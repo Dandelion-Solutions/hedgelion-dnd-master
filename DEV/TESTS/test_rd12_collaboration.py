@@ -158,6 +158,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
     def __init__(self, clause: dict[str, object] | None = None) -> None:
         self.current_revision = CAMPAIGN_REVISION
         self.current_tree = TREE_SHA
+        self.pin_calls = 0
         super().__init__(clause)
         self.records["MANIFEST.yaml"] = {
             "campaign_id": CAMPAIGN_ID,
@@ -174,6 +175,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
         return "github.com/example/campaigns"
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        self.pin_calls += 1
         if campaign_id != CAMPAIGN_ID:
             raise KeyError(campaign_id)
         return PinnedCampaign(CAMPAIGN_ID, self.current_revision, self.current_tree)
@@ -2159,6 +2161,23 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
         )
         _persist_obligation(repository, associated)
         return associated
+
+    def test_persisted_obligation_validation_reuses_prepared_host_basis(self) -> None:
+        repository = CampaignPublicationRepositoryFixture()
+        obligation = self._open_with_all_inputs(repository, "obligation-basis-reuse")
+        host = _host(repository)
+        basis = host._begin_operation()
+        persisted = obligation.to_mapping()
+        repository.pin_calls = 0
+
+        restored = CollaborationObligation.from_mapping(
+            persisted, host=host, basis=basis
+        )
+
+        self.assertEqual(restored, obligation)
+        # One fresh pin verifies that the original basis did not move after
+        # native owner reads; parsing must not acquire a second basis of its own.
+        self.assertEqual(repository.pin_calls, 1)
 
     def test_t02b_publication_entry_point_is_runtime_host_routed(self) -> None:
         self.assertTrue(callable(getattr(collaboration_module, "publish_closed", None)))

@@ -37,8 +37,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -997,7 +997,11 @@ class CollaborationObligation:
 
     @classmethod
     def from_mapping(
-        cls, value: object, *, host: RuntimeHost
+        cls,
+        value: object,
+        *,
+        host: RuntimeHost,
+        basis: _OperationBasis | None = None,
     ) -> CollaborationObligation:
         """Load one persisted obligation only after strict native revalidation."""
         if not isinstance(value, Mapping):
@@ -1127,7 +1131,7 @@ class CollaborationObligation:
             and obligation.closed_input_set_fingerprint is not None
         ):
             CollaborationClosedBasis.from_obligation(obligation)
-        _validate_persisted_input_owners(obligation, host)
+        _validate_persisted_input_owners(obligation, host, basis=basis)
         return obligation
 
 
@@ -2186,7 +2190,7 @@ def _read_current_obligation(
         raise CollaborationAdmissionError(
             "current collaboration obligation belongs to another campaign"
         )
-    obligation = CollaborationObligation.from_mapping(current, host=host)
+    obligation = CollaborationObligation.from_mapping(current, host=host, basis=basis)
     _revalidate_host_basis(host, basis)
     return basis, obligation
 
