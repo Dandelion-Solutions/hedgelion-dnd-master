@@ -925,6 +925,13 @@ class StorySourceRegistrationTests(unittest.TestCase):
         extra_field["candidates"][0]["importance"] = "low"
         with self.assertRaises(StoryContractError):
             story_module.validate_story_source_window("E-EVT", extra_field)
+        empty_window = window | {
+            "expected_coverage": {"kind": "CONTIGUOUS", "through": "evt:2"},
+            "proposed_coverage": {"kind": "CONTIGUOUS", "through": "evt:2"},
+            "candidates": [],
+        }
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_source_window("E-EVT", empty_window)
 
 
 def _registered_story_unit(layer: str) -> dict[str, object]:
@@ -965,16 +972,24 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
             "t0_basis": _t0_basis(),
         }
     elif layer == "MECHANICS":
-        payload = {"mechanical_source_keys": ["native"]}
+        payload = {
+            "mechanical_source_keys": ["native"],
+            "resolution_refs": [
+                {"family": "runtime.resolution", "identity": ["resolution-1"]}
+            ],
+        }
     else:
         payload = {"factual_source_keys": ["native"]}
+    sources = {"native": {"ref": {"family": source_family, "identity": [source_id]}}}
+    if layer == "MECHANICS":
+        sources["owner"] = {
+            "ref": {"family": "runtime.resolution", "identity": ["resolution-1"]}
+        }
     return {
         "schema_version": story_module.STORY_UNIT_SCHEMA_VERSIONS[layer],
         "story_id": story_id,
         "content": {"body": "A source-bound Story account."},
-        "sources": {
-            "native": {"ref": {"family": source_family, "identity": [source_id]}}
-        },
+        "sources": sources,
         "projection_basis": [
             {
                 "source_domain": source_domain,
@@ -1009,6 +1024,114 @@ class StoryUnitLayerTests(unittest.TestCase):
                 _registered_story_unit("EVENTS"), layer="NARRATIVE"
             )
 
+    def test_payload_source_keys_are_bound_to_registered_native_families(self) -> None:
+        wrong_families = {
+            "TRANSCRIPT": "runtime.semantic_event",
+            "EVENTS": "runtime.message",
+            "MECHANICS": "runtime.message",
+            "NARRATIVE": "runtime.message",
+        }
+        for layer, family in wrong_families.items():
+            with self.subTest(layer=layer):
+                unit = _registered_story_unit(layer)
+                unit["sources"]["native"]["ref"]["family"] = family
+                with self.assertRaises(StoryContractError):
+                    story_module.validate_story_unit(unit, layer=layer)
+
+    def test_archive_and_relation_registrations_bind_candidate_owner_source(
+        self,
+    ) -> None:
+        archive = _registered_story_unit("TRANSCRIPT")
+        archive["projection_basis"] = [
+            {
+                "source_domain": "campaign.transcript_archival_requests@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "T-ARC", ["interaction-1", "clause-1", 2]
+                    )
+                ],
+            }
+        ]
+        interaction_ref = {
+            "family": "runtime.interaction",
+            "identity": ["interaction-1"],
+            "selector": {"clause_id": "clause-1", "target_ordinal": 2},
+        }
+        archive["sources"]["request"] = {"ref": interaction_ref}
+        archive["payload"]["interaction_ref"] = interaction_ref
+        archive["payload"]["exact_text_ref"] = archive["sources"]["native"]["ref"]
+        story_module.validate_story_unit(archive, layer="TRANSCRIPT")
+
+        relation = _registered_story_unit("EVENTS")
+        relation["projection_basis"] = [
+            {
+                "source_domain": "campaign.semantic_relations@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "E-REL", ["runtime.semantic_event", "event-1", "assertion-1"]
+                    )
+                ],
+            }
+        ]
+        relation["sources"]["native"] = {
+            "ref": {
+                "family": "runtime.semantic_event",
+                "identity": ["event-1", "assertion-1"],
+            }
+        }
+        relation["payload"] = {"relation_source_keys": ["native"]}
+        story_module.validate_story_unit(relation, layer="EVENTS")
+
+        wrong_relation = deepcopy(relation)
+        wrong_relation["sources"]["native"]["ref"]["family"] = "runtime.message"
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(wrong_relation, layer="EVENTS")
+
+        wrong_archive = deepcopy(archive)
+        wrong_archive["payload"]["interaction_ref"]["selector"]["target_ordinal"] = True
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(wrong_archive, layer="TRANSCRIPT")
+
+    def test_event_source_family_is_checked_independently_of_optional_t0(self) -> None:
+        event = _registered_story_unit("EVENTS")
+        event["payload"].pop("t0_basis")
+        event["sources"]["native"]["ref"]["family"] = "runtime.message"
+
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(event, layer="EVENTS")
+
+    def test_terminal_outcome_candidate_binds_its_resolution_or_command_owner(
+        self,
+    ) -> None:
+        outcome = _registered_story_unit("MECHANICS")
+        outcome["projection_basis"] = [
+            {
+                "source_domain": "campaign.mechanical_outcomes@LOCAL",
+                "semantic_contract_generation": 1,
+                "candidate_ids": [
+                    story_module.encode_candidate_id(
+                        "M-OUT", ["runtime.resolution", "resolution-1", "terminal"]
+                    )
+                ],
+            }
+        ]
+        outcome["sources"] = {
+            "native": {
+                "ref": {
+                    "family": "runtime.resolution",
+                    "identity": ["resolution-1"],
+                }
+            }
+        }
+        outcome["payload"] = {"mechanical_source_keys": ["native"]}
+        story_module.validate_story_unit(outcome, layer="MECHANICS")
+
+        outcome["sources"]["native"]["ref"]["family"] = "runtime.message"
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(outcome, layer="MECHANICS")
+
     def test_transcript_units_do_not_merge_distinct_message_candidates(self) -> None:
         unit = _registered_story_unit("TRANSCRIPT")
         unit["projection_basis"][0]["candidate_ids"].append(
@@ -1032,11 +1155,21 @@ class StoryUnitLayerTests(unittest.TestCase):
             story_module.validate_story_unit(separate_contributions, layer="TRANSCRIPT")
 
     def test_replaced_story_unit_shapes_fail_closed_after_schema_cutover(self) -> None:
-        for layer in ("EVENTS", "MECHANICS", "NARRATIVE"):
-            with self.subTest(layer=layer):
-                old_unit = _registered_story_unit(layer) | {"schema_version": 1}
-                with self.assertRaises(StoryContractError):
-                    story_module.validate_story_unit(old_unit, layer=layer)
+        for layer in ("TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"):
+            old_versions = (1,) if layer == "TRANSCRIPT" else (1, 2)
+            for old_version in old_versions:
+                with self.subTest(layer=layer, schema_version=old_version):
+                    old_unit = _registered_story_unit(layer) | {
+                        "schema_version": old_version
+                    }
+                    with self.assertRaises(StoryContractError):
+                        story_module.validate_story_unit(old_unit, layer=layer)
+
+    def test_story_refs_use_minimum_width_canonical_decimal_encoding(self) -> None:
+        noncanonical = _registered_story_unit("EVENTS") | {"story_id": "E0000001"}
+
+        with self.assertRaises(StoryContractError):
+            story_module.validate_story_unit(noncanonical, layer="EVENTS")
 
 
 class StoryT0MaterializationTests(unittest.TestCase):
@@ -1161,6 +1294,9 @@ class StoryPhysicalRouteTests(unittest.TestCase):
             Path("STORY/NARRATIVE/003/N003562.yaml"),
         )
 
+        with self.assertRaises(StoryContractError):
+            story_record_path("STORY", "E0000001")
+
 
 class DramaturgPublicationTests(unittest.TestCase):
     def test_unadmitted_dramaturg_candidate_cannot_enter_native_history(self) -> None:
@@ -1219,7 +1355,7 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.1")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.2")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -1283,11 +1419,11 @@ class StorySchemaTests(unittest.TestCase):
             "runtime-semantic-event-state.schema.json": 1,
             "native-history-currentness.schema.json": 1,
             "native-history-publication.schema.json": 1,
-            "story-projection-state.schema.json": 2,
-            "story-transcript-unit.schema.json": 1,
-            "story-event-unit.schema.json": 2,
-            "story-narrative-unit.schema.json": 2,
-            "story-mechanics-unit.schema.json": 2,
+            "story-projection-state.schema.json": 3,
+            "story-transcript-unit.schema.json": 2,
+            "story-event-unit.schema.json": 3,
+            "story-narrative-unit.schema.json": 3,
+            "story-mechanics-unit.schema.json": 3,
             "semantic-event-t0-basis.schema.json": 1,
             "commentator-snapshot.schema.json": 1,
             "commentator-control-projection.schema.json": 1,
@@ -1325,12 +1461,47 @@ class StorySchemaTests(unittest.TestCase):
                 unit = _registered_story_unit(layer)
                 self.assertTrue(validator.is_valid(unit))
                 self.assertFalse(validator.is_valid(unit | {"unregistered": True}))
+                if layer == "EVENTS":
+                    self.assertFalse(
+                        validator.is_valid(unit | {"story_id": "E0000001"})
+                    )
                 if layer == "TRANSCRIPT":
                     merged = deepcopy(unit)
                     merged["projection_basis"][0]["candidate_ids"].append(
                         story_module.encode_candidate_id("T-MSG", ["message-2"])
                     )
                     self.assertFalse(validator.is_valid(merged))
+                    archive = _registered_story_unit("TRANSCRIPT")
+                    archive["projection_basis"] = [
+                        {
+                            "source_domain": "campaign.transcript_archival_requests@LOCAL",
+                            "semantic_contract_generation": 1,
+                            "candidate_ids": [
+                                story_module.encode_candidate_id(
+                                    "T-ARC", ["interaction-1", "clause-1", 2]
+                                )
+                            ],
+                        }
+                    ]
+                    archive["sources"]["request"] = {
+                        "ref": {
+                            "family": "runtime.interaction",
+                            "identity": ["interaction-1"],
+                            "selector": {
+                                "clause_id": "clause-1",
+                                "target_ordinal": 2,
+                            },
+                        }
+                    }
+                    archive["payload"]["interaction_ref"] = archive["sources"][
+                        "request"
+                    ]["ref"]
+                    archive["payload"]["exact_text_ref"] = archive["sources"]["native"][
+                        "ref"
+                    ]
+                    self.assertTrue(validator.is_valid(archive))
+                    del archive["payload"]["exact_text_ref"]
+                    self.assertFalse(validator.is_valid(archive))
 
     def test_story_source_window_schema_rejects_unknown_candidate_fields(self) -> None:
         schema = json.loads(
@@ -1372,7 +1543,7 @@ class StorySchemaTests(unittest.TestCase):
         )
         validator = Draft202012Validator(schema)
         state = {
-            "schema_version": 2,
+            "schema_version": 3,
             "layer": "EVENTS",
             "story_id_allocator_high_water": 0,
             "coverage_by_source_domain": {},
@@ -1380,7 +1551,22 @@ class StorySchemaTests(unittest.TestCase):
         }
         self.assertTrue(validator.is_valid(state))
         self.assertFalse(validator.is_valid(state | {"schema_version": 1}))
+        self.assertFalse(validator.is_valid(state | {"schema_version": 2}))
         self.assertFalse(validator.is_valid(state | {"global_coverage": "evt:0"}))
+        self.assertFalse(
+            validator.is_valid(
+                state
+                | {
+                    "lookup": {
+                        "E0000001": {
+                            "entity_refs": [],
+                            "source_refs": [],
+                            "story_refs": [],
+                        }
+                    }
+                }
+            )
+        )
 
 
 class SchemaVersionTests(unittest.TestCase):

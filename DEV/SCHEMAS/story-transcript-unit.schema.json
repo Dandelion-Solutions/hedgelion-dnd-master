@@ -8,8 +8,10 @@
       "type": "object",
       "required": ["payload"],
       "properties": {
-        "schema_version": {"const": 1},
-        "story_id": {"pattern": "^T[0-9]{6,}$"},
+        "schema_version": {"const": 2},
+        "story_id": {
+          "$ref": "story-unit-common.schema.json#/$defs/transcriptStoryRef"
+        },
         "payload": {
           "type": "object",
           "additionalProperties": false,
@@ -69,6 +71,30 @@
               }
             }
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["projection_basis"],
+        "properties": {
+          "projection_basis": {
+            "type": "array",
+            "contains": {
+              "type": "object",
+              "required": ["source_domain"],
+              "properties": {
+                "source_domain": {
+                  "pattern": "^campaign\\.transcript_archival_requests@"
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "payload": {"required": ["interaction_ref", "exact_text_ref"]}
         }
       }
     }

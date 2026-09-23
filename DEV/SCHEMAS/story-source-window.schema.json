@@ -20,6 +20,7 @@
     "proposed_coverage": {"$ref": "#/$defs/terminalCoverage"},
     "candidates": {
       "type": "array",
+      "minItems": 1,
       "items": {"$ref": "#/$defs/candidate"}
     }
   },

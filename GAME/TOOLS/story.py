@@ -25,8 +25,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -174,13 +174,13 @@ STORY_SOURCE_REGISTRATIONS: Final[Mapping[str, StorySourceRegistration]] = (
 
 STORY_UNIT_SCHEMA_VERSIONS: Final[Mapping[str, int]] = MappingProxyType(
     {
-        "TRANSCRIPT": 1,
-        "EVENTS": 2,
-        "MECHANICS": 2,
-        "NARRATIVE": 2,
+        "TRANSCRIPT": 2,
+        "EVENTS": 3,
+        "MECHANICS": 3,
+        "NARRATIVE": 3,
     }
 )
-STORY_PROJECTION_STATE_SCHEMA_VERSION: Final[int] = 2
+STORY_PROJECTION_STATE_SCHEMA_VERSION: Final[int] = 3
 
 
 class StoryContractError(ValueError):
@@ -678,6 +678,170 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
             raise StoryContractError("NARRATIVE factual source key is unbound")
         normalized_payload = {"factual_source_keys": keys}
 
+    def ref_for_key(source_key: str) -> Mapping[str, object]:
+        dependency = sources.get(source_key)
+        if not isinstance(dependency, Mapping):
+            raise StoryContractError("payload source key is not in the source manifest")
+        reference = dependency.get("ref")
+        if not isinstance(reference, Mapping):
+            raise StoryContractError("payload source dependency has no native ref")
+        return reference
+
+    def source_key_refs(source_keys: Sequence[str]) -> list[Mapping[str, object]]:
+        return [ref_for_key(key) for key in source_keys]
+
+    def owner_matches(
+        reference: Mapping[str, object], owner_family: str, owner_id: str
+    ) -> bool:
+        identity = reference.get("identity")
+        return (
+            reference.get("family") == owner_family
+            and isinstance(identity, Sequence)
+            and not isinstance(identity, (str, bytes))
+            and owner_id in identity
+        )
+
+    for registration, contribution in zip(
+        contribution_registrations, contributions, strict=True
+    ):
+        parts = [
+            decode_candidate_id(registration.registration_id, candidate_id)
+            for candidate_id in contribution["candidate_ids"]
+        ]
+        if registration.registration_id == "T-MSG":
+            key = normalized_payload["message_source_key"]
+            reference = ref_for_key(key)
+            if reference.get("family") != "runtime.message" or tuple(
+                reference["identity"]
+            ) != tuple(parts[0]):
+                raise StoryContractError(
+                    "T-MSG message source differs from its candidate"
+                )
+        elif registration.registration_id == "T-ARC":
+            message_ref = ref_for_key(normalized_payload["message_source_key"])
+            exact_ref = normalized_payload.get("exact_text_ref")
+            request_ref = normalized_payload.get("interaction_ref")
+            if (
+                not isinstance(exact_ref, Mapping)
+                or not isinstance(request_ref, Mapping)
+                or message_ref.get("family") != "runtime.message"
+                or exact_ref.get("family") != "runtime.message"
+                or exact_ref.get("identity") != message_ref.get("identity")
+            ):
+                raise StoryContractError("T-ARC requires exact native message evidence")
+            if not any(
+                dependency.get("ref") == exact_ref for dependency in sources.values()
+            ):
+                raise StoryContractError("T-ARC exact text ref is absent from sources")
+            interaction_id, clause_id, target_ordinal = parts[0]
+            selector = request_ref.get("selector")
+            if (
+                request_ref.get("family") != "runtime.interaction"
+                or not owner_matches(request_ref, "runtime.interaction", interaction_id)
+                or not isinstance(selector, Mapping)
+                or selector.get("clause_id") != clause_id
+                or type(selector.get("target_ordinal")) is not int
+                or selector.get("target_ordinal") != target_ordinal
+                or not any(
+                    dependency.get("ref") == request_ref
+                    for dependency in sources.values()
+                )
+            ):
+                raise StoryContractError("T-ARC request target is not source-bound")
+        elif registration.registration_id in {"E-EVT", "N-EVT"}:
+            field = (
+                "event_source_keys"
+                if registration.registration_id == "E-EVT"
+                else "factual_source_keys"
+            )
+            refs = source_key_refs(normalized_payload[field])
+            source_event_ids = {
+                reference["identity"][0]
+                for reference in refs
+                if reference.get("family") == "runtime.semantic_event"
+                and isinstance(reference.get("identity"), Sequence)
+                and not isinstance(reference.get("identity"), (str, bytes))
+                and reference.get("identity")
+            }
+            if any(event_id not in source_event_ids for (event_id,) in parts):
+                raise StoryContractError(
+                    "SemanticEvent candidate lacks its exact native source"
+                )
+        elif registration.registration_id in {"E-REL", "N-REL"}:
+            field = (
+                "relation_source_keys"
+                if registration.registration_id == "E-REL"
+                else "factual_source_keys"
+            )
+            refs = source_key_refs(normalized_payload[field])
+            for owner_family, owner_id, assertion_key in parts:
+                if not any(
+                    owner_matches(reference, owner_family, owner_id)
+                    and (
+                        assertion_key in reference["identity"][1:]
+                        or reference.get("selector") == assertion_key
+                        or (
+                            isinstance(reference.get("selector"), Mapping)
+                            and reference["selector"].get("assertion_key")
+                            == assertion_key
+                        )
+                    )
+                    for reference in refs
+                ):
+                    raise StoryContractError(
+                        "historical relation candidate lacks its owner assertion"
+                    )
+        elif registration.registration_id == "M-SEG":
+            mechanical_refs = source_key_refs(
+                normalized_payload["mechanical_source_keys"]
+            )
+            if any(
+                reference.get("family") != "runtime.mechanical_event"
+                for reference in mechanical_refs
+            ):
+                raise StoryContractError(
+                    "M-SEG facts require native MechanicalEvent sources"
+                )
+            owner_refs = [
+                *_native_ref_array(
+                    normalized_payload.get("resolution_refs", []), "resolution_refs"
+                ),
+                *_native_ref_array(
+                    normalized_payload.get("receipt_refs", []), "receipt_refs"
+                ),
+                *(dependency["ref"] for dependency in sources.values()),
+            ]
+            for owner_family, owner_id, _segment_sequence in parts:
+                if not any(
+                    owner_matches(reference, owner_family, owner_id)
+                    for reference in owner_refs
+                ):
+                    raise StoryContractError(
+                        "M-SEG candidate lacks its exact execution owner"
+                    )
+        elif registration.registration_id == "M-OUT":
+            outcome_refs = [
+                *source_key_refs(normalized_payload["mechanical_source_keys"]),
+                *_native_ref_array(
+                    normalized_payload.get("resolution_refs", []), "resolution_refs"
+                ),
+                *_native_ref_array(
+                    normalized_payload.get("receipt_refs", []), "receipt_refs"
+                ),
+                *(dependency["ref"] for dependency in sources.values()),
+            ]
+            for owner_family, owner_id, _terminal in parts:
+                if owner_family not in {
+                    "runtime.resolution",
+                    "runtime.command",
+                } or not any(
+                    owner_matches(reference, owner_family, owner_id)
+                    for reference in outcome_refs
+                ):
+                    raise StoryContractError(
+                        "M-OUT candidate lacks its terminal receipt owner"
+                    )
+
     normalized: dict[str, object] = {
         "schema_version": version,
         "story_id": unit["story_id"],
@@ -721,6 +885,11 @@ def _story_layer(story_id: object) -> tuple[str, int]:
     sequence = int(match["sequence"])
     if sequence < 1:
         raise StoryContractError("story_id sequence must be positive")
+    canonical = f"{match['prefix']}{sequence:06d}"
+    if story_id != canonical:
+        raise StoryContractError(
+            "story_id sequence must use minimum-width canonical decimal"
+        )
     return _PREFIX_LAYERS[match["prefix"]], sequence
 
 
@@ -881,21 +1050,22 @@ def validate_story_source_window(
             }
         )
 
-    if candidates:
-        if expected_ordinal is not None and proposed_ordinal is not None:
-            progress = proposed_ordinal - expected_ordinal
-        elif expected_ordinal is None and proposed_ordinal is not None:
-            progress = proposed_ordinal
-        else:
-            progress = 0
-        if progress != len(candidates) or progress < 1:
-            raise StoryContractError(
-                "candidate cardinality does not match contiguous coverage"
-            )
-        if upper is None or proposed_ordinal is None or proposed_ordinal > upper:
-            raise StoryContractError("proposed coverage exceeds the exact source upper")
-    elif expected_ordinal != proposed_ordinal:
-        raise StoryContractError("an empty source window cannot advance coverage")
+    if not candidates:
+        raise StoryContractError(
+            "an empty lane has no SourceWindow; omit the window without advancing coverage"
+        )
+    if expected_ordinal is not None and proposed_ordinal is not None:
+        progress = proposed_ordinal - expected_ordinal
+    elif expected_ordinal is None and proposed_ordinal is not None:
+        progress = proposed_ordinal
+    else:
+        progress = 0
+    if progress != len(candidates) or progress < 1:
+        raise StoryContractError(
+            "candidate cardinality does not match contiguous coverage"
+        )
+    if upper is None or proposed_ordinal is None or proposed_ordinal > upper:
+        raise StoryContractError("proposed coverage exceeds the exact source upper")
     if upper is None:
         if expected_ordinal is not None or proposed_ordinal is not None or candidates:
             raise StoryContractError("empty source upper conflicts with coverage")

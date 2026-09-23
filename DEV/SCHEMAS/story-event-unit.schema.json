@@ -8,8 +8,10 @@
       "type": "object",
       "required": ["payload"],
       "properties": {
-        "schema_version": {"const": 2},
-        "story_id": {"pattern": "^E[0-9]{6,}$"},
+        "schema_version": {"const": 3},
+        "story_id": {
+          "$ref": "story-unit-common.schema.json#/$defs/eventStoryRef"
+        },
         "payload": {
           "type": "object",
           "additionalProperties": false,
