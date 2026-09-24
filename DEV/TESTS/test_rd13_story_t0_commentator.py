@@ -2,12 +2,14 @@ from __future__ import annotations
 
 import json
 import unittest
+from collections.abc import Mapping
 from copy import deepcopy
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
+from GAME.TOOLS import history as history_module
 from GAME.TOOLS import story as story_module
 from GAME.TOOLS.commentator import (
     CommentatorContractError,
@@ -21,6 +23,8 @@ from GAME.TOOLS.dramaturg import (
     rebase_dramaturg_horizon,
     validate_dramaturg_horizon,
 )
+from GAME.TOOLS.durability import FRAMEWORK_MODULE_VERSION as DURABILITY_MODULE_VERSION
+from GAME.TOOLS.durability import route_serialized_operation
 from GAME.TOOLS.history import (
     FRAMEWORK_MODULE_VERSION,
     HistoryContractError,
@@ -43,7 +47,7 @@ from GAME.TOOLS.live_state import (
     derive_live_epoch_id,
 )
 from GAME.TOOLS.native_storage import route_native_record
-from GAME.TOOLS.policy_basis import PinnedCampaign
+from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.runtime_host import EvtSourceWindow, compose_runtime_host
 from GAME.TOOLS.story import (
     StoryContractError,
@@ -57,6 +61,14 @@ from GAME.TOOLS.story import (
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 _TEST_EVT_HOST_TOKENS: dict[int, object] = {}
+
+
+def _plain_test(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _plain_test(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain_test(item) for item in value]
+    return value
 
 
 def _issue_native_history_from_window(
@@ -93,6 +105,15 @@ def _t0_basis() -> dict[str, object]:
                 "provenance_refs": ["fact.party_authorized"],
             }
         ],
+    }
+
+
+def _event_with_t0(event_id: str, ordinal: int = 1) -> dict[str, object]:
+    basis = _t0_basis() | {"event_id": event_id}
+    return _semantic_event() | {
+        "event_id": event_id,
+        "semantic_order": ordinal,
+        "semantic_delta": {"actor_decision_basis": basis},
     }
 
 
@@ -210,6 +231,150 @@ class _HistoryRepository:
         return {}
 
 
+class _StoryPublicationRepository(_HistoryRepository):
+    def __init__(self, events: list[dict[str, object]]) -> None:
+        super().__init__(events=events)
+        self.revision = _HISTORY_REVISION
+        self.tree_sha = "b" * 40
+        self.records["MANIFEST.yaml"] = {
+            "campaign_id": "campaign.main",
+            "campaign_name": "Main",
+            "branch": "refs/heads/campaign/main",
+            "created_at": "2026-09-24T00:00:00Z",
+        }
+        self.records["CAMPAIGN_CARD.yaml"] = {
+            "campaign_id": "campaign.main",
+            "campaign_name": "Main",
+        }
+        self.records["MANIFEST.yaml"]["players"] = {"player_ids": ["player.aria"]}
+        self.records[
+            route_native_record("world.player", ("player.aria",)).relative_path
+        ] = {
+            "kind": "world.player",
+            "id": "player.aria",
+            "campaign_id": "campaign.main",
+            "state": {},
+        }
+        self.parents: dict[str, str] = {}
+        self.trees = {self.revision: self.tree_sha}
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        if campaign_id != self.campaign_id:
+            raise KeyError(campaign_id)
+        return PinnedCampaign(campaign_id, self.revision, self.tree_sha)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if (
+            pinned.campaign_id != self.campaign_id
+            or pinned.revision != self.revision
+            or pinned.tree_sha != self.tree_sha
+        ):
+            raise KeyError("stale exact campaign pin")
+        self.read_paths.append(path)
+        return deepcopy(self.records[path])
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        if revision not in self.trees:
+            raise KeyError(revision)
+        return {
+            "ref": campaign_ref,
+            "revision": revision,
+            "tree_sha": self.trees[revision],
+            "parent_revision": self.parents.get(revision),
+        }
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> object:
+        del repository_ref
+        if ancestor_revision == descendant_revision:
+            return {"relation": "EQUAL"}
+        current = descendant_revision
+        while current in self.parents:
+            current = self.parents[current]
+            if current == ancestor_revision:
+                return {"relation": "ANCESTOR"}
+        return {"relation": "NOT_ANCESTOR"}
+
+
+class _StoryPublicationTransport:
+    def __init__(self, repository: _StoryPublicationRepository) -> None:
+        self.repository = repository
+        self.calls: list[tuple[str, object]] = []
+        self.pending_operations: dict[str, object | None] = {}
+        self.pending_parent = repository.revision
+        self.pending_tree = "d" * 40
+        self.pending_commit = "c" * 40
+        self.response_status = "accepted"
+        self.before_ref_read: object | None = None
+
+    def repository_identity(self) -> str:
+        return self.repository.repository_identity()
+
+    def resolve_authenticated_acting_principal(
+        self, campaign_id: str, pinned_campaign: PinnedCampaign
+    ) -> AuthenticatedPrincipalEvidence:
+        if campaign_id != pinned_campaign.campaign_id:
+            raise KeyError(campaign_id)
+        return AuthenticatedPrincipalEvidence("principal.story-writer")
+
+    def read_ref(self, target_ref: str) -> object:
+        self.calls.append(("read_ref", target_ref))
+        callback = self.before_ref_read
+        self.before_ref_read = None
+        if callable(callback):
+            callback()
+        return {"head_sha": self.repository.revision}
+
+    def create_tree(self, base_tree_sha: str, path_operations: object) -> object:
+        self.calls.append(("create_tree", path_operations))
+        if base_tree_sha != self.repository.tree_sha or not isinstance(
+            path_operations, Mapping
+        ):
+            raise ValueError("tree basis mismatch")
+        self.pending_operations = dict(path_operations)
+        return self.pending_tree
+
+    def create_commit(self, parent_sha: str, tree_sha: str, target_ref: str) -> object:
+        self.calls.append(("create_commit", (parent_sha, tree_sha, target_ref)))
+        self.pending_parent = parent_sha
+        if tree_sha != self.pending_tree:
+            raise ValueError("tree mismatch")
+        return self.pending_commit
+
+    def update_ref(
+        self, target_ref: str, new_commit_sha: str, force: bool = False
+    ) -> object:
+        self.calls.append(("update_ref", (target_ref, new_commit_sha, force)))
+        if self.response_status != "accepted":
+            return {
+                "status": "rejected",
+                "reason": "configuration",
+                "dispatched": True,
+            }
+        if force or new_commit_sha != self.pending_commit:
+            return {"status": "rejected", "reason": "configuration"}
+        if self.repository.revision != self.pending_parent:
+            return {
+                "status": "rejected",
+                "reason": "non_fast_forward",
+                "head_sha": self.repository.revision,
+            }
+        self.repository.parents[new_commit_sha] = self.pending_parent
+        self.repository.revision = new_commit_sha
+        self.repository.tree_sha = self.pending_tree
+        self.repository.trees[new_commit_sha] = self.pending_tree
+        for path, value in self.pending_operations.items():
+            if value is None:
+                self.repository.records.pop(path, None)
+            else:
+                self.repository.records[path] = _plain_test(value)
+        return {"status": "accepted", "head_sha": new_commit_sha, "dispatched": True}
+
+
 class _HistoryLiveTransport:
     def __init__(self) -> None:
         opening_revision = "e" * 40
@@ -289,6 +454,22 @@ class NativeHistoryAuthorityTests(unittest.TestCase):
 
 
 class NativeHistoryWindowTests(unittest.TestCase):
+    def test_history_owner_reads_exact_bounded_evt_page(self) -> None:
+        repository = _HistoryRepository()
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport()
+        )
+        read_window = getattr(history_module, "read_native_history_window", None)
+        self.assertTrue(
+            callable(read_window), "History must expose bounded native pages"
+        )
+
+        publication = read_window(host, lower_exclusive_ordinal=1, max_items=1)
+
+        self.assertEqual([event.event_id for event in publication.events], ["event-2"])
+        self.assertEqual(publication.currentness.lower_exclusive_ordinal, 1)
+        self.assertEqual(publication.currentness.upper_ordinal, 2)
+
     def test_host_history_reads_only_the_bound_semantic_event_adapter_window(
         self,
     ) -> None:
@@ -614,13 +795,40 @@ class T0BasisTests(unittest.TestCase):
     def test_t0_basis_is_explicit_and_reconstructible_without_current_actor_state(
         self,
     ) -> None:
-        basis = build_t0_basis(_semantic_event(), _t0_basis())
+        event = _semantic_event() | {
+            "semantic_delta": {"actor_decision_basis": _t0_basis()}
+        }
+        basis = build_t0_basis(event, _t0_basis())
 
         self.assertEqual(basis["factors"][0]["t0_value"], "epistemic.known")
         with self.assertRaises(HistoryContractError):
             validate_t0_basis(
                 {**_t0_basis(), "factors": [{"factor_id": "fact.party_authorized"}]}
             )
+
+    def test_t0_basis_is_extracted_only_from_its_exact_native_semantic_event(
+        self,
+    ) -> None:
+        basis = _t0_basis()
+        event = _semantic_event() | {
+            "semantic_delta": {"gate": "opened", "actor_decision_basis": basis}
+        }
+        extract = getattr(history_module, "extract_t0_basis_from_semantic_event", None)
+        self.assertTrue(callable(extract), "native History must expose T0 extraction")
+
+        self.assertEqual(extract(event), build_t0_basis(event, basis))
+        forged = deepcopy(basis)
+        forged["factors"][0]["t0_value"] = "epistemic.rejected"  # type: ignore[index]
+        with self.assertRaises(HistoryContractError):
+            build_t0_basis(event, forged)
+        mismatched = deepcopy(event)
+        mismatched["semantic_delta"]["actor_decision_basis"]["event_id"] = "event.other"  # type: ignore[index]
+        with self.assertRaises(HistoryContractError):
+            validate_semantic_event_draft(mismatched)
+
+    def test_caller_cannot_add_a_t0_basis_absent_from_native_event(self) -> None:
+        with self.assertRaises(HistoryContractError):
+            build_t0_basis(_semantic_event(), _t0_basis())
 
 
 class StoryProjectionTests(unittest.TestCase):
@@ -1520,11 +1728,434 @@ class StoryUnitLayerTests(unittest.TestCase):
 
 
 class StoryT0MaterializationTests(unittest.TestCase):
+    def test_native_semantic_event_has_its_exact_w02_operation_route(self) -> None:
+        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.4")
+        event = _semantic_event()
+
+        operation = route_serialized_operation(
+            "runtime.semantic_event", event["event_id"], event
+        )
+
+        self.assertEqual(
+            operation.relative_path,
+            route_native_record(
+                "runtime.semantic_event", (event["event_id"],)
+            ).relative_path,
+        )
+
     def test_story_event_retains_story_local_t0_basis(self) -> None:
         projection = validate_story_projection(_story_projection(), layer="EVENTS")
 
         self.assertEqual(projection["t0_basis"]["event_id"], "event.gate_opened")
         self.assertNotIn("current_actor_state", projection)
+
+    def test_native_t0_basis_is_materialized_with_story_state_in_one_publication(
+        self,
+    ) -> None:
+        event = _event_with_t0("event.private-choice")
+        native_basis = _t0_basis() | {"event_id": "event.private-choice"}
+        native_basis["factors"].append(  # type: ignore[union-attr]
+            {
+                "owner_family": "world.actor",
+                "factor_id": "goal.protect_the_gate",
+                "t0_value": {"goal": "protect the gate"},
+                "provenance_refs": ["goal.protect_the_gate"],
+            }
+        )
+        event["semantic_delta"]["actor_decision_basis"] = native_basis  # type: ignore[index]
+        event["semantic_delta"]["factual_changes"] = [  # type: ignore[index]
+            {"summary": "The guard opened the gate."}
+        ]
+        event["semantic_delta"]["private_offscreen"] = True  # type: ignore[index]
+        repository = _StoryPublicationRepository([event])
+        actor_path = route_native_record("world.actor", ("actor.guard",)).relative_path
+        repository.records[actor_path] = {
+            "kind": "world.actor",
+            "id": "actor.guard",
+            "campaign_id": "campaign.main",
+            "state": {"current_goal": "epistemic.rejected"},
+        }
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+        publish = getattr(story_module, "publish_story_event_window", None)
+        self.assertTrue(callable(publish), "T07C must own Story publication")
+
+        result = publish(
+            host,
+            publication=publication,
+            event_bodies={"event.private-choice": "The guard opened the gate."},
+        )
+
+        story_path = story_record_path("STORY", "E000001").as_posix()
+        state_path = "STORY/EVENTS/PROJECTION_STATE.yaml"
+        stored = repository.records[story_path]
+        state = repository.records[state_path]
+        self.assertEqual(stored["payload"]["t0_basis"], native_basis)
+        self.assertEqual(
+            stored["availability"],
+            {
+                "requires_story_refs": [],
+                "requires_source_refs": [
+                    {
+                        "family": "runtime.semantic_event",
+                        "identity": ["event.private-choice"],
+                    }
+                ],
+            },
+        )
+        self.assertEqual(state["story_id_allocator_high_water"], 1)
+        self.assertEqual(
+            state["coverage_by_source_domain"]["campaign.semantic_events@LOCAL"][
+                "terminal_coverage"
+            ]["through"],
+            "evt:1",
+        )
+        self.assertEqual(result.status, "PUBLISHED")
+        writes = [payload for name, payload in transport.calls if name == "update_ref"]
+        self.assertEqual(len(writes), 1)
+        self.assertFalse(writes[0][2])
+        operations = next(
+            payload for name, payload in transport.calls if name == "create_tree"
+        )
+        self.assertIn(story_path, operations)
+        self.assertIn(state_path, operations)
+        self.assertEqual(
+            repository.records[
+                route_native_record(
+                    "runtime.semantic_event", ("event.private-choice",)
+                ).relative_path
+            ],
+            event,
+        )
+        self.assertNotIn(
+            actor_path,
+            repository.read_paths,
+        )
+
+    def test_story_publication_retry_uses_current_coverage_without_a_second_write(
+        self,
+    ) -> None:
+        event = _event_with_t0("event.gate_opened")
+        repository = _StoryPublicationRepository([event])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+        publish = getattr(story_module, "publish_story_event_window", None)
+        self.assertTrue(callable(publish))
+
+        first = publish(
+            host,
+            publication=publication,
+            event_bodies={"event.gate_opened": "The guard opened the gate."},
+        )
+        recovered = publish(
+            host,
+            publication=publication,
+            event_bodies={"event.gate_opened": "The guard opened the gate."},
+        )
+
+        self.assertEqual(first.status, "PUBLISHED")
+        self.assertEqual(recovered.status, "ALREADY_COVERED")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_story_publication_advances_one_bounded_native_page_at_a_time(self) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        second = _semantic_event() | {
+            "event_id": "event-2",
+            "semantic_order": 2,
+            "semantic_delta": {"gate": "secured"},
+        }
+        repository = _StoryPublicationRepository([first, second])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        first_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=None, max_items=1
+        )
+        first_result = story_module.publish_story_event_window(
+            host,
+            publication=first_page,
+            event_bodies={"event-1": "The guard considered the party."},
+        )
+        second_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=1, max_items=1
+        )
+        second_result = story_module.publish_story_event_window(
+            host,
+            publication=second_page,
+            event_bodies={"event-2": "The gate was secured."},
+        )
+
+        self.assertEqual(first_result.story_ids, ("E000001",))
+        self.assertEqual(second_result.story_ids, ("E000002",))
+        self.assertEqual(
+            repository.records["STORY/EVENTS/PROJECTION_STATE.yaml"][
+                "coverage_by_source_domain"
+            ]["campaign.semantic_events@LOCAL"]["terminal_coverage"]["through"],
+            "evt:2",
+        )
+
+    def test_changed_native_event_basis_rejects_stale_story_window(self) -> None:
+        event = _event_with_t0("event.gate_opened")
+        repository = _StoryPublicationRepository([event])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+        event_path = route_native_record(
+            "runtime.semantic_event", ("event.gate_opened",)
+        ).relative_path
+        changed = deepcopy(event)
+        changed["semantic_delta"]["actor_decision_basis"]["factors"][0]["t0_value"] = (  # type: ignore[index]
+            "epistemic.rejected"
+        )
+        repository.records[event_path] = changed
+        repository.parents["f" * 40] = repository.revision
+        repository.revision = "f" * 40
+        repository.tree_sha = "1" * 40
+        repository.trees[repository.revision] = repository.tree_sha
+        before_calls = len(transport.calls)
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=publication,
+                event_bodies={"event.gate_opened": "The guard opened the gate."},
+            )
+
+        self.assertEqual(len(transport.calls), before_calls)
+        self.assertEqual(repository.records[event_path], changed)
+        self.assertNotIn("STORY/EVENTS/PROJECTION_STATE.yaml", repository.records)
+
+    def test_campaign_movement_during_story_write_cannot_overwrite_newer_canon(
+        self,
+    ) -> None:
+        event = _event_with_t0("event.gate_opened")
+        repository = _StoryPublicationRepository([event])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+        state_path = "STORY/EVENTS/PROJECTION_STATE.yaml"
+        newer_state = story_module.empty_story_projection_state("EVENTS")
+
+        def move_campaign_ref() -> None:
+            transport.repository.parents["f" * 40] = transport.repository.revision
+            transport.repository.revision = "f" * 40
+            transport.repository.tree_sha = "1" * 40
+            transport.repository.trees[transport.repository.revision] = (
+                transport.repository.tree_sha
+            )
+            transport.repository.records[state_path] = newer_state
+
+        transport.before_ref_read = move_campaign_ref
+        event_path = route_native_record(
+            "runtime.semantic_event", ("event.gate_opened",)
+        ).relative_path
+        original_event = deepcopy(repository.records[event_path])
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=publication,
+                event_bodies={"event.gate_opened": "The guard opened the gate."},
+            )
+
+        self.assertEqual(repository.records[state_path], newer_state)
+        self.assertEqual(repository.records[event_path], original_event)
+        self.assertNotIn(
+            story_module.story_record_path("STORY", "E000001").as_posix(),
+            repository.records,
+        )
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_rejected_story_publication_does_not_mutate_native_history(self) -> None:
+        event = _event_with_t0("event.gate_opened")
+        repository = _StoryPublicationRepository([event])
+        transport = _StoryPublicationTransport(repository)
+        transport.response_status = "rejected"
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+        event_path = route_native_record(
+            "runtime.semantic_event", ("event.gate_opened",)
+        ).relative_path
+        original_event = deepcopy(repository.records[event_path])
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=publication,
+                event_bodies={"event.gate_opened": "The guard opened the gate."},
+            )
+
+        self.assertEqual(repository.records[event_path], original_event)
+        self.assertNotIn("STORY/EVENTS/PROJECTION_STATE.yaml", repository.records)
+
+    def test_story_window_cannot_advance_coverage_with_a_missing_event_body(
+        self,
+    ) -> None:
+        event = _event_with_t0("event.gate_opened")
+        repository = _StoryPublicationRepository([event])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host, publication=publication, event_bodies={}
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+        self.assertNotIn("STORY/EVENTS/PROJECTION_STATE.yaml", repository.records)
+
+    def test_story_projection_state_validator_rejects_stale_or_incompatible_coverage(
+        self,
+    ) -> None:
+        state = story_module.empty_story_projection_state("EVENTS")
+        self.assertEqual(
+            story_module.validate_story_projection_state(state, layer="EVENTS"),
+            state,
+        )
+        covered = deepcopy(state)
+        covered["coverage_by_source_domain"] = {
+            "campaign.semantic_events@LOCAL": {
+                "semantic_contract_generation": 1,
+                "terminal_coverage": {"kind": "CONTIGUOUS", "through": "evt:2"},
+            }
+        }
+        self.assertEqual(
+            story_module.validate_story_projection_state(covered, layer="EVENTS"),
+            covered,
+        )
+        for invalid in (
+            covered
+            | {
+                "coverage_by_source_domain": {
+                    "campaign.semantic_events@LOCAL": {
+                        "semantic_contract_generation": 2,
+                        "terminal_coverage": {
+                            "kind": "CONTIGUOUS",
+                            "through": "evt:2",
+                        },
+                    }
+                }
+            },
+            covered
+            | {
+                "coverage_by_source_domain": {
+                    "campaign.semantic_events@LOCAL": {
+                        "semantic_contract_generation": 1,
+                        "terminal_coverage": {
+                            "kind": "CONTIGUOUS",
+                            "through": "evt:02",
+                        },
+                    }
+                }
+            },
+            covered | {"global_coverage": "evt:2"},
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(StoryContractError):
+                story_module.validate_story_projection_state(invalid, layer="EVENTS")
+
+    def test_story_catchup_materializes_every_event_without_caller_omission(
+        self,
+    ) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        second = _semantic_event() | {
+            "event_id": "event-2",
+            "semantic_order": 2,
+            "kind": "maintenance",
+            "semantic_delta": {"private_offscreen": True},
+        }
+        repository = _StoryPublicationRepository([first, second])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        publication = host.history.read()
+
+        result = story_module.publish_story_event_window(
+            host,
+            publication=publication,
+            event_bodies={
+                "event-1": "The guard made a choice.",
+                "event-2": "A technical maintenance event was recorded.",
+            },
+        )
+
+        self.assertEqual(len(result.story_ids), 2)
+        self.assertEqual(
+            repository.records["STORY/EVENTS/PROJECTION_STATE.yaml"][
+                "coverage_by_source_domain"
+            ]["campaign.semantic_events@LOCAL"]["terminal_coverage"]["through"],
+            "evt:2",
+        )
+        self.assertTrue(
+            all(
+                story_module.story_record_path("STORY", story_id).as_posix()
+                in repository.records
+                for story_id in result.story_ids
+            )
+        )
+
+    def test_selected_live_story_window_preserves_origin_and_uses_campaign_anchor(
+        self,
+    ) -> None:
+        repository = _StoryPublicationRepository(
+            [{**_semantic_event(), "event_id": "live-event-1", "semantic_order": 1}]
+        )
+        transport = _StoryPublicationTransport(repository)
+        live = _HistoryLiveTransport()
+        host = compose_runtime_host("campaign.main", repository, live, transport)
+        publication = host.history.read(origin=f"LIVE:{live.source.epoch_id}")
+
+        result = story_module.publish_story_event_window(
+            host,
+            publication=publication,
+            event_bodies={"live-event-1": "The scene shifted."},
+        )
+
+        domain = story_module.story_source_domain(
+            "E-EVT", f"LIVE:{live.source.epoch_id}"
+        )
+        state = repository.records["STORY/EVENTS/PROJECTION_STATE.yaml"]
+        story = repository.records[
+            story_module.story_record_path("STORY", "E000001").as_posix()
+        ]
+        self.assertEqual(result.source_domain, domain)
+        self.assertIn(domain, state["coverage_by_source_domain"])
+        self.assertEqual(
+            story["projection_basis"][0]["candidate_ids"],
+            [story_module.encode_candidate_id("E-EVT", ["live-event-1"])],
+        )
+        self.assertNotIn(
+            route_native_record(
+                "runtime.semantic_event", ("live-event-1",)
+            ).relative_path,
+            next(payload for name, payload in transport.calls if name == "create_tree"),
+        )
+        self.assertIn(
+            route_native_record("world.player", ("player.aria",)).relative_path,
+            next(payload for name, payload in transport.calls if name == "create_tree"),
+        )
 
 
 class CommentatorSelfContainedTests(unittest.TestCase):
@@ -1702,7 +2333,9 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.6")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.4")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -1935,7 +2568,7 @@ class StorySchemaTests(unittest.TestCase):
 
 class SchemaVersionTests(unittest.TestCase):
     def test_history_module_starts_at_its_first_material_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.3")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
@@ -2024,6 +2657,35 @@ class SchemaVersionTests(unittest.TestCase):
                 {**_semantic_event(), "schema_version": 1.0}
             )
         )
+
+    def test_native_semantic_event_schema_admits_only_typed_embedded_t0_basis(
+        self,
+    ) -> None:
+        event_schema = json.loads(
+            (SCHEMAS / "runtime-semantic-event-state.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        basis_schema = json.loads(
+            (SCHEMAS / "semantic-event-t0-basis.schema.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        registry = Registry().with_resource(
+            basis_schema["$id"], Resource.from_contents(basis_schema)
+        )
+        validator = Draft202012Validator(event_schema, registry=registry)
+        native_basis = _t0_basis()
+        event = _semantic_event() | {
+            "semantic_delta": {"actor_decision_basis": native_basis}
+        }
+
+        self.assertTrue(validator.is_valid(event))
+        invalid = deepcopy(event)
+        invalid["semantic_delta"]["actor_decision_basis"]["factors"][0].pop(  # type: ignore[index]
+            "t0_value"
+        )
+        self.assertFalse(validator.is_valid(invalid))
 
     def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(
         self,

@@ -11,6 +11,13 @@
     "semantic_order": {"type": "integer", "minimum": 1},
     "kind": {"type": "string", "minLength": 1},
     "provenance_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "semantic_delta": {"type": "object"}
+    "semantic_delta": {
+      "type": "object",
+      "properties": {
+        "actor_decision_basis": {
+          "$ref": "https://hedgelion.invalid/schemas/semantic-event-t0-basis.schema.json"
+        }
+      }
+    }
   }
 }

@@ -19,8 +19,8 @@ from typing import Final
 
 from .native_storage import route_native_record
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -338,13 +338,18 @@ class RoutedSerializedOperation:
         if not isinstance(copied, dict):
             raise DurabilityContractError("serialized operation payload must be an object")
         declared_kind = copied.get("kind")
-        if declared_kind is not None and declared_kind != self.owner_kind:
+        if (
+            self.owner_kind != "runtime.semantic_event"
+            and declared_kind is not None
+            and declared_kind != self.owner_kind
+        ):
             raise DurabilityContractError("serialized operation owner kind differs from payload")
         identity_field = {
             "runtime.command": "command_id",
             "runtime.interaction": "input_message_id",
             "runtime.intent_plan": "intent_plan_id",
             "runtime.collaboration_obligation": "obligation_id",
+            "runtime.semantic_event": "event_id",
         }.get(self.owner_kind, "id")
         if copied.get(identity_field, copied.get("id")) != self.owner_id:
             raise DurabilityContractError("serialized operation owner identity differs from payload")

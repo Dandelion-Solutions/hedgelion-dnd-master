@@ -15,6 +15,10 @@ from typing import Final
 
 from GAME.TOOLS.history import (
     HistoryContractError,
+    NativeHistoryPublication,
+    _read_bound_native_history,
+    extract_t0_basis_from_semantic_event,
+    recover_native_history,
     validate_semantic_event_draft,
     validate_t0_basis,
 )
@@ -25,8 +29,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -185,6 +189,35 @@ STORY_PROJECTION_STATE_SCHEMA_VERSION: Final[int] = 4
 
 class StoryContractError(ValueError):
     """Raised when an owner-local Story projection violates its boundary."""
+
+
+class StoryPublicationStatus(StrEnum):
+    PUBLISHED = "PUBLISHED"
+    ALREADY_COVERED = "ALREADY_COVERED"
+    NO_CANDIDATES = "NO_CANDIDATES"
+
+
+@dataclass(frozen=True, slots=True)
+class StoryPublicationResult:
+    """Non-content acknowledgement for one Story EVENTS source window."""
+
+    status: StoryPublicationStatus
+    campaign_revision: str
+    source_domain: str
+    coverage_through: str | None
+    story_ids: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, StoryPublicationStatus):
+            raise StoryContractError("Story publication status is not registered")
+        _nonempty_string(self.campaign_revision, "Story campaign revision")
+        _nonempty_string(self.source_domain, "Story source domain")
+        ids = tuple(
+            _string_array(self.story_ids, "Story publication IDs", allow_empty=True)
+        )
+        if any(_story_layer(story_id)[0] != "EVENTS" for story_id in ids):
+            raise StoryContractError("Story publication IDs must belong to EVENTS")
+        object.__setattr__(self, "story_ids", ids)
 
 
 def story_source_registration(registration_id: object) -> StorySourceRegistration:
@@ -960,6 +993,110 @@ def story_record_path(story_root: object, story_id: object) -> Path:
     return Path(root) / layer / f"{sequence // 1000:03d}" / f"{story_id}.yaml"
 
 
+def story_projection_state_path(story_root: object, layer: object) -> Path:
+    root = select_story_root(story_root)
+    if not isinstance(layer, str) or layer not in STORY_UNIT_SCHEMA_VERSIONS:
+        raise StoryContractError("Story projection-state layer is not registered")
+    return Path(root) / layer / "PROJECTION_STATE.yaml"
+
+
+def empty_story_projection_state(layer: object) -> dict[str, object]:
+    if layer != "EVENTS":
+        raise StoryContractError(
+            "owner-local projection-state creation currently supports EVENTS only"
+        )
+    return {
+        "schema_version": STORY_PROJECTION_STATE_SCHEMA_VERSION,
+        "layer": layer,
+        "story_id_allocator_high_water": 0,
+        "coverage_by_source_domain": {},
+        "lookup": {},
+    }
+
+
+def validate_story_projection_state(value: object, *, layer: str) -> dict[str, object]:
+    """Validate one exact persisted Story layer-state owner."""
+    if layer != "EVENTS":
+        raise StoryContractError(
+            "owner-local projection-state validation currently supports EVENTS only"
+        )
+    state = _mapping(value, "Story projection state")
+    expected_fields = {
+        "schema_version",
+        "layer",
+        "story_id_allocator_high_water",
+        "coverage_by_source_domain",
+        "lookup",
+    }
+    if set(state) != expected_fields:
+        raise StoryContractError("Story projection-state fields are not strict")
+    if (
+        type(state["schema_version"]) is not int
+        or state["schema_version"] != STORY_PROJECTION_STATE_SCHEMA_VERSION
+        or state["layer"] != layer
+    ):
+        raise StoryContractError(
+            "Story projection-state schema or layer is unsupported"
+        )
+    high_water = state["story_id_allocator_high_water"]
+    if type(high_water) is not int or high_water < 0:
+        raise StoryContractError("Story allocator high-water must be non-negative")
+    raw_coverage = _mapping(
+        state["coverage_by_source_domain"], "coverage_by_source_domain"
+    )
+    coverage: dict[str, object] = {}
+    for domain, raw_entry in raw_coverage.items():
+        registration = _registration_for_domain(layer, domain)
+        entry = _mapping(raw_entry, "Story source-domain coverage entry")
+        if set(entry) != {"semantic_contract_generation", "terminal_coverage"}:
+            raise StoryContractError(
+                "Story source-domain coverage fields are not strict"
+            )
+        if (
+            type(entry["semantic_contract_generation"]) is not int
+            or entry["semantic_contract_generation"]
+            != registration.semantic_contract_generation
+        ):
+            raise StoryContractError("Story coverage generation is unsupported")
+        _ordinal, terminal = _coverage_cursor(
+            entry["terminal_coverage"], registration, "terminal_coverage"
+        )
+        coverage[domain] = {
+            "semantic_contract_generation": registration.semantic_contract_generation,
+            "terminal_coverage": terminal,
+        }
+    raw_lookup = _mapping(state["lookup"], "Story lookup")
+    lookup: dict[str, object] = {}
+    highest_sequence = 0
+    for story_id, raw_entry in raw_lookup.items():
+        entry_layer, sequence = _story_layer(story_id)
+        if entry_layer != layer:
+            raise StoryContractError("Story lookup ID belongs to another layer")
+        highest_sequence = max(highest_sequence, sequence)
+        entry = _mapping(raw_entry, "Story lookup entry")
+        if set(entry) != {"entity_refs", "source_refs", "story_refs"}:
+            raise StoryContractError("Story lookup-entry fields are not strict")
+        lookup[story_id] = {
+            "entity_refs": _native_ref_array(
+                entry["entity_refs"], "lookup.entity_refs"
+            ),
+            "source_refs": _native_ref_array(
+                entry["source_refs"], "lookup.source_refs"
+            ),
+            "story_refs": _story_ref_array(entry["story_refs"], "lookup.story_refs"),
+        }
+    if highest_sequence > high_water:
+        raise StoryContractError("Story lookup exceeds allocator high-water")
+    normalized: dict[str, object] = {
+        "schema_version": STORY_PROJECTION_STATE_SCHEMA_VERSION,
+        "layer": layer,
+        "story_id_allocator_high_water": high_water,
+        "coverage_by_source_domain": coverage,
+        "lookup": lookup,
+    }
+    return normalized
+
+
 def _coverage_cursor(
     value: object, registration: StorySourceRegistration, label: str
 ) -> tuple[int | None, dict[str, object]]:
@@ -1351,3 +1488,397 @@ def project_story_window(
                 "Story projection must use only its bounded native sources"
             )
     return deepcopy(validated)
+
+
+def _story_lookup_entry(unit: Mapping[str, object]) -> dict[str, object]:
+    sources = _mapping(unit["sources"], "Story sources")
+    availability = _mapping(unit["availability"], "Story availability")
+    story_refs = list(unit.get("cross_refs", ()))
+    story_refs.extend(availability["requires_story_refs"])
+    source_refs_by_identity: dict[str, dict[str, object]] = {}
+    for value in sources.values():
+        reference = _native_ref(
+            _mapping(value, "Story source dependency")["ref"], "source ref"
+        )
+        identity = json.dumps(reference, sort_keys=True, separators=(",", ":"))
+        source_refs_by_identity[identity] = reference
+    return {
+        "entity_refs": _native_ref_array(unit.get("entity_refs", ()), "entity_refs"),
+        "source_refs": list(source_refs_by_identity.values()),
+        "story_refs": _story_ref_array(
+            list(dict.fromkeys(story_refs)), "lookup.story_refs"
+        ),
+    }
+
+
+def _exact_story_read(
+    host: object, basis: object, path: str, *, optional: bool = False
+) -> Mapping[str, object] | None:
+    repository = getattr(host, "_repository", None)
+    pinned = getattr(basis, "pinned_campaign", None)
+    if repository is None or pinned is None:
+        raise StoryContractError("Story I/O requires one exact RuntimeHost basis")
+    try:
+        value = repository.read_exact_path(pinned, path)
+    except KeyError:
+        if optional:
+            return None
+        raise StoryContractError(f"exact Story owner path is unavailable: {path}")
+    except (AttributeError, OSError, TypeError, ValueError) as exc:
+        raise StoryContractError(f"exact Story owner read failed: {path}") from exc
+    if not isinstance(value, Mapping):
+        raise StoryContractError(f"exact Story owner path is not an object: {path}")
+    normalized = _plain_json(value, f"exact Story owner path {path}")
+    if not isinstance(normalized, dict):
+        raise StoryContractError(f"exact Story owner path is not a JSON object: {path}")
+    return normalized
+
+
+def _materialize_event_unit(
+    event: object,
+    *,
+    source_domain: str,
+    story_id: str,
+    body: str,
+) -> dict[str, object]:
+    event_mapping = _mapping(event, "owner-issued Story source event")
+    normalized_event = validate_semantic_event_draft(event_mapping)
+    event_id = _nonempty_string(normalized_event["event_id"], "event_id")
+    basis = extract_t0_basis_from_semantic_event(normalized_event)
+    candidate_id = encode_candidate_id("E-EVT", [event_id])
+    unit: dict[str, object] = {
+        "schema_version": STORY_UNIT_SCHEMA_VERSIONS["EVENTS"],
+        "story_id": story_id,
+        "content": {"body": _nonempty_string(body, "Story event body")},
+        "sources": {
+            "event": {
+                "ref": {
+                    "family": "runtime.semantic_event",
+                    "identity": [event_id],
+                }
+            }
+        },
+        "projection_basis": [
+            {
+                "source_domain": source_domain,
+                "semantic_contract_generation": 1,
+                "candidate_ids": [candidate_id],
+            }
+        ],
+        "availability": {
+            "requires_story_refs": [],
+            "requires_source_refs": [
+                {"family": "runtime.semantic_event", "identity": [event_id]}
+            ],
+        },
+        "payload": {"event_source_keys": ["event"]},
+    }
+    if basis is not None:
+        unit["payload"]["t0_basis"] = basis  # type: ignore[index]
+    return validate_story_unit(unit, layer="EVENTS")
+
+
+def publish_story_event_window(
+    host: object,
+    *,
+    publication: NativeHistoryPublication,
+    event_bodies: Mapping[str, str],
+) -> StoryPublicationResult:
+    """Publish one exact native EVT window as one Story EVENTS W02 closure.
+
+    Every event in the window is MATERIALIZED; this API has no omission argument.
+    A retained Actor T0 basis is copied only from its containing accepted native
+    SemanticEvent. Story remains a projection and the W02 campaign ref is the
+    only publication authority.
+    """
+    if not isinstance(publication, NativeHistoryPublication):
+        raise StoryContractError("owner-issued native History publication is required")
+    try:
+        from .durability import route_serialized_operation
+        from .history import _is_owner_issued_publication
+        from .native_storage import route_native_record, validate_loaded_identity
+        from .publication import PublicationOutcome, PublicationStatus
+        from .runtime_host import RuntimeHost, _OperationBasis
+    except ImportError as exc:  # pragma: no cover - package wiring failure
+        raise StoryContractError(
+            "Story publication owner dependencies are unavailable"
+        ) from exc
+    if not _is_owner_issued_publication(publication):
+        raise StoryContractError(
+            "Story requires service-issued native History evidence"
+        )
+    if not isinstance(host, RuntimeHost):
+        raise StoryContractError("Story publication requires a bound RuntimeHost")
+    try:
+        checked_publication = recover_native_history(
+            publication.to_mapping(), currentness=publication.currentness
+        )
+    except (HistoryContractError, TypeError, ValueError) as exc:
+        raise StoryContractError("native Story source publication is invalid") from exc
+    if checked_publication.to_mapping() != publication.to_mapping():
+        raise StoryContractError("native Story source publication changed on recovery")
+    if publication.campaign_id != host.campaign_id:
+        raise StoryContractError("native Story source belongs to another campaign")
+    source_domain = story_source_domain("E-EVT", publication.origin)
+    state_path = story_projection_state_path(STORY_ROOT, "EVENTS").as_posix()
+    basis = host._begin_operation()
+    if not isinstance(basis, _OperationBasis):
+        raise StoryContractError("Story currentness basis is not owner-issued")
+    if basis.host_token is not host._basis_token:
+        raise StoryContractError("Story currentness basis belongs to another host")
+    state_value = _exact_story_read(host, basis, state_path, optional=True)
+    state = (
+        empty_story_projection_state("EVENTS")
+        if state_value is None
+        else validate_story_projection_state(state_value, layer="EVENTS")
+    )
+    native_lower = publication.currentness.lower_exclusive_ordinal
+    native_upper = publication.currentness.upper_ordinal
+    try:
+        current_publication = _read_bound_native_history(
+            source_adapter=host.semantic_events,
+            basis=basis,
+            origin=publication.origin,
+            lower_exclusive_ordinal=native_lower,
+            max_items=max(1, len(publication.events)),
+        )
+    except (
+        HistoryContractError,
+        AttributeError,
+        KeyError,
+        OSError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        raise StoryContractError(
+            "native Story source currentness could not be revalidated"
+        ) from exc
+    if (
+        current_publication.campaign_id != publication.campaign_id
+        or current_publication.origin != publication.origin
+        or current_publication.source_ref != publication.source_ref
+        or current_publication.currentness.lower_exclusive_ordinal != native_lower
+        or current_publication.currentness.upper_ordinal != native_upper
+        or tuple(event.as_mapping() for event in current_publication.events)
+        != tuple(event.as_mapping() for event in publication.events)
+    ):
+        raise StoryContractError("native Story source window is stale or changed")
+    coverage = _mapping(
+        state["coverage_by_source_domain"], "Story coverage_by_source_domain"
+    )
+    previous = coverage.get(source_domain)
+    previous_ordinal: int | None = None
+    expected_coverage: dict[str, object] = {"kind": "CONTIGUOUS", "through": None}
+    if previous is not None:
+        previous_entry = _mapping(previous, "Story coverage entry")
+        registration = story_source_registration("E-EVT")
+        previous_ordinal, expected_coverage = _coverage_cursor(
+            previous_entry["terminal_coverage"], registration, "terminal_coverage"
+        )
+
+    if native_upper is None:
+        if previous_ordinal not in {None, 0}:
+            raise StoryContractError(
+                "native Story source upper moved behind persisted Story coverage"
+            )
+        return StoryPublicationResult(
+            StoryPublicationStatus.NO_CANDIDATES,
+            basis.pinned_campaign.revision,
+            source_domain,
+            None if previous is None else expected_coverage["through"],  # type: ignore[arg-type]
+            (),
+        )
+    if previous_ordinal is not None and native_upper < previous_ordinal:
+        raise StoryContractError(
+            "native Story source upper moved behind persisted Story coverage"
+        )
+    if previous_ordinal is not None and native_upper == previous_ordinal:
+        return StoryPublicationResult(
+            StoryPublicationStatus.ALREADY_COVERED,
+            basis.pinned_campaign.revision,
+            source_domain,
+            expected_coverage["through"],  # type: ignore[arg-type]
+            (),
+        )
+    if (native_lower or 0) != (previous_ordinal or 0):
+        raise StoryContractError(
+            "native Story window does not continue exact current Story coverage"
+        )
+    event_ids = tuple(event.event_id for event in publication.events)
+    if not event_ids or native_upper - (native_lower or 0) != len(event_ids):
+        raise StoryContractError("native Story window is empty or non-contiguous")
+    if not isinstance(event_bodies, Mapping) or set(event_bodies) != set(event_ids):
+        raise StoryContractError(
+            "Story event bodies must cover every native event exactly once"
+        )
+
+    if native_upper is None:
+        raise StoryContractError(
+            "nonempty Story source window has no native upper basis"
+        )
+    proposed_coverage = {
+        "kind": "CONTIGUOUS",
+        "through": encode_candidate_cursor("E-EVT", native_upper),
+    }
+    source_window = validate_story_source_window(
+        "E-EVT",
+        {
+            "source_domain": source_domain,
+            "semantic_contract_generation": 1,
+            "source_basis": {
+                "origin": publication.origin,
+                "lane": "evt",
+                "upper": encode_candidate_cursor("E-EVT", native_upper),
+                "enumeration_representation": (
+                    f"{publication.currentness.source_ref}@"
+                    f"{publication.currentness.source_revision}:"
+                    f"{native_lower or 0}..{native_upper}"
+                ),
+                "owner_contracts": [
+                    {"family": "runtime.semantic_event", "schema_version": 1}
+                ],
+            },
+            "expected_coverage": expected_coverage,
+            "proposed_coverage": proposed_coverage,
+            "candidates": [
+                {
+                    "candidate_id": encode_candidate_id("E-EVT", [event_id]),
+                    "requirement": "MUST_MATERIALIZE",
+                    "source_keys": ["event"],
+                }
+                for event_id in event_ids
+            ],
+        },
+    )
+    record_keys_by_event = {
+        event_id: f"record{index + 1}" for index, event_id in enumerate(event_ids)
+    }
+    for candidate, event_id in zip(source_window["candidates"], event_ids, strict=True):
+        candidate_value = _mapping(candidate, "validated Story source candidate")
+        candidate_id = _nonempty_string(
+            candidate_value.get("candidate_id"), "candidate_id"
+        )
+        if decode_candidate_id("E-EVT", candidate_id) != (event_id,):
+            raise StoryContractError(
+                "validated Story candidate order differs from native history"
+            )
+        validate_story_candidate_result(
+            "E-EVT",
+            source_domain,
+            candidate_value,
+            {
+                "source_domain": source_domain,
+                "candidate_id": candidate_id,
+                "outcome": "MATERIALIZED",
+                "record_keys": [record_keys_by_event[event_id]],
+            },
+        )
+
+    normalized_bodies = {
+        event_id: _nonempty_string(event_bodies[event_id], "Story event body")
+        for event_id in event_ids
+    }
+    next_sequence = state["story_id_allocator_high_water"]
+    if type(next_sequence) is not int:
+        raise StoryContractError("Story allocator high-water is invalid")
+    records: dict[str, dict[str, object]] = {}
+    lookup = dict(_mapping(state["lookup"], "Story lookup"))
+    story_ids: list[str] = []
+    for event in current_publication.events:
+        next_sequence += 1
+        story_id = f"E{next_sequence:06d}"
+        unit = _materialize_event_unit(
+            event.as_mapping(),
+            source_domain=source_domain,
+            story_id=story_id,
+            body=normalized_bodies[event.event_id],
+        )
+        record_path = story_record_path(STORY_ROOT, story_id).as_posix()
+        if record_path in records or story_id in lookup:
+            raise StoryContractError("Story allocator would reuse an existing Story ID")
+        if _exact_story_read(host, basis, record_path, optional=True) is not None:
+            raise StoryContractError(
+                "Story allocator collides with an existing known-ID record"
+            )
+        records[record_path] = unit
+        lookup[story_id] = _story_lookup_entry(unit)
+        story_ids.append(story_id)
+
+    through = proposed_coverage["through"]
+    coverage[source_domain] = {
+        "semantic_contract_generation": 1,
+        "terminal_coverage": {"kind": "CONTIGUOUS", "through": through},
+    }
+    next_state = validate_story_projection_state(
+        {
+            "schema_version": STORY_PROJECTION_STATE_SCHEMA_VERSION,
+            "layer": "EVENTS",
+            "story_id_allocator_high_water": next_sequence,
+            "coverage_by_source_domain": coverage,
+            "lookup": lookup,
+        },
+        layer="EVENTS",
+    )
+    operations: dict[str, object | None] = dict(records)
+    operations[state_path] = next_state
+    first_event = current_publication.events[0]
+    if publication.origin == "LOCAL":
+        anchor_path = route_native_record(
+            "runtime.semantic_event", (first_event.event_id,)
+        ).relative_path
+        anchor_payload = first_event.as_mapping()
+        exact_anchor = _exact_story_read(host, basis, anchor_path)
+        if exact_anchor != anchor_payload:
+            raise StoryContractError("Story W02 anchor differs from exact native event")
+        routed_operation = route_serialized_operation(
+            "runtime.semantic_event", first_event.event_id, anchor_payload
+        )
+        operations[anchor_path] = anchor_payload
+    else:
+        manifest = _exact_story_read(host, basis, "MANIFEST.yaml")
+        players = _mapping(manifest.get("players"), "campaign PLAYER routing")
+        player_ids = _string_array(
+            players.get("player_ids"), "campaign player_ids", allow_empty=True
+        )
+        if not player_ids:
+            raise StoryContractError(
+                "LIVE Story publication requires an existing campaign owner anchor"
+            )
+        # W02 requires one native campaign-route operation. This exact unchanged
+        # PLAYER is only the transaction anchor; it supplies no Story authority,
+        # reader eligibility or participant selection.
+        anchor_id = min(player_ids)
+        anchor_path = route_native_record("world.player", (anchor_id,)).relative_path
+        anchor_payload = _exact_story_read(host, basis, anchor_path)
+        try:
+            validate_loaded_identity("world.player", (anchor_id,), anchor_payload)
+        except ValueError as exc:
+            raise StoryContractError("LIVE Story campaign anchor is invalid") from exc
+        if anchor_payload.get("campaign_id") != host.campaign_id:
+            raise StoryContractError("LIVE Story campaign anchor has foreign scope")
+        routed_operation = route_serialized_operation(
+            "world.player", anchor_id, anchor_payload
+        )
+        operations[anchor_path] = anchor_payload
+    try:
+        outcome = host.publication.publish_owner_delta(
+            routed_operation=routed_operation,
+            path_operations=operations,
+            owner_generations={},
+            publication_reason="story-events-projection",
+            basis=basis,
+        )
+    except (AttributeError, OSError, TypeError, ValueError) as exc:
+        raise StoryContractError("Story publication failed closed") from exc
+    if not isinstance(outcome, PublicationOutcome) or (
+        outcome.status is not PublicationStatus.ACCEPTED
+    ):
+        status = getattr(getattr(outcome, "status", None), "name", "UNKNOWN")
+        raise StoryContractError(f"Story publication was not confirmed: {status}")
+    return StoryPublicationResult(
+        StoryPublicationStatus.PUBLISHED,
+        outcome.observed_head_sha or basis.pinned_campaign.revision,
+        source_domain,
+        through,
+        tuple(story_ids),
+    )

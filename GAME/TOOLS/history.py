@@ -27,8 +27,8 @@ _HISTORY_CONTRACT_GENERATION: Final[int] = 1
 _NATIVE_HISTORY_KIND: Final[str] = "runtime.native_history"
 _MISSING_HOST_TOKEN: Final[object] = object()
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 
 class HistoryContractError(ValueError):
@@ -549,6 +549,8 @@ def _read_bound_native_history(
     source_adapter: object,
     basis: object,
     origin: str,
+    lower_exclusive_ordinal: int | None = None,
+    max_items: int = 1000,
 ) -> NativeHistoryPublication:
     """Validate and issue history from this RuntimeHost's bound adapter output."""
     checked_origin = _history_origin(origin)
@@ -578,15 +580,15 @@ def _read_bound_native_history(
     try:
         if checked_origin == "LOCAL":
             raw_window = source_adapter.read_local_evt_window(
-                lower_exclusive_ordinal=None,
-                max_items=1000,
+                lower_exclusive_ordinal=lower_exclusive_ordinal,
+                max_items=max_items,
                 _basis=basis,
             )
         else:
             raw_window = source_adapter.read_selected_live_evt_window(
                 origin=checked_origin,
-                lower_exclusive_ordinal=None,
-                max_items=1000,
+                lower_exclusive_ordinal=lower_exclusive_ordinal,
+                max_items=max_items,
                 _basis=basis,
             )
     except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
@@ -626,6 +628,38 @@ def _read_bound_native_history(
         expected_source_ref=expected_source_ref,
         expected_source_revision=expected_source_revision,
         _expected_host_token=basis.host_token,
+    )
+
+
+def read_native_history_window(
+    host: object,
+    *,
+    origin: str = "LOCAL",
+    lower_exclusive_ordinal: int | None = None,
+    max_items: int = 1000,
+    _basis: object | None = None,
+) -> NativeHistoryPublication:
+    """Read one bounded, owner-issued native history interval through RuntimeHost."""
+    try:
+        from .runtime_host import RuntimeHost, _OperationBasis
+    except ImportError as exc:  # pragma: no cover - package wiring failure
+        raise HistoryContractError("RuntimeHost history route is unavailable") from exc
+    if not isinstance(host, RuntimeHost):
+        raise HistoryContractError("native history requires a bound RuntimeHost")
+    if _basis is None:
+        basis = host._begin_operation()
+    elif isinstance(_basis, _OperationBasis):
+        basis = _basis
+    else:
+        raise HistoryContractError("native history basis is not owner-typed")
+    if basis.host_token is not host._basis_token:
+        raise HistoryContractError("native history basis belongs to another host")
+    return _read_bound_native_history(
+        source_adapter=host.semantic_events,
+        basis=basis,
+        origin=origin,
+        lower_exclusive_ordinal=lower_exclusive_ordinal,
+        max_items=max_items,
     )
 
 
@@ -1163,14 +1197,37 @@ def validate_semantic_event_draft(value: object) -> dict[str, object]:
         raise HistoryContractError("semantic event has unsupported or missing fields")
     if not isinstance(event["semantic_delta"], Mapping):
         raise HistoryContractError("semantic_delta must be an object")
-    return {
+    semantic_delta = _thaw_history_value(event["semantic_delta"])
+    if not isinstance(semantic_delta, dict):
+        raise HistoryContractError("semantic_delta must be a JSON object")
+    normalized = {
         "schema_version": _schema_version(event["schema_version"]),
         "event_id": _nonempty_string(event["event_id"], "event_id"),
         "semantic_order": _positive_int(event["semantic_order"], "semantic_order"),
         "kind": _nonempty_string(event["kind"], "kind"),
         "provenance_refs": _unique_strings(event["provenance_refs"], "provenance_refs"),
-        "semantic_delta": deepcopy(dict(event["semantic_delta"])),
+        "semantic_delta": semantic_delta,
     }
+    extract_t0_basis_from_semantic_event(normalized)
+    return normalized
+
+
+def extract_t0_basis_from_semantic_event(
+    value: object,
+) -> dict[str, object] | None:
+    """Return the bounded T0 basis embedded in this exact accepted event, if present."""
+    event = _mapping(value, "semantic event")
+    event_id = _nonempty_string(event.get("event_id"), "event_id")
+    semantic_delta = _mapping(event.get("semantic_delta"), "semantic_delta")
+    if "actor_decision_basis" not in semantic_delta:
+        return None
+    raw_basis = semantic_delta["actor_decision_basis"]
+    basis = validate_t0_basis(raw_basis)
+    if basis["event_id"] != event_id:
+        raise HistoryContractError(
+            "retained T0 basis must bind its containing native SemanticEvent"
+        )
+    return basis
 
 
 def validate_t0_basis(value: object) -> dict[str, object]:
@@ -1217,12 +1274,19 @@ def validate_t0_basis(value: object) -> dict[str, object]:
 
 
 def build_t0_basis(event: object, basis: object) -> dict[str, object]:
-    """Bind retained factors to their accepted native SemanticEvent."""
+    """Copy only the T0 basis admitted inside its accepted native SemanticEvent."""
 
     event_value = validate_semantic_event_draft(event)
     basis_value = validate_t0_basis(basis)
-    if basis_value["event_id"] != event_value["event_id"]:
-        raise HistoryContractError("T0 basis must bind its accepted semantic event")
+    owner_basis = extract_t0_basis_from_semantic_event(event_value)
+    if owner_basis is None:
+        raise HistoryContractError(
+            "native SemanticEvent does not contain a retained T0 decision basis"
+        )
+    if basis_value != owner_basis:
+        raise HistoryContractError(
+            "T0 basis differs from the containing native SemanticEvent evidence"
+        )
     return basis_value
 
 
