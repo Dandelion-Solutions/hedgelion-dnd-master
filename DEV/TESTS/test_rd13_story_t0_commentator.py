@@ -1254,6 +1254,17 @@ def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool], ...]:
         "segment_sequence": 0,
     }
 
+    negative_segment = deepcopy(valid)
+    negative_segment["payload"]["resolution_refs"][0]["selector"] = {
+        "segment_id": "resolution-1:segment:-1",
+        "segment_sequence": -1,
+    }
+
+    boolean_resolution_ordinal = deepcopy(valid)
+    boolean_resolution_ordinal["payload"]["resolution_refs"][0]["selector"][
+        "segment_sequence"
+    ] = True
+
     valid_receipt_link = deepcopy(valid)
     valid_receipt_link["projection_basis"][0]["candidate_ids"] = [
         story_module.encode_candidate_id("M-SEG", ["runtime.command", "command-1", 1])
@@ -1270,6 +1281,11 @@ def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool], ...]:
     valid_receipt_link["payload"].pop("resolution_refs")
     valid_receipt_link["payload"]["receipt_refs"] = [command_segment_ref]
 
+    boolean_receipt_ordinal = deepcopy(valid_receipt_link)
+    boolean_receipt_ordinal["payload"]["receipt_refs"][0]["selector"][
+        "segment_sequence"
+    ] = True
+
     return (
         ("valid exact payload link", valid, True),
         ("valid exact receipt link", valid_receipt_link, True),
@@ -1277,6 +1293,9 @@ def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool], ...]:
         ("empty payload links", empty_payload_links, False),
         ("wrong owner", wrong_owner, False),
         ("wrong segment", wrong_segment, False),
+        ("negative segment ordinal", negative_segment, False),
+        ("boolean resolution ordinal", boolean_resolution_ordinal, False),
+        ("boolean receipt ordinal", boolean_receipt_ordinal, False),
     )
 
 
@@ -1683,7 +1702,7 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.6")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",

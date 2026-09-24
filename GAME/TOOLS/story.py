@@ -25,8 +25,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -725,6 +725,16 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
     def exact_segment_ref(
         reference: Mapping[str, object], owner_family: str, owner_id: str, sequence: int
     ) -> bool:
+        selector = reference.get("selector")
+        if not isinstance(selector, Mapping):
+            return False
+        segment_sequence = selector.get("segment_sequence")
+        if (
+            isinstance(segment_sequence, bool)
+            or not isinstance(segment_sequence, int)
+            or segment_sequence < 1
+        ):
+            return False
         return exact_native_ref(
             reference,
             owner_family,
