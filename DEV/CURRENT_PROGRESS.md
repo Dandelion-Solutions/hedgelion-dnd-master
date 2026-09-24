@@ -3,11 +3,11 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P/T02B/T07A/T02C ACCEPTED — T04A CANDIDATE / T07B FIX_ROUND_2 REVIEW_PENDING
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P/T02B/T07A/T02C ACCEPTED — T04A/T07B REPAIR CANDIDATES / INDEPENDENT REVIEW PENDING
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: independently review T04A candidate `20dd5301310bf5db250c229655ac957fe56e23c3` and T07B fix-round-2 candidate `5a53b8e4323f53cde2f3c718e477003a4da3ce29`; then continue each lane only after its named producer PASS
+NEXT_AUTHORIZED_UNIT: independently review combined T04A/T07B repair candidate `dfca9bc45eecc05e2b7287c20954172e7921ffa7`; then continue each lane only after its named producer PASS
 REQUIRED_GATE: T04A reviewer PASS -> T04B -> T05C after T02C+T04B+T05B; T07B reviewer PASS -> T07C and subsequent T07 Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
 KNOWN_BLOCKERS: OpenCode task permission currently denies independent reviewer dispatch; full-suite version census scans protected local `.entire/` capture files. T04B waits for T04A reviewer PASS; T05C waits for T02C+T04B+accepted T05B; T07C+ wait for T07B independent PASS and serial Story prerequisites. T07 CLS↔HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution is not required for pre-release collaboration v2->v3 or unactivated Story schema cutovers; hosted CI is unavailable, and release execution, gameplay bootstrap and Wave 05 remain unauthorized.
@@ -365,10 +365,11 @@ UNPUBLISHED_WORK: NONE after publication/read-back
 ## Latest Wave-04 execution state — 2026-09-24 (T04A candidate / T07B fix-round-2)
 
 ```text
-STATUS: FINAL_REVIEW — T04A implementation candidate; T07B fix-round-2 candidate
+STATUS: FINAL_REVIEW — T04A and T07B repair candidates await independent re-review
 W04.T02C: ACCEPTED after independent reviewer PASS at dd0783c4eca20a94431b17844ca09ac64f8ba2cf
-W04.T04A: candidate code commit 20dd5301310bf5db250c229655ac957fe56e23c3; independent task review pending
-W04.T07B: fix-round-2 candidate 5a53b8e4323f53cde2f3c718e477003a4da3ce29; independent re-review pending
+W04.T04A: repair commit 0d190a9db11129a02f07c71a812996c78a8d33cf; independent task review pending
+W04.T07B: repair commits 0b4dde06d5bdc70fd85b4b6856da45c3f1147d59 and dfca9bc45eecc05e2b7287c20954172e7921ffa7; independent re-review pending
+COMBINED_REPAIR_CANDIDATE: dfca9bc45eecc05e2b7287c20954172e7921ffa7
 T04B: gated on T04A reviewer PASS
 T07C: gated on T07B reviewer PASS
 WAVE_05: NOT AUTHORIZED

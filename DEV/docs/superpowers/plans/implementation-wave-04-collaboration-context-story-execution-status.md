@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING
-CURRENT_TASK: bounded T04A and T07B repairs after independent re-review FAIL
-LAST_COMPLETED_TASK: independent re-review of T04A and T07B fix-round-2 on combined HEAD b13496b19bc8a7f11b82a24e11508036e815596f
-LAST_SAFE_SHA: b13496b19bc8a7f11b82a24e11508036e815596f — reproducible reviewed repair basis, NOT task acceptance
+STATUS: FINAL_REVIEW — bounded T04A and T07B repair candidates ready for independent re-review
+CURRENT_TASK: obtain independent PASS for combined repair candidate `dfca9bc45eecc05e2b7287c20954172e7921ffa7`
+LAST_COMPLETED_TASK: bounded code/test repairs for IRR-T04A-01/02 and IRR-T07B-01; no acceptance inferred
+LAST_SAFE_SHA: 8ca335f969f3ace1623356e1a6c2b835282ef26f — reviewed failure basis; repair candidates supersede its implementation state
 
 ## Current independent review
 
@@ -17,8 +17,8 @@ REVIEWED_PARENT: b16ba8d2b4e3cffa86736fb20d10a34b01c97ff9
 
 | Task | Candidate | Independent disposition |
 |---|---|---|
-| W04.T04A | 20dd5301310bf5db250c229655ac957fe56e23c3 | FAIL / REPAIR REQUIRED — IRR-T04A-01 and IRR-T04A-02 |
-| W04.T07B fix-round-2 | 5a53b8e4323f53cde2f3c718e477003a4da3ce29 | FAIL / REPAIR REQUIRED — IRR-T07B-01 |
+| W04.T04A | `0d190a9db11129a02f07c71a812996c78a8d33cf` | repair candidate; independent re-review pending |
+| W04.T07B fix-round-3 | `0b4dde06d5bdc70fd85b4b6856da45c3f1147d59` + `dfca9bc45eecc05e2b7287c20954172e7921ffa7` | repair candidate; independent re-review pending |
 
 Findings:
 
@@ -89,29 +89,53 @@ T07B currently rejects source-classified OMITTED results unconditionally. This i
 
 The mandatory pre-T07 CLS↔HDM preflight remains at its recorded PASS. Its exact evidence and explicit semantic-change/unavailable-evidence reopen conditions are retained in CURRENT_PROGRESS and the prior ledger. This review does not rerun it, treat private planning as evidence, or waive a future genuine trigger.
 
-## Verification and impact
+## Repair-candidate verification and impact
 
 ```text
-EXACT REVIEWED HEAD: b13496b19bc8a7f11b82a24e11508036e815596f
-HOSTED_RUN: 35945179177
-HOSTED_JOB: 107461446825
-STATUS / CONCLUSION: completed / success
-MAINTENANCE: PASS
-CANONICAL DEV: Ran 1175 tests; OK (skipped=5)
-VERSION_UNCLASSIFIED: []
-VERSION_LEGACY_HITS: []
+REPAIR_BASE_SHA: 634bed78f4ff211b33632e2a00acf83256fee643
+T04A_REPAIR_COMMIT: 0d190a9db11129a02f07c71a812996c78a8d33cf
+T07B_REPAIR_COMMITS: 0b4dde06d5bdc70fd85b4b6856da45c3f1147d59, dfca9bc45eecc05e2b7287c20954172e7921ffa7
+COMBINED_REPAIR_CANDIDATE_HEAD: dfca9bc45eecc05e2b7287c20954172e7921ffa7
 ```
 
-The local `.entire/` census issue did not reproduce on hosted CI; the local issue is not claimed repaired. Protected capture files remain untouched.
+CURRENT_VERIFICATION_STATE:
+- T04A RED/GREEN: body drift, missing body field, added body field, and unverified
+  singleplayer creator/agency cases fail closed without producing an OBSOLETE result;
+  positively lost pending required agency still becomes OBSOLETE. OPEN and CLOSED
+  uncertainty regressions preserve the exact owner records.
+- T07B RED/GREEN: one shared M-SEG fixture table is evaluated by Python and schema v4
+  for exact payload/receipt links, absent/empty links, wrong owner and invalid segment
+  ordinal. Python retains exact selector-to-candidate matching. JSON Schema validates
+  the closed typed-reference shape; it does not replace the Python owner equality check.
+- Focused suites: `test_rd12_collaboration` 108 passed; W03
+  `PlayerAccessTransitionTests` plus RuntimeHost composition 50 passed;
+  `test_rd13_story_t0_commentator` 55 passed.
+- Ruff check/format: PASS (the shared RD13 check excludes pre-existing SIM117
+  diagnostics only). Maintenance audit: PASS.
+- Canonical DEV unittest discovery: 1178 tests, 5 skipped, 1 failure. The remaining
+  failure is the version census scanning protected local `.entire/` capture files;
+  this tree is untouched. Hosted CI is unavailable for the repair candidates.
+- Independent reviewer task dispatch remains denied by OpenCode permissions. No
+  independent PASS is claimed; the repair candidates are ready for re-review here.
 
-Candidate version changes remain recorded, not erased: T04A collaboration 1.0.14 -> 1.0.15 with obligation schema v3 unchanged; T07B repair round 2 Story 1.0.3 -> 1.0.4, MECHANICS schema 3 -> 4 and projection-state schema 3 -> 4. Further material repairs require fresh Version Impact assessment; do not reuse an already-spent revision silently.
+VERSION_IMPACT:
+- Collaboration module `1.0.15 -> 1.0.16`; collaboration obligation schema v3
+  unchanged. Story module `1.0.4 -> 1.0.5`; MECHANICS unit schema remains v4 and
+  projection-state schema remains v4. No campaign-contract, storage, catalog or engine
+  release bump; migration/dual-read remain NONE for the pre-release clean-slate tree.
+- This execution-status checkpoint: `VERSION_IMPACT: NONE`.
 
-VERSION_IMPACT: NONE for this review/control-only checkpoint
-SYSTEM_IMPACT: no new owner/architecture decision made by this review; findings require bounded implementation/contract repairs
-NEXT_EXACT_TASK: repair IRR-T04A-01/02 and IRR-T07B-01 in their existing lanes; focused and cross-owner regressions; coherent publish/read-back and exact-head verification; fresh independent re-review before T04B/T07C
-KNOWN_BLOCKERS: independent FAIL on both candidates; T04B/T07C remain blocked; downstream follows the named joins above
-UNPUBLISHED_WORK: NONE after verified publication/read-back
-WAVE_05: NOT AUTHORIZED
+SYSTEM_IMPACT: NONE — fixes stay within the reviewed T04A/T07B owner/test lanes;
+W03 `access_control.py` and RuntimeHost interfaces are unchanged. T04A only reconciles
+and returns candidates; T04B retains its same-closure publication and recovery gate.
+T07B continues fail-closed for SOURCE_CLASSIFIED omission; no positive native-proof
+omission route is asserted. WAVE_05: NOT AUTHORIZED.
+NEXT_EXACT_TASK: independently re-review combined repair candidate
+`dfca9bc45eecc05e2b7287c20954172e7921ffa7`; start T04B and T07C only after their
+respective producer PASS gates.
+KNOWN_BLOCKERS: reviewer task permission denied; local full suite census remains
+contaminated by protected `.entire/` capture files.
+UNPUBLISHED_WORK: NONE after candidate publication/read-back.
 
 No whole-wave restore, production implementation by the reviewer, migration, release, gameplay bootstrap, new branch/ref or force update is authorized here.
 
