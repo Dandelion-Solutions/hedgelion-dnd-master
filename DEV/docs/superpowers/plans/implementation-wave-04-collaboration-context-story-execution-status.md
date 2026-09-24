@@ -4,1063 +4,125 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T00P ACCEPTED / T02B + T07A AUTHORIZED IN PARALLEL
-CURRENT_TASK: W04.T02B publication/recovery and W04.T07A native history publication/recovery in parallel
-LAST_COMPLETED_TASK:
-  W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
-  W04.T05B accepted after reviewer PASS -> `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
-  W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
-  W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
-  W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
-  W04.T00P accepted after reviewer PASS -> `595ff95f10d3d48de5748ae32a60d4839106ea2b`
-LAST_SAFE_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+STATUS: EXECUTING
+CURRENT_TASK: bounded T04A and T07B repairs after independent re-review FAIL
+LAST_COMPLETED_TASK: independent re-review of T04A and T07B fix-round-2 on combined HEAD b13496b19bc8a7f11b82a24e11508036e815596f
+LAST_SAFE_SHA: b13496b19bc8a7f11b82a24e11508036e815596f — reproducible reviewed repair basis, NOT task acceptance
 
-## Execution policy
+## Current independent review
+
+REPORT: DEV/docs/superpowers/design/2026-09-24-w04-t04a-t07b-independent-re-review.md
+REVIEWED_HEAD: b13496b19bc8a7f11b82a24e11508036e815596f
+REVIEWED_PARENT: b16ba8d2b4e3cffa86736fb20d10a34b01c97ff9
+
+| Task | Candidate | Independent disposition |
+|---|---|---|
+| W04.T04A | 20dd5301310bf5db250c229655ac957fe56e23c3 | FAIL / REPAIR REQUIRED — IRR-T04A-01 and IRR-T04A-02 |
+| W04.T07B fix-round-2 | 5a53b8e4323f53cde2f3c718e477003a4da3ce29 | FAIL / REPAIR REQUIRED — IRR-T07B-01 |
+
+Findings:
+
+- IRR-T04A-01: the W03 full-body guard receives the frozen campaign body as its own current-body evidence; reload the actual current owner body.
+- IRR-T04A-02: unknown creator/agency validity for singleplayer is converted to OBSOLETE; uncertainty must remain a bounded failure rather than terminalization without proof.
+- IRR-T07B-01: an M-SEG unit with its exact selector only in sources passes Python but fails MECHANICS schema v4; align both validators.
+
+The report distinguishes static counterexamples from tests actually executed by hosted CI. New regression witnesses have not been run by this reviewer.
+
+## Accepted producer checkpoints retained
+
+| Task | Accepted checkpoint / evidence route |
+|---|---|
+| W04.T00H | Accepted host-composition chain retained in the historical ledger identified below |
+| W04.T01A | b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772 |
+| W04.T05A | 995924b2a5448dbf9ae4a52555f64de69f7fd699 |
+| W04.T01B | 856abcbd6621da33b9ca5ff59413ae7aeb8b3d20 |
+| W04.T05B | a1a4d204fbeec9f8a24e681289e0e530e5b91b75 |
+| W04.T01C | 7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62 |
+| W04.T02A | 5c77aced9dafd9a7f26177090b3e62466b8ec561 |
+| W04.T03A | ca3efa3c7750cffc2eef228b4b8666b75828cea9 |
+| W04.T00P | 606cf87caeee427622680f8898a6ba1998fb1a9e — accepted later coherent host/History bridge; earlier 595ff95f10d3d48de5748ae32a60d4839106ea2b chain retained |
+| W04.T02B | 711738ce20d449a330313f5e51292408d311a616 |
+| W04.T07A | 534653babd788d85663dfc2006fbc921ad1577bd |
+| W04.T02C | dd0783c4eca20a94431b17844ca09ac64f8ba2cf |
+
+This review does not reopen any of these accepted tasks. It does not accept the two new candidates or mark Wave 04 complete.
+
+## Scheduling and gates
+
+```text
+T04A bounded repair -> independent PASS -> T04B
+T05B + T02C + T04B -> T05C -> T06A -> T06B
+
+T07B bounded repair -> independent PASS -> T07C -> T07D -> T07E
+T07A..T07E -> T07-INTEGRATION independent review
+
+T04B + T02C + T07-INTEGRATION -> T08A
+T06B + accepted W03 currentness -> T08B
+T08A + T08B + T03A -> T08C
+T08C + all lane checkpoints -> Wave-04 FINAL_REVIEW
+mandatory Senior Wave-04 integration audit -> closure decision
+```
+
+Only the two repair lanes are ready now. They may run in parallel because their primary production/test files are disjoint; do not create artificial work to fill worker slots.
 
 MAX_CONFIGURED_HDM_WORKERS: 5
 MAX_SAFE_WAVE04_PRODUCTION_WORKERS: 4
-REVIEWER_LIMIT: NONE
+REVIEWER_LIMIT: NONE; reviewers do not consume worker slots
 SAME_PRODUCTION_OR_PRIMARY_TEST_FILE_WRITERS: SERIALIZED
-DEPENDENT_TASK_START: only after producer independent reviewer PASS is published/read back
-SYSTEM_IMPACT: stops only affected lane; independent lanes continue
-VERSION_SYNC: shared/global version owners are reserved and serialized before publication
+DEPENDENT_TASK_START: only after exact producer independent PASS is published/read back
 
-The detailed execution decomposition, write sets, mandatory REDs and protected boundaries are owned by the stable Wave-04 plan. This cursor records scheduling/currentness only and does not override it.
+Current OpenCode reviewer-task permission denial is recorded. Do not change/bypass that permission or self-approve a repaired task. If local independent review remains unavailable, publish the candidate and evidence for the independent reviewer; dependent gates remain closed meanwhile.
 
-## Lane graph
+## Preserved T04A clarification
 
-COLLABORATION:
-T01A -> T01B -> T01C
-T01C -> T02A -> T02B -> T02C -> T04A -> T04B
-T01C -> T03A in parallel with T02A-T02C
+Historical hydration and current admission are distinct. Exact durable accepted associations, authorship, PC association and frozen fingerprints survive author deactivation. An inactive historical author is not by itself a reason to reject historical hydration or cancel an otherwise valid satisfied requirement.
 
-CONTEXT / EMISSION:
-T05A -> T05B
-T05B + T04B + T02C -> T05C -> T06A -> T06B
+A positively established invalid outstanding required agency or decision opportunity may obsolete the affected generation. Do not remove its requirements, synthesize consent/PASS, automatically create a successor, or reinterpret accepted mechanics. Unknown authority/opportunity is a bounded failure, not proof of obsolescence. New inputs and recipient-facing catch-up continue to require current authorization and disclosure eligibility.
 
-STORY / COMMENTATOR:
-T07-PREFLIGHT -> T07A -> T07B -> T07C -> T07D -> T07E -> T07-INTEGRATION
-No T07A RED before the mandatory fresh cross-project preflight is recorded.
+T04A is read-only candidate reconciliation. T04B owns same-closure authority/obligation/PLAYER-route publication and recovery. The current fixes must not cross that boundary prematurely.
 
-FINAL CONSUMERS:
-T04B + T02C + T07-INTEGRATION -> T08A
-T06B -> T08B
-T08A + T08B + T03A -> T08C
-T08C + all lane checkpoints -> FINAL_REVIEW
+## Preserved Story and cross-project limits
 
-## Initial scheduler
+All four Story layers and eight source registrations remain mandatory under the stable plan. No SPARSE baseline coverage, false omission of required material, source-identity substitution, native-history reconstruction from Story, or current T1 substitute for retained T0 is authorized.
 
-READY_NOW: []
+T07B currently rejects source-classified OMITTED results unconditionally. This is safe against the old untrusted omission request, but is not positive verification of native-proven omission support. Preserve that qualification in subsequent source/materialization evidence; no caller MAY_OMIT or reason flag may authorize omission.
 
-COORDINATOR_GATE_READY_NOW: []
+The mandatory pre-T07 CLS↔HDM preflight remains at its recorded PASS. Its exact evidence and explicit semantic-change/unavailable-evidence reopen conditions are retained in CURRENT_PROGRESS and the prior ledger. This review does not rerun it, treat private planning as evidence, or waive a future genuine trigger.
 
-NOT_READY:
-- T01B through T04B wait a Senior ruling for W04.T01A System-Impact
-- T05B through T06B wait a Senior ruling for W04.T05A System-Impact
-- T07A waits fresh private CLS evidence after PREFLIGHT_UNAVAILABLE
-- T03A/T02A wait T01C reviewer PASS
-- T04A waits complete T02C
-- T05C waits T05B + T04B + T02C
-- T06A waits T05C
-- T08A/T08B/T08C wait their named joins
-
-No Wave-04 production subtask is currently eligible. The lane stops are independent: a Senior ruling may resume only its affected lane, and a restored private evidence route may independently unblock the Story preflight.
-
-## Write-set reservations
-
-COLLABORATION LANE:
-- GAME/TOOLS/collaboration.py
-- DEV/TESTS/test_rd12_collaboration.py
-- collaboration obligation/closed-basis/handoff/frontier/catch-up schemas
-- DEV/SCHEMAS/intent-clause.schema.json where owned by the subtask
-Only one collaboration-lane worker at a time.
-
-PLAYER DELTA:
-- DEV/TESTS/test_rd16_world_family_machine_integration.py
-- bounded Wave-05 player delta evidence only
-No physical shared PLAYER schema write.
-
-CONTEXT LANE:
-- GAME/TOOLS/context_runtime.py
-- GAME/TOOLS/context_budget.py when required
-- DEV/TESTS/test_rd11_context_runtime.py
-- Context owner-local schemas
-Only one Context-lane worker at a time.
-
-EMISSION LANE:
-- GAME/TOOLS/turn_runtime.py
-- GAME/TOOLS/emission.py
-- DEV/TESTS/test_rd10_role_emission.py
-- owner-local turn/handoff/narration schemas
-Starts only after Context integration.
-
-STORY LANE:
-- GAME/TOOLS/history.py
-- GAME/TOOLS/story.py
-- GAME/TOOLS/commentator.py
-- GAME/TOOLS/dramaturg.py
-- DEV/TESTS/test_rd13_story_t0_commentator.py
-- owner-local Story/T0/Commentator/Dramaturg schemas
-Only one Story-lane implementation worker at a time because the primary test file is shared.
-
-FINAL CONSUMERS:
-T08A and T08B use disjoint focused test/delta surfaces and may execute in parallel after their inputs are GREEN. T08C is the convergence checkpoint.
-
-## Pre-implementation risk controls learned from Wave 03
-
-1. TYPED_OBJECT_IS_NOT_AUTHORITY
-   - Every new collaboration/history/context/control carrier must prove its producer/currentness boundary.
-   - Public constructor, Protocol, subclass, structural shape, token/registry or caller-provided validator cannot substitute for native owner admission.
-
-2. CURRENTNESS_IS_FULL_BASIS
-   - Same revision with changed relevant body/basis must fail closed.
-   - Projection/current flags cannot substitute for exact source/owner currentness.
-
-3. NO_REVERSE_AUTHORITY
-   - Collaboration cannot authorize PLAYER/access.
-   - Context cannot establish truth/knowledge/access.
-   - Story/Commentator cannot establish native history/access.
-   - Dramaturg cannot establish canon.
-   - Session cannot establish campaign/LIVE/PLAYER authority.
-
-4. NO_SHARED_FINAL_WRITER_THEFT
-   - W04 emits deltas only for Wave-05-owned shipped CORE/shared schemas/catalogs.
-
-5. NO_LATE_VERSION_SURPRISE
-   - Persistent collaboration and Story/PO-009 schema impacts are evaluated at the first material row, not at wave end.
-   - Durable Context/Turn control introduced for convenience is a System-Impact event.
-
-## Story completeness gate
-
-T07B is not allowed to close with an EVENTS-only implementation.
-
-Required baseline registrations:
-- T-MSG and T-ARC -> TRANSCRIPT
-- E-EVT and E-REL -> EVENTS
-- M-SEG and M-OUT -> MECHANICS
-- N-EVT and N-REL -> NARRATIVE
-
-The current owner-local schema set lacks a Story TRANSCRIPT unit schema; T07B owns the missing owner-local machine contract and the complete eight-registration coverage tests. Coverage/currentness remains per source-domain/generation/cardinality, never one global Story frontier.
-
-## W04.T07 mandatory preflight
-
-PREFLIGHT_DISPOSITION: PREFLIGHT_UNAVAILABLE
-
-Fresh public HDM evidence was read at `6cbde6a4845376ee55e8e9c10a17f354111a276d`:
-
-- `2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` blob `ea3dea6653c356c3be5529ff8c916740a0f39b6d`;
-- `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md` blob `566f6d2e70087aa0abc93108c562d3b8e2d77023`;
-- `2026-09-08-story-baseline-projection-source-contracts.md` blob `4e85a2899657f43c2bb812e9608d9d0c254b4a96`;
-- `2026-09-08-story-persistence-growth-sharding-consumer-decoupling-owner-decision.md` blob `3718ac404acade3bef84a655414258785bab5413`;
-- `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` blob `5cd35b8f9782b53915591fd2967bff22edaf43fe`.
-
-The required fresh private CLS paths could not be read:
-
-- `audit/cls-project-audit-workspace` -> `CLS-AUDIT/CURRENT_AUDIT_STATE.md` and `CLS-AUDIT/graph/HDM_INTEGRATION_GRAPH.md`;
-- `feature/commentator-language-stack` -> `HDM-CLS/docs/SENIOR_AUDITOR_HDM_INTEGRATION_HANDOFF.md` and `HDM-CLS/docs/CURRENT_PROGRESS.md`;
-- `git ls-remote git@github-hdm:dkolyada/hedgelion-dnd-master-lab.git` returned `Repository not found` for both required refs;
-- `git ls-remote git@github.com:dkolyada/hedgelion-dnd-master-lab.git` returned `Permission denied (publickey)`;
-- the local runtime has no `gh` command for an authenticated GitHub read route.
-
-The current W04 task Source Manifest is the stable Wave-04 plan execution section in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`, blob `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`. The historical WP-24 manifest is not substituted for this current W04 manifest.
-
-No private ref/blob was inferred from planning-time evidence. Per the stable plan, only Story is stopped. Re-run the exact preflight after a current read-only private CLS route is available; do not begin W04.T07A RED first.
-
-## System-Impact briefs
-
-### W04.T01A - collaboration admission
-
-TRIGGER: the current W03 owner exports owner-issued `PlayerResolution` for principal-to-PLAYER/control authorization, but no native coordination dependency/currentness/opportunity/durability/order result that W04.T01A can consume and revalidate.
-
-CURRENT_TASK: Senior must rule whether an existing W03 owner-native participant/currentness result can be consumed and revalidated by T01A, or whether the missing coordination boundary must return to design; keep T01A-T04B stopped pending that ruling.
-
-RECOMMENDATION: Do not resume with a local issuer, callback, token, registry or caller route; choose a native W03 route or return to design for an explicit owner boundary.
-
-COST/RISK IF WRONG: Resuming without the owner boundary can mint participant authority and persist unauthorized or cross-scope collaboration; continuing the stop costs only collaboration-lane schedule time.
-
-LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
-
-APPROVED EXPECTATION: T01A admits only exact native participant authority; caller-provided constructors, structural shapes, tokens, registries, callbacks and routes cannot mint it.
-
-DISCOVERED PRESSURE: a local collaboration issuer or caller-provided route/loader inevitably mints or substitutes authority. The attempted W04 implementation and its repairs were restored: `a300b23774f9ed31dfbc991be73211c338976955`, `59b12a3075155c9f5984420691ff98be32562c6f`, and `de3254041b1126a5f46f53e1b8fcbee27153f968` are removed by `6cbde6a4845376ee55e8e9c10a17f354111a276d`.
-
-AFFECTED OWNERS: W03 participant/currentness authority and the future collaboration admission consumer.
-
-PROTECTED INVARIANTS: Collaboration never grants PLAYER/access authority; complete source basis, not a typed carrier/current flag, establishes currentness.
-
-WHAT CAN PROCEED: no dependent collaboration subtask. Context and Story were independent but are separately stopped below.
-
-SAFE OPTIONS: (1) Senior specifies an existing owner-native W03 result/admission route that T01A may consume; or (2) return to design for an explicit owner interface/boundary. No local bridge, callback, token or registry is authorized.
-
-UNPUBLISHED_WORK: NONE.
-
-### W04.T05A - Context admission
-
-TRIGGER: the current W03 route accepts caller-constructible LIVE/projection carriers and callbacks but supplies no native reload or registered role/purpose eligibility binding for Context admission.
-
-CURRENT_TASK: Senior must rule whether an existing W03 owner-native reload and registered role/purpose eligibility route can be consumed by Context, or whether the missing boundary must return to design; keep T05A-T06B stopped pending that ruling.
-
-RECOMMENDATION: Require owner-routed LIVE/PLAYER/information eligibility and reject caller carriers, callbacks, registries and durable Context state.
-
-COST/RISK IF WRONG: Resuming on shaped carriers can admit stale or forged currentness and disclose out-of-scope material; continuing the stop costs Context/emission schedule time.
-
-LAST_SAFE_SHA: `6cbde6a4845376ee55e8e9c10a17f354111a276d`
-
-APPROVED EXPECTATION: `current=True`/`eligible=True`, shaped carriers and physical/index/cache presence are only post-resolution data and never caller authority.
-
-DISCOVERED PRESSURE: accepting those existing carriers permits internally consistent forged currentness/eligibility and loses role/purpose binding. The attempted implementation `e55cc560fee431460cdc5753abb94be9f5433008` was restored by `2c0a893f428e2e822d74c8fefc69f27f5b3f259a`.
-
-AFFECTED OWNERS: W03 LIVE/PLAYER/information currentness and eligibility owners; Context admission consumer.
-
-PROTECTED INVARIANTS: Context cannot establish truth, knowledge or access; currentness is a complete owner/source basis.
-
-WHAT CAN PROCEED: no dependent Context or emission subtask.
-
-SAFE OPTIONS: (1) Senior identifies an existing owner-native reload/role-profile route that T05A may consume; or (2) return to design for an explicit interface/boundary. No caller callback, registry, durable Context state or W03 interface change is authorized.
-
-UNPUBLISHED_WORK: NONE.
-
-## Verification / completion state
-
-CURRENT_VERIFICATION_STATE:
-- Wave 03 is globally CLOSED / Senior PASS; post-closure F63-F65 targeted repair is independently Senior PASS with hosted validation 992 passed / 6 skipped.
-- Wave-04 stable plan decomposition is published.
-- W04.T01A and W04.T05A attempted implementations were independently reviewed, restored to the pre-W04 owner tree, and await the two recorded Senior System-Impact rulings.
-- W04.T07 mandatory preflight is `PREFLIGHT_UNAVAILABLE`; no W04.T07 RED or implementation occurred.
-- No Wave-05 final-writer surface has been authorized for W04.
-
-VERSION_IMPACT:
-- This documentation-only repair is NONE; no current version-bearing owner or projection changes.
-- Current W04 production-tree impact is NONE after restoration; this does not retrospectively classify either aborted implementation as a compliant NONE assessment.
-- `a300b23774f9ed31dfbc991be73211c338976955` added optional but semantic collaboration fields to persisted `DEV/SCHEMAS/intent-clause.schema.json`, whose owner is the runtime Interaction/IntentPlan. It was never accepted and was restored; no bump is made now. A future reattempt must run the owner-specific persistent-contract Version Impact Gate before claiming an additive/compatible/no-bump result.
-- `e55cc560fee431460cdc5753abb94be9f5433008` materially changed the Context runtime without a compliant version assessment and was restored. No current-tree version change exists; any reattempt must classify the actual module namespace before publication.
-- Cursor evidence only: NONE.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T01A and W04.T05A briefs above. W04.T07 is separately PREFLIGHT_UNAVAILABLE, not a System-Impact classification.
-NEXT_EXACT_TASK: obtain a Senior ruling for the two System-Impact briefs and restore a read-only private CLS evidence route; then reschedule only the specifically unblocked lane.
-KNOWN_BLOCKERS: T01A-T04B await T01A ruling; T05A-T06B await T05A ruling; T07A awaits fresh private CLS evidence. No Wave-04 production task is currently eligible.
-UNPUBLISHED_WORK: NONE after publication/read-back.
-## Senior gate resolution — 2026-09-21
-
-SENIOR_REVIEWED_PUBLIC_HEAD: `5b3841ffe17bbea0e0663342eab1278427d6b07c`
-OUTCOME: **TARGETED_REPAIR_REQUIRED / NO ARCHITECTURE REOPEN**
-AFFECTED_LANES: W04.T01A, W04.T05A
-W04.T07_PREFLIGHT: **PASS**
-
-### SR-W04-T01A — coordination admission stays Collaboration-owned
-
-RULING: **TARGETED_REPAIR_REQUIRED / SYSTEM_IMPACT RESOLVED**
-
-No new W03 `coordination authority` result, local issuer, callback-authority, token registry or second currentness owner is required or permitted.
-
-The accepted owner split already supplies the machine route:
-
-1. `runtime.interaction` and `runtime.intent_plan` are existing accepted native owners with known-ID physical routes under WP-11 and existing schemas `runtime-interaction-state.schema.json`, `runtime-intent-plan-state.schema.json` and embedded `intent-clause.schema.json`.
-2. W03 owns current principal -> exact current PLAYER/control authorization. Use its owner-native route/revalidation; do not accept caller-minted PLAYER/currentness carriers.
-3. R2.5/WP-17 **itself owns coordination-family admission and material-dependency classification**. W03 does not and must not mint that result.
-4. An accepted Interaction/IntentClause may nominate a bounded dependency candidate, scope and referenced participants/native owners; it is discovery/input evidence, not final authority.
-5. Before choosing a coordination family or enrolling a required contributor, Collaboration must re-read/revalidate the smallest applicable native currentness/ownership/chronology basis required by the dependency class.
-6. Existing native Procedure/Continuation/Choice/Reaction ordering wins and produces `RULE_OWNED_ORDERED`; Collaboration does not mirror it.
-7. Only a positive bounded current material dependency may produce `AGENCY_DEPENDENT_COLLECTIVE`; failure to prove independence is not sufficient. Otherwise use `INDEPENDENT_IMMEDIATE`.
-8. Exact known-ID native loads may use the existing host/storage transport boundary, but loaded identity/schema/currentness must be owner-validated. A callback returning `is_current`, `required_players`, `coordination_family` or equivalent semantic verdict is forbidden.
-9. The W04 owner-local admission result may be a derived typed result minted by `collaboration.py` **after** those validations. It owns only collaboration admission/collection semantics and carries references/evidence identities; it does not become PLAYER, LIVE, chronology, Procedure or Interaction authority.
-
-Required REDs remain those in stable T01A plus explicit rejection of:
-- caller-selected coordination family;
-- caller-selected required-contributor set without native revalidation;
-- caller-supplied boolean/callback currentness;
-- stale/foreign Interaction/IntentPlan/PLAYER/native-opportunity basis;
-- generic collaboration when an admitted native ordered owner applies.
-
-The prior restored attempts are non-precedential. Re-run the persistent-contract Version Impact Gate for any actual `intent-clause.schema.json` change.
-
-### SR-W04-T05A — Context currentness/eligibility is owner-routed resolution, not carrier trust
-
-RULING: **TARGETED_REPAIR_REQUIRED / SYSTEM_IMPACT RESOLVED**
-
-No new W03 Context carrier, currentness token, eligibility issuer or durable Context authority is required or permitted.
-
-R2.3 + WP08 + WP09 already require T05A to realize:
+## Verification and impact
 
 ```text
-registered RoleContextRequest + registered ContextNeedProfile
--> bounded candidate discovery/routing hints
--> exact routed native-owner reload
--> native currentness + role/purpose/recipient eligibility validation
--> internal post-resolution candidate basis
--> packet closure/allocation
+EXACT REVIEWED HEAD: b13496b19bc8a7f11b82a24e11508036e815596f
+HOSTED_RUN: 35945179177
+HOSTED_JOB: 107461446825
+STATUS / CONCLUSION: completed / success
+MAINTENANCE: PASS
+CANONICAL DEV: Ran 1175 tests; OK (skipped=5)
+VERSION_UNCLASSIFIED: []
+VERSION_LEGACY_HITS: []
 ```
 
-Implementation constraints:
+The local `.entire/` census issue did not reproduce on hosted CI; the local issue is not claimed repaired. Protected capture files remain untouched.
 
-1. Caller-shaped candidate objects, `current=true`, `eligible=true`, scene/index/cache presence and physical prompt presence are discovery hints only.
-2. Before semantic use, T05A must resolve the candidate through its routed current native owner. Use existing owner routes:
-   - current PLAYER/control through W03 access-control resolution;
-   - selected LIVE/currentness through W03 LIVE owner validation;
-   - information/knowledge/disclosure through their native owners and recipient eligibility;
-   - other candidate families through their existing known-ID native routes/validators.
-3. A host-injected exact-load transport may provide bytes/records; it may not return semantic `current`/`eligible` verdicts. Context performs/dispatches owner validation.
-4. `ContextNeedProfile` registration and role/purpose/subject/recipient binding are Context/consumer-contract responsibilities already accepted by R2.3/R2.4/WP08/WP09. T05A may realize the finite registered profile table/contracts in its allowed Context scope; the caller/LLM cannot invent a profile or widen it.
-5. The existing `current` / `eligible` fields may remain only on an internal owner-resolved result after successful validation. They are never accepted as authority-bearing input.
-6. If a discovered family lacks an admitted exact owner route/eligibility resolver, that candidate fails closed or yields the registered terminal/degraded outcome; do not invent a generic callback or broaden into a scan.
-7. Context remains an ephemeral projection and cannot establish truth, PLAYER/access, knowledge/disclosure or LIVE authority.
+Candidate version changes remain recorded, not erased: T04A collaboration 1.0.14 -> 1.0.15 with obligation schema v3 unchanged; T07B repair round 2 Story 1.0.3 -> 1.0.4, MECHANICS schema 3 -> 4 and projection-state schema 3 -> 4. Further material repairs require fresh Version Impact assessment; do not reuse an already-spent revision silently.
 
-Mandatory REDs include forged booleans/carriers, stale PLAYER/LIVE, wrong role/purpose/profile/recipient, scene/index/cache-only admission, and a fake semantic callback that claims current/eligible without native reload.
-
-The prior restored attempt is non-precedential. Re-run module/version impact against the actual accepted implementation.
-
-### SR-W04-T07 — mandatory CLS↔HDM preflight
-
-RESULT: **PREFLIGHT_PASS / SYSTEM_IMPACT NONE**
-
-Private refs were read directly through GitHub Connector:
-
-- audit workspace `6273260c55107bc769d355875da749c9ef3c9296`;
-- feature CLS `0f88185966aed937852824db7417f83487beef23`.
-
-Exact required artifacts/blobs:
-
-- audit state `c5fe22947ec6e573c15f686c3840579f9a3e19d2`;
-- HDM integration graph `1665618d0276c7a150956d6f4664b085f8bfdac2`;
-- Senior-Auditor handoff `0fc0ca7ef1072d6fd9614efe92e62f0807da838e`;
-- feature current progress `0eae6d528f606caa1721bdb433270755aad2d9a1`;
-- WP12-04 Source Manifest `4caa601d5c43cbdfb51ff121a21b2b63a5df5cee`;
-- WP12-04 canonical design `96ba235d535a9088ef8d808c40b0b92e18cbdc53`;
-- architect wide-angle PASS `9e7500e8cd0cc9011fae6c1b8bb13eedc38a5ed6`.
-
-Public bytes at the reviewed head:
-- SCC owner `ea3dea6653c356c3be5529ff8c916740a0f39b6d`;
-- stable W04 plan `cdbc1d2bbc651ff6b087e22b8d502ec46bbc7386`.
-
-Those public owner bytes are unchanged from the current CLS WP12-04 consumed basis. Current private WP12-04 explicitly reports no public HDM write, no public semantic reopen, no REAL integration claim, and keeps REAL source integration downstream. Post-manifest private changes only frame/design/activate the private retrieval package and do not create a new W04.T07 public contract.
-
-Therefore W04.T07A may begin. The implementation still must obey the public SCC/Story/T0 owners and may not import private CLS implementation as public architecture.
-
-## Resumption state
-
-```text
-W04.T01A: AUTHORIZED_FOR_TARGETED_REIMPLEMENTATION
-W04.T05A: AUTHORIZED_FOR_TARGETED_REIMPLEMENTATION
-W04.T07A: PREFLIGHT_PASS / AUTHORIZED
-W04.T01B+: DEPENDENCY_GATED
-W04.T05B+: DEPENDENCY_GATED
-W04.T07B+: DEPENDENCY_GATED
+VERSION_IMPACT: NONE for this review/control-only checkpoint
+SYSTEM_IMPACT: no new owner/architecture decision made by this review; findings require bounded implementation/contract repairs
+NEXT_EXACT_TASK: repair IRR-T04A-01/02 and IRR-T07B-01 in their existing lanes; focused and cross-owner regressions; coherent publish/read-back and exact-head verification; fresh independent re-review before T04B/T07C
+KNOWN_BLOCKERS: independent FAIL on both candidates; T04B/T07C remain blocked; downstream follows the named joins above
+UNPUBLISHED_WORK: NONE after verified publication/read-back
 WAVE_05: NOT AUTHORIZED
-```
 
-VERSION_IMPACT: NONE for this ruling/preflight documentation checkpoint.
-SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
+No whole-wave restore, production implementation by the reviewer, migration, release, gameplay bootstrap, new branch/ref or force update is authorized here.
 
+## Detailed historical evidence retention
 
-## Current execution override after Senior resolution
-
-STATUS: EXECUTING
-CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A may execute in parallel when write sets remain isolated.
-LAST_SAFE_SHA: `5b3841ffe17bbea0e0663342eab1278427d6b07c` product tree before this documentation-only ruling.
-CURRENT_VERIFICATION_STATE: restored pre-attempt production tree; three gates resolved above; normal task TDD/review/Version Impact applies.
-VERSION_IMPACT: NONE for the Senior ruling checkpoint.
-SYSTEM_IMPACT: NONE CURRENT; prior T01A/T05A events are resolved by SR-W04-T01A/SR-W04-T05A.
-NEXT_EXACT_TASK: coordinator reschedules T01A, T05A and T07A; each publishes only after its own hdm-reviewer PASS/read-back. Dependent tasks wait for named checkpoints.
-KNOWN_BLOCKERS: NONE for T01A/T05A/T07A start.
-UNPUBLISHED_WORK: NONE after publication/read-back.
-
-## Execution stop after targeted reimplementation review
+The rolling cursor is compacted to current state; prior detailed material is retained verbatim in repository history:
 
 ```text
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: resolve the three W04 System-Impact briefs before resuming T01A, T05A or T07A.
-LAST_SAFE_SHA: `0bd665860386e04ecd2efb589e58069a4d6da033` restored product tree before the targeted reimplementation attempts.
-LAST_PUBLISHED_SHA: `86138093021095fa24ec611314fa9482749c5afa`
-
-CURRENT_VERIFICATION_STATE:
-- T01A focused regression passed, but independent review rejected its unadmitted generic native opportunity contract.
-- T05A focused regression and maintenance audit passed, but independent re-review rejected its caller-controlled exact-load boundary and missing native role/purpose eligibility binding.
-- T07A focused regression and malformed-provenance repair passed, but independent re-review rejected its structural caller-provided NativeHistoryOwnerPort boundary.
-- No rejected T01A/T05A/T07A implementation checkpoint authorizes a dependent task.
-
-VERSION_IMPACT:
-- T01A final task classification is pending the Senior resolution because the rejected implementation introduced a new module/schema and IntentClause semantic fields without accepted task-completion evidence.
-- T05A repair commit `22e24951358bca8b3636a3c80fcbfa510e01d614` records `NONE` for unchanged existing version-bearing namespaces.
-- T07A repair commits record `GAME/TOOLS/history.py` module revision `1.0.7`; native-history schemas remain at `1`; no engine, campaign, storage, catalog or shared projection bump was required.
-- This cursor checkpoint: VERSION_IMPACT: NONE.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
-- T01A: no finite owner-defined, schema-validated native opportunity route exists for AGENCY_DEPENDENT_COLLECTIVE. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t01a-fix-round-1-system-impact-brief.md`.
-- T05A: no approved trusted exact-load boundary or native role/purpose eligibility route exists. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t05a-fix-round-1-implementation-impact-brief.md`.
-- T07A: no admitted W02/native owner adapter or composition-root boundary exists; structural port conformance is forgeable. Brief: `DEV/docs/superpowers/design/2026-09-21-w04-t07a-implementation-impact-brief.md`.
-
-NEXT_EXACT_TASK: Senior/design resolution of the three recorded owner-boundary choices; do not run T01B+, T05B+, T07B+, or any Wave-05 task.
-KNOWN_BLOCKERS: the three System-Impact briefs above.
-UNPUBLISHED_WORK: NONE after publication/read-back.
+path: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md
+commit: b13496b19bc8a7f11b82a24e11508036e815596f
+blob: 82560dd4b321a91c9f438401b964bcd6904f6ed3
 ```
 
-
-## Final Senior/design ruling — 2026-09-21
-
-AUTHORITATIVE_RULING:
-`DEV/docs/superpowers/design/2026-09-21-w04-t01a-t05a-t07a-senior-design-rulings.md`
-
-REVIEWED_STOP_HEAD: `35f979b3e05e10cc759f01361e7271d36941ff4e`
-
-Fresh GitHub comparison proved rejected implementation residue remains. Before
-new RED, restore the exact task production/schema/test paths listed in the ruling
-to `0bd665860386e04ecd2efb589e58069a4d6da033`, preserving current design/control
-artifacts.
-
-After restore reviewer PASS/read-back:
-
-```text
-T01A: AUTHORIZED — accepted IntentClause is finite opportunity identity;
-      Collaboration owns family classification after native revalidation.
-
-T05A: AUTHORIZED — RepositoryPort + read-only Step-5.8 LIVE source read;
-      registered ContextNeedProfile/RoleContextRequest owns role-purpose eligibility.
-
-T07A: AUTHORIZED — fixed Step-5.10 campaign.semantic_events@S evt-lane adapter;
-      no NativeHistoryOwnerPort.
-```
-
-CLS↔HDM preflight remains PASS unless its explicit trigger fires.
-
-STATUS: EXECUTING
-NEXT_EXACT_TASK: clean-basis restore -> local reviewer PASS -> publish/read-back
--> parallel T01A/T05A/T07A fresh TDD where write sets allow.
-KNOWN_BLOCKERS: restore checkpoint only; no unresolved design decision.
-SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
-VERSION_IMPACT: NONE for ruling/restore; each fresh task performs its own gate.
-
-## Clean-basis restore acceptance — 2026-09-21
-
-STATUS: EXECUTING
-CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A are authorized for fresh parallel TDD under the final Senior/design ruling.
-LAST_SAFE_SHA: `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a`
-LAST_COMPLETED_TASK: mandatory clean-basis restore of the eleven ruled task production/schema/test paths to `0bd665860386e04ecd2efb589e58069a4d6da033`.
-CURRENT_VERIFICATION_STATE: exact staged/worktree comparison to `0bd665860386e04ecd2efb589e58069a4d6da033` passed; independent local `hdm-reviewer` re-review PASS; diff check passed; non-force publication and remote read-back matched `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a`. Full local DEV suite recorded 1006 passed, 6 skipped and 9 failures: five are generated GAME cache / `.entire/` contamination and four are unchanged S6D owner tests; exact-head hosted CI `35610456548` is SUCCESS.
-VERSION_IMPACT: NONE for the restore and this execution-state checkpoint.
-SYSTEM_IMPACT: NONE CURRENT; final Senior/design rulings resolve the prior T01A/T05A/T07A stops without architecture reopen.
-NEXT_EXACT_TASK: dispatch W04.T01A, W04.T05A and W04.T07A with disjoint write sets; T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
-KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks remain dependency-gated; Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after restore publication/read-back.
-
-## Runtime host composition acceptance — 2026-09-21
-
-STATUS: EXECUTING
-CURRENT_TASK: W04.T01A / W04.T05A / W04.T07A may execute in parallel with isolated write sets.
-LAST_SAFE_SHA: `a7432515e500cc2caf21fe55db17f64a7fd0ed47`
-LAST_COMPLETED_TASK: W04.T00H -> W04_RUNTIME_HOST_COMPOSITION_READY / W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY.
-CURRENT_VERIFICATION_STATE: T00H RED/GREEN, host focused suite, cross-owner regression, direct Context tests, ruff, compile, diff check and maintenance audit passed; independent scoped re-review PASS; non-force publication/read-back at `a7432515e500cc2caf21fe55db17f64a7fd0ed47`.
-VERSION_IMPACT: `GAME/TOOLS/runtime_host.py` new module `framework_module_version: 1.0.1`; no persistent schema, campaign/storage/catalog generation or Wave-05 projection change. Context import-resolution repair: NONE.
-SYSTEM_IMPACT: NONE CURRENT; RuntimeHost and runtime_execution ordering producer routes are accepted by the owner decision.
-NEXT_EXACT_TASK: dispatch T01A, T05A and T07A; T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires before RED.
-KNOWN_BLOCKERS: none for the three root tasks; all downstream tasks and Wave 05 remain dependency-gated/unauthorized.
-UNPUBLISHED_WORK: NONE after publication/read-back.
-
-## Targeted reimplementation stop after final ruling
-
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: resolve the two recorded owner-boundary gaps before resuming W04.T01A, W04.T05A or W04.T07A.
-LAST_SAFE_SHA: `ce05e58e9f398e779dcdda68cb9aec53e82cfe7a` clean task-surface restoration; `80d1cedfce7f529df96ea2c4b2342ce466cc8806` records its acceptance without changing product bytes.
-LAST_PUBLISHED_SHA: `2eb3c28f480932db984240d5ea9f41954d744eaf`
-CURRENT_VERIFICATION_STATE: targeted focused suites and maintenance audits passed at several rejected checkpoints, but independent reviewers found that no accepted producer validates native ordered-owner authority for T01A and that forged host construction mints Context/LOCAL history for T05A/T07A. No rejected checkpoint may unlock a dependent task.
-VERSION_IMPACT: documentation checkpoint NONE. Rejected fresh-attempt module/schema transitions are recorded in `2026-09-21-w04-t01a-fix-round-4-system-impact-brief.md`; they are non-precedential and must not be reused as an accepted basis.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
-- T01A: `DEV/docs/superpowers/design/2026-09-21-w04-t01a-fix-round-4-system-impact-brief.md` records that the only discovered complete ordering validator is a new manual/public mirror, not an admitted native owner route.
-- T05A: `DEV/docs/superpowers/design/2026-09-21-w04-t05a-fix-round-4-system-impact-brief.md` records that caller-forged hosts mint Context and LOCAL history.
-- T07A: `DEV/docs/superpowers/design/2026-09-21-w04-t07a-fix-round-3-system-impact-brief.md` records the same missing host composition route; T07A remains dependency-gated on its resolution.
-NEXT_EXACT_TASK: Senior/design identifies the complete T01A native ordering-validator producer/composition/currentness route and the T05A/T07A non-replaceable host composition route, or returns the affected boundary to design. Do not run T01B+, T05B+, T07B+, or Wave-05.
-KNOWN_BLOCKERS: the two System-Impact gaps above.
-UNPUBLISHED_WORK: NONE after publication/read-back.
-
-
-## Senior route owner decision — 2026-09-21
-
-AUTHORITATIVE_DECISION:
-`DEV/docs/superpowers/design/2026-09-21-w04-runtime-host-ordering-route-owner-decision.md`
-
-REVIEWED_STOP_HEAD: `256c4916fecaf38c40c890570f65815cae4df2bb`
-
-```text
-SYSTEM_IMPACT: RESOLVED
-ARCHITECTURE_REVIEW_REQUIRED: NO
-
-NEW PREREQUISITE:
-  W04.T00H runtime host composition
-  -> W04_RUNTIME_HOST_COMPOSITION_READY
-  -> W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY
-
-T01A:
-  ordered producer = Step-3 runtime_execution owner
-  positive proof = exact current Resolution(AWAITING_CHOICE/REACTION)
-                   -> exact Continuation generation
-                   -> pending ChoiceRequest/ReactionOffer
-                   -> ACTIVE Procedure if linked
-  Procedure existence alone != ordered proof
-  mechanics.py helper forbidden
-
-T05A:
-  no caller BoundContextRuntime/repository/live override
-  Context is a sibling service under campaign-bound RuntimeHost
-
-T07A:
-  no caller History service/repository/live override
-  History is a sibling service under the same RuntimeHost
-  Step-5.10 evt source-domain route remains authority geometry
-```
-
-Threat-model clarification: arbitrary Python object fabrication/mutation inside
-tracked deterministic runtime is TCB compromise, not a gameplay caller path.
-Negative review targets admitted model/player/data/API surfaces. A deployment
-that permits untrusted Python execution inside this TCB is unsupported and must
-supply process/tool isolation rather than an in-process token.
-
-### Mandatory clean restore before T00H
-
-Restore exactly to `80d1cedfce7f529df96ea2c4b2342ce466cc8806`:
-
-```text
-DEV/SCHEMAS/context-need-profile.schema.json
-DEV/SCHEMAS/context-trace.schema.json
-DEV/SCHEMAS/intent-clause.schema.json
-DEV/SCHEMAS/native-history-currentness.schema.json
-DEV/SCHEMAS/native-history-publication.schema.json
-DEV/SCHEMAS/runtime-collaboration-obligation-state.schema.json
-DEV/TESTS/test_rd09_access_live.py
-DEV/TESTS/test_rd11_context_runtime.py
-DEV/TESTS/test_rd12_collaboration.py
-DEV/TESTS/test_rd13_story_t0_commentator.py
-GAME/SCHEMA/collaboration_obligation.schema.yaml
-GAME/TOOLS/collaboration.py
-GAME/TOOLS/context_runtime.py
-GAME/TOOLS/history.py
-GAME/TOOLS/live_state.py
-GAME/TOOLS/mechanics.py
-```
-
-Delete paths absent at the clean basis. Preserve current design/version evidence,
-cursor/current-progress and unrelated accepted build/tool-discovery changes.
-
-Restore -> baseline verification -> local hdm-reviewer -> publish/read-back ->
-T00H -> reviewer PASS -> T01A/T05A/T07A.
-
-The existing T07 CLS↔HDM preflight remains PASS unless its explicit semantic
-trigger fires before T07A RED.
-
-VERSION_IMPACT: NONE for this decision/restore; fresh task-local gates apply.
-KNOWN_BLOCKERS: clean restore + T00H checkpoint only.
-
-## Runtime-host restore acceptance — 2026-09-21
-
-STATUS: EXECUTING
-CURRENT_TASK: W04.T00H runtime-host composition only.
-LAST_SAFE_SHA: `e7909df857e79d181dca5527609754def4248cc4`
-LAST_COMPLETED_TASK: mandatory 16-path clean restore to `80d1cedfce7f529df96ea2c4b2342ce466cc8806` under the runtime-host/ordering route owner decision.
-CURRENT_VERIFICATION_STATE: exact restore comparison, diff check, focused RD09/RD11/RD13 suite (208 passed), maintenance audit and independent local `hdm-reviewer` PASS completed before non-force publication/read-back at `e7909df857e79d181dca5527609754def4248cc4`.
-VERSION_IMPACT: NONE for restore and this cursor checkpoint.
-SYSTEM_IMPACT: NONE CURRENT; the owner decision supplies T00H and the native ordered-evidence route.
-NEXT_EXACT_TASK: W04.T00H -> reviewer PASS/publish/read-back -> W04.T01A/W04.T05A/W04.T07A in parallel.
-KNOWN_BLOCKERS: T01A/T05A/T07A wait `W04_RUNTIME_HOST_COMPOSITION_READY`; all downstream tasks and Wave 05 remain dependency-gated/unauthorized.
-UNPUBLISHED_WORK: NONE after restore publication/read-back.
-
-## Root-task acceptance and T07A stop — 2026-09-22
-
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W04.T07A native history publication/recovery; resolve the selected-LIVE evt-lane reader boundary before accepting T07A
-LAST_COMPLETED_TASK:
-  W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
-  W04.T05A accepted after independent re-review -> `995924b2a5448dbf9ae4a52555f64de69f7fd699`
-LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
-LAST_PUBLISHED_SHA: `a40e5b3a6479b27e442c4951779015d9e07bc5ae`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T01A is accepted at the exact reviewed head above.
-- W04.T05A is accepted at the exact reviewed head above.
-- W04.T07A is not accepted: published `c37c517136a78dd57edde09320e7f1dc0fd3cb0e` reads an unadmitted aggregate from family-root `LOG/SEMANTIC_EVENTS`; the exposed selected-LIVE reader cannot perform the WP-11 compact-index-plus-exact-record reads required by the accepted evt-lane ruling.
-- T01B+ and T05B+ remain dependency-gated by their own DAG prerequisites; T07B+ remains gated by T07A acceptance.
-
-VERSION_IMPACT:
-- W04.T01A accepted chain: `171dc0e` collaboration module absent -> `1.0.1`, `runtime_execution.py` `1.0.4 -> 1.0.5`, and new `runtime.collaboration_obligation` schema/projection at `1`; `dcf04fa` collaboration `1.0.1 -> 1.0.2` and runtime execution `1.0.5 -> 1.0.6`; `3bc9265` runtime execution `1.0.6 -> 1.0.7`; `d3d2df4` runtime execution `1.0.7 -> 1.0.8`; `b50f490` formatting only, no further transition. Collaboration schema/projection remain `1`; IntentClause additive fields have no independent version namespace; engine, campaign-contract, storage, and catalog namespaces are unchanged.
-- W04.T05A accepted chain: `a9168cb` `GAME/TOOLS/context_runtime.py` `1.0.1 -> 1.0.2`; `e340ed5` `1.0.2 -> 1.0.3`; `995924b` `1.0.3 -> 1.0.4`. No Context schema namespace, engine, campaign-contract, storage, catalog, LIVE, or shared projection bump.
-- W04.T07A remains non-accepted at `c37c517`; its `history.py` module and native-history schemas are review-only and create no accepted T07A transition.
-- This documentation checkpoint: NONE.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. Brief: `DEV/docs/superpowers/design/2026-09-22-w04-t07a-selected-live-reader-system-impact-brief.md`.
-NEXT_EXACT_TASK: Senior chooses/admit an existing selected-LIVE composition/read route for the narrow evt-lane adapter, or returns that boundary to design; do not accept T07A or start T07B+ before resolution.
-KNOWN_BLOCKERS: T07A Senior review; T01B+/T05B+ remain independently DAG-gated.
-UNPUBLISHED_WORK: NONE after this documentation checkpoint is published and read back.
-
-## W04.T01B persisted association repair — 2026-09-22
-
-STATUS: FINAL_REVIEW
-CURRENT_TASK: W04.T01B obligation lineage/input association restore authorization; independent re-review is required before acceptance
-INPUT: W04.T01A is accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; T01B is therefore eligible under the named DAG edge
-LAST_COMPLETED_TASK: W04.T01A accepted after independent re-review -> `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
-LAST_SAFE_SHA: `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`
-LAST_PUBLISHED_SHA: `fb93cba1e41bc17bc865dc4ed7003bb1dcb464bf`
-
-CURRENT_VERIFICATION_STATE:
-- RED witnesses prove that persisted restore previously accepted a valid non-holder,
-  inactive PLAYER and invalid-PC contributor before the production repair.
-- GREEN restores live association authorization for every persisted non-originating
-  input: exact current holder membership, active PLAYER status and controlled-PC
-  binding are required. The exact originating `(interaction_id, clause_id)` remains
-  the only admitted non-holder exception and cannot add a PC association.
-- T01B is not accepted; independent re-review remains required.
-
-VERSION_IMPACT:
-- T01B collaboration obligation persistent schema: `1 -> 2`.
-- T01B collaboration module: `1.0.3 -> 1.0.4`.
-- Campaign-contract generation, storage generation, migration and other affected
-  namespaces: unchanged.
-
-SYSTEM_IMPACT: NONE for T01B; the separate W04.T07A System-Impact stop remains open.
-NEXT_EXACT_TASK: independently re-review this T01B candidate, then accept only after PASS; do not start T01C+ before acceptance.
-KNOWN_BLOCKERS: T01B independent re-review; W04.T07A Senior review.
-UNPUBLISHED_WORK: NONE after the candidate checkpoint is published and read back.
-
-## Accepted T01B/T05B and T01C eligibility — 2026-09-22
-
-STATUS: SENIOR_REVIEW_REQUIRED
-CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
-LAST_COMPLETED_TASK:
-  W04.T01B accepted after reviewer PASS at `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
-  W04.T05B accepted after reviewer PASS at `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`
-LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T01B is accepted at the exact reviewer-PASS head above; W04.T01C is eligible/current because its required T01B input is now accepted.
-- W04.T05B is accepted at the exact reviewer-PASS head above. W04.T05C remains blocked until T05B, T04B and T02C are all accepted.
-- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
-
-VERSION_IMPACT:
-- W04.T01A accepted chain: `171dc0e` collaboration module absent -> `1.0.1`, `runtime_execution.py` `1.0.4 -> 1.0.5`, and new collaboration schema/projection at `1`; `dcf04fa` collaboration `1.0.1 -> 1.0.2` and runtime execution `1.0.5 -> 1.0.6`; `3bc9265` runtime execution `1.0.6 -> 1.0.7`; `d3d2df4` runtime execution `1.0.7 -> 1.0.8`; `b50f490` formatting only, with no further transition.
-- W04.T01B accepted chain: `cf4ea5e` collaboration module `1.0.2 -> 1.0.3`; `40c7952` collaboration obligation schema/projections `1 -> 2` and collaboration module `1.0.3 -> 1.0.4`; `fb93cba` persisted-input revalidation remained at collaboration module `1.0.4`; `856abcb` collaboration module `1.0.4 -> 1.0.5`.
-- W04.T05A accepted chain: `a9168cb` Context `1.0.1 -> 1.0.2`; `e340ed5` Context `1.0.2 -> 1.0.3`; `995924b` Context `1.0.3 -> 1.0.4`.
-- W04.T05B accepted chain: `7d0207b` Context `1.0.4 -> 1.0.5`; `1d112fa` Context `1.0.5 -> 1.0.6` and RuntimeHost `1.0.3 -> 1.0.4`; `a1a4d20` Context `1.0.6 -> 1.0.7` and RuntimeHost `1.0.4 -> 1.0.5`.
-- Engine release, campaign-contract generation, storage generation, migration, catalog and other shared/global namespaces are unchanged. This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01B, T01C and T05B remain within accepted owner boundaries.
-NEXT_EXACT_TASK: execute W04.T01C; require its reviewer PASS before T02A/T03A. Keep T05C blocked on T05B + T04B + T02C, keep T07A at the Senior-only stop, and do not authorize Wave 05.
-KNOWN_BLOCKERS: T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review; T01C reviewer PASS gates T02A/T03A. Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
-
-## W04.T01C fix round 1 candidate — superseded 2026-09-22
-
-STATUS: FINAL_REVIEW
-CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
-LAST_COMPLETED_TASK: W04.T01B accepted after reviewer PASS -> `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
-LAST_SAFE_SHA: `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`
-CANDIDATE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
-
-CURRENT_VERIFICATION_STATE: T01C fix-round-1 RED/GREEN and its focused
-verification were published at the exact candidate SHA, but its module-local
-Version Impact entry was incomplete. The round-1 evidence is superseded by the
-round-2 metadata correction below; no round-1 behavior or schema result is
-reopened.
-
-VERSION_IMPACT: superseded; see
-`DEV/docs/superpowers/design/2026-09-22-w04-t01c-fix-round-2-version-impact-and-verification.md`
-for the exact current transition.
-
-SYSTEM_IMPACT: NONE for T01C; the separate W04.T07A selected-LIVE reader stop
-remains SENIOR_REVIEW_REQUIRED.
-NEXT_EXACT_TASK: complete independent reviewer re-review of T01C fix round 2;
-accept T01C only after PASS, then unlock T02A/T03A. Keep T05C blocked on T05B +
-T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
-KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
-UNPUBLISHED_WORK: NONE for round 1; superseded by the round-2 correction below.
-
-## W04.T01C fix round 2 metadata correction — 2026-09-22
-
-STATUS: FINAL_REVIEW
-CURRENT_TASK: W04.T01C maximal safe frontier and scope-local currentness
-BASE_PUBLISHED_SHA: `45ddaadeeabedf37a6f592b4b3708d15adcedd98`
-LAST_SAFE_SHA: `c4e3c72e1e1f98a01a1fa87e7ff42ed14d55054d`
-CANDIDATE_SHA: `a6720027b199deb54020eac2044f4fb7341b9c23`
-
-ROUND-2 PROVENANCE CHAIN:
-- `03b9ce6`: initial frontier implementation; collaboration module `1.0.5 -> 1.0.6`.
-- `c4e3c72`: material authority/currentness repair omitted its required module-local increment, leaving `1.0.6`.
-- `a672002`: applies that one required `1.0.6 -> 1.0.7` correction.
-- `3fc7d58`: final synchronization/publication evidence for the round-2 evidence and this execution cursor.
-ROUND-3 DOCUMENTATION CORRECTION: `VERSION_IMPACT: NONE`; provenance-only;
-no production, schema, test, or version value changed.
-
-CURRENT_VERIFICATION_STATE: the material T01C authority/currentness repair is
-unchanged. Its collaboration module metadata is corrected from `1.0.6` to
-`1.0.7`; targeted collaboration/cross-owner tests, version assertion, Ruff,
-format, diff check and maintenance audit passed. See the round-2 evidence file
-for exact commands/results.
-
-VERSION_IMPACT: `GAME/TOOLS/collaboration.py` `1.0.6 -> 1.0.7`; collaboration
-frontier schema remains `1`; all other affected HDM-owned namespaces NONE.
-
-SYSTEM_IMPACT: NONE for T01C; the separate W04.T07A selected-LIVE reader stop
-remains SENIOR_REVIEW_REQUIRED.
-NEXT_EXACT_TASK: publish/read back this round-2 metadata correction, then obtain
-independent reviewer PASS for T01C before unlocking T02A/T03A. Keep T05C blocked
-on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize
-Wave 05.
-KNOWN_BLOCKERS: T01C reviewer PASS; T05C dependency join; T07A Senior review.
-UNPUBLISHED_WORK: NONE after candidate publication/read-back; T01C acceptance
-remains pending independent reviewer PASS.
-
-## W04.T01C acceptance and parallel downstream eligibility — 2026-09-22
-
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02A/T03A CURRENT IN PARALLEL
-CURRENT_TASK: W04.T02A explicit close, frozen input basis and handoff; W04.T03A strict PLAYER collaboration delta
-BASE_PUBLISHED_SHA: `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
-LAST_COMPLETED_TASK:
-  W04.T01C accepted after independent re-review -> `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T01C is accepted at the exact independent re-review PASS head above.
-- W04.T02A is eligible/current because T01C is accepted and the accepted W02 execution owner is published: `W02_DETERMINISTIC_EXECUTION_READY` at `351ab3e876254c31b506efcadc76fca635ea2aab`.
-- W04.T03A is eligible/current because T01C is accepted. Per the stable Wave-04 plan, it may run in parallel with T02A-T02C and does not write `collaboration.py` or `test_rd12`.
-- W04.T05C remains blocked on accepted T05B + T04B + T02C.
-- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
-
-VERSION_IMPACT:
-- Complete accepted W04.T01C chain:
-  - `03b9ce6`: `GAME/TOOLS/collaboration.py` `1.0.5 -> 1.0.6` for the initial frontier implementation.
-  - `c4e3c72`: material authority/currentness repair; the required module-local increment was omitted, leaving `1.0.6` pending correction.
-  - `a672002`: corrected `GAME/TOOLS/collaboration.py` `1.0.6 -> 1.0.7`.
-  - `3fc7d58`: final synchronization/publication evidence; no production, schema or version value changed.
-  - `7b66ac8`: independent re-review acceptance; no production, schema or version value changed.
-- `DEV/SCHEMAS/collaboration-frontier.schema.json` remains at `schema_version: 1`.
-- All other affected HDM-owned namespaces are unchanged: collaboration obligation schema/projections remain at `2`; engine release, campaign-contract generation, storage generation, migration and catalog namespaces remain unchanged.
-- This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T01C is accepted with no open System-Impact finding.
-NEXT_EXACT_TASK: execute W04.T02A and W04.T03A in parallel under their stable-plan write sets; T02A requires T01C plus the accepted W02 execution owner above, while T03A requires T01C. Keep T05C blocked on T05B + T04B + T02C, keep T07A at its Senior-only stop, and do not authorize Wave 05.
-KNOWN_BLOCKERS: T05C dependency join; T07A Senior review; Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
-
-## W04.T02A and W04.T03A acceptance — 2026-09-22
-
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
-CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
-LAST_COMPLETED_TASK:
-  W04.T02A accepted after reviewer PASS -> `5c77aced9dafd9a7f26177090b3e62466b8ec561`
-  W04.T03A accepted after reviewer PASS -> `ca3efa3c7750cffc2eef228b4b8666b75828cea9`
-LAST_SAFE_SHA: `5c77aced9dafd9a7f26177090b3e62466b8ec561`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T02A is accepted at the exact reviewer-PASS head above. Its close/frozen-basis/handoff behavior is now a published producer checkpoint.
-- W04.T03A is accepted at its exact reviewer-PASS head above. Its bounded PLAYER collaboration delta is complete and does not edit the physical shared PLAYER schema or Wave-05 final-writer surfaces.
-- W04.T02B is eligible/current because T02A is accepted and the accepted W02 publication/recovery inputs are published:
-  - `W02_DURABILITY_PUBLICATION_READY` at `fdb6888070bd34c128b7fed3703e08005bfb5554`;
-  - `W02_RECOVERY_MAINTENANCE_READY` at `f7afbcb3959812c44b1b35cde56426ec80317936` (the accepted exact-recovery/maintenance checkpoint).
-- W04.T04A remains blocked until T02C. W04.T05C remains blocked on T05B + T04B + T02C.
-- W04.T07A remains a Senior-only selected-LIVE reader System-Impact stop; no T07B+ task is authorized.
-
-VERSION_IMPACT:
-- W04.T02A collaboration reaches `GAME/TOOLS/collaboration.py` `1.0.9`: `c24159f` advanced `1.0.7 -> 1.0.8` for close/frozen-basis/handoff and introduced `collaboration-closed-basis.schema.json` v1 plus `collaboration-handoff.schema.json` v1; `5c77aced9dafd9a7f26177090b3e62466b8ec561` advanced `1.0.8 -> 1.0.9` for stale-handoff repair. Collaboration obligation schema/projections remain at v2; engine release, campaign-contract generation, storage generation, migration and catalog namespaces remain unchanged.
-- W04.T03A: `VERSION_IMPACT: NONE`; the bounded fixture/test delta introduces no runtime module, persistent schema, campaign-contract, storage, catalog or release namespace.
-- This documentation-only checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only. T02A and T03A remain within their accepted owner boundaries.
-NEXT_EXACT_TASK: execute W04.T02B under the stable-plan write set. T02C remains downstream of T02B and current W03 access/LIVE routes; T04A waits for T02C; T05C waits for T05B + T04B + T02C. Keep T07A at its Senior-only stop and do not authorize Wave 05.
-KNOWN_BLOCKERS: T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A Senior review. Migration execution, release execution and gameplay bootstrap remain unauthorized.
-UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published and read back.
-
-## W04.T02B publication/recovery review stop — 2026-09-22
-
-STATUS: **SENIOR_REVIEW_REQUIRED — T02B UNACCEPTED; T07A REMAINS A SEPARATE STOP**
-CURRENT_TASK: W04.T02B publication/recovery and route-companion closure
-REVIEWED_PUBLISHED_SHA: `ae424f32cc785f940f7740355924aa259d8895c6`
-LAST_SAFE_SHA: `b737555b9d9a1c404576dc173dfdaf34cd023e13`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T02A and W04.T03A remain accepted at their exact reviewer-PASS heads.
-- The published T02B candidate is not accepted. Independent review found that
-  collaboration calls an unadmitted repository publication capability and
-  bypasses the accepted W02 `FrozenCampaignPublicationAttempt` / publication
-  owner contract.
-- The candidate changes the collaboration obligation persistent contract from
-  schema v2 to v3 and makes `closed_input_set_fingerprint` required for
-  closed/resolved records, but supplies no accepted migration edge, existing-v2
-  disposition, or `campaign_contract_generation` consequence.
-- The DEV schema, GAME schema projection and Python lifecycle checks do not
-  agree: the runtime rejects a fingerprint on OPEN and requires one on
-  CLOSED/RESOLVED; the DEV schema permits a fingerprint on OPEN, while the
-  GAME projection permits null for every lifecycle.
-- No publisher or migration is selected or implemented by this checkpoint.
-
-VERSION_IMPACT:
-- The candidate's unaccepted production/schema transition is unresolved and is
-  not adopted by this documentation checkpoint.
-- `VERSION_IMPACT: NONE` for this documentation-only checkpoint; no version,
-  schema, campaign-contract, storage, migration or catalog value changed here.
-
-SYSTEM_IMPACT: **SENIOR_REVIEW_REQUIRED — W04.T02B**. The separate W04.T07A
-selected-LIVE reader stop remains open and is not merged into this finding.
-T02C, T04A/T04B, T05C and Wave 05 remain dependency-gated/not authorized.
-
-NEXT_EXACT_TASK: Senior resolution of the publication-owner boundary and the
-schema compatibility/lifecycle disposition in
-`DEV/docs/superpowers/design/2026-09-22-w04-t02b-publication-recovery-system-impact-brief.md`.
-Do not select or implement a publisher or migration before that resolution.
-KNOWN_BLOCKERS: T02B Senior review; T02C waits for accepted T02B; T04A waits
-for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07A
-separate Senior review; Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after this documentation-only checkpoint is published
-and read back.
-
-
-## Senior/owner decision — T02B + T07A — 2026-09-22
-
-AUTHORITATIVE_DECISION:
-`DEV/docs/superpowers/design/2026-09-22-w04-t02b-t07a-publication-live-reader-owner-decision.md`
-
-REVIEWED_STOP_HEAD: `d34fa8d1b462e7eaa57d20cd940e6183be0b061a`
-
-```text
-T02B SYSTEM_IMPACT: RESOLVED
-T07A SYSTEM_IMPACT: RESOLVED
-ARCHITECTURE_REVIEW_REQUIRED: NO
-
-NEW PREREQUISITE:
-  W04.T00P
-  -> W04_RUNTIME_HOST_IO_EXTENSIONS_READY
-  -> W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY
-```
-
-T02B restore basis:
-`b737555b9d9a1c404576dc173dfdaf34cd023e13`
-for exactly collaboration.py, test_rd12, DEV obligation schema and GAME
-collaboration_obligation projection.
-
-T07A restore basis:
-`e340ed5add19dbc4ed6ff350229ef6f2827fabb8`
-for exactly history.py, rd13 and the two native-history schemas (delete schemas
-that were absent there). RuntimeHost is not rolled back; T00P owns its coherent
-integration.
-
-Accepted T02B compatibility disposition:
-
-```text
-runtime.collaboration_obligation 2 -> 3
-migration edge: NONE
-dual-read: NONE
-campaign_contract_generation bump: NO
-basis: unreleased pre-v1 clean-slate replacement
-```
-
-Accepted v3 lifecycle:
-
-```text
-OPEN -> fingerprint null
-CLOSED -> SHA256
-RESOLVED -> same SHA256 retained
-OBSOLETE -> null or retained SHA256 depending whether the generation froze
-```
-
-Accepted publication route:
-domain delta -> RuntimeHost CampaignPublicationService -> W02
-FrozenCampaignPublicationAttempt -> ConnectorGitPlan -> PublicationOutcome ->
-typed reconciliation if required. No collaboration-local publisher/result.
-
-Accepted T07 route:
-RuntimeHost SemanticEventSourceAdapter supplies strict bounded LOCAL or selected-
-LIVE evt windows; History validates and issues authority. No LOCAL aggregate
-history read, no fake LIVE tree index, no missing-LIVE campaign fallback.
-
-CLS↔HDM T07 preflight remains PASS unless its explicit semantic-change trigger fires.
-
-CURRENT_VERIFICATION_STATE: accepted T01A/T05A/T01B/T05B/T01C/T02A/T03A remain closed. Rejected T02B/T07A candidates remain unaccepted until restored/reimplemented.
-VERSION_IMPACT: NONE for this decision/restores. Fresh T00P/T02B/T07A gates apply; T02B owns the accepted pre-release v2->v3 schema transition.
-SYSTEM_IMPACT: RESOLVED / NONE CURRENT.
-NEXT_EXACT_TASK: scoped restores -> reviewer PASS -> publish/read-back -> T00P -> reviewer PASS -> T02B and T07A in parallel where write sets are disjoint.
-KNOWN_BLOCKERS: restores + T00P only; downstream remains dependency-gated.
-WAVE_05: NOT AUTHORIZED.
-
-## W04.T00P acceptance and parallel T02B/T07A authorization — 2026-09-22
-
-STATUS: **EXECUTING — T02B/T07A AUTHORIZED IN PARALLEL**
-CURRENT_TASK: W04.T02B publication/recovery and W04.T07A native history publication/recovery in parallel
-BASE_PUBLISHED_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
-
-LAST_COMPLETED_TASK:
-  W04.T00P accepted after reviewer PASS -> `595ff95f10d3d48de5748ae32a60d4839106ea2b`
-
-CURRENT_VERIFICATION_STATE:
-- W04.T01A, W04.T05A, W04.T01B, W04.T05B, W04.T01C, W04.T02A and W04.T03A remain accepted at their recorded reviewer-PASS heads.
-- W04.T00P is accepted after reviewer PASS at the exact head above.
-- RuntimeHost `framework_module_version` records the T00P chain `1.0.5 -> 1.0.6 -> 1.0.7`.
-- T00P outputs are `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` and `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY`.
-- Fresh W04.T02B and W04.T07A are authorized/current in parallel under the accepted owner decision and their disjoint write sets.
-- W04.T02C, T04A/T04B, T05C and T07B+ remain dependency-gated; Wave 05 remains prohibited/not authorized.
-
-VERSION_IMPACT: NONE for this documentation-only checkpoint; no version-bearing value changed in this cursor update. The recorded RuntimeHost production chain is `1.0.5 -> 1.0.6 -> 1.0.7`.
-SYSTEM_IMPACT: NONE CURRENT — T00P, T02B and T07A remain within the accepted owner decision boundary.
-NEXT_EXACT_TASK: execute W04.T02B and W04.T07A in parallel under their normal task review gates.
-KNOWN_BLOCKERS: downstream dependency joins only; migration execution, release execution and gameplay bootstrap remain unauthorized.
-UNPUBLISHED_WORK: NONE after publication/read-back.
-WAVE_05: PROHIBITED / NOT AUTHORIZED
-
-
-## T00P, T02B and T07A acceptance — 2026-09-23
-
-STATUS: EXECUTING
-CURRENT_TASK: W04.T02C collaboration catch-up and W04.T07B Story source registrations in parallel
-LAST_SAFE_SHA: `711738ce20d449a330313f5e51292408d311a616`
-LAST_PUBLISHED_SHA: `711738ce20d449a330313f5e51292408d311a616`
-
-LAST_COMPLETED_TASK:
-  W04.T00P accepted after repair/re-review PASS; RuntimeHost output checkpoint `606cf87caeee427622680f8898a6ba1998fb1a9e`
-  W04.T02B accepted after independent task re-review PASS -> `711738ce20d449a330313f5e51292408d311a616`
-  W04.T07A accepted after independent task re-review PASS -> `534653babd788d85663dfc2006fbc921ad1577bd`
-
-CURRENT_VERIFICATION_STATE:
-- Previously accepted W04.T01A, T05A, T01B, T05B, T01C, T02A and T03A remain closed at their recorded reviewer-PASS heads.
-- T00P supplies CampaignPublicationService through the exact W02 attempt/reconciliation route and the bound raw LOCAL/selected-LIVE evt adapter. The later History bridge integration is host/basis-bound; History alone validates/issues history.
-- T02B uses only CampaignPublicationService for OPEN->CLOSED and CLOSED->RESOLVED/OBSOLETE same-campaign closures. Prepared owner reads and W02 freeze reuse one `_OperationBasis`; ref drift is rejected before ref update. CLOSED cold recovery, RESOLVED idempotence, stale/non-fast-forward, indeterminate no-second-write, non-actionable plan omission, and terminal route-companion removal are covered.
-- T07A consumes only host-issued raw windows, validates the matching host token, exact selected-LIVE source/ref/revision, contiguous bounded ordinals, event schema/provenance and generation-1 `semantic_order`; missing LIVE never falls back to LOCAL/campaign.
-- T02C is eligible from T02B PASS plus current W03 access/LIVE routes. T07B is eligible from T07A PASS and runs serially within the Story lane.
-- T04A waits for T02C; T04B waits for T04A. T05C still requires T02C + T04B + accepted T05B. T07C+ remain serially gated by preceding Story task PASS.
-- T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires. Wave 05 remains NOT AUTHORIZED.
-
-VERSION_IMPACT:
-- T00P RuntimeHost chain: `5812700` `1.0.5 -> 1.0.6`; `595ff95` `1.0.6 -> 1.0.7`; `606cf87` `1.0.7 -> 1.0.8`. No persistent schema, campaign, storage, catalog or protocol generation changed.
-- T02B chain: `e25ddae` collaboration `1.0.9 -> 1.0.10`, durability `1.0.2 -> 1.0.3`, obligation schema/projection `2 -> 3`; `f383e5f` collaboration `1.0.10 -> 1.0.11`; `711738c` collaboration `1.0.11 -> 1.0.12`. Accepted disposition: migration edge NONE, dual-read NONE, `campaign_contract_generation` NO BUMP; v2 is rejected after the unreleased pre-v1 clean-slate replacement.
-- T07A chain: `3f81e5f` initializes the History module at `1.0.1` and adds the two native-history schemas at v1; `1cb90d7` History `1.0.1 -> 1.0.2`; `534653b` History `1.0.2 -> 1.0.3`. Schemas remain v1; no engine/campaign/storage/catalog bump.
-- No accepted change requires a global engine release bump.
-- This execution-cursor/CURRENT_PROGRESS/evidence checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: NONE CURRENT — T00P, T02B and T07A remain within the accepted owner decision; no architecture reopen.
-NEXT_EXACT_TASK: execute W04.T02C and W04.T07B in parallel within their disjoint stable-plan write sets. Do not start T04A before T02C PASS, T04B before T04A PASS, T05C before its full join, or T07C before T07B PASS.
-KNOWN_BLOCKERS: T04A/T04B wait on the Collaboration lane; T05C waits on T02C+T04B; later Story tasks are serial. Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after the documentation checkpoint is published/read back.
-
-
-## T02C acceptance and T07B final-review-pending checkpoint — 2026-09-24
-
-STATUS: EXECUTING — T02C ACCEPTED; T07B FINAL_REVIEW_PENDING
-CURRENT_TASK: W04.T04A exact after-authority reconciliation; T07B independent review remains required before T07C
-LAST_SAFE_SHA: `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
-LAST_PUBLISHED_SHA: `cf26a3cc6dcc7de8f7fca408d664a64053275c29`
-
-LAST_COMPLETED_TASK:
-  W04.T02C accepted after independent reviewer PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
-  W04.T07B implementation candidate published -> `20443067e051850bd6bef3314e43fbe72c4da43c`; independent re-review pending
-
-CURRENT_VERIFICATION_STATE:
-- W04.T00P, T02B, T07A and T02C are accepted at their recorded reviewer-PASS checkpoints. Prior accepted T01A, T05A, T01B, T05B, T01C, T02A and T03A remain unchanged.
-- T02C reloads current obligation/generation and caller PLAYER route before mutable association; catch-up omits raw `purpose`; native basis refs are exact-revalidated. `W04_COLLABORATION_PUBLICATION_READY` is accepted.
-- W04.T04A is eligible from T02C PASS plus accepted W03 access-policy transition inputs. T04B waits on T04A. T05C still requires T02C + T04B + accepted T05B.
-- T07B `2044306` implements fixed registrations, canonical CIDs/lane cursors, four StoryUnit layers, coverage/source-window schemas and registration-bound payloads. Local TDD/verification passes, but independent reviewer PASS is unavailable; `W04_STORY_SOURCE_CONTRACTS_READY` is NOT asserted and T07C remains gated.
-- T07 CLS↔HDM preflight remains PASS absent its explicit semantic-change trigger. Wave 05 remains NOT AUTHORIZED.
-
-CURRENT_VERIFICATION_STATE (T07B candidate):
-  focused T02C/T07B/T00P/Step-4 suites: 170 passed
-  Ruff check: PASS (pre-existing SIM117 diagnostics excluded for shared RD13)
-  Ruff format: PASS on Story module and RD13 test file
-  maintenance audit: PASS
-  git diff --check: PASS
-  independent T07B task review: PENDING
-
-VERSION_IMPACT:
-- T02C: `cd4a5ea` collaboration `1.0.12 -> 1.0.13`, new catch-up schema v1; `dd0783c` collaboration `1.0.13 -> 1.0.14`, catch-up schema `1 -> 2`. No engine/campaign/storage/catalog bump.
-- T07B chain: `864dc9f` initializes Story module at `1.0.1`, replaces unactivated EVENTS/MECHANICS/NARRATIVE/projection-state scaffolds from schema v1 to v2 and creates TRANSCRIPT v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no further local schema transition.
-- Story semantic-contract generations remain 1. SourceWindow is transient and its development schema has no local persisted schema-version field; common definitions add no independent runtime schema namespace.
-- The pre-v1 engine remains `development` at `1.0-alpha`; `GAME/CAMPAIGN/STORY` contains only scaffold placeholders and no persisted Story units/state. Schema cutover uses no migration edge/dual-read and does not bump `campaign_contract_generation` (current 2), storage generation, catalog generation or engine release. Old StoryUnit v1 shapes are rejected by the new validator.
-- This documentation checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: NONE CURRENT — T02C/T07B remain within accepted Wave-04 semantics; no architecture reopen.
-NEXT_EXACT_TASK: execute W04.T04A. Keep T04B after T04A PASS, T05C after T02C + T04B, and T07C after independent T07B PASS. Retry T07B review on `gpt-6-luna` when reviewer capacity returns.
-KNOWN_BLOCKERS: T07B independent review capacity; T04B/T05C dependency joins; Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE; T07B candidate is published and awaiting review.
-
-
-## T07B independent review round 1 findings — superseded 2026-09-24
-
-STATUS: HISTORICAL — T02C ACCEPTED; T07B FIX ROUND 1 SUPERSEDED
-CURRENT_TASK: W04.T04A exact after-authority reconciliation and bounded T07B source-identity/cardinality repair in parallel
-LAST_SAFE_SHA: `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
-LAST_PUBLISHED_SHA: `cf26a3cc6dcc7de8f7fca408d664a64053275c29`
-
-LAST_COMPLETED_TASK: W04.T02C accepted after independent reviewer PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`.
-T07B candidate `20443067e051850bd6bef3314e43fbe72c4da43c` is published but is not accepted.
-
-CURRENT_VERIFICATION_STATE:
-- Independent T07B review on `gpt-6-luna` found: (1) M-SEG ignores `segment_sequence` in its owner selector; (2) M-OUT MAY_OMIT remains caller-selected and is not bound to native source keys/NO_GAMEPLAY_OUTCOME proof; (3) projection-state schema accepts SPARSE coverage despite baseline generation-1 contiguous registrations.
-- These are bounded implementation findings within the accepted T07B source contracts; no System-Impact or architecture reopen was requested. T07C remains gated by T07B PASS.
-- W04.T04A is eligible from T02C PASS plus accepted W03 access-policy transition inputs. T04B waits on T04A; T05C waits for T02C + T04B + accepted T05B.
-- CLS↔HDM T07 preflight remains PASS absent its explicit semantic-change trigger. Wave 05 remains NOT AUTHORIZED.
-
-VERSION_IMPACT:
-- T02C accepted chain: `cd4a5ea` collaboration `1.0.12 -> 1.0.13`, catch-up schema v1; `dd0783c` collaboration `1.0.13 -> 1.0.14`, catch-up schema `1 -> 2`. No campaign/storage/catalog/engine bump.
-- T07B candidate chain: `864dc9f` initializes Story module at `1.0.1`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `1 -> 2` and new TRANSCRIPT schema v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `2 -> 3`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no schema value transition. Semantic generations remain 1; pre-release empty Story data basis yields migration/dual-read/campaign-generation NONE.
-- This cursor checkpoint: `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: NONE CURRENT — findings are T07B implementation defects within the accepted design.
-NEXT_EXACT_TASK: execute W04.T04A and repair T07B in parallel under disjoint Collaboration/Story write sets. Keep T04B after T04A PASS and T07C after T07B independent PASS.
-KNOWN_BLOCKERS: T04B/T05C dependency joins; T07B fix-round re-review; Wave 05 remains unauthorized.
-UNPUBLISHED_WORK: NONE after this cursor checkpoint is published/read back.
-
-
-## T04A Senior clarification and implementation candidate — 2026-09-24
-
-STATUS: FINAL_REVIEW — T04A candidate and T07B fix-round-2 await independent task review
-CURRENT_TASK: W04.T04A exact after-authority reconciliation; review T04A and T07B fix-round-2 before dependent tasks
-BASE_PUBLISHED_SHA: `e633c3cab045b44b77388c91fc3cc3a0bec08330`
-T04A_CANDIDATE_SHA: `20dd5301310bf5db250c229655ac957fe56e23c3`
-CODE_CHECKPOINT_REMOTE_READBACK_SHA: `b16ba8d2b4e3cffa86736fb20d10a34b01c97ff9`
-LAST_ACCEPTED_COLLABORATION_TASK: W04.T02C PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
-LAST_T07B_FIX_ROUND_2_CANDIDATE: `5a53b8e4323f53cde2f3c718e477003a4da3ce29`
-
-### Senior clarification — prospective authority, retained accepted evidence
-
-- Evaluate affected generations against the exact after-authority view from W03.
-- Obsolete a generation when a required obligation to the changed PLAYER remains
-  unsatisfied, or when current opportunity/necessary voluntary agency is invalid.
-  Do not rewrite requirements, synthesize PASS/consent, or create a successor.
-- If the PLAYER already satisfied its requirement and remaining agency/opportunity
-  remain valid, deactivation alone does not obsolete the generation.
-- Preserve accepted Interaction/IntentClause associations, authorship, PC binding,
-  content and any frozen fingerprint. OBSOLETE does not mean RESOLVED or executable.
-- Exact persisted-owner hydration validates campaign/generation, native owner links,
-  IntentPlan/Clause identity and saved author/PC identity without re-authorizing a
-  historical author. Caller-shaped mappings remain subject to current authority checks.
-- New inputs, reuse in a generation, close/handoff and recipient catch-up retain their
-  applicable current authority/opportunity/disclosure checks.
-- T04B owns same-campaign-closure publication of access transition, OBSOLETE state
-  and route-ref removal; terminal records remain exact-known-ID recoverable and leave
-  the active routing queue.
-
-### Candidate verification
-
-CURRENT_VERIFICATION_STATE:
-- TDD RED: new T04A tests failed at the absent reconciliation API.
-- Focused T04A tests: 13 passed; full `test_rd12_collaboration`: 106 passed;
-  W03 `PlayerAccessTransitionTests`: 29 passed.
-- Ruff check and format check: PASS. Maintenance audit: PASS.
-- Canonical full DEV discovery command
-  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v`:
-  1175 tests, 5 skipped, 1 failure. The remaining version-census test scans
-  protected local `.entire/` capture files (`.entire/logs/` and `.entire/tmp/`);
-  `.entire` was not modified. The clean-checkout provenance test passed after
-  publication. Hosted CI is unavailable in this runtime.
-- Independent review was attempted but the OpenCode task permission denied creation;
-  no independent reviewer PASS is claimed. T04B remains gated on T04A PASS, and
-  T07C remains gated on T07B PASS.
-
-VERSION_IMPACT:
-- T04A collaboration module: `GAME/TOOLS/collaboration.py` `1.0.14 -> 1.0.15`.
-- Persistent collaboration schema remains v3; no persisted shape changed. No
-  campaign-contract, storage, catalog or engine release bump; no migration/dual-read
-  edge is required for the pre-release clean-slate scaffold, which has no persisted
-  collaboration records.
-- T07B fix-round-2 candidate: Story module `1.0.3 -> 1.0.4`; MECHANICS schema
-  `3 -> 4`; projection-state schema `3 -> 4`. Other Story schemas unchanged.
-- This execution-status and `DEV/CURRENT_PROGRESS.md` documentation:
-  `VERSION_IMPACT: NONE`.
-
-SYSTEM_IMPACT: NONE — the implementation is within T04A's approved collaboration
-owner/test scope. W03 `access_control.py` remains read-only; T04A does not publish.
-WAVE_05: NOT AUTHORIZED.
-NEXT_EXACT_TASK: obtain independent review PASS for T04A and T07B fix-round-2;
-continue to T04B and T07C only after their respective producer PASS gates.
-KNOWN_BLOCKERS: task/reviewer dispatch denied by current OpenCode permissions;
-full-suite version census is contaminated by protected local `.entire` logs.
-UNPUBLISHED_WORK: NONE after the candidate and execution evidence are published/read back.
+Read that exact snapshot for earlier Source Manifests, System-Impact briefs/rulings, rejected attempts and restores, complete version chains, original CLS preflight evidence and detailed author verification. Those historical states do not override the current disposition above or the stable semantic owners. No separate current proof ledger or executable plan is created.
