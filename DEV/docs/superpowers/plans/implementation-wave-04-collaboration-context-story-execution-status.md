@@ -972,9 +972,9 @@ KNOWN_BLOCKERS: T07B independent review capacity; T04B/T05C dependency joins; Wa
 UNPUBLISHED_WORK: NONE; T07B candidate is published and awaiting review.
 
 
-## T07B independent review round 1 findings — 2026-09-24
+## T07B independent review round 1 findings — superseded 2026-09-24
 
-STATUS: EXECUTING — T02C ACCEPTED; T07B FIX ROUND 1 REQUIRED
+STATUS: HISTORICAL — T02C ACCEPTED; T07B FIX ROUND 1 SUPERSEDED
 CURRENT_TASK: W04.T04A exact after-authority reconciliation and bounded T07B source-identity/cardinality repair in parallel
 LAST_SAFE_SHA: `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
 LAST_PUBLISHED_SHA: `cf26a3cc6dcc7de8f7fca408d664a64053275c29`
@@ -990,10 +990,73 @@ CURRENT_VERIFICATION_STATE:
 
 VERSION_IMPACT:
 - T02C accepted chain: `cd4a5ea` collaboration `1.0.12 -> 1.0.13`, catch-up schema v1; `dd0783c` collaboration `1.0.13 -> 1.0.14`, catch-up schema `1 -> 2`. No campaign/storage/catalog/engine bump.
-- T07B candidate chain: `864dc9f` initializes Story module at `1.0.1`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `1 -> 2` and new TRANSCRIPT schema v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no schema value transition. Semantic generations remain 1; pre-release empty Story data basis yields migration/dual-read/campaign-generation NONE.
+- T07B candidate chain: `864dc9f` initializes Story module at `1.0.1`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `1 -> 2` and new TRANSCRIPT schema v1; `cac8fc9` Story module `1.0.1 -> 1.0.2`, EVENT/MECHANICS/NARRATIVE/projection-state schemas `2 -> 3`, TRANSCRIPT schema `1 -> 2`; `2044306` Story module `1.0.2 -> 1.0.3`, no schema value transition. Semantic generations remain 1; pre-release empty Story data basis yields migration/dual-read/campaign-generation NONE.
 - This cursor checkpoint: `VERSION_IMPACT: NONE`.
 
 SYSTEM_IMPACT: NONE CURRENT — findings are T07B implementation defects within the accepted design.
 NEXT_EXACT_TASK: execute W04.T04A and repair T07B in parallel under disjoint Collaboration/Story write sets. Keep T04B after T04A PASS and T07C after T07B independent PASS.
 KNOWN_BLOCKERS: T04B/T05C dependency joins; T07B fix-round re-review; Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after this cursor checkpoint is published/read back.
+
+
+## T04A Senior clarification and implementation candidate — 2026-09-24
+
+STATUS: FINAL_REVIEW — T04A candidate and T07B fix-round-2 await independent task review
+CURRENT_TASK: W04.T04A exact after-authority reconciliation; review T04A and T07B fix-round-2 before dependent tasks
+BASE_PUBLISHED_SHA: `e633c3cab045b44b77388c91fc3cc3a0bec08330`
+T04A_CANDIDATE_SHA: `20dd5301310bf5db250c229655ac957fe56e23c3`
+LAST_ACCEPTED_COLLABORATION_TASK: W04.T02C PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
+LAST_T07B_FIX_ROUND_2_CANDIDATE: `5a53b8e4323f53cde2f3c718e477003a4da3ce29`
+
+### Senior clarification — prospective authority, retained accepted evidence
+
+- Evaluate affected generations against the exact after-authority view from W03.
+- Obsolete a generation when a required obligation to the changed PLAYER remains
+  unsatisfied, or when current opportunity/necessary voluntary agency is invalid.
+  Do not rewrite requirements, synthesize PASS/consent, or create a successor.
+- If the PLAYER already satisfied its requirement and remaining agency/opportunity
+  remain valid, deactivation alone does not obsolete the generation.
+- Preserve accepted Interaction/IntentClause associations, authorship, PC binding,
+  content and any frozen fingerprint. OBSOLETE does not mean RESOLVED or executable.
+- Exact persisted-owner hydration validates campaign/generation, native owner links,
+  IntentPlan/Clause identity and saved author/PC identity without re-authorizing a
+  historical author. Caller-shaped mappings remain subject to current authority checks.
+- New inputs, reuse in a generation, close/handoff and recipient catch-up retain their
+  applicable current authority/opportunity/disclosure checks.
+- T04B owns same-campaign-closure publication of access transition, OBSOLETE state
+  and route-ref removal; terminal records remain exact-known-ID recoverable and leave
+  the active routing queue.
+
+### Candidate verification
+
+CURRENT_VERIFICATION_STATE:
+- TDD RED: new T04A tests failed at the absent reconciliation API.
+- Focused T04A tests: 13 passed; full `test_rd12_collaboration`: 106 passed;
+  W03 `PlayerAccessTransitionTests`: 29 passed.
+- Ruff check and format check: PASS. Maintenance audit: PASS.
+- Full DEV unittest discovery: 1175 tests, 5 skipped, 2 failures. One was the
+  expected dirty-checkout provenance assertion before this checkpoint; the other
+  version census included protected local `.entire/logs/entire.log`. The `.entire`
+  tree was not modified. Hosted CI is unavailable in this runtime.
+- Independent review was attempted but the OpenCode task permission denied creation;
+  no independent reviewer PASS is claimed. T04B remains gated on T04A PASS, and
+  T07C remains gated on T07B PASS.
+
+VERSION_IMPACT:
+- T04A collaboration module: `GAME/TOOLS/collaboration.py` `1.0.14 -> 1.0.15`.
+- Persistent collaboration schema remains v3; no persisted shape changed. No
+  campaign-contract, storage, catalog or engine release bump; no migration/dual-read
+  edge is required for the pre-release clean-slate scaffold, which has no persisted
+  collaboration records.
+- T07B fix-round-2 candidate: Story module `1.0.3 -> 1.0.4`; MECHANICS schema
+  `3 -> 4`; projection-state schema `3 -> 4`. Other Story schemas unchanged.
+- This execution-status documentation: `VERSION_IMPACT: NONE`.
+
+SYSTEM_IMPACT: NONE — the implementation is within T04A's approved collaboration
+owner/test scope. W03 `access_control.py` remains read-only; T04A does not publish.
+WAVE_05: NOT AUTHORIZED.
+NEXT_EXACT_TASK: obtain independent review PASS for T04A and T07B fix-round-2;
+continue to T04B and T07C only after their respective producer PASS gates.
+KNOWN_BLOCKERS: task/reviewer dispatch denied by current OpenCode permissions;
+full-suite version census is contaminated by protected local `.entire` logs.
+UNPUBLISHED_WORK: NONE after the candidate and execution evidence are published/read back.
