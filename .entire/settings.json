@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "strategy_options": {
+    "checkpoint_remote": {
+      "provider": "github",
+      "repo": "Dandelion-Solutions/entire-projects"
+    },
+    "push_sessions": true
+  },
+  "checkpoints": {
+    "primary": {
+      "type": "git-refs"
+    }
+  }
+}
