@@ -5,9 +5,9 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: FINAL_REVIEW — T04B/T07C candidates await independent PASS
-CURRENT_TASK: publish/read back the full T07C verification cursor/global progress and submit T04B/T07C candidates for independent review
+CURRENT_TASK: independently review T04B candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` and T07C candidate code head `0c5cbc78174ca3545d4342674ba9afe9ae50622c`
 LAST_COMPLETED_TASK: T07B independent re-review PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04B targeted repair at `6bb8723ff5ef8f3508d53303ba614d42222393d3`; T07C bounded Story-local T0/currentness/W02 publication candidate
-LAST_SAFE_SHA: 4b026a575c0b79253dd976ae9290a4f4a0d935ed — T07C exact-page code candidate and cursor published/read back; T04B and T07C independent PASS gates pending
+LAST_SAFE_SHA: 33ad2f2ce78d30d735fde28ff20a75d426c4db27 — T07C code, full verification cursor and progress published/read back; independent PASS gates pending
 
 ## Current independent review
 
@@ -115,7 +115,7 @@ The mandatory pre-T07 CLS-HDM preflight retains its recorded PASS and explicit s
 T04B_REVIEWED_FAIL_COMMIT: f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372
 T04B_REPAIR_CANDIDATE_COMMIT: 6bb8723ff5ef8f3508d53303ba614d42222393d3
 T07C_STORY_CANDIDATE_HEAD: 0c5cbc78174ca3545d4342674ba9afe9ae50622c
-T07C_PROGRESS_READBACK_HEAD: 4b026a575c0b79253dd976ae9290a4f4a0d935ed
+T07C_PROGRESS_READBACK_HEAD: 33ad2f2ce78d30d735fde28ff20a75d426c4db27
 T07B_ACCEPTED_REPAIR: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
 ```
 
@@ -142,7 +142,7 @@ VERSION_IMPACT:
 SYSTEM_IMPACT: NONE — T04B consumes existing W03 forward-plan/progress/current-route producers and W02 exact predecessor reads/publication. T07C consumes existing owner-issued NativeHistory windows, T0 embedded in SemanticEvent and W02 campaign publication; durability only gained the exact `runtime.semantic_event` routed-identity mapping needed by that existing W02 route. No W03/RuntimeHost ownership boundary or persistent schema changed.
 NEXT_EXACT_TASK: independently re-review T04B `6bb8723ff5ef8f3508d53303ba614d42222393d3` and T07C `0c5cbc78174ca3545d4342674ba9afe9ae50622c`. T05C waits for T04B PASS; T07D waits for T07C PASS.
 KNOWN_BLOCKERS: independent reviews pending for both candidates; OpenCode reviewer/task permission denial remains in force. Full DEV suite remains pending for the clean published candidate head.
-UNPUBLISHED_WORK: cursor/global progress full-verification update only; T07C code is published/read back at `0c5cbc78174ca3545d4342674ba9afe9ae50622c` within cursor HEAD `4b026a575c0b79253dd976ae9290a4f4a0d935ed`.
+UNPUBLISHED_WORK: NONE after candidate and verification cursor publication/read-back at `33ad2f2ce78d30d735fde28ff20a75d426c4db27`.
 WAVE_04: NOT COMPLETE
 WAVE_05: NOT AUTHORIZED
 
