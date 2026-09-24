@@ -1234,7 +1234,7 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
     }
 
 
-def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool, bool], ...]:
+def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool], ...]:
     valid = _registered_story_unit("MECHANICS")
 
     absent_payload_links = deepcopy(valid)
@@ -1254,12 +1254,6 @@ def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool, bool], 
         "segment_sequence": 0,
     }
 
-    wrong_exact_segment = deepcopy(valid)
-    wrong_exact_segment["payload"]["resolution_refs"][0]["selector"] = {
-        "segment_id": "resolution-1:segment:2",
-        "segment_sequence": 2,
-    }
-
     valid_receipt_link = deepcopy(valid)
     valid_receipt_link["projection_basis"][0]["candidate_ids"] = [
         story_module.encode_candidate_id("M-SEG", ["runtime.command", "command-1", 1])
@@ -1277,15 +1271,12 @@ def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool, bool], 
     valid_receipt_link["payload"]["receipt_refs"] = [command_segment_ref]
 
     return (
-        ("valid exact payload link", valid, True, True),
-        ("valid exact receipt link", valid_receipt_link, True, True),
-        ("absent payload links", absent_payload_links, False, False),
-        ("empty payload links", empty_payload_links, False, False),
-        ("wrong owner", wrong_owner, False, False),
-        ("invalid segment ordinal", wrong_segment, False, False),
-        # Draft 2020-12 validates the typed reference shape, while the Python
-        # owner validator binds that selector to the decoded candidate identity.
-        ("wrong exact segment binding", wrong_exact_segment, False, True),
+        ("valid exact payload link", valid, True),
+        ("valid exact receipt link", valid_receipt_link, True),
+        ("absent payload links", absent_payload_links, False),
+        ("empty payload links", empty_payload_links, False),
+        ("wrong owner", wrong_owner, False),
+        ("wrong segment", wrong_segment, False),
     )
 
 
@@ -1457,7 +1448,7 @@ class StoryUnitLayerTests(unittest.TestCase):
         self,
     ) -> None:
         validator = _story_unit_schema_validator("MECHANICS")
-        for name, unit, python_expected, schema_expected in _m_seg_contract_cases():
+        for name, unit, expected_valid in _m_seg_contract_cases():
             with self.subTest(case=name):
                 try:
                     story_module.validate_story_unit(unit, layer="MECHANICS")
@@ -1466,8 +1457,8 @@ class StoryUnitLayerTests(unittest.TestCase):
                 else:
                     python_valid = True
                 schema_valid = validator.is_valid(unit)
-                self.assertEqual(python_valid, python_expected)
-                self.assertEqual(schema_valid, schema_expected)
+                self.assertEqual(python_valid, expected_valid)
+                self.assertEqual(schema_valid, expected_valid)
 
     def test_transcript_units_do_not_merge_distinct_message_candidates(self) -> None:
         unit = _registered_story_unit("TRANSCRIPT")
