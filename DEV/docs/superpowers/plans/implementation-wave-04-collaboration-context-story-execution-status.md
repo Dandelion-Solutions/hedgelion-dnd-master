@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING
-CURRENT_TASK: bounded T04B recovery/LIVE-barrier repair and W04.T07C Story-local T0/currentness/publication
-LAST_COMPLETED_TASK: T07B independent re-review PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04B independently reviewed FAIL
-LAST_SAFE_SHA: a5cd9c517913bcf04d7acfbe895be49cdf941111 — exact reviewed state; T07B accepted, T04B remains unaccepted
+STATUS: EXECUTING — T04B repair candidate pending independent PASS; T07C authorized
+CURRENT_TASK: implement W04.T07C Story-local T0/currentness/publication; submit T04B candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` for independent review
+LAST_COMPLETED_TASK: T07B independent re-review PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04B targeted repair and focused verification at `6bb8723ff5ef8f3508d53303ba614d42222393d3`
+LAST_SAFE_SHA: a5cd9c517913bcf04d7acfbe895be49cdf941111 — T07B accepted; T04B candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` remains unaccepted pending independent review
 
 ## Current independent review
 
@@ -18,7 +18,7 @@ REVIEWED_PARENT: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
 | Task | Candidate / repair | Independent disposition |
 |---|---|---|
 | W04.T04A | 20dd5301310bf5db250c229655ac957fe56e23c3 + 0d190a9db11129a02f07c71a812996c78a8d33cf | Prior PASS preserved; IRR-T04A-01/02 CLOSED |
-| W04.T04B | f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372 | FAIL / TARGETED_REPAIR_REQUIRED; IRR-T04B-01/02 BLOCKING |
+| W04.T04B | f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372 | FAIL / TARGETED_REPAIR_REQUIRED; IRR-T04B-01/02 BLOCKING; repair candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` pending independent re-review |
 | W04.T07B | 55fb0a52a933b90a15ad2bc8b0af624635edaf26 | PASS / GO; IRR-T07B-02 CLOSED |
 
 T07B now checks an actual positive integer ordinal, explicitly excluding bool, before exact segment selector comparison. Its resolution/receipt boolean cases, nonpositive ordinal cases and retained semantic-binding tests ran successfully in exact-head hosted CI. The earlier explicit payload-link repair is retained.
@@ -107,34 +107,33 @@ T07B's unconditional rejection of source-classified OMITTED results is not posit
 
 The mandatory pre-T07 CLS-HDM preflight retains its recorded PASS and explicit semantic-change/unavailable-evidence trigger conditions. This review does not repeat it or waive a future genuine trigger. Its exact original refs/blobs remain in CURRENT_PROGRESS and the historical ledger.
 
-## Verification and Version Impact
+## T04B repair candidate verification and Version Impact
 
 ```text
-T04B_CANDIDATE_COMMIT: f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372
+T04B_REVIEWED_FAIL_COMMIT: f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372
+T04B_REPAIR_CANDIDATE_COMMIT: 6bb8723ff5ef8f3508d53303ba614d42222393d3
 T07B_ACCEPTED_REPAIR: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
-REVIEWED_HEAD: a5cd9c517913bcf04d7acfbe895be49cdf941111
-HOSTED_RUN: 35988891445
-HOSTED_JOB: 107597978376
-STATUS / CONCLUSION: completed / success
-MAINTENANCE: PASS
-CANONICAL DEV: Ran 1186 tests; OK (skipped=5)
-VERSION_UNCLASSIFIED: []
-VERSION_LEGACY_HITS: []
 ```
 
-Independent hosted evidence includes the eight new T04B tests, retained T04A cases and the shared boolean-ordinal regression table. The green suite does not cover the new T04B counterexamples described in the report; those remain required repair REDs.
+T04B_RED/GREEN: regressions cover empty/subset/extra effect carriers, incomplete after-state, ACTIVE/partial/indeterminate/stale LIVE proof, missing selected route, completed W03 forward proof, no-LIVE publication and bounded recovery. The empty-effect recovery regression failed against the pre-repair candidate; focused repair coverage is now green.
 
-The author's focused checks remain recorded: RD12 116, cross-owner W03/RuntimeHost/W02 90, RD13 55; Ruff check/format and maintenance PASS, with existing RD13 SIM117 excluded from the optional Ruff check. The author-local full run reported one protected `.entire/` version-census failure. That failure did not reproduce in the clean exact-head hosted run. No local capture data, permission or census behavior is claimed repaired by this review.
+CURRENT_VERIFICATION_STATE:
+- Full RD12 collaboration suite: 128 passed.
+- W03 `MultiLiveForwardTransitionTests`: 13 passed; RuntimeHost composition: 21 passed.
+- Maintenance audit: PASS; Ruff check and format check: PASS.
+- Full DEV suite is pending until the T07C candidate is complete. The prior author-local `.entire/` census failure and hosted success on the earlier review head are historical, not results for `6bb8723`.
+- No hosted CI or independent review has run for `6bb8723`; reviewer/task permission denial is not bypassed and no PASS is claimed.
 
 VERSION_IMPACT:
-- T07B Story module `1.0.5 -> 1.0.6` accepted; MECHANICS schema v4 and projection-state v4 unchanged. No campaign-contract, storage, catalog or engine bump; no migration/dual-read.
-- T04B collaboration module `1.0.16 -> 1.0.17` remains the submitted unaccepted candidate; obligation schema v3 unchanged. Further material repair requires a fresh Version Impact Gate.
-- This review/control checkpoint: `VERSION_IMPACT: NONE`.
+- T04B collaboration module `1.0.17 -> 1.0.18`; obligation schema v3 unchanged.
+- No campaign-contract, storage-format, catalog or engine bump; no migration/dual-read. No persistent route/schema field was added.
+- T07B Story module `1.0.5 -> 1.0.6` remains accepted; MECHANICS/projection-state schema v4 unchanged.
+- This execution-status checkpoint: `VERSION_IMPACT: NONE`.
 
-SYSTEM_IMPACT: no new owner decision. T04B must enforce existing complete-recovery and W03 LIVE-boundary obligations; ordinary in-scope repair is authorized. If an actually missing accepted producer interface prevents it, record that specific gap before crossing the owner boundary.
-NEXT_EXACT_TASK: repair IRR-T04B-01/02 and execute T07C in disjoint lanes; obtain their respective independent review before dependent work.
-KNOWN_BLOCKERS: IRR-T04B-01/02 block T04B/T05C. OpenCode reviewer permission and local `.entire/` census interaction remain environment limitations; do not bypass them.
-UNPUBLISHED_WORK: NONE after this review/control publication and read-back.
+SYSTEM_IMPACT: NONE — T04B consumes existing W03 forward-plan/progress/current-route producers and W02 exact predecessor reads/publication; no W03/RuntimeHost boundary or persisted schema changed.
+NEXT_EXACT_TASK: independently re-review T04B candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3`; implement T07C under the stable plan while preserving the native-proven-omission qualification. Keep T05C/T07D and later tasks behind their independent PASS gates.
+KNOWN_BLOCKERS: T04B independent PASS pending; T07C implementation not yet complete. OpenCode reviewer/task permission denial and local `.entire/` census interaction remain environment limitations.
+UNPUBLISHED_WORK: cursor and global current-progress updates are included in the coherent checkpoint publication.
 WAVE_04: NOT COMPLETE
 WAVE_05: NOT AUTHORIZED
 

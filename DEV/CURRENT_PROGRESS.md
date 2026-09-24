@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T07B INDEPENDENT PASS — T07C AUTHORIZED / T04B TARGETED REPAIR REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T07B INDEPENDENT PASS — T07C AUTHORIZED / T04B REPAIR CANDIDATE PENDING REVIEW
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T07B independently accepted on `a5cd9c517913bcf04d7acfbe895be49cdf941111`; T04A prior PASS remains accepted; Wave 03 remains the last fully closed wave, with mandatory Senior audit PASS on `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: repair IRR-T04B-01/02 in the collaboration lane and execute W04.T07C from accepted T07B in the disjoint Story lane; T05C remains blocked until repaired T04B independent PASS
+NEXT_AUTHORIZED_UNIT: independently review T04B repair candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` and execute W04.T07C from accepted T07B in the disjoint Story lane; T05C remains blocked until T04B independent PASS
 REQUIRED_GATE: repaired T04B independent PASS -> T05C after accepted T02C+T05B; T07C independent PASS -> subsequent Story tasks serially and T07-INTEGRATION; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: IRR-T04B-01 incomplete recovery effect-set validation and IRR-T04B-02 missing required W03 LIVE revocation barrier block T04B/T05C. IRR-T07B-02 is closed and T07C may start. OpenCode reviewer-task permission deny and local protected `.entire/` census contamination remain environment limitations; exact reviewed-head hosted CI is independently verified SUCCESS. The recorded T07 CLS-HDM preflight retains its explicit reopen triggers. Migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: IRR-T04B-01/02 have code/test repair candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` but remain open until independent PASS; T05C stays blocked. T07B is accepted and T07C may proceed. OpenCode reviewer/task permission deny remains in force; do not bypass or self-approve. Full candidate verification is pending after T07C; local protected `.entire/` census contamination remains an environment limitation. The recorded T07 CLS-HDM preflight retains its explicit reopen triggers. Migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
