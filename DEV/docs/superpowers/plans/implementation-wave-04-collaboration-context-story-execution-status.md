@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING
-CURRENT_TASK: W04.T04B same-closure publication/recovery and bounded T07B selector-type repair
-LAST_COMPLETED_TASK: W04.T04A independent repair re-review PASS on 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff
-LAST_SAFE_SHA: 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff — exact reviewed basis; T04A accepted, T07B unaccepted
+STATUS: FINAL_REVIEW — T04B and T07B repair candidates await independent PASS
+CURRENT_TASK: independently review T04B same-closure publication/recovery and T07B boolean ordinal repair
+LAST_COMPLETED_TASK: T04A independent PASS at `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`; T04B/T07B local repair checks
+LAST_SAFE_SHA: d91db0c8937bf39ea2a1160c7d0b7e1d76288c67 — T04A PASS, T07B IRR-T07B-02 open
 
 ## Current independent review
 
@@ -18,9 +18,10 @@ REVIEWED_PARENT: dfca9bc45eecc05e2b7287c20954172e7921ffa7
 | Task | Candidate / repair | Independent disposition |
 |---|---|---|
 | W04.T04A | 20dd5301310bf5db250c229655ac957fe56e23c3 + 0d190a9db11129a02f07c71a812996c78a8d33cf | PASS / GO; IRR-T04A-01/02 CLOSED |
-| W04.T07B | 5a53b8e4323f53cde2f3c718e477003a4da3ce29 + 0b4dde06d5bdc70fd85b4b6856da45c3f1147d59 + dfca9bc45eecc05e2b7287c20954172e7921ffa7 | FAIL / REPAIR REQUIRED; IRR-T07B-02 BLOCKING |
+| W04.T04B | `f0ba25f` | implementation candidate; independent review pending |
+| W04.T07B IRR-T07B-02 | `55fb0a52a933b90a15ad2bc8b0af624635edaf26` | implementation candidate; independent review pending |
 
-The original IRR-T07B-01 missing/empty payload-link witness is fixed. The remaining IRR-T07B-02 accepts boolean `segment_sequence=true` as equal to integer 1 in Python while MECHANICS schema v4 rejects it. Repair strict selector typing before equality, retaining exact owner/segment binding. This is a domain-input type defect, not a host/TCB attack or architectural gate.
+IRR-T07B-01 is fixed by requiring explicit payload owner links. IRR-T07B-02 was repaired by rejecting booleans/non-positive segment ordinals before selector equality; its shared resolution/receipt fixtures pass through Python and schema v4. This remains a domain-input type repair, not a host/TCB attack or architectural gate.
 
 The report distinguishes exact code/contract tracing, an isolated equality/type probe, and actual hosted suite execution. The reviewer did not run the complete new boolean regression against a local repository.
 
@@ -97,30 +98,49 @@ T07B's unconditional rejection of source-classified OMITTED results is not posit
 
 The mandatory pre-T07 CLS-HDM preflight retains its recorded PASS and explicit semantic-change/unavailable-evidence trigger conditions. This review does not repeat it or waive a future genuine trigger. Its exact original refs/blobs remain in CURRENT_PROGRESS and the historical ledger.
 
-## Verification and Version Impact
+## Candidate verification and Version Impact
 
 ```text
-EXACT REVIEWED HEAD: 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff
-HOSTED_RUN: 35951449546
-HOSTED_JOB: 107480668040
-STATUS / CONCLUSION: completed / success
-MAINTENANCE: PASS
-CANONICAL DEV: Ran 1178 tests; OK (skipped=5)
-VERSION_UNCLASSIFIED: []
-VERSION_LEGACY_HITS: []
+T04B_CANDIDATE_COMMIT: f0ba25f
+T07B_BOOLEAN_REPAIR_CANDIDATE: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
+COMBINED_REPAIR_HEAD: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
 ```
 
-The local `.entire/` census failure did not reproduce in this exact-head hosted run. The local capture-file interaction is not claimed repaired. Protected capture files remain untouched. Earlier author statements that hosted CI was unavailable apply to their runtime, not to current independently verified hosted state.
+CURRENT_VERIFICATION_STATE:
+- T04B same-closure suite: 8 passed; full RD12 collaboration: 116 passed.
+- Cross-owner suites: W03 `PlayerAccessTransitionTests`, RuntimeHost composition and
+  W02 durability/publication: 90 passed.
+- T07B full RD13 Story/Commentator suite: 55 passed; boolean resolution/receipt cases
+  are present in the shared Python/schema fixture table.
+- The boolean counterexample was RED before the guard: Python accepted
+  `segment_sequence=True` for both resolution and receipt refs while schema v4
+  rejected those values. The strict positive-int check now precedes selector equality.
+- Ruff check/format: PASS (`SIM117` excluded as pre-existing RD13 diagnostics only).
+  Maintenance audit: PASS.
+- Canonical DEV unittest discovery: 1186 tests, 5 skipped, 1 failure. The remaining
+  failure is the local version-census scan of protected `.entire/` capture files;
+  no `.entire` data or permission was changed.
+- Hosted CI for this repair head is not available to this OpenCode session. The
+  reviewer permission remains denied; no independent PASS is claimed.
 
-Accepted T04A module transition: collaboration 1.0.15 -> 1.0.16, obligation schema v3 unchanged; no campaign/storage/catalog/engine generation or migration/dual-read change.
+VERSION_IMPACT:
+- T04B collaboration module `1.0.16 -> 1.0.17`; collaboration obligation schema v3
+  unchanged.
+- T07B Story module `1.0.5 -> 1.0.6`; MECHANICS schema v4 and projection-state schema
+  v4 unchanged. No campaign-contract, storage, catalog or engine bump; migration and
+  dual-read remain NONE for the pre-release clean-slate data basis.
+- This execution-status checkpoint: `VERSION_IMPACT: NONE`.
 
-T07B candidate transition: Story 1.0.4 -> 1.0.5, MECHANICS schema v4 and projection-state v4. These candidate values are retained, not erased; another material repair must perform the fresh Version Impact Gate. No broader cutover is authorized by this review.
-
-VERSION_IMPACT: NONE for this review/control-only checkpoint
-SYSTEM_IMPACT: NONE — remaining finding is a bounded implementation/contract repair
-NEXT_EXACT_TASK: execute T04B and repair IRR-T07B-02 in parallel where write sets permit; focused/cross-owner verification and coherent publication/read-back; independent re-review before their dependent tasks
-KNOWN_BLOCKERS: T07B FAIL blocks T07C; T05C waits for T04B; OpenCode local reviewer dispatch remains denied
-UNPUBLISHED_WORK: NONE after verified publication/read-back
+SYSTEM_IMPACT: NONE — T04B uses the existing W03 after-authority producer and W02
+CampaignPublicationService; no W03 or RuntimeHost interface was changed. T07B retains
+schema v4 and exact Python candidate/segment binding.
+NEXT_EXACT_TASK: independently re-review combined repair head
+`55fb0a52a933b90a15ad2bc8b0af624635edaf26`; T04B and T07B remain unaccepted until
+their respective independent PASS. Do not start T05C/T07C before named gates.
+KNOWN_BLOCKERS: independent reviewer task dispatch denied; local full-suite census
+contaminated by protected `.entire/` capture files.
+UNPUBLISHED_WORK: NONE in this checkpoint after publication/read-back; this cursor and
+the global progress update are included in the coherent publication.
 WAVE_04: NOT COMPLETE
 WAVE_05: NOT AUTHORIZED
 

@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T04A INDEPENDENT PASS — T04B AUTHORIZED / T07B TARGETED REPAIR REQUIRED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T04A ACCEPTED — T04B/T07B REPAIR CANDIDATES / INDEPENDENT REVIEW PENDING
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T04A independently accepted on `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`; Wave 03 remains the last fully closed wave, with mandatory Senior audit PASS on `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: execute W04.T04B from accepted T04A and repair IRR-T07B-02 in the disjoint Story lane; T07C remains blocked until repaired T07B independent PASS
-REQUIRED_GATE: T04B independent PASS -> T05C after accepted T02C+T05B; repaired T07B independent PASS -> T07C and subsequent Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
+NEXT_AUTHORIZED_UNIT: independently review T04B candidate `f0ba25f` and T07B boolean repair candidate `55fb0a52a933b90a15ad2bc8b0af624635edaf26`; continue each lane only after its independent PASS
+REQUIRED_GATE: T04B independent PASS -> T05C after accepted T02C+T05B; T07B independent PASS -> T07C and subsequent Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: IRR-T07B-02 blocks T07B/T07C: boolean segment_sequence is admitted by Python despite MECHANICS schema rejection. T04A findings IRR-T04A-01/02 are closed; T04B may start. T05C still waits for T04B. OpenCode reviewer-task permission deny and local protected `.entire/` census contamination remain environment limitations; exact reviewed-head hosted CI is independently verified SUCCESS, not globally unavailable. The recorded T07 CLS-HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: T04B and T07B repair candidates await independent review; the task/reviewer permission deny remains in force, and the local full-suite census scans protected `.entire/` capture files. T04A findings IRR-T04A-01/02 are closed. T05C still waits for T04B; T07C waits for T07B. The recorded T07 CLS-HDM preflight remains PASS unless its semantic-change trigger fires. Hosted CI for the repair head is unavailable in this runtime. Migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
