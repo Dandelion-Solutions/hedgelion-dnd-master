@@ -5,9 +5,9 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: FINAL_REVIEW — T04B/T07C candidates await independent PASS
-CURRENT_TASK: run exact-head DEV verification and submit T04B candidate `6bb8723ff5ef8f3508d53303ba614d42222393d3` plus T07C candidate `0c5cbc78174ca3545d4342674ba9afe9ae50622c` for independent review
-LAST_COMPLETED_TASK: T07B independent re-review PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04B targeted repair at `6bb8723ff5ef8f3508d53303ba614d42222393d3`; T07C candidate code `f5732ed6e259f4ea0fa71764c153b61a54cc1082` with exact-page coverage correction `0c5cbc78174ca3545d4342674ba9afe9ae50622c`
-LAST_SAFE_SHA: edd150f93f7077ed0ce3fc6cc42b8d75f862e1ec — published prior cursor; T07C exact-page correction is locally committed and awaits coherent publication
+CURRENT_TASK: publish/read back the full T07C verification cursor/global progress and submit T04B/T07C candidates for independent review
+LAST_COMPLETED_TASK: T07B independent re-review PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04B targeted repair at `6bb8723ff5ef8f3508d53303ba614d42222393d3`; T07C bounded Story-local T0/currentness/W02 publication candidate
+LAST_SAFE_SHA: 4b026a575c0b79253dd976ae9290a4f4a0d935ed — T07C exact-page code candidate and cursor published/read back; T04B and T07C independent PASS gates pending
 
 ## Current independent review
 
@@ -114,7 +114,8 @@ The mandatory pre-T07 CLS-HDM preflight retains its recorded PASS and explicit s
 ```text
 T04B_REVIEWED_FAIL_COMMIT: f0ba25f34cb60d9b9f0019bcbb414bc6e97b2372
 T04B_REPAIR_CANDIDATE_COMMIT: 6bb8723ff5ef8f3508d53303ba614d42222393d3
-T07C_STORY_CANDIDATE_COMMITS: f5732ed6e259f4ea0fa71764c153b61a54cc1082 + 0c5cbc78174ca3545d4342674ba9afe9ae50622c
+T07C_STORY_CANDIDATE_HEAD: 0c5cbc78174ca3545d4342674ba9afe9ae50622c
+T07C_PROGRESS_READBACK_HEAD: 4b026a575c0b79253dd976ae9290a4f4a0d935ed
 T07B_ACCEPTED_REPAIR: 55fb0a52a933b90a15ad2bc8b0af624635edaf26
 ```
 
@@ -126,7 +127,7 @@ CURRENT_VERIFICATION_STATE:
 - W03 `MultiLiveForwardTransitionTests`: 13 passed; RuntimeHost composition: 21 passed.
 - Full RD13 Story/T0/Commentator suite: 70 passed, including bounded Story pagination, exact T0 source binding/copy, state/coverage validation, stale source/Story rejection, W02 atomic publication and refusal to advance coverage with missing event bodies.
 - Current-progress authority tests: 2 passed. Maintenance audit after the full run: PASS.
-- Full DEV suite on prior exact head `edd150f93f7077ed0ce3fc6cc42b8d75f862e1ec`: 1213 tests, 5 skipped, one protected `.entire/` version-census failure. The T07C exact-page coverage correction followed that run; rerun on the final clean candidate head. No protected capture files or permissions were changed.
+- Canonical DEV unittest discovery on exact clean published head `4b026a575c0b79253dd976ae9290a4f4a0d935ed`: 1213 tests, 5 skipped, one failure in `test_census_has_zero_unclassified_hits`; the scan includes 38,770 protected `.entire/` version-like hits. `test_clean_checkout_metadata_records_exact_head` passed; no protected capture files or permissions were changed.
 - Ruff check with existing RD13 `SIM117` diagnostics excluded: PASS. Ruff format check for History/Story and RD13 tests: PASS. The changed durability module contains pre-existing whole-file format drift already present on the base; its changed route hunk is review-scoped and no broad formatting was applied.
 - No hosted CI or independent review has run for either candidate; reviewer/task permission denial is not bypassed and no PASS is claimed.
 - `SOURCE_CLASSIFIED` Story omissions remain rejected absent native classification proof. T07C materializes the complete selected EVT window and does not add caller MAY_OMIT/reason authority; this is not positive lawful-omission support. T07D and integration must preserve that limitation.
@@ -139,9 +140,9 @@ VERSION_IMPACT:
 - This execution-status checkpoint: `VERSION_IMPACT: NONE`.
 
 SYSTEM_IMPACT: NONE — T04B consumes existing W03 forward-plan/progress/current-route producers and W02 exact predecessor reads/publication. T07C consumes existing owner-issued NativeHistory windows, T0 embedded in SemanticEvent and W02 campaign publication; durability only gained the exact `runtime.semantic_event` routed-identity mapping needed by that existing W02 route. No W03/RuntimeHost ownership boundary or persistent schema changed.
-NEXT_EXACT_TASK: publish/read back the T07C exact-page correction and updated cursor, run canonical full DEV verification on that clean head, then independently re-review T04B and T07C. T05C waits for T04B PASS; T07D waits for T07C PASS.
+NEXT_EXACT_TASK: independently re-review T04B `6bb8723ff5ef8f3508d53303ba614d42222393d3` and T07C `0c5cbc78174ca3545d4342674ba9afe9ae50622c`. T05C waits for T04B PASS; T07D waits for T07C PASS.
 KNOWN_BLOCKERS: independent reviews pending for both candidates; OpenCode reviewer/task permission denial remains in force. Full DEV suite remains pending for the clean published candidate head.
-UNPUBLISHED_WORK: T07C correction `0c5cbc78174ca3545d4342674ba9afe9ae50622c` plus this cursor/global-progress update await coherent publication/read-back.
+UNPUBLISHED_WORK: cursor/global progress full-verification update only; T07C code is published/read back at `0c5cbc78174ca3545d4342674ba9afe9ae50622c` within cursor HEAD `4b026a575c0b79253dd976ae9290a4f4a0d935ed`.
 WAVE_04: NOT COMPLETE
 WAVE_05: NOT AUTHORIZED
 
