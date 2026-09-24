@@ -27,7 +27,7 @@ from .access_control import (
     publish_access_policy_transition,
     resolve_player,
 )
-from .durability import route_serialized_operation
+from .durability import RoutedSerializedOperation, route_serialized_operation
 from .native_storage import (
     FAMILY_ROOTS,
     IdentityMismatch,
@@ -45,8 +45,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.16
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.16"
+# framework_module_version: 1.0.17
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.17"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -2309,11 +2309,11 @@ def _access_transition_player_ids(
     return affected_player_ids
 
 
-def _read_current_campaign_body(
+def _read_current_campaign_manifest(
     host: RuntimeHost,
     basis: _OperationBasis,
 ) -> Mapping[str, object]:
-    """Read the complete pinned manifest used by W03's full-body guard."""
+    """Read the complete pinned MANIFEST owner through the bound repository route."""
     try:
         raw = host._repository.read_exact_path(basis.pinned_campaign, "MANIFEST.yaml")
     except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
@@ -2325,7 +2325,14 @@ def _read_current_campaign_body(
         raise CollaborationAdmissionError(
             "exact current campaign body has a foreign campaign identity"
         )
-    current = deepcopy(dict(body))
+    return deepcopy(dict(body))
+
+
+def _campaign_body_with_revision(
+    manifest: Mapping[str, object], basis: _OperationBasis
+) -> dict[str, object]:
+    """Attach the exact pin revision as W03's campaign-body currentness carrier."""
+    current = deepcopy(dict(manifest))
     if "campaign_revision" in current:
         current["campaign_revision"] = basis.pinned_campaign.revision
     elif "current_revision" in current and "revision" not in current:
@@ -2333,6 +2340,15 @@ def _read_current_campaign_body(
     else:
         current["revision"] = basis.pinned_campaign.revision
     return current
+
+
+def _read_current_campaign_body(
+    host: RuntimeHost,
+    basis: _OperationBasis,
+) -> Mapping[str, object]:
+    """Read the complete pinned MANIFEST body used by W03's full-body guard."""
+    manifest = _read_current_campaign_manifest(host, basis)
+    return _campaign_body_with_revision(manifest, basis)
 
 
 def _exact_access_player(
@@ -2520,11 +2536,12 @@ def _reconcile_access_transition(
     transition: FrozenAccessPolicyTransition,
     *,
     host: RuntimeHost,
+    basis: _OperationBasis | None = None,
 ) -> CollaborationAccessReconciliation:
     if not isinstance(transition, FrozenAccessPolicyTransition):
         raise CollaborationAdmissionError("W03 frozen access transition is required")
     try:
-        basis = _operation_basis(host, None)
+        basis = _operation_basis(host, basis)
         if transition.campaign_id != basis.pinned_campaign.campaign_id:
             raise CollaborationAdmissionError(
                 "W03 access transition belongs to another campaign"
@@ -3276,6 +3293,325 @@ def _route_companion_operations(
         )
     _revalidate_host_basis(host, basis)
     return operations
+
+
+def _player_access_after_image(
+    transition: FrozenAccessPolicyTransition,
+    after_view: Mapping[str, object],
+    current_player: Mapping[str, object],
+) -> dict[str, object]:
+    if transition.current_player is None:
+        raise CollaborationAdmissionError(
+            "PLAYER after-image requires a W03 PLAYER transition"
+        )
+    after_raw = _mapping(after_view.get("player"), "W03 after-authority PLAYER")
+    try:
+        current = PlayerRecord.from_mapping(current_player)
+        after = PlayerRecord.from_mapping(after_raw)
+    except (AccessControlContractError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError("W03 PLAYER after-image is invalid") from exc
+    kind = _access_transition_kind(transition)
+    _validate_player_access_delta(kind, current, after)
+
+    result = deepcopy(dict(current_player))
+    result["status"] = after.status
+    result["deactivated_by"] = after.deactivated_by
+    if kind in {
+        AccessTransitionKind.GRANT_MECHANICAL_OVERRIDE,
+        AccessTransitionKind.REVOKE_MECHANICAL_OVERRIDE,
+    }:
+        raw_policy = result.get("policy_authority", {})
+        if not isinstance(raw_policy, Mapping):
+            raise CollaborationAdmissionError(
+                "current PLAYER policy authority is malformed"
+            )
+        policy = deepcopy(dict(raw_policy))
+        policy["mechanical_override_policy"] = after.mechanical_override_policy
+        result["policy_authority"] = policy
+    return result
+
+
+def _manifest_access_after_image(
+    current_manifest: Mapping[str, object],
+    after_view: Mapping[str, object],
+) -> dict[str, object]:
+    current_players = current_manifest.get("players")
+    after_campaign = _mapping(
+        after_view.get("campaign"), "W03 after-authority campaign"
+    )
+    after_players = after_campaign.get("players")
+    if not isinstance(current_players, Mapping) or not isinstance(
+        after_players, Mapping
+    ):
+        raise CollaborationAdmissionError("campaign PLAYER access body is malformed")
+    result = deepcopy(dict(current_manifest))
+    players = deepcopy(dict(current_players))
+    players["join_policy"] = after_players.get("join_policy")
+    players["player_ids"] = deepcopy(after_players.get("player_ids"))
+    result["mode"] = after_campaign.get("mode")
+    result["players"] = players
+    return result
+
+
+def _build_access_reconciliation_operations(
+    reconciliation: CollaborationAccessReconciliation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis,
+) -> tuple[dict[str, object | None], RoutedSerializedOperation, dict[str, int]]:
+    transition = reconciliation.transition
+    current_manifest = _read_current_campaign_manifest(host, basis)
+    operations: dict[str, object | None] = {}
+    player_operations: dict[str, dict[str, object]] = {}
+    owner_generations: dict[str, int] = {}
+
+    if transition.current_player is not None:
+        current_player_id = _id(
+            _mapping(transition.current_player, "W03 current PLAYER transition").get(
+                "player_id"
+            ),
+            "W03 transition player_id",
+        )
+        current_player, _record = _exact_access_player(host, basis, current_player_id)
+        player_operations[current_player_id] = _player_access_after_image(
+            transition, reconciliation.after_authority_view, current_player
+        )
+    else:
+        operations["MANIFEST.yaml"] = _manifest_access_after_image(
+            current_manifest, reconciliation.after_authority_view
+        )
+
+    route_removals: dict[str, set[tuple[str, int]]] = {}
+    for candidate in reconciliation.obligations:
+        _obligation_basis, current = _read_current_obligation(
+            candidate.obligation_id, host, basis=basis
+        )
+        if (
+            current.campaign_id != transition.campaign_id
+            or current.generation != candidate.generation
+        ):
+            raise CollaborationAdmissionError(
+                "T04B obligation currentness differs from T04A reconciliation"
+            )
+        if current.to_mapping() == candidate.to_mapping():
+            continue
+        if (
+            current.lifecycle not in {"OPEN", "CLOSED"}
+            or candidate.lifecycle != "OBSOLETE"
+        ):
+            raise CollaborationAdmissionError(
+                "T04A reconciliation contains an unsupported obligation mutation"
+            )
+        expected_terminal = replace(current, lifecycle="OBSOLETE")
+        if expected_terminal.to_mapping() != candidate.to_mapping():
+            raise CollaborationAdmissionError(
+                "T04A OBSOLETE candidate changed retained obligation evidence"
+            )
+        operations[
+            route_native_record(
+                "runtime.collaboration_obligation", (candidate.obligation_id,)
+            ).relative_path
+        ] = candidate.to_mapping()
+        owner_generations[
+            f"runtime.collaboration_obligation:{candidate.obligation_id}"
+        ] = candidate.generation
+        route_ref = (candidate.obligation_id, candidate.generation)
+        for player_id in _prior_route_holder_ids(current):
+            route_removals.setdefault(player_id, set()).add(route_ref)
+
+    for player_id, removed_refs in route_removals.items():
+        raw_player, _record = _exact_access_player(host, basis, player_id)
+        current_refs = set(_player_route_refs(raw_player, "current PLAYER"))
+        if not removed_refs.issubset(current_refs):
+            raise CollaborationAdmissionError(
+                "T04B terminal route removal is stale or incomplete"
+            )
+        result = deepcopy(player_operations.get(player_id, dict(raw_player)))
+        result["collaboration_route_refs"] = [
+            {"obligation_id": item_id, "generation": generation}
+            for item_id, generation in sorted(current_refs - removed_refs)
+        ]
+        player_operations[player_id] = result
+
+    impacted_player_ids = _access_transition_player_ids(transition)
+    if transition.current_player is not None:
+        anchor_player_id = _id(
+            _mapping(transition.current_player, "W03 current PLAYER transition").get(
+                "player_id"
+            ),
+            "W03 transition player_id",
+        )
+    elif impacted_player_ids:
+        anchor_player_id = impacted_player_ids[0]
+    else:
+        raise CollaborationAdmissionError(
+            "campaign access publication has no bounded PLAYER route anchor"
+        )
+
+    if anchor_player_id not in player_operations:
+        # W02 requires an exact native owner path in the same closure. For a
+        # campaign-only policy change, the bounded PLAYER route is the unchanged
+        # transaction anchor; it does not become access-policy authority.
+        anchor_player, _record = _exact_access_player(host, basis, anchor_player_id)
+        player_operations[anchor_player_id] = deepcopy(dict(anchor_player))
+    for player_id, payload in player_operations.items():
+        operations[route_native_record("world.player", (player_id,)).relative_path] = (
+            payload
+        )
+
+    routed_operation = route_serialized_operation(
+        "world.player", anchor_player_id, player_operations[anchor_player_id]
+    )
+    if operations.get(routed_operation.relative_path) != _thaw(
+        routed_operation.payload
+    ):
+        raise CollaborationAdmissionError(
+            "T04B routed PLAYER operation is missing from the campaign closure"
+        )
+    _revalidate_host_basis(host, basis)
+    return operations, routed_operation, owner_generations
+
+
+def _recover_access_reconciliation_after_publication(
+    reconciliation: CollaborationAccessReconciliation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis,
+) -> CollaborationAccessReconciliation:
+    transition = reconciliation.transition
+    if _thaw(reconciliation.after_authority_view) != transition.after_authority_view:
+        raise CollaborationAdmissionError(
+            "T04B recovery candidate differs from its frozen W03 after-view"
+        )
+    if basis.pinned_campaign.revision == transition.expected_campaign_revision:
+        raise CollaborationAdmissionError(
+            "authority/collaboration closure is not yet published"
+        )
+
+    current_campaign = _read_current_campaign_body(host, basis)
+    proposed_campaign = _campaign_body_with_revision(
+        transition.proposed_campaign, basis
+    )
+    try:
+        rebased_transition = replace(
+            transition,
+            proposed_campaign_revision=basis.pinned_campaign.revision,
+            proposed_campaign=proposed_campaign,
+        )
+        current_player = None
+        if transition.current_player is not None:
+            player_id = _id(
+                _mapping(
+                    transition.current_player, "W03 current PLAYER transition"
+                ).get("player_id"),
+                "W03 transition player_id",
+            )
+            current_player, _record = _exact_access_player(host, basis, player_id)
+        after_view = rebased_transition.recover_after_authority(
+            current_campaign, current_player
+        )
+    except (AccessControlContractError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "W03 after-authority campaign body is not the recovered current owner"
+        ) from exc
+
+    for candidate in reconciliation.obligations:
+        _obligation_basis, current = _read_current_obligation(
+            candidate.obligation_id, host, basis=basis
+        )
+        if current.to_mapping() != candidate.to_mapping():
+            raise CollaborationAdmissionError(
+                "recovered collaboration obligation differs from the T04A after-view"
+            )
+        route_ref = (current.obligation_id, current.generation)
+        if current.lifecycle == "OBSOLETE":
+            _validate_terminal_route_removal(current, host, basis=basis)
+        else:
+            for player_id in _prior_route_holder_ids(current):
+                player = _read_native(host, basis, "world.player", player_id)
+                if route_ref not in set(_player_route_refs(player, "current PLAYER")):
+                    raise CollaborationAdmissionError(
+                        "recovered nonterminal obligation lacks its complete PLAYER route"
+                    )
+            if not _opportunity_matches_obligation(current, host, basis=basis):
+                raise CollaborationAdmissionError(
+                    "recovered collaboration opportunity is no longer current"
+                )
+    _revalidate_host_basis(host, basis)
+    return CollaborationAccessReconciliation(
+        transition=rebased_transition,
+        after_authority_view=after_view,
+        affected_obligation_ids=reconciliation.affected_obligation_ids,
+        obligations=reconciliation.obligations,
+    )
+
+
+def recover_collaboration_access_reconciliation(
+    reconciliation: CollaborationAccessReconciliation,
+    *,
+    host: RuntimeHost,
+) -> CollaborationAccessReconciliation:
+    """Recover only the exact after-authority/collaboration closure by known IDs."""
+    if not isinstance(reconciliation, CollaborationAccessReconciliation):
+        raise CollaborationAdmissionError(
+            "typed T04A reconciliation is required for closure recovery"
+        )
+    basis = _operation_basis(host, None)
+    return _recover_access_reconciliation_after_publication(
+        reconciliation, host, basis=basis
+    )
+
+
+def publish_collaboration_access_reconciliation(
+    reconciliation: CollaborationAccessReconciliation,
+    *,
+    host: RuntimeHost,
+) -> CollaborationAccessReconciliation:
+    """Publish W03 access authority and T04A effects in one W02 campaign closure."""
+    if not isinstance(reconciliation, CollaborationAccessReconciliation):
+        raise CollaborationAdmissionError(
+            "typed T04A reconciliation is required for same-closure publication"
+        )
+    basis = _operation_basis(host, None)
+    transition = reconciliation.transition
+    if basis.pinned_campaign.revision != transition.expected_campaign_revision:
+        return _recover_access_reconciliation_after_publication(
+            reconciliation, host, basis=basis
+        )
+    canonical = _reconcile_access_transition(transition, host=host, basis=basis)
+    if canonical != reconciliation:
+        raise CollaborationAdmissionError(
+            "T04A reconciliation is stale or caller-shaped"
+        )
+    operations, routed_operation, owner_generations = (
+        _build_access_reconciliation_operations(canonical, host, basis=basis)
+    )
+    try:
+        outcome = host.publication.publish_owner_delta(
+            routed_operation=routed_operation,
+            path_operations=operations,
+            owner_generations=owner_generations,
+            publication_reason="collaboration-access-reconciliation",
+            basis=basis,
+        )
+    except (AttributeError, OSError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "same-closure access/collaboration publication failed closed"
+        ) from exc
+    if not isinstance(outcome, PublicationOutcome):
+        raise CollaborationAdmissionError(
+            "same-closure publication result is not W02 owner-typed"
+        )
+    try:
+        return _recover_access_reconciliation_after_publication(
+            canonical, host, basis=_operation_basis(host, None)
+        )
+    except CollaborationAdmissionError as exc:
+        if outcome.status is PublicationStatus.ACCEPTED:
+            raise
+        raise CollaborationAdmissionError(
+            "W02 did not confirm the access/collaboration closure"
+        ) from exc
 
 
 def _closed_publication_operations(

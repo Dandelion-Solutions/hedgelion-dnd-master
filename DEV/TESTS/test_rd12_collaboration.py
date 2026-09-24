@@ -25,6 +25,7 @@ from GAME.TOOLS.access_control import (
     resolve_player,
 )
 from GAME.TOOLS.collaboration import (
+    CollaborationAccessReconciliation,
     CollaborationAdmissionError,
     CollaborationCatchUp,
     CollaborationClosedBasis,
@@ -2951,7 +2952,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.16")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.17")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -3502,6 +3503,226 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
             collaboration_module.reconcile_collaboration_for_player_access_transition(
                 transition, host=_host(repository)
             )
+
+
+class CollaborationAccessPublicationClosureTests(unittest.TestCase):
+    def _open_reconciliation(
+        self,
+        *,
+        transition_kind: str = "deactivate",
+    ) -> tuple[
+        CampaignPublicationRepositoryFixture,
+        CampaignPublicationTransport,
+        CollaborationObligation,
+        object,
+        CollaborationAccessReconciliation,
+    ]:
+        repository = CampaignPublicationRepositoryFixture(_collective_clause())
+        repository.records["MANIFEST.yaml"] = _campaign_manifest()
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-access-closure"
+        )
+        assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
+        if transition_kind == "deactivate":
+            transition = _self_deactivation_transition(repository)
+            reconciliation = collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        elif transition_kind == "join-policy":
+            transition = _join_policy_transition()
+            reconciliation = collaboration_module.reconcile_collaboration_for_access_policy_transition(
+                transition, host=_host(repository)
+            )
+        else:
+            raise AssertionError(f"unknown test transition {transition_kind}")
+        return (
+            repository,
+            CampaignPublicationTransport(repository),
+            obligation,
+            transition,
+            reconciliation,
+        )
+
+    def test_access_and_obsolete_obligation_publish_in_one_campaign_closure(
+        self,
+    ) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        host = _host(repository, transport)
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+
+        update_ref_calls = [
+            payload for name, payload in transport.calls if name == "update_ref"
+        ]
+        self.assertEqual(len(update_ref_calls), 1)
+        self.assertFalse(update_ref_calls[0][2])
+        self.assertEqual(repository.current_revision, transport.next_head)
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        alice_path = route_native_record(
+            "world.player", ("player-alice",)
+        ).relative_path
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        self.assertEqual(repository.records[bob_path]["status"], "inactive")
+        self.assertEqual(repository.records[bob_path]["collaboration_route_refs"], [])
+        self.assertEqual(repository.records[alice_path]["collaboration_route_refs"], [])
+        self.assertEqual(repository.records[obligation_path]["lifecycle"], "OBSOLETE")
+        self.assertEqual(published.obligations[0].lifecycle, "OBSOLETE")
+        self.assertEqual(
+            published.after_authority_view["campaign"]["revision"],
+            repository.current_revision,
+        )
+
+    def test_campaign_access_policy_and_collaboration_close_together(self) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation(transition_kind="join-policy")
+        )
+        host = _host(repository, transport)
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+
+        manifest = repository.records["MANIFEST.yaml"]
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        self.assertEqual(manifest["players"]["join_policy"], "open_contributors")
+        self.assertEqual(repository.records[obligation_path]["lifecycle"], "OPEN")
+        self.assertEqual(published.obligations[0].lifecycle, "OPEN")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_duplicate_publish_and_after_commit_recovery_do_not_dispatch_again(
+        self,
+    ) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        host = _host(repository, transport)
+        first = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+        writes_after_first = len(
+            [name for name, _ in transport.calls if name == "update_ref"]
+        )
+
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+        retried = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+
+        self.assertEqual(recovered, first)
+        self.assertEqual(retried, first)
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]),
+            writes_after_first,
+        )
+
+    def test_recovery_before_publication_fails_without_mutation(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        before = deepcopy(repository.records)
+
+        with self.assertRaisesRegex(
+            CollaborationAdmissionError, "not.*published|predecessor"
+        ):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                reconciliation, host=_host(repository, transport)
+            )
+
+        self.assertEqual(repository.records, before)
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_body_drift_after_prepare_stops_before_w02_dispatch(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        repository.records["MANIFEST.yaml"]["campaign_name"] = "Drifted"
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation, host=_host(repository, transport)
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_recovery_rejects_after_authority_manifest_body_drift(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        host = _host(repository, transport)
+        collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+        repository.records["MANIFEST.yaml"]["campaign_name"] = "Drifted after commit"
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                reconciliation, host=host
+            )
+
+    def test_stale_obligation_generation_stops_before_w02_dispatch(self) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        successor = replace(obligation, generation=2, predecessor_generation=1)
+        _persist_obligation(repository, successor)
+        _attach_route_ref(repository, successor, "player-alice", "player-bob")
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation, host=_host(repository, transport)
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_indeterminate_ack_reconciles_same_closure_without_second_write(
+        self,
+    ) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        transport.response_status = "indeterminate"
+        host = _host(repository, transport)
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+
+        self.assertEqual(published.obligations[0].lifecycle, "OBSOLETE")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+        self.assertEqual(recovered, published)
+        self.assertEqual(
+            repository.records[
+                route_native_record(
+                    "runtime.collaboration_obligation", (obligation.obligation_id,)
+                ).relative_path
+            ]["lifecycle"],
+            "OBSOLETE",
+        )
 
 
 if __name__ == "__main__":
