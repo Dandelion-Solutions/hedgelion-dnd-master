@@ -296,6 +296,7 @@ class MutableCampaignRepositoryFixture(RepositoryFixture):
     def __init__(self, clause: dict[str, object] | None = None) -> None:
         self.current_revision = CAMPAIGN_REVISION
         super().__init__(clause)
+        self.records["MANIFEST.yaml"] = _campaign_manifest()
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
         if campaign_id != CAMPAIGN_ID:
@@ -406,14 +407,40 @@ def _access_campaign(
     join_policy: str = "invite_only",
 ) -> dict[str, object]:
     return {
+        "schema_version": 4,
+        "campaign_contract": {"created_with": 2, "current": 2},
         "campaign_id": CAMPAIGN_ID,
         "revision": revision,
+        "campaign_name": "The Frostfall",
+        "campaign_name_origin": "creator",
+        "branch": "campaign/frostfall",
+        "status": "active",
+        "created_at": "2026-09-24T00:00:00Z",
         "mode": "multiplayer",
+        "engine": {"update_policy": "ask"},
+        "ruleset": {"baseline": "D&D 2024 / SRD 5.2.1"},
+        "rules": {"baseline": "D&D 2024 / SRD 5.2.1"},
+        "storage": {"state_root": "STATE", "index_root": "INDEX"},
+        "sync": {"force_push_allowed": False, "persistence_policy": "batched"},
+        "world_time": {"calendar_id": None},
         "players": {
             "join_policy": join_policy,
             "player_ids": list(player_ids),
         },
+        "last_checkpoint_id": None,
     }
+
+
+def _campaign_manifest(
+    *,
+    player_ids: tuple[str, ...] = ("player-alice", "player-bob"),
+    join_policy: str = "invite_only",
+    mode: str = "multiplayer",
+) -> dict[str, object]:
+    body = _access_campaign(player_ids=player_ids, join_policy=join_policy)
+    body.pop("revision")
+    body["mode"] = mode
+    return body
 
 
 def _self_deactivation_transition(
@@ -2924,7 +2951,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.15")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.16")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -2941,6 +2968,9 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
                 "world.player",
                 "player-carol",
                 _player_record("player-carol", "44", "carol", "pc-carol"),
+            )
+            repository.records["MANIFEST.yaml"] = _campaign_manifest(
+                player_ids=("player-alice", "player-bob", "player-carol")
             )
         obligation = open_or_successor_obligation(
             _classify(repository), obligation_id="obligation-access-reconcile"
@@ -3000,6 +3030,7 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
         self.assertEqual(
             reconciliation.after_authority_view["player"]["status"], "inactive"
         )
+        self.assertIn("MANIFEST.yaml", repository.reads)
         self.assertEqual(
             tuple(
                 (item.obligation_id, item.generation)
@@ -3022,6 +3053,27 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
         )
         self.assertEqual(repeated, reconciliation)
         self.assertEqual(repository.records, before)
+
+    def test_w03_full_body_guard_uses_loaded_manifest_and_rejects_body_drift(
+        self,
+    ) -> None:
+        for mutation in ("changed", "missing", "added"):
+            with self.subTest(mutation=mutation):
+                repository, _obligation = self._open_pending()
+                transition = _self_deactivation_transition(repository)
+                current_manifest = deepcopy(repository.records["MANIFEST.yaml"])
+                if mutation == "changed":
+                    current_manifest["campaign_name"] = "Changed name"
+                elif mutation == "missing":
+                    current_manifest.pop("created_at")
+                else:
+                    current_manifest["unmodeled_owner_field"] = "changed"
+                repository.records["MANIFEST.yaml"] = current_manifest
+
+                with self.assertRaises(CollaborationAdmissionError):
+                    collaboration_module.reconcile_collaboration_for_player_access_transition(
+                        transition, host=_host(repository)
+                    )
 
     def test_reactivation_restores_only_prospective_pending_eligibility(self) -> None:
         repository, obligation = self._open_pending()
@@ -3280,18 +3332,36 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
     ) -> None:
         repository, _obligation = self._open_pending()
         transition = _singleplayer_transition()
+        before = deepcopy(repository.records)
 
-        reconciliation = (
+        with self.assertRaisesRegex(CollaborationAdmissionError, "creator|agency"):
             collaboration_module.reconcile_collaboration_for_access_policy_transition(
                 transition, host=_host(repository)
             )
-        )
+        self.assertEqual(repository.records, before)
 
+    def test_singleplayer_uncertainty_does_not_obsolete_closed_generation(self) -> None:
+        repository, obligation = self._open_pending()
+        accepted = self._accept_bob_input(repository, obligation)
+        closed = collaboration_module.close_obligation(accepted, host=_host(repository))
+        _persist_obligation(repository, closed)
+        transition = _singleplayer_transition()
+        before = deepcopy(repository.records)
+
+        with self.assertRaisesRegex(CollaborationAdmissionError, "creator|agency"):
+            collaboration_module.reconcile_collaboration_for_access_policy_transition(
+                transition, host=_host(repository)
+            )
+
+        current_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        self.assertEqual(repository.records[current_path]["lifecycle"], "CLOSED")
         self.assertEqual(
-            reconciliation.after_authority_view["campaign"]["mode"],
-            "singleplayer",
+            repository.records[current_path]["closed_input_set_fingerprint"],
+            closed.closed_input_set_fingerprint,
         )
-        self.assertEqual(reconciliation.obligations[0].lifecycle, "OBSOLETE")
+        self.assertEqual(repository.records, before)
 
     def test_campaign_policy_mutation_without_creator_provenance_fails_closed(
         self,

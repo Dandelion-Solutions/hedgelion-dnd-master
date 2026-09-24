@@ -45,8 +45,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.15
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.15"
+# framework_module_version: 1.0.16
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.16"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -2309,6 +2309,32 @@ def _access_transition_player_ids(
     return affected_player_ids
 
 
+def _read_current_campaign_body(
+    host: RuntimeHost,
+    basis: _OperationBasis,
+) -> Mapping[str, object]:
+    """Read the complete pinned manifest used by W03's full-body guard."""
+    try:
+        raw = host._repository.read_exact_path(basis.pinned_campaign, "MANIFEST.yaml")
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "exact pinned current campaign body is unavailable"
+        ) from exc
+    body = _mapping(raw, "exact current campaign MANIFEST")
+    if body.get("campaign_id") != basis.pinned_campaign.campaign_id:
+        raise CollaborationAdmissionError(
+            "exact current campaign body has a foreign campaign identity"
+        )
+    current = deepcopy(dict(body))
+    if "campaign_revision" in current:
+        current["campaign_revision"] = basis.pinned_campaign.revision
+    elif "current_revision" in current and "revision" not in current:
+        current["current_revision"] = basis.pinned_campaign.revision
+    else:
+        current["revision"] = basis.pinned_campaign.revision
+    return current
+
+
 def _exact_access_player(
     host: RuntimeHost,
     basis: _OperationBasis,
@@ -2468,9 +2494,9 @@ def _pending_contributors_remain_authorized(
     campaign_mode: str,
 ) -> bool:
     if campaign_mode == "singleplayer":
-        # The frozen W03 transition carries no creator identity to Collaboration;
-        # unresolved singleplayer creator authority therefore fails closed.
-        return False
+        raise CollaborationAdmissionError(
+            "singleplayer creator/agency validity is unavailable in the W03 transition"
+        )
     for contributor in _pending_required_contributors(obligation):
         player_state = after_players.get(contributor.player_id)
         if player_state is None:
@@ -2509,6 +2535,7 @@ def _reconcile_access_transition(
         current_players: dict[str, tuple[Mapping[str, object], PlayerRecord]] = {}
         for player_id in affected_player_ids:
             current_players[player_id] = _exact_access_player(host, basis, player_id)
+        current_campaign_body = _read_current_campaign_body(host, basis)
 
         current_player = None
         after_player = None
@@ -2524,7 +2551,7 @@ def _reconcile_access_transition(
             after_view = publish_access_policy_transition(
                 transition,
                 current_campaign_revision=basis.pinned_campaign.revision,
-                current_campaign=transition.current_campaign,
+                current_campaign=current_campaign_body,
                 current_player=current_player,
             )
         except (AccessControlContractError, TypeError, ValueError) as exc:
