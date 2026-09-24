@@ -18,10 +18,13 @@ from GAME.TOOLS.access_control import (
     AccessControlContractError,
     PlayerRecord,
     VerifiedPrincipal,
+    advance_multi_live_freeze,
     authorize_operation,
     build_principal_player_route,
     freeze_access_policy_transition,
+    freeze_multi_live_forward_plan,
     freeze_player_access_transition,
+    publish_forward_transition,
     resolve_player,
 )
 from GAME.TOOLS.collaboration import (
@@ -51,7 +54,15 @@ from GAME.TOOLS.collaboration import (
     validate_visible_consequence,
 )
 from GAME.TOOLS.history import observe_first_initialization_history
-from GAME.TOOLS.live_state import LiveRouting
+from GAME.TOOLS.live_state import (
+    LiveClaim,
+    LiveEnvelope,
+    LiveLifecycle,
+    LiveRouting,
+    build_live_ref,
+    build_live_route,
+    derive_live_epoch_id,
+)
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.runtime_execution import NativeOrderingEvidence
@@ -65,6 +76,8 @@ CAMPAIGN_ID = "campaign-frostfall"
 CAMPAIGN_REVISION = "a" * 40
 TREE_SHA = "b" * 40
 CHANGED_CAMPAIGN_REVISION = "c" * 40
+LIVE_SOURCE_REVISION = "7" * 40
+LIVE_CLOSED_REVISION = "8" * 40
 
 
 def _thaw_for_test(value: object) -> object:
@@ -168,6 +181,8 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
         self.current_revision = CAMPAIGN_REVISION
         self.current_tree = TREE_SHA
         self.pin_calls = 0
+        self._snapshots: dict[str, tuple[str, dict[str, object]]] = {}
+        self._parents: dict[str, str] = {}
         super().__init__(clause)
         self.records["MANIFEST.yaml"] = {
             "campaign_id": CAMPAIGN_ID,
@@ -179,6 +194,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
             "campaign_id": CAMPAIGN_ID,
             "campaign_name": "The Frostfall",
         }
+        self.capture_current_revision()
 
     def repository_identity(self) -> str:
         return "github.com/example/campaigns"
@@ -190,22 +206,51 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
         return PinnedCampaign(CAMPAIGN_ID, self.current_revision, self.current_tree)
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
-        if path in {"MANIFEST.yaml", "CAMPAIGN_CARD.yaml"}:
-            return deepcopy(self.records[path])
-        if (
-            pinned.campaign_id != CAMPAIGN_ID
-            or pinned.revision != self.current_revision
-        ):
+        if pinned.campaign_id != CAMPAIGN_ID:
             raise KeyError("stale campaign pin")
+        if (
+            pinned.revision == self.current_revision
+            and pinned.tree_sha == self.current_tree
+        ):
+            self.reads.append(path)
+            return deepcopy(self.records[path])
+        snapshot = self._snapshots.get(pinned.revision)
+        if snapshot is None or snapshot[0] != pinned.tree_sha:
+            raise KeyError("unknown exact campaign snapshot")
         self.reads.append(path)
-        return deepcopy(self.records[path])
+        return deepcopy(snapshot[1][path])
 
     def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        snapshot = self._snapshots.get(revision)
+        if snapshot is None:
+            raise KeyError("unknown exact campaign commit")
         return {
             "ref": campaign_ref,
             "revision": revision,
-            "tree_sha": self.current_tree,
+            "tree_sha": snapshot[0],
+            "parent_revision": self._parents.get(revision),
         }
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> object:
+        del repository_ref
+        if ancestor_revision == descendant_revision:
+            return {"relation": "EQUAL"}
+        current = descendant_revision
+        while current in self._parents:
+            current = self._parents[current]
+            if current == ancestor_revision:
+                return {"relation": "ANCESTOR"}
+        return {"relation": "NOT_ANCESTOR"}
+
+    def capture_current_revision(self, *, parent_revision: str | None = None) -> None:
+        if parent_revision is not None:
+            self._parents[self.current_revision] = parent_revision
+        self._snapshots[self.current_revision] = (
+            self.current_tree,
+            deepcopy(self.records),
+        )
 
 
 class CampaignPublicationTransport:
@@ -249,6 +294,7 @@ class CampaignPublicationTransport:
     ) -> object:
         self.calls.append(("update_ref", (target_ref, new_commit_sha, force)))
         if self.response_status in {"accepted", "indeterminate"}:
+            parent_revision = self.repository.current_revision
             self.repository.current_revision = new_commit_sha
             self.repository.current_tree = "e" * 40
             for path, payload in self._pending_operations.items():
@@ -256,6 +302,7 @@ class CampaignPublicationTransport:
                     self.repository.records.pop(path, None)
                 else:
                     self.repository.records[path] = _thaw_for_test(payload)
+            self.repository.capture_current_revision(parent_revision=parent_revision)
         return {
             "status": self.response_status,
             "head_sha": (
@@ -357,10 +404,18 @@ def _creator_provenance():
 
 
 class LiveFixture:
+    def __init__(self, route: LiveRouting | None = None) -> None:
+        self.route = route
+
     def read_selected_live(
         self, campaign_id: str, pinned: PinnedCampaign
     ) -> LiveRouting:
-        return LiveRouting(campaign_id=campaign_id, entries=())
+        del pinned
+        return (
+            self.route
+            if self.route is not None
+            else LiveRouting(campaign_id=campaign_id, entries=())
+        )
 
 
 def _player_record(
@@ -617,8 +672,11 @@ def _bob_principal() -> VerifiedPrincipal:
 def _host(
     repository: RepositoryFixture,
     publication: CampaignPublicationTransport | None = None,
+    live: LiveFixture | None = None,
 ) -> object:
-    return compose_runtime_host(CAMPAIGN_ID, repository, LiveFixture(), publication)
+    return compose_runtime_host(
+        CAMPAIGN_ID, repository, live or LiveFixture(), publication
+    )
 
 
 def _classify(repository: RepositoryFixture):
@@ -718,12 +776,41 @@ def _attach_route_ref(
     for player_id in player_ids:
         path = route_native_record("world.player", (player_id,)).relative_path
         player = repository.records[path]
+        refs = {
+            (ref["obligation_id"], ref["generation"])
+            for ref in player.get("collaboration_route_refs", ())
+        }
+        refs.add((obligation.obligation_id, obligation.generation))
         player["collaboration_route_refs"] = [
-            {
-                "obligation_id": obligation.obligation_id,
-                "generation": obligation.generation,
-            }
+            {"obligation_id": obligation_id, "generation": generation}
+            for obligation_id, generation in sorted(refs)
         ]
+
+
+def _live_source(scene_id: str) -> LiveEnvelope:
+    claims = (LiveClaim.exact_owner("world.actor", f"actor-{scene_id}"),)
+    epoch_id = derive_live_epoch_id(CAMPAIGN_ID, scene_id, CAMPAIGN_REVISION, claims)
+    return LiveEnvelope(
+        campaign_id=CAMPAIGN_ID,
+        scene_id=scene_id,
+        epoch_id=epoch_id,
+        opening_campaign_revision=CAMPAIGN_REVISION,
+        source_ref=build_live_ref(CAMPAIGN_ID, scene_id, epoch_id),
+        source_revision=LIVE_SOURCE_REVISION,
+        claims=claims,
+    )
+
+
+def _accepted_live_close_ack(attempt: object) -> dict[str, object]:
+    return {
+        "accepted": True,
+        "source_key": attempt.source_key,  # type: ignore[attr-defined]
+        "target_ref": attempt.target_ref,  # type: ignore[attr-defined]
+        "expected_source_revision": attempt.expected_source_revision,  # type: ignore[attr-defined]
+        "new_source_revision": attempt.proposed_source_revision,  # type: ignore[attr-defined]
+        "selected_route": attempt.selected_route.as_mapping(),  # type: ignore[attr-defined]
+        "successor": attempt.successor_route.as_mapping(),  # type: ignore[attr-defined]
+    }
 
 
 def _ordered_resolution(
@@ -2952,7 +3039,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.17")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.18")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -3510,6 +3597,8 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         self,
         *,
         transition_kind: str = "deactivate",
+        obligation_count: int = 1,
+        unrelated_obligation: bool = False,
     ) -> tuple[
         CampaignPublicationRepositoryFixture,
         CampaignPublicationTransport,
@@ -3519,12 +3608,33 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
     ]:
         repository = CampaignPublicationRepositoryFixture(_collective_clause())
         repository.records["MANIFEST.yaml"] = _campaign_manifest()
-        obligation = open_or_successor_obligation(
-            _classify(repository), obligation_id="obligation-access-closure"
-        )
-        assert obligation is not None
-        _persist_obligation(repository, obligation)
-        _attach_route_ref(repository, obligation, "player-alice", "player-bob")
+        admission = _classify(repository)
+        obligations: list[CollaborationObligation] = []
+        for index in range(obligation_count):
+            obligation_id = (
+                "obligation-access-closure"
+                if index == 0
+                else f"obligation-access-closure-{index + 1}"
+            )
+            obligation = open_or_successor_obligation(
+                admission, obligation_id=obligation_id
+            )
+            assert obligation is not None
+            _persist_obligation(repository, obligation)
+            _attach_route_ref(repository, obligation, "player-alice", "player-bob")
+            obligations.append(obligation)
+        if unrelated_obligation:
+            unrelated = replace(
+                obligations[0],
+                obligation_id="obligation-unaffected",
+                required_contributors=(
+                    ContributorRef(player_id="player-alice", pc_id="pc-alice"),
+                ),
+            )
+            _persist_obligation(repository, unrelated)
+            _attach_route_ref(repository, unrelated, "player-alice")
+        repository.capture_current_revision()
+        obligation = obligations[0]
         if transition_kind == "deactivate":
             transition = _self_deactivation_transition(repository)
             reconciliation = collaboration_module.reconcile_collaboration_for_player_access_transition(
@@ -3543,6 +3653,165 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             obligation,
             transition,
             reconciliation,
+        )
+
+    def _advance_deactivation_after_state(
+        self,
+        repository: CampaignPublicationRepositoryFixture,
+        transport: CampaignPublicationTransport,
+        *,
+        obsolete_ids: tuple[str, ...] = (),
+        cleanup_ids: tuple[str, ...] = (),
+    ) -> None:
+        """Publish a controlled post-W03 fixture, optionally only partly applied."""
+        operations: dict[str, object | None] = {}
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        bob = deepcopy(repository.records[bob_path])
+        bob["status"] = "inactive"
+        bob["deactivated_by"] = "self"
+        operations[bob_path] = bob
+        for obligation_id in obsolete_ids:
+            obligation_path = route_native_record(
+                "runtime.collaboration_obligation", (obligation_id,)
+            ).relative_path
+            obligation = deepcopy(repository.records[obligation_path])
+            obligation["lifecycle"] = "OBSOLETE"
+            operations[obligation_path] = obligation
+        for player_id in ("player-alice", "player-bob"):
+            player_path = route_native_record(
+                "world.player", (player_id,)
+            ).relative_path
+            player = deepcopy(
+                operations.get(player_path, repository.records[player_path])
+            )
+            player["collaboration_route_refs"] = [
+                ref
+                for ref in player.get("collaboration_route_refs", ())
+                if ref["obligation_id"] not in cleanup_ids
+            ]
+            operations[player_path] = player
+        transport._pending_operations = operations
+        transport.update_ref("campaign/frostfall", transport.next_head, force=False)
+
+    def _live_reconciliation(
+        self,
+        *,
+        source_count: int = 1,
+        complete_forward: bool,
+    ) -> tuple[
+        CampaignPublicationRepositoryFixture,
+        CampaignPublicationTransport,
+        object,
+        CollaborationAccessReconciliation,
+        LiveRouting,
+        LiveRouting,
+        object,
+        object,
+    ]:
+        repository, transport, _obligation, _old_transition, _old_reconciliation = (
+            self._open_reconciliation()
+        )
+        sources = tuple(
+            _live_source(f"scene-live-{index}") for index in range(source_count)
+        )
+        active_route = build_live_route(CAMPAIGN_ID, sources)
+        repository.capture_current_revision()
+        current_campaign = _access_campaign()
+        proposed_source_revisions = {
+            source.source_key: LIVE_CLOSED_REVISION for source in sources
+        }
+        plan = freeze_multi_live_forward_plan(
+            active_route,
+            current_campaign=current_campaign,
+            expected_campaign_revision=repository.current_revision,
+            proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+            proposed_source_revisions=proposed_source_revisions,
+        )
+        if complete_forward:
+            progress = advance_multi_live_freeze(
+                plan,
+                acknowledgements={
+                    attempt.source_key: _accepted_live_close_ack(attempt)
+                    for attempt in plan.attempts
+                },
+            )
+            forward = publish_forward_transition(
+                plan,
+                progress,
+                current_campaign_revision=repository.current_revision,
+                campaign_state=current_campaign,
+            )
+            proposed_campaign = deepcopy(dict(forward.campaign_state))
+            proposed_campaign.pop("access_transition", None)
+            proposed_campaign.pop("live_routing", None)
+            proposed_route = forward.route
+        else:
+            acknowledgements: dict[object, object] = {}
+            current_sources: dict[object, object] = {}
+            if source_count > 1:
+                acknowledgements[sources[0].source_key] = _accepted_live_close_ack(
+                    plan.attempts[0]
+                )
+                acknowledgements[sources[1].source_key] = None
+                current_sources[sources[1].source_key] = sources[1]
+            progress = advance_multi_live_freeze(
+                plan,
+                acknowledgements=acknowledgements,
+                current_sources=current_sources,
+            )
+            route_entries = {source.source_key: source for source in sources}
+            route_entries.update(
+                {source.source_key: source for source in progress.final_sources}
+            )
+            proposed_route = build_live_route(
+                CAMPAIGN_ID, tuple(route_entries.values())
+            )
+            proposed_campaign = current_campaign | {
+                "revision": CHANGED_CAMPAIGN_REVISION,
+            }
+
+        player_path = route_native_record("world.player", ("player-bob",)).relative_path
+        current_player = deepcopy(repository.records[player_path])
+        proposed_player = deepcopy(current_player)
+        proposed_player["status"] = "inactive"
+        proposed_player["deactivated_by"] = "self"
+        principal = _bob_principal()
+        resolution = resolve_player(
+            principal,
+            _route(),
+            lambda candidate_id: repository.records[
+                route_native_record("world.player", (candidate_id,)).relative_path
+            ],
+            campaign_id=CAMPAIGN_ID,
+        )
+        transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="deactivate_self",
+            current_player=current_player,
+            proposed_player=proposed_player,
+            current_campaign=current_campaign,
+            proposed_campaign=proposed_campaign,
+            expected_campaign_revision=repository.current_revision,
+            proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+            current_live_route=active_route,
+            proposed_live_route=proposed_route,
+        )
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition,
+                host=_host(repository, live=LiveFixture(active_route)),
+            )
+        )
+        return (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            active_route,
+            proposed_route,
+            plan,
+            progress,
         )
 
     def test_access_and_obsolete_obligation_publish_in_one_campaign_closure(
@@ -3643,6 +3912,365 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             )
 
         self.assertEqual(repository.records, before)
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_recovery_and_advanced_publish_reject_empty_effect_set(self) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        self._advance_deactivation_after_state(repository, transport)
+        empty = replace(
+            reconciliation,
+            affected_obligation_ids=(),
+            obligations=(),
+        )
+        host = _host(repository, transport)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                empty, host=host
+            )
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                empty, host=host
+            )
+
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        self.assertEqual(repository.records[obligation_path]["lifecycle"], "OPEN")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_empty_carrier_does_not_hide_effects_in_a_complete_published_closure(
+        self,
+    ) -> None:
+        repository, transport, obligation, _transition, reconciliation = (
+            self._open_reconciliation()
+        )
+        host = _host(repository, transport)
+        collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=host
+        )
+        empty = replace(
+            reconciliation,
+            affected_obligation_ids=(),
+            obligations=(),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                empty, host=_host(repository, transport)
+            )
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                empty, host=_host(repository, transport)
+            )
+
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        self.assertEqual(repository.records[obligation_path]["lifecycle"], "OBSOLETE")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_subset_carrier_cannot_hide_a_second_affected_obligation(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation(obligation_count=2)
+        )
+        first_id = reconciliation.affected_obligation_ids[0]
+        self._advance_deactivation_after_state(
+            repository,
+            transport,
+            obsolete_ids=(first_id[0],),
+            cleanup_ids=(first_id[0],),
+        )
+        subset = replace(
+            reconciliation,
+            affected_obligation_ids=(first_id,),
+            obligations=tuple(
+                item
+                for item in reconciliation.obligations
+                if (item.obligation_id, item.generation) == first_id
+            ),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                subset, host=_host(repository, transport)
+            )
+
+        second_id = reconciliation.affected_obligation_ids[1][0]
+        second_path = route_native_record(
+            "runtime.collaboration_obligation", (second_id,)
+        ).relative_path
+        self.assertEqual(repository.records[second_path]["lifecycle"], "OPEN")
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_extra_effect_identity_is_rejected_after_publication(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation(unrelated_obligation=True)
+        )
+        collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation, host=_host(repository, transport)
+        )
+        unrelated_path = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-unaffected",)
+        ).relative_path
+        extra_obligation = CollaborationObligation.from_mapping(
+            repository.records[unrelated_path], host=_host(repository, transport)
+        )
+        extra_ids = tuple(
+            sorted(
+                (
+                    *reconciliation.affected_obligation_ids,
+                    (extra_obligation.obligation_id, extra_obligation.generation),
+                )
+            )
+        )
+        extra_effects = replace(
+            reconciliation,
+            affected_obligation_ids=extra_ids,
+            obligations=tuple(
+                sorted(
+                    (*reconciliation.obligations, extra_obligation),
+                    key=lambda item: (item.obligation_id, item.generation),
+                )
+            ),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                extra_effects, host=_host(repository, transport)
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_recovery_rejects_partially_applied_complete_effect_set(self) -> None:
+        repository, transport, _obligation, _transition, reconciliation = (
+            self._open_reconciliation(obligation_count=2)
+        )
+        first_id = reconciliation.affected_obligation_ids[0][0]
+        self._advance_deactivation_after_state(
+            repository,
+            transport,
+            obsolete_ids=(first_id,),
+            cleanup_ids=(first_id,),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                reconciliation, host=_host(repository, transport)
+            )
+
+        second_id = reconciliation.affected_obligation_ids[1][0]
+        second_path = route_native_record(
+            "runtime.collaboration_obligation", (second_id,)
+        ).relative_path
+        self.assertEqual(repository.records[second_path]["lifecycle"], "OPEN")
+
+    def test_active_affected_live_source_blocks_campaign_write(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            active_route,
+            _proposed,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=False)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(active_route)),
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_partial_indeterminate_multi_live_close_blocks_campaign_write(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active_route,
+            partial_route,
+            _plan,
+            progress,
+        ) = self._live_reconciliation(source_count=2, complete_forward=False)
+        self.assertEqual(progress.status, "INDETERMINATE")
+        self.assertEqual(
+            sum(
+                source.status is LiveLifecycle.CLOSED_UNABSORBED
+                for source in partial_route.entries
+            ),
+            1,
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(partial_route)),
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_stale_closed_live_revision_does_not_match_w03_forward_proof(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        stale_source = replace(closed_route.entries[0], source_revision="9" * 40)
+        stale_route = build_live_route(CAMPAIGN_ID, (stale_source,))
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(stale_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+
+    def test_recovery_rejects_partially_closed_w03_live_boundary(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active_route,
+            partial_route,
+            _plan,
+            progress,
+        ) = self._live_reconciliation(source_count=2, complete_forward=False)
+        self.assertEqual(progress.status, "INDETERMINATE")
+        obligation_id = reconciliation.affected_obligation_ids[0][0]
+        self._advance_deactivation_after_state(
+            repository,
+            transport,
+            obsolete_ids=(obligation_id,),
+            cleanup_ids=(obligation_id,),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(partial_route)),
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+
+    def test_completed_w03_forward_closure_joins_access_publication_and_recovers(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        self.assertEqual(progress.status, "READY_TO_PUBLISH")
+        self.assertTrue(
+            all(
+                source.status is LiveLifecycle.CLOSED_UNABSORBED
+                for source in closed_route.entries
+            )
+        )
+
+        host = _host(repository, transport, LiveFixture(closed_route))
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=host,
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+        )
+
+        self.assertNotEqual(active_route.as_mapping(), closed_route.as_mapping())
+        self.assertNotIn("live_routing", repository.records["MANIFEST.yaml"])
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+        operations = next(
+            payload for name, payload in transport.calls if name == "create_tree"
+        )
+        self.assertNotIn("MANIFEST.yaml", operations)
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, LiveFixture(closed_route)),
+        )
+        self.assertEqual(recovered, published)
+
+    def test_closed_live_route_reestablishes_bounded_w03_forward_proof(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active,
+            closed,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, LiveFixture(closed)),
+        )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 1
+        )
+        self.assertEqual(published.obligations[0].lifecycle, "OBSOLETE")
+
+    def test_missing_selected_live_route_blocks_required_forward_boundary(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active,
+            _closed,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture()),
+            )
+
         self.assertEqual(
             len([name for name, _ in transport.calls if name == "update_ref"]), 0
         )
