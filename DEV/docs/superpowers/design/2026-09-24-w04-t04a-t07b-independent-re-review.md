@@ -1,127 +1,134 @@
-# Independent re-review — W04.T04A and W04.T07B repair round 2
+# Independent re-review — W04.T04A and W04.T07B
 
-Status: **FINAL REVIEW DISPOSITION — BOTH CANDIDATES FAIL / REPAIR REQUIRED**
+Status: **CURRENT FINAL DISPOSITION — T04A PASS / T07B TARGETED REPAIR REQUIRED**
 
 Date: 2026-09-24
 
-## Exact review basis
+## Exact review basis and scope
 
-- Reviewed combined remote HEAD: `b13496b19bc8a7f11b82a24e11508036e815596f`.
-- Parent: `b16ba8d2b4e3cffa86736fb20d10a34b01c97ff9`.
-- T04A implementation: `20dd5301310bf5db250c229655ac957fe56e23c3`.
-- T07B repair-round-2 implementation: `5a53b8e4323f53cde2f3c718e477003a4da3ce29`.
-- Role: independent task re-reviewer. This review makes no implementation, test, schema or architecture change.
+- Reviewed remote HEAD: `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`.
+- Reviewed parent / combined code candidate: `dfca9bc45eecc05e2b7287c20954172e7921ffa7`.
+- T04A repair: `0d190a9db11129a02f07c71a812996c78a8d33cf`, following implementation `20dd5301310bf5db250c229655ac957fe56e23c3`.
+- T07B repairs: `0b4dde06d5bdc70fd85b4b6856da45c3f1147d59` and `dfca9bc45eecc05e2b7287c20954172e7921ffa7`, following candidate `5a53b8e4323f53cde2f3c718e477003a4da3ce29`.
+- Role: independent task re-reviewer. No production code, executable tests, schema or accepted architecture is changed by this review publication.
 
-The prior full execution ledger, including author reports, previous findings, accepted task chains and the T04A Senior clarification, is retained at the same execution-status path in reviewed commit `b13496b19bc8a7f11b82a24e11508036e815596f`, blob `82560dd4b321a91c9f438401b964bcd6904f6ed3`. The rolling cursor routes current dispositions; that exact prior snapshot retains the detailed historical evidence, not a competing current cursor.
+The previous report remains verbatim at this same path in commit `8ca335f969f3ace1623356e1a6c2b835282ef26f`, blob `1e3af3550acbb715cd68405506219fea118e3627`. Its failures were against `b13496b19bc8a7f11b82a24e11508036e815596f`, not against the repaired HEAD. The current report supersedes its task dispositions only as stated below.
 
 ## Bounded source manifest and method
 
-The review follows the stable Wave-04 task scope, current development execution process and ChatGPT Work transport overlay. Sources were read through GitHub Connector at the reviewed HEAD; no local repository transport or repository-wide preload was used.
+All repository evidence was read through GitHub Connector at the reviewed HEAD. The bounded review graph is W03 access/currentness -> T04A reconciliation -> T04B consumer, and Story source contracts -> T07B codec/schema -> T07C consumer. No whole-repository preload or local repository was used.
 
-| Source | Review use |
+| Current artifact | Evidence use |
 |---|---|
-| `GAME/TOOLS/collaboration.py`, blob `e8efcb01d01da295c8b2b28e0f3c64d8e232837b` | historical hydration and after-authority reconciliation |
-| `GAME/TOOLS/access_control.py`, blob `54e22e268026765892c9e82bdab6eb19a5e89ffe` | W03 exact-body guard and frozen transition |
-| `GAME/TOOLS/runtime_host.py`, blob `bf1639e7d6f41ff2fbc52195a16dcddb5b2689fe` | actual pin/read boundary |
-| `DEV/TESTS/test_rd12_collaboration.py`, blob `c97989048d0895e074244afbe3a81490a129b37b` | T04A witnesses |
-| `GAME/TOOLS/story.py`, blob `6e54fa3993968dfe9d4da4088cc79de6a98c564b` | repaired unit, result and source-window validation |
-| `DEV/SCHEMAS/story-mechanics-unit.schema.json`, blob `ad5a2cd11d2c6a5d24da1fc8de7a5a09efed440c` | MECHANICS v4 shape |
-| `DEV/SCHEMAS/story-projection-state.schema.json` | contiguous coverage repair |
-| `DEV/TESTS/test_rd13_story_t0_commentator.py`, blob `0140185c2ea2f3928dcd1e7357d158b670cd9991` | round-2 tests and registered-unit fixture |
-| WP-17 canonical specification, blob `d49d817d796929c816ea2ae7bcd815d0986f1102` | accepted history, current agency, lifecycle and uncertainty |
-| `2026-09-08-story-baseline-projection-source-contracts.md` | M-SEG/M-OUT and conditional omission contracts |
-| stable Wave-04 plan and current execution ledger | task boundaries and producer gates |
+| `AGENTS.md`, `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md`, `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` | Role, transport, review and publication gates |
+| Stable Wave-04 plan, blob `e64902d1b1df6ed8cebde411231a3d0ddee33be5` | Task scope, output checkpoints and downstream joins |
+| `DEV/CURRENT_PROGRESS.md` and Wave-04 execution cursor | Current candidates, previous review and preserved qualifications |
+| `GAME/TOOLS/collaboration.py`, blob `31f1a3ccdbd2054100a8f9979f9024005407d872` | Full-body reload, uncertainty failure, preserved historical hydration |
+| `GAME/TOOLS/access_control.py`, blob `54e22e268026765892c9e82bdab6eb19a5e89ffe` | Unchanged W03 full-body comparison and revision-carrier semantics |
+| `DEV/TESTS/test_rd12_collaboration.py` and exact T04A repair diff | Matching MANIFEST, changed/missing/added fields, OPEN/CLOSED uncertainty witnesses |
+| `GAME/TOOLS/story.py`, blob `30b117efb231b0fa616aeb60de6d2d774ee4df5e` | M-SEG payload-link admission and selector comparison |
+| `DEV/SCHEMAS/story-mechanics-unit.schema.json`, blob `8543eec4131e3f3cbea2b104c0979bd1f7fd3eb8` | MECHANICS v4 typed nonempty segment-owner link |
+| `DEV/TESTS/test_rd13_story_t0_commentator.py`, blob `2c41253c00b347c5a95bef49a04f44ab0980cfea` | Shared validator fixture table and separate exact-segment tests |
+| Prior review's WP-17 and baseline Story source-contract evidence | Retained semantics; no new owner decision or omission authorization |
 
-Findings below are established by exact code/contract comparison and deterministic static path tracing. The proposed new regressions were **not executed by this reviewer**. Existing hosted tests were independently checked separately. A green existing suite does not prove an untested branch correct.
+The changed paths were checked against the previous findings, with local guard/call-path tracing and inspection of the new tests. Existing tests were independently verified in exact-head hosted CI. A new boolean-selector counterexample was traced through the actual current code; an isolated Python comparison/JSON-Schema type probe confirmed the primitive behavior. The complete new repository regression was **not executed by this reviewer**. No local run is represented as an exact-repository test.
 
-## Existing verification independently confirmed
-
-Hosted run `35945179177`, job `107461446825`, ran on exact reviewed HEAD:
+## Exact-head hosted verification
 
 ```text
 workflow: Validate engine source
+head_sha: 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff
+run: 35951449546
+job: 107480668040
 status: completed
 conclusion: success
 Run full maintenance audit: success
 Run DEV unit tests: success
-canonical command: .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
-Ran 1175 tests
+command: .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
+Ran 1178 tests
 OK (skipped=5)
 VERSION_UNCLASSIFIED=[]
 VERSION_LEGACY_HITS=[]
 ```
 
-The local `.entire/` census failure did not reproduce in the clean hosted checkout. This does not claim the local capture-file/census interaction is repaired. No capture files or OpenCode permissions are changed here.
+The logs include the new full-body drift test, OPEN/CLOSED singleplayer uncertainty tests, the historical-input regressions and the shared M-SEG validator table. The local protected `.entire/` census failure does not reproduce in this clean hosted checkout. That local issue is not claimed repaired, and capture files/permissions are untouched. This evidence belongs to the reviewed HEAD, not to a later documentation commit.
 
-## Findings
+## Disposition of previous findings
 
-### IRR-T04A-01 — BLOCKING — frozen campaign body is compared with itself
+| Finding | Re-review disposition | Exact reason |
+|---|---|---|
+| IRR-T04A-01 | CLOSED | `_read_current_campaign_body` independently reads full `MANIFEST.yaml` through the pinned RepositoryPort, retains unrelated fields and supplies that body to the unchanged W03 guard. Matching-body success plus changed/deleted/added-field negatives are present and run in hosted CI. |
+| IRR-T04A-02 | CLOSED | Unknown singleplayer creator/agency validity raises a bounded `CollaborationAdmissionError`; it no longer returns a false invalidity verdict that produces OBSOLETE. OPEN and CLOSED tests verify failure without state mutation. Proven lost pending agency retains its positive OBSOLETE test. |
+| IRR-T07B-01 | CLOSED for the original missing/empty-payload-link witness | M-SEG admission now requires payload `resolution_refs` or `receipt_refs`; an exact link only in `sources` no longer satisfies that requirement. The shared fixture table covers valid resolution/command links, absence, emptiness, wrong family and zero ordinal. A distinct remaining type mismatch is recorded below. |
 
-**Evidence.** `collaboration.py::_reconcile_access_transition` calls:
+### T04A acceptance
+
+**W04.T04A: PASS / GO** at the exact reviewed state.
+
+`W04_AUTHORITY_COLLAB_RECONCILIATION_READY` is accepted. The full native MANIFEST is independently read; the transport pin supplies the W03 revision carrier without turning a projected access-only subset into the full body. Unknown authority remains failure, and positively invalid pending agency remains a separate obsolescence path. Historical associations, author/PC linkage and existing fingerprints are retained; new input and recipient catch-up retain current authorization. Reconciliation remains read-only and route-bounded. W03 code is unchanged.
+
+This accepts T04A, not T04B or the whole wave. Unknown singleplayer agency is still a bounded failure; this PASS does not claim a positive creator-resolution path that the candidate does not provide. Same-closure publication/recovery and its tests remain T04B-owned.
+
+## Remaining finding
+
+### IRR-T07B-02 — BLOCKING — boolean segment ordinal passes Python but fails schema
+
+**Exact code path.** `story.py::_plain_json` preserves booleans. `_native_ref` passes a selector through that generic JSON normalization. The M-SEG path ultimately calls `exact_native_ref`, which compares the actual selector with an expected selector using ordinary mapping equality:
 
 ```python
-publish_access_policy_transition(
-    transition,
-    current_campaign_revision=basis.pinned_campaign.revision,
-    current_campaign=transition.current_campaign,
-    current_player=current_player,
-)
+return reference.get("selector") == selector
 ```
 
-The PLAYER is reloaded, but the campaign body supplied as current is the transition's own frozen predecessor. `RuntimeHost._begin_operation` provides a campaign pin and selected LIVE routing, not an independently loaded campaign body. W03 compares its `current_campaign` argument to `transition.current_campaign`; this call makes the full-body guard tautological. Final host-basis equality does not perform the missing body comparison.
+For candidate `["runtime.resolution","resolution-1",1]`, the expected selector contains integer `segment_sequence=1`. The current code does not validate the actual segment ordinal's type before that equality comparison.
 
-**Static witness / required RED.** Freeze a legitimate W03 transition from campaign body M. Keep the declared revision and PLAYER/obligation fixtures fixed, but have the exact native campaign read supply M' with an unrelated frozen field changed, removed or added. T04A never reads M', so the W03 full-body guard cannot reject that mismatch. This is inconsistent source/body evidence, not arbitrary mutation of trusted Python internals.
+**Counterexample.** Start with the existing valid `_registered_story_unit("MECHANICS")` fixture, keep the candidate and `segment_id` unchanged, and change only:
 
-**Rule.** T04A exact after-authority reconciliation and the existing W03 full-campaign-body currentness rule.
+```python
+unit["payload"]["resolution_refs"][0]["selector"]["segment_sequence"] = True
+```
 
-**Minimal repair.** In the collaboration consumer, obtain the actual current campaign body through the existing pinned owner route and pass it to the W03 guard. Do not change the W03 semantic owner, introduce a new port, or defer this prerequisite to T04B. Add matching-body success and changed/missing/added-field negatives at the T04A entry point.
+Keep `receipt_refs` absent. This is ordinary malformed input data, not a fabricated host or mutation of private TCB state.
 
-### IRR-T04A-02 — BLOCKING — unknown authority becomes terminal obsolescence
+The relevant selector is:
 
-**Evidence.** `_pending_contributors_remain_authorized` returns `False` immediately for `campaign_mode == "singleplayer"`, explicitly because creator identity is unavailable in the frozen transition. This happens before checking the pending set. `_reconcile_access_transition` turns that `False` into `replace(obligation, lifecycle="OBSOLETE")` for affected OPEN/CLOSED obligations.
+```json
+{"segment_id":"resolution-1:segment:1","segment_sequence":true}
+```
 
-`test_singleplayer_transition_fails_closed_for_unverified_pending_agency` expects that terminal mutation. It ratifies the conflation instead of testing uncertainty separately.
+Python's current equality path accepts that selector as equal to the expected integer-1 selector. The MECHANICS v4 schema requires `segment_sequence` to be an integer of at least 1, so its only payload link is invalid. The structural contract and Python admission still disagree, now on type rather than field presence.
 
-**Rule.** WP17-27/41 require invalidated opportunity/required agency for obsolescence; WP17-73 prescribes bounded refresh/block/repair for uncertainty. Unknown creator authority does not establish invalidity. The T04A clarification preserves accepted inputs and distinguishes proved loss of current required agency from historical authorship.
+**Isolated probe result:** selector mapping equality `True`; the current selector-shape integer constraint rejects the boolean; the corresponding integer selector passes. Full validator outcome is established by static path tracing, not a claimed new repository test execution.
 
-**Required RED.** Where the available after-authority evidence cannot establish singleplayer creator/agency validity, reconciliation must fail closed without producing an OBSOLETE candidate. Separately retain a positive test where proven invalid required agency does justify obsolescence. Include a CLOSED or already-satisfied-input case so the unconditional branch cannot terminalize it solely because evidence is unavailable.
+**Rule.** T07B strict owner-local serialized contract and exact typed segment identity. Successful semantic admission must not admit a boolean as a native positive segment ordinal.
 
-**Minimal repair.** Distinguish proved invalidity from unavailable evidence using existing failure/error paths. No new owner or host capability is required. Do not invent a blanket mode-change terminalization law as a substitute for the missing evidence.
+**Minimal repair destination.** `GAME/TOOLS/story.py` M-SEG selector validation and `DEV/TESTS/test_rd13_story_t0_commentator.py`. Validate the selector's required fields and positive integer type before equality/binding. Do not coerce `True` to 1, weaken the schema, remove exact candidate binding, introduce a new validator authority or perform a whole-wave restore. Run the boolean witness through both validators for resolution and command/receipt routes; retain valid positive and negative/malformed cases.
 
-### IRR-T07B-01 — BLOCKING — M-SEG Python admission and schema v4 disagree
+**Important parity limit.** A structurally well-formed selector for segment 2 can legitimately pass structural JSON Schema while failing Python's exact candidate-1 binding. This review does not require JSON Schema to perform cross-field candidate decoding/equality or force both validators to be equally permissive. Preserve the separate semantic mismatch test. The blocking counterexample above is the opposite, invalid direction: Python admits a value that its declared structural schema rejects.
 
-**Evidence.** For M-SEG, `validate_story_unit` merges optional payload `resolution_refs`, optional `receipt_refs` and source-manifest refs into `owner_refs`. A matching segment selector in `sources` suffices even when both payload arrays are absent.
+## Preserved qualifications and Version Impact
 
-The current `story-mechanics-unit.schema.json` v4 condition for `campaign.mechanical_segments@...` requires at least one of those two payload fields. The same unit therefore passes Python admission and fails its declared serialized contract.
+- T04A collaboration module `1.0.15 -> 1.0.16` is accepted; obligation schema remains v3. No new persistent field, campaign/storage/catalog/engine generation, migration or dual-read is required by this repair.
+- T07B Story module `1.0.4 -> 1.0.5` and the submitted MECHANICS v4/projection-state v4 candidate remain recorded but are not a task PASS. A further material Python repair needs its normal fresh Version Impact assessment; do not silently reuse a spent module revision.
+- The earlier SOURCE_CLASSIFIED omission qualification remains: blanket rejection of OMITTED is safe against caller-chosen omission but is not proof of a legal native-evidence-consuming omission route. No such support/completeness is credited here, and a caller MAY_OMIT/reason flag must never enable it.
+- The recorded CLS-HDM preflight remains at its existing PASS, with its explicit semantic-change triggers intact. This targeted repair review neither reruns it nor waives future triggers.
+- Accepted earlier tasks remain closed. No new host prerequisite, architectural boundary, migration policy or deployment capability is authorized.
 
-**Concrete static witness.** Start with existing `_registered_story_unit("MECHANICS")`. Delete `payload.resolution_refs` but retain `sources.owner.ref`, already bound to `runtime.resolution`, `resolution-1`, segment sequence 1. Python still finds the exact segment ref; the schema's conditional `anyOf` fails. The round-2 tests did not run this exact object through both validators.
-
-**Minimal repair.** Align the owner-native validator and schema to one intended representation while preserving exact candidate/segment/receipt binding. Run the same positive/negative table through both validators: absent payload links, empty links, wrong owner, wrong segment, and valid linkage. Do not weaken source binding just to make the schema permissive.
-
-## Other observations and evidence limits
-
-T04A meaningfully separates historical accepted-association hydration from new input/catch-up admission. It retains input identities and does not publish or automatically create a successor. These improvements are not rejected or rolled back by the findings above.
-
-T07B now checks exact M-SEG segment selectors and removes SPARSE from the baseline persisted coverage contract. Its unconditional SOURCE_CLASSIFIED/OMITTED rejection closes the previously permissive untrusted omission path. It is not evidence that legal native-proven omissions are implemented: the current helper has no positive proof-consuming route. This review gives no such completeness credit, but does not classify safe blanket rejection by itself as a new authority bypass. Keep that qualification explicit in downstream source/materialization evidence; never enable omission from a caller MAY_OMIT/reason flag. The blocking T07B disposition here is the concrete validator/schema disagreement above.
-
-Accepted earlier tasks remain accepted. The existing CLS preflight is not reopened by this code/schema review. The arbitrary-Python-mutation/TCB threat model is unchanged.
-
-## Final dispositions and continuation
+## Continuation and final verdicts
 
 ```text
-W04.T04A: FAIL / REPAIR REQUIRED
-  IRR-T04A-01: BLOCKING
-  IRR-T04A-02: BLOCKING
-W04.T04B: BLOCKED until repaired T04A independent PASS
+W04.T04A: PASS / GO
+W04_AUTHORITY_COLLAB_RECONCILIATION_READY: ACCEPTED
+W04.T04B: AUTHORIZED from accepted T04A; not yet implemented or accepted here
 
-W04.T07B fix-round-2: FAIL / REPAIR REQUIRED
-  IRR-T07B-01: BLOCKING
-W04.T07C+: BLOCKED until repaired T07B independent PASS and normal prerequisites
+W04.T07B: FAIL / REPAIR REQUIRED
+IRR-T07B-02: BLOCKING
+W04.T07C: BLOCKED until repaired T07B independent PASS
 
+W04.T05C: still waits for T04B plus accepted T02C and T05B
 WAVE_04: NOT COMPLETE
 WAVE_05: NOT AUTHORIZED
-VERSION_IMPACT: NONE for this review/control publication
-SYSTEM_IMPACT: no new architecture decision made; bounded code/contract repairs required
+VERSION_IMPACT: NONE for this review/control-only publication
+SYSTEM_IMPACT: NONE — routine bounded implementation/contract repair
 ```
 
-Repair the two disjoint owner/test lanes in place. No whole-wave rollback, new RuntimeHost prerequisite, migration, branch or private-CLS work is authorized by this report. Preserve the accepted historical-input clarification and normal Version Impact discipline. Publish coherent candidates with focused/cross-owner tests and exact-head hosted evidence, then obtain fresh independent re-review. An OpenCode reviewer permission denial must not be bypassed or converted into self-approval.
+T04B and the bounded T07B repair may run in parallel within their disjoint owner/test lanes. Do not replay T04A repairs or reopen earlier accepted work without a proven regression. Preserve exact-head verification, reviewer and publication/read-back gates. OpenCode reviewer permission denial is not permission for self-approval or bypass; publish coherent candidates and evidence for independent review here when necessary.

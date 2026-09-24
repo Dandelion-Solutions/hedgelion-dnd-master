@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T00P/T02B/T07A/T02C ACCEPTED — T04A/T07B REPAIR CANDIDATES / INDEPENDENT REVIEW PENDING
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T04A INDEPENDENT PASS — T04B AUTHORIZED / T07B TARGETED REPAIR REQUIRED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
-LAST_CLOSED_UNIT: Wave 03 implementation independently reviewed task-by-task and closed by mandatory Senior integration audit PASS on 2026-09-19; reviewed implementation head `9ae3feb74a2d657a081140781899dcbe66819b5b`
-NEXT_AUTHORIZED_UNIT: independently review combined T04A/T07B repair candidate `dfca9bc45eecc05e2b7287c20954172e7921ffa7`; then continue each lane only after its named producer PASS
-REQUIRED_GATE: T04A reviewer PASS -> T04B -> T05C after T02C+T04B+T05B; T07B reviewer PASS -> T07C and subsequent T07 Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — created/published; authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: OpenCode task permission currently denies independent reviewer dispatch; full-suite version census scans protected local `.entire/` capture files. T04B waits for T04A reviewer PASS; T05C waits for T02C+T04B+accepted T05B; T07C+ wait for T07B independent PASS and serial Story prerequisites. T07 CLS↔HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution is not required for pre-release collaboration v2->v3 or unactivated Story schema cutovers; hosted CI is unavailable, and release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+LAST_CLOSED_UNIT: W04.T04A independently accepted on `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`; Wave 03 remains the last fully closed wave, with mandatory Senior audit PASS on `9ae3feb74a2d657a081140781899dcbe66819b5b`
+NEXT_AUTHORIZED_UNIT: execute W04.T04B from accepted T04A and repair IRR-T07B-02 in the disjoint Story lane; T07C remains blocked until repaired T07B independent PASS
+REQUIRED_GATE: T04B independent PASS -> T05C after accepted T02C+T05B; repaired T07B independent PASS -> T07C and subsequent Story tasks serially; then exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit before closure
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
+KNOWN_BLOCKERS: IRR-T07B-02 blocks T07B/T07C: boolean segment_sequence is admitted by Python despite MECHANICS schema rejection. T04A findings IRR-T04A-01/02 are closed; T04B may start. T05C still waits for T04B. OpenCode reviewer-task permission deny and local protected `.entire/` census contamination remain environment limitations; exact reviewed-head hosted CI is independently verified SUCCESS, not globally unavailable. The recorded T07 CLS-HDM preflight remains PASS unless its semantic-change trigger fires. Migration execution, release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -220,6 +220,8 @@ The Wave-05 exact 17-row runtime-family realization matrix and Wave-06 item-boun
 
 ## PO-authorized W04.T07 cross-project preflight — PASS 2026-09-21
 
+This section retains the original preflight and its triggers; the present task re-review does not claim a new private-project read or unconditional current compatibility beyond those triggers.
+
 Immediately before the first RED step of `W04.T07 — Native history, T0, Story, Commentator and Dramaturg integration`, fresh-reconcile the current public Story/Commentator self-contained corpus owner against the current private CLS whole-project integration/audit state.
 
 ```text
@@ -275,6 +277,43 @@ W04.T07A: AUTHORIZED
 
 Planning evidence was not used as a substitute for unavailable private evidence; the required private evidence was read directly through the GitHub Connector.
 
+## Current Wave-04 independent re-review — 2026-09-24
+
+REPORT: `DEV/docs/superpowers/design/2026-09-24-w04-t04a-t07b-independent-re-review.md`
+REVIEWED_HEAD: `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`
+REVIEWED_PARENT: `dfca9bc45eecc05e2b7287c20954172e7921ffa7`
+
+```text
+W04.T04A: PASS / GO
+T04A_REPAIR: 0d190a9db11129a02f07c71a812996c78a8d33cf
+IRR-T04A-01: CLOSED — independent full pinned MANIFEST passed to W03
+IRR-T04A-02: CLOSED — unknown agency gives bounded failure, not OBSOLETE
+W04_AUTHORITY_COLLAB_RECONCILIATION_READY: ACCEPTED
+W04.T04B: AUTHORIZED; not yet implemented or accepted by this review
+
+W04.T07B: FAIL / REPAIR REQUIRED
+T07B_REPAIRS: 0b4dde06d5bdc70fd85b4b6856da45c3f1147d59 + dfca9bc45eecc05e2b7287c20954172e7921ffa7
+IRR-T07B-01: original missing/empty payload-link witness CLOSED
+IRR-T07B-02: BLOCKING — boolean selector ordinal passes Python mapping equality
+W04_STORY_SOURCE_CONTRACTS_READY: NOT ACCEPTED
+W04.T07C: BLOCKED
+
+HOSTED_RUN: 35951449546
+HOSTED_JOB: 107480668040
+HOSTED_HEAD: 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff
+STATUS / CONCLUSION: completed / success
+MAINTENANCE: PASS
+CANONICAL DEV: Ran 1178 tests; OK (skipped=5)
+VERSION_UNCLASSIFIED: []
+VERSION_LEGACY_HITS: []
+```
+
+T04A preserves historical accepted associations, author/PC identities and fingerprints while current input/catch-up remains authorized independently. Unavailable singleplayer agency still fails closed; this PASS does not invent positive authority evidence. T04B owns the same-closure publication/recovery consumer.
+
+T07B must validate positive integer selector typing before exact segment equality. Its explicit payload-link repair is retained. Structural schema validity is not a substitute for Python's exact candidate equality; conversely, Python must not accept a structurally invalid boolean ordinal. The report distinguishes static full-path reasoning and the isolated comparison/type probe from repository tests actually run in CI.
+
+The prior Story omission qualification remains: safe blanket SOURCE_CLASSIFIED/OMITTED rejection is not proof of a native-evidence-consuming lawful omission route. Do not enable it with caller MAY_OMIT/reason flags or claim that positive support is complete.
+
 ## Durable cursor
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
@@ -282,102 +321,28 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: EXECUTING — T00P ACCEPTED / T02B + T07A AUTHORIZED IN PARALLEL
-CURRENT_TASK: W04.T02B publication/recovery and route-companion closure; W04.T07A native history publication/recovery
-LAST_COMPLETED_TASK: W04.T01A accepted at `b50f490cf8dc1d5448cf3ee3c84ce4112e5f8772`; W04.T05A accepted at `995924b2a5448dbf9ae4a52555f64de69f7fd699`; W04.T01B accepted at `856abcbd6621da33b9ca5ff59413ae7aeb8b3d20`; W04.T05B accepted at `a1a4d204fbeec9f8a24e681289e0e530e5b91b75`; W04.T01C accepted after independent re-review at `7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62`; W04.T02A accepted at `5c77aced9dafd9a7f26177090b3e62466b8ec561`; W04.T03A accepted at `ca3efa3c7750cffc2eef228b4b8666b75828cea9`; W04.T00P accepted after reviewer PASS at `595ff95f10d3d48de5748ae32a60d4839106ea2b`
-LAST_SAFE_SHA: `595ff95f10d3d48de5748ae32a60d4839106ea2b`
+STATUS: EXECUTING
+CURRENT_TASK: W04.T04B and bounded T07B repair in parallel where write sets permit
+LAST_COMPLETED_TASK: W04.T04A independent PASS at the exact reviewed head above
+LAST_SAFE_SHA: `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff` — T04A accepted; T07B remains unaccepted
 
-CURRENT_VERIFICATION_STATE: W04.T01A, W04.T05A, W04.T01B, W04.T05B, W04.T01C, W04.T02A and W04.T03A remain accepted at their exact reviewer-PASS heads. W04.T00P is accepted after reviewer PASS at `595ff95f10d3d48de5748ae32a60d4839106ea2b`; its RuntimeHost module chain is `1.0.5 -> 1.0.6 -> 1.0.7`, and it publishes `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` plus `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY`. Fresh W04.T02B and W04.T07A are authorized/current in parallel under the accepted owner decision. W04.T05C remains blocked on T05B + T04B + T02C. W04.T07 CLS↔HDM preflight remains PASS unless its explicit semantic-change trigger fires.
-VERSION_IMPACT: accepted T02A collaboration remains through `1.0.9` with closed-basis and handoff schemas at v1; T00P RuntimeHost is recorded at `1.0.5 -> 1.0.6 -> 1.0.7`; T03A remains NONE. This documentation-only checkpoint: `VERSION_IMPACT: NONE`; no engine, campaign-contract, storage, migration or catalog value changed.
-SYSTEM_IMPACT: NONE CURRENT — the accepted owner decision resolved the T02B and T07A boundaries; T00P remains within the accepted RuntimeHost boundary.
-NEXT_EXACT_TASK: execute W04.T02B and W04.T07A in parallel under their disjoint write sets and normal task review gates. Keep T02C, T04A/T04B, T05C and T07B+ dependency-gated; keep Wave 05 prohibited/not authorized.
-KNOWN_BLOCKERS: T02C waits for accepted T02B; T04A waits for T02C; T05C requires T04B and T02C in addition to accepted T05B; T07B+ waits for T07A resolution. Migration execution, release execution and gameplay bootstrap remain unauthorized.
+CURRENT_VERIFICATION_STATE: exact-head hosted maintenance and full DEV suite verified; T04A accepted independently; T07B remains blocked by IRR-T07B-02 despite existing CI success. OpenCode-local reviewer permission denial and `.entire/` census interaction are not claimed repaired or bypassed.
+VERSION_IMPACT: accepted T04A collaboration module `1.0.15 -> 1.0.16`, obligation schema v3 unchanged; T07B candidate Story module `1.0.4 -> 1.0.5`, MECHANICS/projection-state v4 retained pending repair. Further material repair requires its fresh Version Impact Gate. This review/control publication is NONE; no campaign/storage/catalog/engine generation or migration/dual-read change.
+SYSTEM_IMPACT: NONE — no new architecture, host prerequisite or migration decision
+NEXT_EXACT_TASK: T04B implementation and T07B strict selector-type repair; each requires normal TDD, focused/cross-owner/full verification, coherent publication/read-back and independent review before downstream execution
+KNOWN_BLOCKERS: T07C waits for T07B independent PASS; T05C waits for T04B plus accepted T02C/T05B. Final Wave-04 joins and mandatory Senior integration audit remain required. Wave 05 remains unauthorized.
 UNPUBLISHED_WORK: NONE after verified publication/read-back.
 
-Wave 04 remains in execution. Wave 05 is not authorized.
+All earlier accepted producer checkpoints remain accepted and are listed in the task-local cursor. Worker limit remains five configured (four safe Wave-04 production writers); reviewers are separate from that cap. No whole-wave rollback or permission bypass is authorized.
 
-## Latest Wave-04 execution state — 2026-09-22 (T02A/T03A acceptance)
+## Historical Wave-04 progress retention
 
-The latest authoritative task-local state is the final section of
-`DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md`:
-
-```text
-STATUS: SENIOR_REVIEW_REQUIRED (T07A); T02B CURRENT
-W04.T01B: ACCEPTED after reviewer PASS at 856abcbd6621da33b9ca5ff59413ae7aeb8b3d20
-W04.T05B: ACCEPTED after reviewer PASS at a1a4d204fbeec9f8a24e681289e0e530e5b91b75
-W04.T01C: ACCEPTED after independent re-review at 7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62
-W04.T02A: ACCEPTED after reviewer PASS at 5c77aced9dafd9a7f26177090b3e62466b8ec561
-W04.T03A: ACCEPTED after reviewer PASS at ca3efa3c7750cffc2eef228b4b8666b75828cea9
-W04.T02B: ELIGIBLE/CURRENT from T02A plus accepted W02 publication/recovery
-W04.T04A: BLOCKED until T02C
-W04.T05C: BLOCKED on T05B + T04B + T02C
-W04.T07A: SENIOR_REVIEW_REQUIRED; selected-LIVE evt-lane reader stop remains open
-DOWNSTREAM: T02C waits for T02B plus current W03 access/LIVE routes; T04A waits for T02C; T05C waits for T04B and T02C in addition to T05B; T07B+ waits for T07A resolution
-VERSION_IMPACT: T02A collaboration through 1.0.9 with new closed-basis and handoff schemas at v1; T03A NONE; this documentation checkpoint NONE
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — W04.T07A only
-WAVE_05: PROHIBITED / NOT AUTHORIZED
-```
-
-The T07A-only brief is
-`DEV/docs/superpowers/design/2026-09-22-w04-t07a-selected-live-reader-system-impact-brief.md`.
-
-## Latest Wave-04 execution state — 2026-09-22 (T02B review stop)
-
-The published W04.T02B candidate at
-`ae424f32cc785f940f7740355924aa259d8895c6` is not accepted. Independent
-review findings and the required Senior disposition are recorded in
-`DEV/docs/superpowers/design/2026-09-22-w04-t02b-publication-recovery-system-impact-brief.md`.
+Superseded interim stop/authorization and candidate-review snapshots previously appended to this document remain verbatim in repository history:
 
 ```text
-STATUS: SENIOR_REVIEW_REQUIRED (T02B; T07A separate)
-W04.T01B: ACCEPTED after reviewer PASS at 856abcbd6621da33b9ca5ff59413ae7aeb8b3d20
-W04.T05B: ACCEPTED after reviewer PASS at a1a4d204fbeec9f8a24e681289e0e530e5b91b75
-W04.T01C: ACCEPTED after independent re-review at 7b66ac881aa8a60dd6d03bd97d1ab74e1a96da62
-W04.T02A: ACCEPTED after reviewer PASS at 5c77aced9dafd9a7f26177090b3e62466b8ec561
-W04.T03A: ACCEPTED after reviewer PASS at ca3efa3c7750cffc2eef228b4b8666b75828cea9
-W04.T02B: UNACCEPTED / SENIOR_REVIEW_REQUIRED at published candidate ae424f32cc785f940f7740355924aa259d8895c6
-T02C: GATED on accepted T02B
-T04A/T04B: GATED through T02C
-T05C: GATED on T05B + T04B + T02C
-T07A: separate SENIOR_REVIEW_REQUIRED selected-LIVE reader stop
-WAVE_05: PROHIBITED / NOT AUTHORIZED
-VERSION_IMPACT: NONE for this documentation-only checkpoint
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — T02B; T07A remains separate
-UNPUBLISHED_WORK: NONE after publication/read-back
+path: DEV/CURRENT_PROGRESS.md
+commit: 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff
+blob: cf90a9a3abb2c5ca2183892ee154aa118c7541a2
 ```
 
-## Latest Wave-04 execution state — 2026-09-22 (T00P accepted; T02B/T07A parallel authorization)
-
-```text
-STATUS: EXECUTING — T02B/T07A AUTHORIZED IN PARALLEL
-W04.T00P: ACCEPTED after reviewer PASS at 595ff95f10d3d48de5748ae32a60d4839106ea2b
-W04.T02B: AUTHORIZED/CURRENT under the accepted owner decision
-W04.T07A: AUTHORIZED/CURRENT under the accepted owner decision
-W04.T01A/T05A/T01B/T05B/T01C/T02A/T03A: PRESERVED ACCEPTED
-RUNTIME_HOST_VERSION_CHAIN: 1.0.5 -> 1.0.6 -> 1.0.7
-OUTPUTS: W04_RUNTIME_HOST_IO_EXTENSIONS_READY / W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY
-VERSION_IMPACT: NONE for this documentation-only checkpoint
-SYSTEM_IMPACT: NONE CURRENT
-WAVE_05: PROHIBITED / NOT AUTHORIZED
-UNPUBLISHED_WORK: NONE after publication/read-back
-```
-
-## Latest Wave-04 execution state — 2026-09-24 (T04A candidate / T07B fix-round-2)
-
-```text
-STATUS: FINAL_REVIEW — T04A and T07B repair candidates await independent re-review
-W04.T02C: ACCEPTED after independent reviewer PASS at dd0783c4eca20a94431b17844ca09ac64f8ba2cf
-W04.T04A: repair commit 0d190a9db11129a02f07c71a812996c78a8d33cf; independent task review pending
-W04.T07B: repair commits 0b4dde06d5bdc70fd85b4b6856da45c3f1147d59 and dfca9bc45eecc05e2b7287c20954172e7921ffa7; independent re-review pending
-COMBINED_REPAIR_CANDIDATE: dfca9bc45eecc05e2b7287c20954172e7921ffa7
-T04B: gated on T04A reviewer PASS
-T07C: gated on T07B reviewer PASS
-WAVE_05: NOT AUTHORIZED
-SYSTEM_IMPACT: NONE CURRENT
-```
-
-The task-local cursor records the Senior clarification for prospective authority,
-retained accepted evidence, exact-owner historical hydration, current admission,
-and T04B same-closure route cleanup. Local T04A checks are recorded there; no
-independent reviewer PASS is claimed because the current OpenCode task permission
-denied review-task creation. The protected local `.entire` tree remains untouched.
+The task-local cursor additionally retains exact historical ledger pointers for the complete earlier rulings, restores, version chains and author verification. Those snapshots are provenance, not alternate current scheduling authority. The current state is the header and durable cursor above. Wave 04 is not complete; Wave 05 is not authorized.
