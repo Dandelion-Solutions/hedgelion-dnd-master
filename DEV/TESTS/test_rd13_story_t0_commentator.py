@@ -1234,6 +1234,81 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
     }
 
 
+def _m_seg_contract_cases() -> tuple[tuple[str, dict[str, object], bool, bool], ...]:
+    valid = _registered_story_unit("MECHANICS")
+
+    absent_payload_links = deepcopy(valid)
+    absent_payload_links["payload"].pop("resolution_refs")
+    absent_payload_links["payload"].pop("receipt_refs", None)
+
+    empty_payload_links = deepcopy(valid)
+    empty_payload_links["payload"]["resolution_refs"] = []
+    empty_payload_links["payload"]["receipt_refs"] = []
+
+    wrong_owner = deepcopy(valid)
+    wrong_owner["payload"]["resolution_refs"][0]["family"] = "world.actor"
+
+    wrong_segment = deepcopy(valid)
+    wrong_segment["payload"]["resolution_refs"][0]["selector"] = {
+        "segment_id": "resolution-1:segment:0",
+        "segment_sequence": 0,
+    }
+
+    wrong_exact_segment = deepcopy(valid)
+    wrong_exact_segment["payload"]["resolution_refs"][0]["selector"] = {
+        "segment_id": "resolution-1:segment:2",
+        "segment_sequence": 2,
+    }
+
+    valid_receipt_link = deepcopy(valid)
+    valid_receipt_link["projection_basis"][0]["candidate_ids"] = [
+        story_module.encode_candidate_id("M-SEG", ["runtime.command", "command-1", 1])
+    ]
+    command_segment_ref = {
+        "family": "runtime.command",
+        "identity": ["command-1"],
+        "selector": {
+            "segment_id": "command-1:segment:1",
+            "segment_sequence": 1,
+        },
+    }
+    valid_receipt_link["sources"]["owner"]["ref"] = deepcopy(command_segment_ref)
+    valid_receipt_link["payload"].pop("resolution_refs")
+    valid_receipt_link["payload"]["receipt_refs"] = [command_segment_ref]
+
+    return (
+        ("valid exact payload link", valid, True, True),
+        ("valid exact receipt link", valid_receipt_link, True, True),
+        ("absent payload links", absent_payload_links, False, False),
+        ("empty payload links", empty_payload_links, False, False),
+        ("wrong owner", wrong_owner, False, False),
+        ("invalid segment ordinal", wrong_segment, False, False),
+        # Draft 2020-12 validates the typed reference shape, while the Python
+        # owner validator binds that selector to the decoded candidate identity.
+        ("wrong exact segment binding", wrong_exact_segment, False, True),
+    )
+
+
+def _story_unit_schema_validator(layer: str) -> Draft202012Validator:
+    schema_name = {
+        "TRANSCRIPT": "story-transcript-unit.schema.json",
+        "EVENTS": "story-event-unit.schema.json",
+        "MECHANICS": "story-mechanics-unit.schema.json",
+        "NARRATIVE": "story-narrative-unit.schema.json",
+    }[layer]
+    resources = Registry()
+    for referenced_name in (
+        "story-unit-common.schema.json",
+        "semantic-event-t0-basis.schema.json",
+    ):
+        referenced = json.loads((SCHEMAS / referenced_name).read_text(encoding="utf-8"))
+        resources = resources.with_resource(
+            referenced["$id"], Resource.from_contents(referenced)
+        )
+    schema = json.loads((SCHEMAS / schema_name).read_text(encoding="utf-8"))
+    return Draft202012Validator(schema, registry=resources)
+
+
 class StoryUnitLayerTests(unittest.TestCase):
     def test_all_four_unit_contracts_validate_their_payload_and_prefix(self) -> None:
         for layer in ("TRANSCRIPT", "EVENTS", "MECHANICS", "NARRATIVE"):
@@ -1377,6 +1452,22 @@ class StoryUnitLayerTests(unittest.TestCase):
         wrong_segment["payload"]["resolution_refs"][0]["selector"] = wrong_selector
         with self.assertRaises(StoryContractError):
             story_module.validate_story_unit(wrong_segment, layer="MECHANICS")
+
+    def test_m_seg_payload_contract_table_runs_through_python_and_json_schema(
+        self,
+    ) -> None:
+        validator = _story_unit_schema_validator("MECHANICS")
+        for name, unit, python_expected, schema_expected in _m_seg_contract_cases():
+            with self.subTest(case=name):
+                try:
+                    story_module.validate_story_unit(unit, layer="MECHANICS")
+                except StoryContractError:
+                    python_valid = False
+                else:
+                    python_valid = True
+                schema_valid = validator.is_valid(unit)
+                self.assertEqual(python_valid, python_expected)
+                self.assertEqual(schema_valid, schema_expected)
 
     def test_transcript_units_do_not_merge_distinct_message_candidates(self) -> None:
         unit = _registered_story_unit("TRANSCRIPT")
@@ -1601,7 +1692,7 @@ class StorySchemaTests(unittest.TestCase):
     def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.4")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.5")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",

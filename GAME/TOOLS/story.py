@@ -25,8 +25,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -850,8 +850,11 @@ def validate_story_unit(value: object, *, layer: str) -> dict[str, object]:
                 *_native_ref_array(
                     normalized_payload.get("receipt_refs", []), "receipt_refs"
                 ),
-                *(dependency["ref"] for dependency in sources.values()),
             ]
+            if not owner_refs:
+                raise StoryContractError(
+                    "M-SEG requires an explicit payload execution-owner link"
+                )
             for owner_family, owner_id, segment_sequence in parts:
                 if owner_family not in {
                     "runtime.resolution",
