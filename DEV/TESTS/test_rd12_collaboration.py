@@ -15,9 +15,14 @@ from referencing import Registry, Resource
 
 from GAME.TOOLS import collaboration as collaboration_module
 from GAME.TOOLS.access_control import (
+    AccessControlContractError,
     PlayerRecord,
     VerifiedPrincipal,
+    authorize_operation,
     build_principal_player_route,
+    freeze_access_policy_transition,
+    freeze_player_access_transition,
+    resolve_player,
 )
 from GAME.TOOLS.collaboration import (
     CollaborationAdmissionError,
@@ -44,6 +49,7 @@ from GAME.TOOLS.collaboration import (
     required_route_holders,
     validate_visible_consequence,
 )
+from GAME.TOOLS.history import observe_first_initialization_history
 from GAME.TOOLS.live_state import LiveRouting
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
@@ -284,6 +290,70 @@ class ChangingPinRepositoryFixture(RepositoryFixture):
         return deepcopy(self.records[path])
 
 
+class MutableCampaignRepositoryFixture(RepositoryFixture):
+    """Exact-read fixture whose pinned campaign revision advances on closure."""
+
+    def __init__(self, clause: dict[str, object] | None = None) -> None:
+        self.current_revision = CAMPAIGN_REVISION
+        super().__init__(clause)
+
+    def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
+        if campaign_id != CAMPAIGN_ID:
+            raise KeyError(campaign_id)
+        return PinnedCampaign(CAMPAIGN_ID, self.current_revision, TREE_SHA)
+
+    def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if (
+            pinned.campaign_id != CAMPAIGN_ID
+            or pinned.revision != self.current_revision
+        ):
+            raise KeyError("stale campaign pin")
+        self.reads.append(path)
+        return deepcopy(self.records[path])
+
+
+class CreatorHistoryFixture:
+    def read_exact_campaign_ref(self, campaign_id: str) -> dict[str, object]:
+        return {
+            "campaign_id": campaign_id,
+            "campaign_ref": "refs/heads/campaign/frostfall",
+            "campaign_head_revision": CHANGED_CAMPAIGN_REVISION,
+            "default_ref": "refs/heads/main",
+            "default_head_revision": TREE_SHA,
+            "initialization_revision": CAMPAIGN_REVISION,
+        }
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> dict[str, object]:
+        return {
+            "campaign_id": CAMPAIGN_ID,
+            "revision": revision,
+            "parent_revision": TREE_SHA,
+            "campaign_specific": True,
+        }
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> dict[str, str]:
+        return {"relation": "EQUAL"}
+
+    def read_authenticated_commit_author(
+        self, campaign_ref: str, revision: str
+    ) -> dict[str, object]:
+        return {
+            "author": {"login": "creator"},
+            "authenticated": True,
+            "per_user": True,
+        }
+
+
+def _creator_provenance():
+    observation = observe_first_initialization_history(
+        CreatorHistoryFixture(), CAMPAIGN_ID
+    )
+    assert observation.evidence is not None
+    return observation.evidence
+
+
 class LiveFixture:
     def read_selected_live(
         self, campaign_id: str, pinned: PinnedCampaign
@@ -327,6 +397,166 @@ def _collective_clause() -> dict[str, object]:
             }
         ],
     }
+
+
+def _access_campaign(
+    *,
+    revision: str = CAMPAIGN_REVISION,
+    player_ids: tuple[str, ...] = ("player-alice", "player-bob"),
+    join_policy: str = "invite_only",
+) -> dict[str, object]:
+    return {
+        "campaign_id": CAMPAIGN_ID,
+        "revision": revision,
+        "mode": "multiplayer",
+        "players": {
+            "join_policy": join_policy,
+            "player_ids": list(player_ids),
+        },
+    }
+
+
+def _self_deactivation_transition(
+    repository: MutableCampaignRepositoryFixture,
+    *,
+    player_id: str = "player-bob",
+    player_ids: tuple[str, ...] = ("player-alice", "player-bob"),
+):
+    player_path = route_native_record("world.player", (player_id,)).relative_path
+    current_player = deepcopy(repository.records[player_path])
+    principal = _bob_principal()
+    resolution = resolve_player(
+        principal,
+        _route(),
+        lambda candidate_id: repository.records[
+            route_native_record("world.player", (candidate_id,)).relative_path
+        ],
+        campaign_id=CAMPAIGN_ID,
+    )
+    proposed_player = deepcopy(current_player)
+    proposed_player["status"] = "inactive"
+    proposed_player["deactivated_by"] = "self"
+    return freeze_player_access_transition(
+        principal,
+        resolution,
+        operation="deactivate_self",
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=_access_campaign(player_ids=player_ids),
+        proposed_campaign=_access_campaign(
+            revision=CHANGED_CAMPAIGN_REVISION,
+            player_ids=player_ids,
+        ),
+        expected_campaign_revision=CAMPAIGN_REVISION,
+        proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+        live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+    )
+
+
+def _self_reactivation_transition(
+    repository: MutableCampaignRepositoryFixture,
+):
+    player_path = route_native_record("world.player", ("player-bob",)).relative_path
+    current_player = deepcopy(repository.records[player_path])
+    current_player["status"] = "inactive"
+    current_player["deactivated_by"] = "self"
+    repository.put("world.player", "player-bob", current_player)
+    principal = _bob_principal()
+    resolution = resolve_player(
+        principal,
+        _route(),
+        lambda candidate_id: repository.records[
+            route_native_record("world.player", (candidate_id,)).relative_path
+        ],
+        campaign_id=CAMPAIGN_ID,
+    )
+    proposed_player = deepcopy(current_player)
+    proposed_player["status"] = "active"
+    proposed_player["deactivated_by"] = None
+    return freeze_player_access_transition(
+        principal,
+        resolution,
+        operation="reactivate",
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=_access_campaign(),
+        proposed_campaign=_access_campaign(revision=CHANGED_CAMPAIGN_REVISION),
+        expected_campaign_revision=CAMPAIGN_REVISION,
+        proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+        live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+    )
+
+
+def _join_policy_transition(
+    *,
+    player_ids: tuple[str, ...] = ("player-alice", "player-bob"),
+):
+    return freeze_access_policy_transition(
+        VerifiedPrincipal(stable_account_id="99", login="creator"),
+        current_campaign=_access_campaign(player_ids=player_ids),
+        proposed_campaign=_access_campaign(
+            revision=CHANGED_CAMPAIGN_REVISION,
+            player_ids=player_ids,
+            join_policy="open_contributors",
+        ),
+        creator_provenance=_creator_provenance(),
+        expected_campaign_revision=CAMPAIGN_REVISION,
+        proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+        live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+    )
+
+
+def _singleplayer_transition(
+    *,
+    player_ids: tuple[str, ...] = ("player-alice", "player-bob"),
+):
+    return freeze_access_policy_transition(
+        VerifiedPrincipal(stable_account_id="99", login="creator"),
+        current_campaign=_access_campaign(player_ids=player_ids),
+        proposed_campaign={
+            **_access_campaign(
+                revision=CHANGED_CAMPAIGN_REVISION,
+                player_ids=player_ids,
+            ),
+            "mode": "singleplayer",
+        },
+        creator_provenance=_creator_provenance(),
+        expected_campaign_revision=CAMPAIGN_REVISION,
+        proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+        live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+    )
+
+
+def _mechanical_grant_revocation_transition(
+    repository: MutableCampaignRepositoryFixture,
+):
+    player_path = route_native_record("world.player", ("player-bob",)).relative_path
+    current_player = deepcopy(repository.records[player_path])
+    current_player["policy_authority"] = {"mechanical_override_policy": True}
+    repository.put("world.player", "player-bob", current_player)
+    resolution = resolve_player(
+        _bob_principal(),
+        _route(),
+        lambda candidate_id: repository.records[
+            route_native_record("world.player", (candidate_id,)).relative_path
+        ],
+        campaign_id=CAMPAIGN_ID,
+    )
+    proposed_player = deepcopy(current_player)
+    proposed_player["policy_authority"] = {"mechanical_override_policy": False}
+    return freeze_player_access_transition(
+        VerifiedPrincipal(stable_account_id="99", login="creator"),
+        resolution,
+        operation="revoke_mechanical_override",
+        current_player=current_player,
+        proposed_player=proposed_player,
+        current_campaign=_access_campaign(),
+        proposed_campaign=_access_campaign(revision=CHANGED_CAMPAIGN_REVISION),
+        creator_provenance=_creator_provenance(),
+        expected_campaign_revision=CAMPAIGN_REVISION,
+        proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+        live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+    )
 
 
 def _route() -> object:
@@ -2690,6 +2920,518 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
             obsolete.closed_input_set_fingerprint,
             closed.closed_input_set_fingerprint,
         )
+
+
+class CollaborationAccessReconciliationTests(unittest.TestCase):
+    def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.15")
+        self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
+
+    def _open_pending(
+        self, *, required: tuple[dict[str, str], ...] | None = None
+    ) -> tuple[MutableCampaignRepositoryFixture, CollaborationObligation]:
+        clause = _collective_clause()
+        if required is not None:
+            clause["required_contributors"] = list(required)
+        repository = MutableCampaignRepositoryFixture(clause)
+        if required is not None and any(
+            ref["player_id"] == "player-carol" for ref in required
+        ):
+            repository.put(
+                "world.player",
+                "player-carol",
+                _player_record("player-carol", "44", "carol", "pc-carol"),
+            )
+        obligation = open_or_successor_obligation(
+            _classify(repository), obligation_id="obligation-access-reconcile"
+        )
+        assert obligation is not None
+        _persist_obligation(repository, obligation)
+        _attach_route_ref(
+            repository,
+            obligation,
+            *tuple(
+                sorted(
+                    {
+                        "player-alice",
+                        *(ref.player_id for ref in obligation.required_contributors),
+                    }
+                )
+            ),
+        )
+        return repository, obligation
+
+    def _accept_bob_input(
+        self,
+        repository: MutableCampaignRepositoryFixture,
+        obligation: CollaborationObligation,
+    ) -> CollaborationObligation:
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-2",
+            clause_id="clause-2",
+            player_id="player-bob",
+            pc_id="pc-bob",
+        )
+        accepted = associate_input(
+            obligation,
+            _host(repository),
+            "interaction-2",
+            "clause-2",
+            principal=_bob_principal(),
+            player_route=_route(),
+        )
+        _persist_obligation(repository, accepted)
+        return accepted
+
+    def test_pending_required_player_deactivation_obsoletes_exact_generation(
+        self,
+    ) -> None:
+        repository, obligation = self._open_pending()
+        transition = _self_deactivation_transition(repository)
+        before = deepcopy(repository.records)
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        self.assertEqual(
+            reconciliation.after_authority_view["player"]["status"], "inactive"
+        )
+        self.assertEqual(
+            tuple(
+                (item.obligation_id, item.generation)
+                for item in reconciliation.obligations
+            ),
+            ((obligation.obligation_id, obligation.generation),),
+        )
+        obsolete = reconciliation.obligations[0]
+        self.assertEqual(obsolete.lifecycle, "OBSOLETE")
+        self.assertEqual(obsolete.accepted_input_uses, obligation.accepted_input_uses)
+        self.assertEqual(
+            obsolete.accepted_input_contributors,
+            obligation.accepted_input_contributors,
+        )
+        self.assertEqual(repository.records, before)
+        repeated = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+        self.assertEqual(repeated, reconciliation)
+        self.assertEqual(repository.records, before)
+
+    def test_reactivation_restores_only_prospective_pending_eligibility(self) -> None:
+        repository, obligation = self._open_pending()
+        transition = _self_reactivation_transition(repository)
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        self.assertEqual(
+            reconciliation.after_authority_view["player"]["status"], "active"
+        )
+        self.assertEqual(len(reconciliation.obligations), 1)
+        self.assertEqual(reconciliation.obligations[0].lifecycle, "OPEN")
+        self.assertEqual(
+            reconciliation.obligations[0].accepted_input_uses,
+            obligation.accepted_input_uses,
+        )
+
+    def test_satisfied_requirement_keeps_valid_generation_and_history_prospectively(
+        self,
+    ) -> None:
+        repository, obligation = self._open_pending(
+            required=(
+                {"player_id": "player-bob", "pc_id": "pc-bob"},
+                {"player_id": "player-carol", "pc_id": "pc-carol"},
+            )
+        )
+        accepted = self._accept_bob_input(repository, obligation)
+        transition = _self_deactivation_transition(
+            repository,
+            player_ids=("player-alice", "player-bob", "player-carol"),
+        )
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        current = reconciliation.obligations[0]
+        self.assertEqual(current.lifecycle, "OPEN")
+        self.assertEqual(current.accepted_input_uses, accepted.accepted_input_uses)
+        self.assertEqual(
+            current.accepted_input_contributors,
+            accepted.accepted_input_contributors,
+        )
+        self.assertEqual(
+            tuple(
+                ref.player_id
+                for ref in collaboration_module._pending_required_contributors(current)
+            ),
+            ("player-carol",),
+        )
+
+        # Simulate T04B's same-closure publication so the exact-recovery path sees
+        # the prospective PLAYER state and unchanged accepted collaboration data.
+        repository.put(
+            "world.player",
+            "player-bob",
+            _thaw_for_test(transition.proposed_player),
+        )
+        _persist_obligation(repository, current)
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+        host = _host(repository)
+
+        recovered = collaboration_module.recover_obligation(
+            host, obligation.obligation_id
+        )
+        self.assertEqual(recovered.accepted_input_uses, accepted.accepted_input_uses)
+        self.assertEqual(
+            recovered.accepted_input_contributors, accepted.accepted_input_contributors
+        )
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active|join"):
+            associate_input(
+                recovered,
+                host,
+                "interaction-3",
+                "clause-3",
+                principal=_bob_principal(),
+                player_route=_route(),
+            )
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active|join"):
+            join_participant(host, principal=_bob_principal(), player_route=_route())
+        with self.assertRaisesRegex(CollaborationAdmissionError, "active"):
+            CollaborationObligation.from_mapping(
+                repository.records[
+                    route_native_record(
+                        "runtime.collaboration_obligation",
+                        (obligation.obligation_id,),
+                    ).relative_path
+                ],
+                host=host,
+            )
+
+    def test_exact_hydration_rejects_forged_historical_author_or_pc(self) -> None:
+        repository, obligation = self._open_pending(
+            required=(
+                {"player_id": "player-bob", "pc_id": "pc-bob"},
+                {"player_id": "player-carol", "pc_id": "pc-carol"},
+            )
+        )
+        self._accept_bob_input(repository, obligation)
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        inactive_bob = deepcopy(repository.records[bob_path])
+        inactive_bob["status"] = "inactive"
+        inactive_bob["deactivated_by"] = "self"
+        repository.put("world.player", "player-bob", inactive_bob)
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+        host = _host(repository)
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        current = deepcopy(repository.records[obligation_path])
+
+        for forged_value, expected_error in (
+            (
+                current
+                | {
+                    "accepted_input_contributors": [
+                        current["accepted_input_contributors"][0],
+                        current["accepted_input_contributors"][1]
+                        | {"player_id": "player-alice"},
+                    ]
+                },
+                "author|holder",
+            ),
+            (
+                current
+                | {
+                    "accepted_input_contributors": [
+                        current["accepted_input_contributors"][0],
+                        current["accepted_input_contributors"][1]
+                        | {"pc_id": "pc-not-controlled"},
+                    ]
+                },
+                "PC association",
+            ),
+        ):
+            with self.subTest(expected_error=expected_error):
+                repository.put(
+                    "runtime.collaboration_obligation",
+                    obligation.obligation_id,
+                    forged_value,
+                )
+                with self.assertRaisesRegex(
+                    CollaborationAdmissionError, expected_error
+                ):
+                    collaboration_module.recover_obligation(
+                        host, obligation.obligation_id
+                    )
+        repository.put(
+            "runtime.collaboration_obligation", obligation.obligation_id, current
+        )
+
+    def test_remaining_active_contributor_can_close_and_handoff_retained_history(
+        self,
+    ) -> None:
+        repository, obligation = self._open_pending(
+            required=(
+                {"player_id": "player-bob", "pc_id": "pc-bob"},
+                {"player_id": "player-carol", "pc_id": "pc-carol"},
+            )
+        )
+        self._accept_bob_input(repository, obligation)
+        transition = _self_deactivation_transition(
+            repository,
+            player_ids=("player-alice", "player-bob", "player-carol"),
+        )
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+        current = reconciliation.obligations[0]
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        repository.put(
+            "world.player",
+            "player-bob",
+            _thaw_for_test(transition.proposed_player),
+        )
+        _persist_obligation(repository, current)
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+        host = _host(repository)
+
+        _add_persisted_input(
+            repository,
+            interaction_id="interaction-3",
+            clause_id="clause-3",
+            player_id="player-carol",
+            pc_id="pc-carol",
+        )
+        carol = VerifiedPrincipal(stable_account_id="44", login="carol")
+        carol_route = build_principal_player_route(
+            CAMPAIGN_ID,
+            (
+                PlayerRecord(
+                    "player-carol",
+                    "44",
+                    "carol",
+                    "active",
+                    None,
+                    controlled_pc_ids=("pc-carol",),
+                ),
+            ),
+        )
+        associated = associate_input(
+            current,
+            host,
+            "interaction-3",
+            "clause-3",
+            principal=carol,
+            player_route=carol_route,
+        )
+        _persist_obligation(repository, associated)
+
+        closed = collaboration_module.close_obligation(associated, host=host)
+        self.assertEqual(closed.lifecycle, "CLOSED")
+        self.assertEqual(
+            closed.accepted_input_uses,
+            (
+                ("interaction-1", "clause-1"),
+                ("interaction-2", "clause-2"),
+                ("interaction-3", "clause-3"),
+            ),
+        )
+        _persist_obligation(repository, closed)
+        handoff = build_handoff(closed, host=host)
+        self.assertEqual(len(handoff.entries), 3)
+        self.assertEqual(
+            repository.records[bob_path]["status"],
+            "inactive",
+        )
+
+    def test_campaign_join_policy_change_preserves_existing_obligation(self) -> None:
+        repository, _obligation = self._open_pending()
+        transition = _join_policy_transition(player_ids=("player-alice", "player-bob"))
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_access_policy_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        self.assertEqual(
+            reconciliation.after_authority_view["campaign"]["players"]["join_policy"],
+            "open_contributors",
+        )
+        self.assertEqual(len(reconciliation.obligations), 1)
+        self.assertEqual(reconciliation.obligations[0].lifecycle, "OPEN")
+
+    def test_singleplayer_transition_fails_closed_for_unverified_pending_agency(
+        self,
+    ) -> None:
+        repository, _obligation = self._open_pending()
+        transition = _singleplayer_transition()
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_access_policy_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        self.assertEqual(
+            reconciliation.after_authority_view["campaign"]["mode"],
+            "singleplayer",
+        )
+        self.assertEqual(reconciliation.obligations[0].lifecycle, "OBSOLETE")
+
+    def test_campaign_policy_mutation_without_creator_provenance_fails_closed(
+        self,
+    ) -> None:
+        with self.assertRaises(AccessControlContractError):
+            freeze_access_policy_transition(
+                VerifiedPrincipal(stable_account_id="99", login="creator"),
+                current_campaign=_access_campaign(),
+                proposed_campaign=_access_campaign(
+                    revision=CHANGED_CAMPAIGN_REVISION,
+                    join_policy="open_contributors",
+                ),
+                expected_campaign_revision=CAMPAIGN_REVISION,
+                proposed_campaign_revision=CHANGED_CAMPAIGN_REVISION,
+                live_route=LiveRouting(campaign_id=CAMPAIGN_ID, entries=()),
+            )
+
+    def test_grant_revocation_is_prospective_for_existing_collaboration_requirement(
+        self,
+    ) -> None:
+        repository, _obligation = self._open_pending()
+        transition = _mechanical_grant_revocation_transition(repository)
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        self.assertEqual(reconciliation.obligations[0].lifecycle, "OPEN")
+        bob_path = route_native_record("world.player", ("player-bob",)).relative_path
+        repository.put(
+            "world.player",
+            "player-bob",
+            _thaw_for_test(transition.proposed_player),
+        )
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+        resolution = resolve_player(
+            _bob_principal(),
+            _route(),
+            lambda candidate_id: repository.records[
+                route_native_record("world.player", (candidate_id,)).relative_path
+            ],
+            campaign_id=CAMPAIGN_ID,
+        )
+        decision = authorize_operation(
+            _bob_principal(),
+            resolution,
+            operation="mechanical_override_policy",
+            campaign_id=CAMPAIGN_ID,
+        )
+        self.assertFalse(decision.authorized)
+        self.assertFalse(
+            repository.records[bob_path]["policy_authority"][
+                "mechanical_override_policy"
+            ]
+        )
+
+    def test_reconciliation_reads_only_route_bounded_obligation_ids(self) -> None:
+        repository, obligation = self._open_pending()
+        rogue = replace(obligation, obligation_id="obligation-not-routed")
+        _persist_obligation(repository, rogue)
+        repository.reads.clear()
+        transition = _self_deactivation_transition(repository)
+
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+
+        expected_path = route_native_record(
+            "runtime.collaboration_obligation", (obligation.obligation_id,)
+        ).relative_path
+        rogue_path = route_native_record(
+            "runtime.collaboration_obligation", (rogue.obligation_id,)
+        ).relative_path
+        self.assertEqual(len(reconciliation.obligations), 1)
+        self.assertIn(expected_path, repository.reads)
+        self.assertNotIn(rogue_path, repository.reads)
+
+    def test_terminal_generation_remains_known_id_recoverable_but_leaves_routes(
+        self,
+    ) -> None:
+        repository, obligation = self._open_pending()
+        transition = _self_deactivation_transition(repository)
+        reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
+        )
+        obsolete = reconciliation.obligations[0]
+        self.assertEqual(obsolete.lifecycle, "OBSOLETE")
+        _persist_obligation(repository, obsolete)
+        repository.put(
+            "world.player",
+            "player-bob",
+            _thaw_for_test(transition.proposed_player),
+        )
+        for companion in collaboration_module.reconcile_player_route_companions(
+            obsolete
+        ):
+            player_path = route_native_record(
+                "world.player", (companion.player_id,)
+            ).relative_path
+            player = deepcopy(repository.records[player_path])
+            player["collaboration_route_refs"] = [
+                ref
+                for ref in player.get("collaboration_route_refs", ())
+                if (ref["obligation_id"], ref["generation"])
+                != (obsolete.obligation_id, obsolete.generation)
+            ]
+            repository.put("world.player", companion.player_id, player)
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+        host = _host(repository)
+
+        recovered = collaboration_module.recover_obligation(
+            host, obligation.obligation_id
+        )
+        self.assertEqual(recovered.lifecycle, "OBSOLETE")
+        self.assertEqual(required_route_holders(recovered), ())
+        repository.reads.clear()
+        catch_up = join_participant(host, principal=_principal(), player_route=_route())
+        self.assertEqual(catch_up.obligations, ())
+        self.assertNotIn(
+            route_native_record(
+                "runtime.collaboration_obligation", (obligation.obligation_id,)
+            ).relative_path,
+            repository.reads,
+        )
+
+    def test_stale_access_transition_fails_closed_before_reconciliation(self) -> None:
+        repository, _obligation = self._open_pending()
+        transition = _self_deactivation_transition(repository)
+        repository.current_revision = CHANGED_CAMPAIGN_REVISION
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                transition, host=_host(repository)
+            )
 
 
 if __name__ == "__main__":

@@ -18,7 +18,15 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import TYPE_CHECKING, Final
 
-from .access_control import AccessControlContractError, PlayerRecord, resolve_player
+from .access_control import (
+    AccessConsumerImpact,
+    AccessControlContractError,
+    AccessTransitionKind,
+    FrozenAccessPolicyTransition,
+    PlayerRecord,
+    publish_access_policy_transition,
+    resolve_player,
+)
 from .durability import route_serialized_operation
 from .native_storage import (
     FAMILY_ROOTS,
@@ -37,8 +45,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.14
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
+# framework_module_version: 1.0.15
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.15"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -1004,7 +1012,40 @@ class CollaborationObligation:
         host: RuntimeHost,
         basis: _OperationBasis | None = None,
     ) -> CollaborationObligation:
-        """Load one persisted obligation only after strict native revalidation."""
+        """Validate an untrusted serialized candidate with current authority."""
+        return cls._from_mapping(
+            value,
+            host=host,
+            basis=basis,
+            historical_owner=False,
+        )
+
+    @classmethod
+    def _from_persisted_owner(
+        cls,
+        value: object,
+        *,
+        host: RuntimeHost,
+        basis: _OperationBasis,
+    ) -> CollaborationObligation:
+        """Hydrate bytes read from this exact native owner without revoking history."""
+        return cls._from_mapping(
+            value,
+            host=host,
+            basis=basis,
+            historical_owner=True,
+        )
+
+    @classmethod
+    def _from_mapping(
+        cls,
+        value: object,
+        *,
+        host: RuntimeHost,
+        basis: _OperationBasis | None,
+        historical_owner: bool,
+    ) -> CollaborationObligation:
+        """Parse strictly, then apply the matching caller/persisted trust rule."""
         if not isinstance(value, Mapping):
             raise CollaborationAdmissionError("serialized obligation must be an object")
         expected = {
@@ -1132,8 +1173,77 @@ class CollaborationObligation:
             and obligation.closed_input_set_fingerprint is not None
         ):
             CollaborationClosedBasis.from_obligation(obligation)
-        _validate_persisted_input_owners(obligation, host, basis=basis)
+        if historical_owner:
+            if basis is None:
+                raise CollaborationAdmissionError(
+                    "historical hydration requires one exact native owner basis"
+                )
+            _validate_historical_input_associations(obligation, host, basis=basis)
+        else:
+            _validate_persisted_input_owners(obligation, host, basis=basis)
         return obligation
+
+
+@dataclass(frozen=True, slots=True)
+class CollaborationAccessReconciliation:
+    """Ephemeral exact-view result for one W03 access transition."""
+
+    transition: FrozenAccessPolicyTransition
+    after_authority_view: Mapping[str, object]
+    affected_obligation_ids: tuple[tuple[str, int], ...]
+    obligations: tuple[CollaborationObligation, ...]
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.transition, FrozenAccessPolicyTransition):
+            raise CollaborationAdmissionError(
+                "access reconciliation requires a frozen W03 transition"
+            )
+        if not isinstance(self.after_authority_view, Mapping):
+            raise CollaborationAdmissionError(
+                "access reconciliation requires the W03 after-authority view"
+            )
+        object.__setattr__(
+            self,
+            "after_authority_view",
+            MappingProxyType(dict(_freeze(self.after_authority_view))),
+        )
+        if not isinstance(self.affected_obligation_ids, tuple):
+            raise CollaborationAdmissionError(
+                "affected collaboration identities must be a tuple"
+            )
+        normalized_ids: list[tuple[str, int]] = []
+        for obligation_id, generation in self.affected_obligation_ids:
+            if (
+                isinstance(generation, bool)
+                or not isinstance(generation, int)
+                or generation < 1
+            ):
+                raise CollaborationAdmissionError(
+                    "affected obligation generation must be positive"
+                )
+            normalized_ids.append(
+                (
+                    _id(obligation_id, "affected obligation_id"),
+                    generation,
+                )
+            )
+        if normalized_ids != sorted(set(normalized_ids)):
+            raise CollaborationAdmissionError(
+                "affected collaboration identities must be sorted and unique"
+            )
+        if not isinstance(self.obligations, tuple) or any(
+            not isinstance(item, CollaborationObligation) for item in self.obligations
+        ):
+            raise CollaborationAdmissionError(
+                "reconciled collaboration obligations must be typed"
+            )
+        actual_ids = tuple(
+            (item.obligation_id, item.generation) for item in self.obligations
+        )
+        if actual_ids != tuple(normalized_ids):
+            raise CollaborationAdmissionError(
+                "reconciled obligations do not match the affected identity set"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1921,10 +2031,15 @@ def _validate_persisted_input_owners(
             raise CollaborationAdmissionError(
                 "accepted input contributor does not match native Interaction owner"
             )
+        input_plan_id = _id(interaction["intent_plan_id"], "input intent_plan_id")
         if identity == originating_identity:
             if contributor.pc_id is not None:
                 raise CollaborationAdmissionError(
                     "originating input cannot add a PC association"
+                )
+            if input_plan_id != obligation.intent_plan_id:
+                raise CollaborationAdmissionError(
+                    "originating Interaction no longer names the obligation IntentPlan"
                 )
             _validate_required_player(host, basis, contributor)
         else:
@@ -1948,15 +2063,656 @@ def _validate_persisted_input_owners(
         plan = _load_plan(
             host,
             basis,
-            _id(interaction["intent_plan_id"], "input intent_plan_id"),
+            input_plan_id,
             interaction_id,
         )
+        if plan.get("campaign_id") != obligation.campaign_id:
+            raise CollaborationAdmissionError(
+                "accepted input IntentPlan belongs to another campaign"
+            )
         clause = _load_clause(plan, clause_id)
         if clause.get("collaboration_semantic_class") != obligation.semantic_class:
             raise CollaborationAdmissionError(
                 "accepted input semantic class does not match obligation"
             )
     _revalidate_host_basis(host, basis)
+
+
+def _validate_historical_input_associations(
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis,
+) -> None:
+    """Validate durable input identity without re-authorizing its historical author."""
+    basis = _operation_basis(host, basis)
+    if basis.pinned_campaign.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "serialized obligation belongs to another campaign"
+        )
+    originating_identity = (obligation.interaction_id, obligation.clause_id)
+    permitted_contributors = (
+        obligation.required_contributors + obligation.optional_contributors
+    )
+    for identity, contributor in obligation.accepted_input_contributors:
+        interaction_id, clause_id = identity
+        interaction = _load_interaction(host, basis, interaction_id)
+        if interaction.get("player_id") != contributor.player_id:
+            raise CollaborationAdmissionError(
+                "accepted historical author differs from native Interaction owner"
+            )
+        if identity == originating_identity:
+            if contributor.pc_id is not None:
+                raise CollaborationAdmissionError(
+                    "originating input cannot add a PC association"
+                )
+            input_plan_id = _id(interaction["intent_plan_id"], "input intent_plan_id")
+            if input_plan_id != obligation.intent_plan_id:
+                raise CollaborationAdmissionError(
+                    "originating Interaction no longer names the obligation IntentPlan"
+                )
+        else:
+            participant = next(
+                (
+                    ref
+                    for ref in permitted_contributors
+                    if ref.player_id == contributor.player_id
+                ),
+                None,
+            )
+            if participant is None:
+                raise CollaborationAdmissionError(
+                    "historical input author is not an obligation holder"
+                )
+            if participant != contributor:
+                raise CollaborationAdmissionError(
+                    "historical author PC association differs from the obligation"
+                )
+            input_plan_id = _id(interaction["intent_plan_id"], "input intent_plan_id")
+        plan = _load_plan(
+            host,
+            basis,
+            input_plan_id,
+            interaction_id,
+        )
+        if plan.get("campaign_id") != obligation.campaign_id:
+            raise CollaborationAdmissionError(
+                "historical input IntentPlan belongs to another campaign"
+            )
+        clause = _load_clause(plan, clause_id)
+        if clause.get("collaboration_semantic_class") != obligation.semantic_class:
+            raise CollaborationAdmissionError(
+                "historical input semantic class does not match obligation"
+            )
+    _revalidate_host_basis(host, basis)
+
+
+def _access_transition_kind(
+    transition: FrozenAccessPolicyTransition,
+) -> AccessTransitionKind:
+    if not isinstance(transition, FrozenAccessPolicyTransition):
+        raise CollaborationAdmissionError("W03 frozen access transition is required")
+    try:
+        return AccessTransitionKind(str(transition.transition_kind))
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "W03 access transition kind is not registered"
+        ) from exc
+
+
+def _campaign_access_values(
+    value: object,
+    label: str,
+) -> tuple[str, str, tuple[str, ...]]:
+    campaign = _mapping(value, label)
+    mode = campaign.get("mode")
+    if mode not in {"singleplayer", "multiplayer"}:
+        raise CollaborationAdmissionError(f"{label} mode is not registered")
+    players = campaign.get("players")
+    if not isinstance(players, Mapping):
+        raise CollaborationAdmissionError(f"{label} players state is malformed")
+    join_policy = players.get("join_policy")
+    if join_policy not in {"invite_only", "open_contributors"}:
+        raise CollaborationAdmissionError(f"{label} join policy is not registered")
+    raw_ids = players.get("player_ids", ())
+    player_ids = tuple(
+        _id(player_id, f"{label} player_id")
+        for player_id in _sequence(raw_ids, f"{label} player_ids")
+    )
+    if len(player_ids) != len(set(player_ids)):
+        raise CollaborationAdmissionError(f"{label} player_ids are duplicate")
+    return mode, join_policy, player_ids
+
+
+def _validate_access_transition_semantics(
+    transition: FrozenAccessPolicyTransition,
+    kind: AccessTransitionKind,
+) -> None:
+    current_campaign = _mapping(
+        transition.current_campaign, "W03 current campaign access"
+    )
+    proposed_campaign = _mapping(
+        transition.proposed_campaign, "W03 proposed campaign access"
+    )
+    current_revision = current_campaign.get(
+        "revision",
+        current_campaign.get(
+            "campaign_revision", current_campaign.get("current_revision")
+        ),
+    )
+    proposed_revision = proposed_campaign.get(
+        "revision",
+        proposed_campaign.get(
+            "campaign_revision", proposed_campaign.get("current_revision")
+        ),
+    )
+    if (
+        current_revision != transition.expected_campaign_revision
+        or proposed_revision != transition.proposed_campaign_revision
+        or proposed_campaign.get("campaign_id") != transition.campaign_id
+        or transition.historical_results_rewritten
+        or not transition.prospective
+    ):
+        raise CollaborationAdmissionError(
+            "W03 access transition revisions or historical boundary are invalid"
+        )
+    current_mode, current_join, current_player_ids = _campaign_access_values(
+        current_campaign, "W03 current campaign access"
+    )
+    after_mode, after_join, after_player_ids = _campaign_access_values(
+        proposed_campaign, "W03 proposed campaign access"
+    )
+    if current_player_ids != after_player_ids:
+        raise CollaborationAdmissionError(
+            "W03 access transition cannot add or remove existing PLAYER bindings"
+        )
+    if transition.current_player is not None:
+        if (
+            transition.proposed_player is None
+            or (current_mode, current_join) != (after_mode, after_join)
+            or kind
+            not in {
+                AccessTransitionKind.DEACTIVATE_SELF,
+                AccessTransitionKind.DEACTIVATE_CREATOR,
+                AccessTransitionKind.REACTIVATE,
+                AccessTransitionKind.GRANT_MECHANICAL_OVERRIDE,
+                AccessTransitionKind.REVOKE_MECHANICAL_OVERRIDE,
+            }
+        ):
+            raise CollaborationAdmissionError(
+                "W03 PLAYER transition contains an unrelated campaign mutation"
+            )
+        return
+    if transition.proposed_player is not None:
+        raise CollaborationAdmissionError(
+            "W03 campaign transition contains an unrelated PLAYER mutation"
+        )
+    if not transition.existing_player_bindings_preserved:
+        raise CollaborationAdmissionError(
+            "W03 campaign access transition revoked an existing binding"
+        )
+    changed_mode = current_mode != after_mode
+    changed_join = current_join != after_join
+    expected_changes = {
+        AccessTransitionKind.MODE_CHANGE: (True, False),
+        AccessTransitionKind.JOIN_POLICY_CHANGE: (False, True),
+        AccessTransitionKind.MODE_AND_JOIN_POLICY_CHANGE: (True, True),
+    }.get(kind)
+    if expected_changes != (changed_mode, changed_join):
+        raise CollaborationAdmissionError(
+            "W03 campaign transition kind differs from its exact after-view"
+        )
+
+
+def _access_transition_player_ids(
+    transition: FrozenAccessPolicyTransition,
+) -> tuple[str, ...]:
+    current_campaign = _mapping(
+        transition.current_campaign, "W03 current campaign access state"
+    )
+    if current_campaign.get("campaign_id") != transition.campaign_id:
+        raise CollaborationAdmissionError(
+            "W03 current campaign differs from access transition identity"
+        )
+    _current_mode, _current_join, campaign_player_ids = _campaign_access_values(
+        current_campaign, "W03 current campaign access"
+    )
+
+    if transition.current_player is not None:
+        current_player = _mapping(
+            transition.current_player, "W03 current PLAYER transition"
+        )
+        player_id = _id(current_player.get("player_id"), "W03 transition player_id")
+        if player_id not in campaign_player_ids:
+            raise CollaborationAdmissionError(
+                "W03 transition PLAYER is absent from the campaign access view"
+            )
+        affected_player_ids = (player_id,)
+    else:
+        affected_player_ids = campaign_player_ids
+
+    impact = transition.impact
+    if not isinstance(impact, AccessConsumerImpact) or not impact.complete:
+        raise CollaborationAdmissionError("W03 access transition impact is incomplete")
+    expected_keys = tuple(
+        dict.fromkeys(
+            (
+                f"campaign:{transition.campaign_id}",
+                *(f"player:{player_id}" for player_id in affected_player_ids),
+            )
+        )
+    )
+    if impact.collaboration_keys != expected_keys:
+        raise CollaborationAdmissionError(
+            "W03 collaboration impact keys are not the exact bounded access set"
+        )
+    return affected_player_ids
+
+
+def _exact_access_player(
+    host: RuntimeHost,
+    basis: _OperationBasis,
+    player_id: str,
+) -> tuple[Mapping[str, object], PlayerRecord]:
+    raw = _read_native(host, basis, "world.player", player_id)
+    if raw.get("campaign_id") != basis.pinned_campaign.campaign_id:
+        raise CollaborationAdmissionError(
+            "access transition PLAYER lacks exact campaign ownership"
+        )
+    try:
+        player = PlayerRecord.from_mapping(raw)
+    except (AccessControlContractError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "access transition PLAYER record is invalid"
+        ) from exc
+    if player.player_id != player_id:
+        raise CollaborationAdmissionError(
+            "access transition PLAYER identity is not exact"
+        )
+    return raw, player
+
+
+def _validate_player_access_delta(
+    kind: AccessTransitionKind,
+    current: PlayerRecord,
+    after: PlayerRecord,
+) -> None:
+    if (
+        current.player_id != after.player_id
+        or current.stable_account_id != after.stable_account_id
+        or current.controlled_pc_ids != after.controlled_pc_ids
+    ):
+        raise CollaborationAdmissionError(
+            "W03 access transition changed PLAYER identity or PC control"
+        )
+    if kind in {
+        AccessTransitionKind.DEACTIVATE_SELF,
+        AccessTransitionKind.DEACTIVATE_CREATOR,
+    }:
+        expected_deactivation = (
+            "self" if kind is AccessTransitionKind.DEACTIVATE_SELF else "creator"
+        )
+        if (
+            current.status != "active"
+            or after.status != "inactive"
+            or after.deactivated_by != expected_deactivation
+            or current.mechanical_override_policy != after.mechanical_override_policy
+        ):
+            raise CollaborationAdmissionError(
+                "W03 deactivation after-view is inconsistent"
+            )
+    elif kind is AccessTransitionKind.REACTIVATE:
+        if (
+            current.status != "inactive"
+            or after.status != "active"
+            or after.deactivated_by is not None
+            or current.mechanical_override_policy != after.mechanical_override_policy
+        ):
+            raise CollaborationAdmissionError(
+                "W03 reactivation after-view is inconsistent"
+            )
+    elif kind is AccessTransitionKind.GRANT_MECHANICAL_OVERRIDE:
+        if (
+            current.status != after.status
+            or current.deactivated_by != after.deactivated_by
+            or current.mechanical_override_policy
+            or not after.mechanical_override_policy
+        ):
+            raise CollaborationAdmissionError("W03 grant after-view is inconsistent")
+    elif kind is AccessTransitionKind.REVOKE_MECHANICAL_OVERRIDE:
+        if (
+            current.status != after.status
+            or current.deactivated_by != after.deactivated_by
+            or not current.mechanical_override_policy
+            or after.mechanical_override_policy
+        ):
+            raise CollaborationAdmissionError(
+                "W03 revocation after-view is inconsistent"
+            )
+    else:
+        raise CollaborationAdmissionError(
+            "campaign access transition unexpectedly changes one PLAYER"
+        )
+
+
+def _opportunity_matches_obligation(
+    obligation: CollaborationObligation,
+    host: RuntimeHost,
+    *,
+    basis: _OperationBasis,
+) -> bool:
+    """Check whether the exact source still admits this immutable generation."""
+    try:
+        _validate_basis_shape(
+            obligation.dependency_class,
+            obligation.dependency_scope,
+            obligation.native_basis_refs,
+        )
+    except (CollaborationAdmissionError, KeyError):
+        return False
+
+    basis_current = True
+    for ref in obligation.native_basis_refs:
+        owner = _read_native(host, basis, ref.family, ref.record_id)
+        if owner.get("revision") != ref.revision:
+            basis_current = False
+
+    interaction = _load_interaction(host, basis, obligation.interaction_id)
+    if interaction.get("intent_plan_id") != obligation.intent_plan_id:
+        _revalidate_host_basis(host, basis)
+        return False
+    plan = _load_plan(host, basis, obligation.intent_plan_id, obligation.interaction_id)
+    clause = _load_clause(plan, obligation.clause_id)
+    try:
+        (
+            semantic_class,
+            _normalized,
+            dependency,
+            purpose,
+            scope,
+            required,
+            optional,
+            basis_refs,
+            ordering_ref,
+        ) = _validate_clause_semantics(clause)
+    except (CollaborationAdmissionError, KeyError, TypeError, ValueError):
+        _revalidate_host_basis(host, basis)
+        return False
+    if (
+        semantic_class != obligation.semantic_class
+        or dependency is not obligation.dependency_class
+        or purpose != obligation.purpose
+        or dict(scope) != dict(obligation.dependency_scope)
+        or required != obligation.required_contributors
+        or optional != obligation.optional_contributors
+        or basis_refs != obligation.native_basis_refs
+        or ordering_ref is not None
+    ):
+        _revalidate_host_basis(host, basis)
+        return False
+    if obligation.semantic_class == "ACTIONABLE_INTENT" and (
+        clause.get("execution_state") != "intent.pending"
+        or clause.get("command_id") is not None
+    ):
+        _revalidate_host_basis(host, basis)
+        return False
+    _revalidate_host_basis(host, basis)
+    return basis_current
+
+
+def _pending_contributors_remain_authorized(
+    obligation: CollaborationObligation,
+    current_players: Mapping[str, tuple[Mapping[str, object], PlayerRecord]],
+    after_players: Mapping[str, tuple[Mapping[str, object], PlayerRecord]],
+    *,
+    campaign_mode: str,
+) -> bool:
+    if campaign_mode == "singleplayer":
+        # The frozen W03 transition carries no creator identity to Collaboration;
+        # unresolved singleplayer creator authority therefore fails closed.
+        return False
+    for contributor in _pending_required_contributors(obligation):
+        player_state = after_players.get(contributor.player_id)
+        if player_state is None:
+            player_state = current_players.get(contributor.player_id)
+        if player_state is None:
+            raise CollaborationAdmissionError(
+                "pending contributor is outside the bounded current PLAYER route"
+            )
+        player = player_state[1]
+        if player.status != "active":
+            return False
+        if (
+            contributor.pc_id is not None
+            and contributor.pc_id not in player.controlled_pc_ids
+        ):
+            return False
+    return True
+
+
+def _reconcile_access_transition(
+    transition: FrozenAccessPolicyTransition,
+    *,
+    host: RuntimeHost,
+) -> CollaborationAccessReconciliation:
+    if not isinstance(transition, FrozenAccessPolicyTransition):
+        raise CollaborationAdmissionError("W03 frozen access transition is required")
+    try:
+        basis = _operation_basis(host, None)
+        if transition.campaign_id != basis.pinned_campaign.campaign_id:
+            raise CollaborationAdmissionError(
+                "W03 access transition belongs to another campaign"
+            )
+        kind = _access_transition_kind(transition)
+        _validate_access_transition_semantics(transition, kind)
+        affected_player_ids = _access_transition_player_ids(transition)
+        current_players: dict[str, tuple[Mapping[str, object], PlayerRecord]] = {}
+        for player_id in affected_player_ids:
+            current_players[player_id] = _exact_access_player(host, basis, player_id)
+
+        current_player = None
+        after_player = None
+        if transition.current_player is not None:
+            target_player_id = _id(
+                _mapping(
+                    transition.current_player, "W03 current PLAYER transition"
+                ).get("player_id"),
+                "W03 transition player_id",
+            )
+            current_player = current_players[target_player_id][0]
+        try:
+            after_view = publish_access_policy_transition(
+                transition,
+                current_campaign_revision=basis.pinned_campaign.revision,
+                current_campaign=transition.current_campaign,
+                current_player=current_player,
+            )
+        except (AccessControlContractError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "W03 after-authority view is stale or invalid"
+            ) from exc
+        if not isinstance(after_view, Mapping):
+            raise CollaborationAdmissionError(
+                "W03 publication did not return an after-authority view"
+            )
+        after_campaign = _mapping(
+            after_view.get("campaign"), "W03 after-authority campaign"
+        )
+        if after_campaign.get("campaign_id") != transition.campaign_id:
+            raise CollaborationAdmissionError(
+                "W03 after-authority campaign identity is not exact"
+            )
+        after_players_value = after_campaign.get("players")
+        if not isinstance(after_players_value, Mapping):
+            raise CollaborationAdmissionError(
+                "W03 after-authority PLAYER access view is malformed"
+            )
+        campaign_mode = after_campaign.get("mode")
+        if campaign_mode not in {"singleplayer", "multiplayer"}:
+            raise CollaborationAdmissionError(
+                "W03 after-authority campaign mode is not registered"
+            )
+
+        after_players = dict(current_players)
+        if transition.current_player is not None:
+            raw_after_player = _mapping(
+                after_view.get("player"), "W03 after-authority PLAYER"
+            )
+            target_player_id = _id(
+                raw_after_player.get("player_id"),
+                "W03 after-authority player_id",
+            )
+            try:
+                after_player = PlayerRecord.from_mapping(raw_after_player)
+            except (AccessControlContractError, TypeError, ValueError) as exc:
+                raise CollaborationAdmissionError(
+                    "W03 after-authority PLAYER is invalid"
+                ) from exc
+            _validate_player_access_delta(
+                kind, current_players[target_player_id][1], after_player
+            )
+            current_raw, _current_record = current_players[target_player_id]
+            for candidate, label in (
+                (transition.current_player, "frozen current PLAYER"),
+                (transition.proposed_player, "frozen proposed PLAYER"),
+                (raw_after_player, "after-authority PLAYER"),
+            ):
+                if candidate is None:
+                    continue
+                candidate_mapping = _mapping(candidate, label)
+                if "collaboration_route_refs" in candidate_mapping and (
+                    _player_route_refs(candidate_mapping, label)
+                    != _player_route_refs(current_raw, "current PLAYER")
+                ):
+                    raise CollaborationAdmissionError(
+                        "W03 access transition changed Collaboration-owned route refs"
+                    )
+            after_players[target_player_id] = (raw_after_player, after_player)
+        elif after_view.get("player") is not None:
+            raise CollaborationAdmissionError(
+                "campaign access transition returned an unexpected PLAYER mutation"
+            )
+
+        affected_ids: set[tuple[str, int]] = set()
+        for player_id in affected_player_ids:
+            raw_player = current_players[player_id][0]
+            for route_ref in _player_route_refs(raw_player, "current PLAYER"):
+                affected_ids.add(route_ref)
+
+        reconciled: list[CollaborationObligation] = []
+        for obligation_id, generation in sorted(affected_ids):
+            _obligation_basis, obligation = _read_current_obligation(
+                obligation_id, host, basis=basis
+            )
+            if obligation.generation != generation:
+                raise CollaborationAdmissionError(
+                    "PLAYER route companion points to a stale obligation generation"
+                )
+            if obligation.campaign_id != transition.campaign_id:
+                raise CollaborationAdmissionError(
+                    "affected obligation belongs to another campaign"
+                )
+            if obligation.lifecycle not in {"OPEN", "CLOSED"}:
+                raise CollaborationAdmissionError(
+                    "nonterminal PLAYER route points to a terminal obligation"
+                )
+            if not set(affected_player_ids).intersection(
+                _prior_route_holder_ids(obligation)
+            ):
+                raise CollaborationAdmissionError(
+                    "affected PLAYER route is not an obligation holder"
+                )
+
+            contributor_states = dict(current_players)
+            for contributor_id in {
+                ref.player_id for ref in obligation.required_contributors
+            }:
+                if contributor_id not in contributor_states:
+                    contributor_states[contributor_id] = _exact_access_player(
+                        host, basis, contributor_id
+                    )
+            opportunity_current = _opportunity_matches_obligation(
+                obligation, host, basis=basis
+            )
+            agency_current = _pending_contributors_remain_authorized(
+                obligation,
+                contributor_states,
+                after_players,
+                campaign_mode=campaign_mode,
+            )
+            reconciled.append(
+                obligation
+                if opportunity_current and agency_current
+                else replace(obligation, lifecycle="OBSOLETE")
+            )
+
+        _revalidate_host_basis(host, basis)
+        return CollaborationAccessReconciliation(
+            transition=transition,
+            after_authority_view=after_view,
+            affected_obligation_ids=tuple(sorted(affected_ids)),
+            obligations=tuple(reconciled),
+        )
+    except CollaborationAdmissionError:
+        raise
+    except (
+        AccessControlContractError,
+        AttributeError,
+        KeyError,
+        TypeError,
+        ValueError,
+    ) as exc:
+        raise CollaborationAdmissionError(
+            "exact after-authority collaboration reconciliation failed"
+        ) from exc
+
+
+def reconcile_collaboration_for_player_access_transition(
+    transition: FrozenAccessPolicyTransition,
+    *,
+    host: RuntimeHost,
+) -> CollaborationAccessReconciliation:
+    """Reconcile bounded obligation refs for one exact PLAYER access change."""
+    kind = _access_transition_kind(transition)
+    if (
+        kind
+        not in {
+            AccessTransitionKind.DEACTIVATE_SELF,
+            AccessTransitionKind.DEACTIVATE_CREATOR,
+            AccessTransitionKind.REACTIVATE,
+            AccessTransitionKind.GRANT_MECHANICAL_OVERRIDE,
+            AccessTransitionKind.REVOKE_MECHANICAL_OVERRIDE,
+        }
+        or transition.current_player is None
+        or transition.proposed_player is None
+    ):
+        raise CollaborationAdmissionError(
+            "PLAYER access reconciliation requires one W03 PLAYER transition"
+        )
+    return _reconcile_access_transition(transition, host=host)
+
+
+def reconcile_collaboration_for_access_policy_transition(
+    transition: FrozenAccessPolicyTransition,
+    *,
+    host: RuntimeHost,
+) -> CollaborationAccessReconciliation:
+    """Reconcile route-bounded obligations for one campaign policy transition."""
+    kind = _access_transition_kind(transition)
+    if (
+        kind
+        not in {
+            AccessTransitionKind.MODE_CHANGE,
+            AccessTransitionKind.JOIN_POLICY_CHANGE,
+            AccessTransitionKind.MODE_AND_JOIN_POLICY_CHANGE,
+        }
+        or transition.current_player is not None
+        or transition.proposed_player is not None
+    ):
+        raise CollaborationAdmissionError(
+            "campaign access reconciliation requires a W03 campaign transition"
+        )
+    return _reconcile_access_transition(transition, host=host)
 
 
 def classify_coordination_dependency(
@@ -2355,7 +3111,9 @@ def _read_current_obligation(
         raise CollaborationAdmissionError(
             "current collaboration obligation belongs to another campaign"
         )
-    obligation = CollaborationObligation.from_mapping(current, host=host, basis=basis)
+    obligation = CollaborationObligation._from_persisted_owner(
+        current, host=host, basis=basis
+    )
     _revalidate_host_basis(host, basis)
     return basis, obligation
 
@@ -2601,6 +3359,28 @@ def close_obligation(
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
     basis = _operation_basis(host, basis)
+    _current_basis, current = _read_current_obligation(
+        obligation.obligation_id, host, basis=basis
+    )
+    if current.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "close obligation belongs to another campaign"
+        )
+    if current.generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "close targets a non-current collaboration generation"
+        )
+    if current.lifecycle != obligation.lifecycle:
+        raise CollaborationAdmissionError(
+            "close targets a stale collaboration lifecycle"
+        )
+    if current.lifecycle in {"CLOSED", "RESOLVED"}:
+        if obligation.to_mapping() != current.to_mapping():
+            raise CollaborationAdmissionError(
+                "close targets a different accepted input set"
+            )
+        return obligation
+    obligation = current
     current_generation, current_lifecycle = _read_current_obligation_state(
         obligation, host, basis=basis
     )
@@ -2616,12 +3396,10 @@ def close_obligation(
         raise CollaborationAdmissionError(
             "close targets a stale collaboration lifecycle"
         )
-    if obligation.lifecycle in {"CLOSED", "RESOLVED"}:
-        return obligation
     if obligation.lifecycle != "OPEN":
         raise CollaborationAdmissionError("only an open obligation can close")
     _revalidate_obligation_native_basis(obligation, host, basis=basis)
-    _validate_persisted_input_owners(obligation, host, basis=basis)
+    _validate_historical_input_associations(obligation, host, basis=basis)
     pending = _pending_required_contributors(obligation)
     if pending:
         raise CollaborationAdmissionError(
@@ -2709,6 +3487,22 @@ def build_handoff(
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
     basis = _operation_basis(host, basis)
+    _current_basis, current = _read_current_obligation(
+        obligation.obligation_id, host, basis=basis
+    )
+    if current.campaign_id != obligation.campaign_id:
+        raise CollaborationAdmissionError(
+            "handoff obligation belongs to another campaign"
+        )
+    if current.generation != obligation.generation:
+        raise CollaborationAdmissionError(
+            "handoff targets a non-current collaboration generation"
+        )
+    if current.lifecycle != obligation.lifecycle:
+        raise CollaborationAdmissionError(
+            "handoff targets a stale collaboration lifecycle"
+        )
+    obligation = current
     current_generation, current_lifecycle = _read_current_obligation_state(
         obligation, host, basis=basis
     )
@@ -2726,7 +3520,7 @@ def build_handoff(
         )
     closed_basis = obligation.closed_basis
     _revalidate_obligation_native_basis(obligation, host, basis=basis)
-    _validate_persisted_input_owners(obligation, host, basis=basis)
+    _validate_historical_input_associations(obligation, host, basis=basis)
     entries: list[CollaborationHandoffEntry] = []
     for identity in closed_basis.accepted_input_uses:
         clause = _load_obligation_clause(obligation, host, *identity, basis=basis)
@@ -3042,7 +3836,7 @@ def obsolete_generation(
         raise CollaborationAdmissionError(
             "only an open or closed collaboration obligation can become obsolete"
         )
-    _validate_persisted_input_owners(current, host, basis=basis)
+    _validate_historical_input_associations(current, host, basis=basis)
     if current.lifecycle == "CLOSED":
         CollaborationClosedBasis.from_obligation(current)
     obsolete = replace(current, lifecycle="OBSOLETE")
