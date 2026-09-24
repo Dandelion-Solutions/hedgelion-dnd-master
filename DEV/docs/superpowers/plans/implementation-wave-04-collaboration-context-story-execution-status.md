@@ -1005,6 +1005,7 @@ STATUS: FINAL_REVIEW — T04A candidate and T07B fix-round-2 await independent t
 CURRENT_TASK: W04.T04A exact after-authority reconciliation; review T04A and T07B fix-round-2 before dependent tasks
 BASE_PUBLISHED_SHA: `e633c3cab045b44b77388c91fc3cc3a0bec08330`
 T04A_CANDIDATE_SHA: `20dd5301310bf5db250c229655ac957fe56e23c3`
+CODE_CHECKPOINT_REMOTE_READBACK_SHA: `b16ba8d2b4e3cffa86736fb20d10a34b01c97ff9`
 LAST_ACCEPTED_COLLABORATION_TASK: W04.T02C PASS -> `dd0783c4eca20a94431b17844ca09ac64f8ba2cf`
 LAST_T07B_FIX_ROUND_2_CANDIDATE: `5a53b8e4323f53cde2f3c718e477003a4da3ce29`
 
@@ -1034,10 +1035,12 @@ CURRENT_VERIFICATION_STATE:
 - Focused T04A tests: 13 passed; full `test_rd12_collaboration`: 106 passed;
   W03 `PlayerAccessTransitionTests`: 29 passed.
 - Ruff check and format check: PASS. Maintenance audit: PASS.
-- Full DEV unittest discovery: 1175 tests, 5 skipped, 2 failures. One was the
-  expected dirty-checkout provenance assertion before this checkpoint; the other
-  version census included protected local `.entire/logs/entire.log`. The `.entire`
-  tree was not modified. Hosted CI is unavailable in this runtime.
+- Canonical full DEV discovery command
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v`:
+  1175 tests, 5 skipped, 1 failure. The remaining version-census test scans
+  protected local `.entire/` capture files (`.entire/logs/` and `.entire/tmp/`);
+  `.entire` was not modified. The clean-checkout provenance test passed after
+  publication. Hosted CI is unavailable in this runtime.
 - Independent review was attempted but the OpenCode task permission denied creation;
   no independent reviewer PASS is claimed. T04B remains gated on T04A PASS, and
   T07C remains gated on T07B PASS.
@@ -1050,7 +1053,8 @@ VERSION_IMPACT:
   collaboration records.
 - T07B fix-round-2 candidate: Story module `1.0.3 -> 1.0.4`; MECHANICS schema
   `3 -> 4`; projection-state schema `3 -> 4`. Other Story schemas unchanged.
-- This execution-status documentation: `VERSION_IMPACT: NONE`.
+- This execution-status and `DEV/CURRENT_PROGRESS.md` documentation:
+  `VERSION_IMPACT: NONE`.
 
 SYSTEM_IMPACT: NONE — the implementation is within T04A's approved collaboration
 owner/test scope. W03 `access_control.py` remains read-only; T04A does not publish.
