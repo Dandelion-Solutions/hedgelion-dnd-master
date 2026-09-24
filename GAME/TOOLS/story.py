@@ -1720,40 +1720,18 @@ def publish_story_event_window(
         "kind": "CONTIGUOUS",
         "through": encode_candidate_cursor("E-EVT", native_upper),
     }
-    source_window = validate_story_source_window(
-        "E-EVT",
+    candidates = [
         {
-            "source_domain": source_domain,
-            "semantic_contract_generation": 1,
-            "source_basis": {
-                "origin": publication.origin,
-                "lane": "evt",
-                "upper": encode_candidate_cursor("E-EVT", native_upper),
-                "enumeration_representation": (
-                    f"{publication.currentness.source_ref}@"
-                    f"{publication.currentness.source_revision}:"
-                    f"{native_lower or 0}..{native_upper}"
-                ),
-                "owner_contracts": [
-                    {"family": "runtime.semantic_event", "schema_version": 1}
-                ],
-            },
-            "expected_coverage": expected_coverage,
-            "proposed_coverage": proposed_coverage,
-            "candidates": [
-                {
-                    "candidate_id": encode_candidate_id("E-EVT", [event_id]),
-                    "requirement": "MUST_MATERIALIZE",
-                    "source_keys": ["event"],
-                }
-                for event_id in event_ids
-            ],
-        },
-    )
+            "candidate_id": encode_candidate_id("E-EVT", [event_id]),
+            "requirement": "MUST_MATERIALIZE",
+            "source_keys": ["event"],
+        }
+        for event_id in event_ids
+    ]
     record_keys_by_event = {
         event_id: f"record{index + 1}" for index, event_id in enumerate(event_ids)
     }
-    for candidate, event_id in zip(source_window["candidates"], event_ids, strict=True):
+    for candidate, event_id in zip(candidates, event_ids, strict=True):
         candidate_value = _mapping(candidate, "validated Story source candidate")
         candidate_id = _nonempty_string(
             candidate_value.get("candidate_id"), "candidate_id"
