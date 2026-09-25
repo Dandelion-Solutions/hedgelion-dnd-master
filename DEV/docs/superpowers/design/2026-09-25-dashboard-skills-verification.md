@@ -1,0 +1,49 @@
+# HDM local dashboard skills РІР‚вЂќ authoring and verification
+
+Status: IN_PROGRESS РІР‚вЂќ architecture skill verification
+
+## Scope and authority
+
+The Product Owner explicitly authorized five project-local dashboard skills using the agreed projection design: PO cockpit, architecture, Python core, LLM runtime and independent audit view. The cockpit presents product capabilities and exceptions; task/wave records explain them on drill-down. This is bounded development-infrastructure guidance, not production runtime implementation, audit execution, or a new product authority. It does not advance the engine's global execution cursor.
+
+Allowed files: the five `.agents/skills/hdm-*` folders, shared references inside the architecture skill, `.gitignore`, and this development-only verification record. Generated `.hdm-dashboard/` state/HTML/history/configuration remain local and untracked. No public GAME/DEV semantic owners or execution gates are changed.
+
+## Source manifest / evidence boundary
+
+Public bootstrap basis: `4b56f722c5ccf9987b5b7a8bc348537fb3ba9d1e`.
+
+| Source | Role and task-relevant disposition |
+|---|---|
+| `AGENTS.md`, `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` | Governance: project-local skills; explicit PO authority; Connector-only remote operations; fresh parent and non-force publication/read-back |
+| `DEV/DESIGN_PROCESS.md`, `DEV/ARCHITECTURE/DESIGN_PROCESS.md`, `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` | Proportional realization of approved scope; evidence qualifiers, boundaries, independent review and checkpoint obligations remain intact |
+| `DEV/PROJECT_MAP.md`, `DEV/ARCHITECTURE/CANONICAL_ARCHITECTURE_INDEX.md` | Discovery routes, not proof of implementation/conformance |
+| `DEV/CURRENT_PROGRESS.md` | Global status owner; acceptance, implementation and current verification remain separate |
+| `DEV/PRODUCT_OWNER_INPUT.md` active routing index, `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` | PO intent and route-local gate meaning; incorporated intent is not implemented capability |
+| `.agents/skills/clean-architecture/SKILL.md` | Diagnostic lens subordinate to current HDM owners; no score or redesign mandate |
+| `.agents/skills/` tree, `.gitignore` | Five requested names absent initially; local generated root required an ignore rule |
+| `DEV/RELEASE/VERSIONING.md`, canonical 2026-09-05 versioning namespace specification | No existing engine/module/persistent/schema/catalog/storage namespace is changed |
+| Lavish upstream README and skill entrypoint | Current installed CLI owns syntax/design/playbooks; project privacy policy remains stronger than optional external examples |
+
+Private audit bootstrap was inspected through its configured authoritative repository. Its identity, paths, content and findings are intentionally absent from this public artifact. Skills discover that source from local configuration and its own bootstrap; they do not assume the development branch is an audit source. Audit evidence never becomes public HDM law.
+
+Claims here concern skill guidance and synthetic exercises only. They are not an engine architecture coverage claim, whole-project audit, measured runtime benchmark or VPS/Lavish installation check.
+
+## Test method
+
+Superpowers writing-skills RED -> GREEN -> REFACTOR, one skill verified before the next is authored. Fresh-context controls receive a fixed synthetic fixture without the candidate skill. Treatments receive the same fixture plus the skill and shared references. Wording micro-samples complement a full JSON/HTML application exercise. Manual scoring checks meaning and omitted fields, not keyword count. Static frontmatter/link checks complement, rather than replace, behavior checks.
+
+Fixtures combine imminent review pressure, sunk draft effort and attractive unsupported summary claims. They use invented repositories/hashes and contain no private source text. Real remote sources are not accessed by these isolated exercises.
+
+### Architecture
+
+RED: five controls rejected the invented 92% score, but produced five incompatible projection shapes and no separate canonical/actual graph pair. Representative exact outputs: `"kind": "local-architecture-projection"`, `"schema": "local-architecture-projection/1"`, and a single `"relationships"` array. One output's visible order was `Snapshot РІвЂ вЂ™ Event ownership РІвЂ вЂ™ Persistence assurance РІвЂ вЂ™ Deferred Context РІвЂ вЂ™ Evidence limits`: useful prose, but no independently navigable canonical/actual comparison. The failure is output structure/interoperability, not an invented assertion that controls ignored authority rules.
+
+GREEN: five fresh-context treatments used the common envelope and separate graph planes. Full JSON/HTML fixture output was generated. One micro-sample and the full output incorrectly typed physical persistence as state ownership; another micro-sample left an edge endpoint implicit. REFACTOR explicitly distinguishes physical persists from semantic owns and requires endpoint resolution. Fresh-context graph re-test and regenerated full artifact now separate semantic ownership from physical persistence. Independent parent checks passed JSON parsing, required envelope, source/claim references, graph endpoints and ownership separation. Skill frontmatter validation passed. Browser policy denied local file opening; visual/interaction QA and installed Lavish review remain unavailable, not PASS.
+
+## Current verification and continuation
+
+NEXT_EXACT_ACTION: Python core baseline, then author and verify that skill before LLM runtime.
+PUBLICATION: not yet performed.
+VERSION_IMPACT: NONE for existing HDM namespaces. New local projection `schema_version: 1` identifies only this development interchange format; no engine release, runtime module, campaign, storage, catalog, ruleset or digest generation transition. No campaign migration.
+SYSTEM_IMPACT: NONE within the PO-authorized local projection boundary.
+LIMITATIONS: the target VPS and installed Lavish review loop are not available on this authoring host; do not claim their execution. Full engine tests have not run for this documentation-only change.
