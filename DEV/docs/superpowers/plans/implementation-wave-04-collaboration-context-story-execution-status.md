@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T04B SYSTEM-IMPACT GATE / T07C CANDIDATE AWAITING INDEPENDENT REVIEW
-CURRENT_TASK: verify and publish T07C IRR-T07C-01/02 repair candidate, then obtain independent re-review; T04B IRR-T04B-02 blocked at the missing accepted W03 producer interface; T05C/T07D remain blocked
+STATUS: EXECUTING — T04B SYSTEM-IMPACT GATE / T07C INDEPENDENT REVIEW PENDING
+CURRENT_TASK: obtain independent re-review of the published T07C IRR-T07C-01/02 candidate; T04B IRR-T04B-02 blocked at the missing accepted W03 producer interface; T05C/T07D remain blocked
 LAST_COMPLETED_TASK: T07B independent PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04A prior PASS retained
-LAST_SAFE_SHA: f1a002611405275e7a828b64aef45c4692ecb089 — latest fetched control/report publication; T07C repair candidate is not yet independently accepted
+LAST_SAFE_SHA: f114eb6a38c50d755cf71094d078c1d362f08bb4 — coherent T07C candidate checkpoint published/read back; independent acceptance remains pending
 
 
 ## Current independent review
@@ -121,10 +121,10 @@ CURRENT_VERIFICATION_STATE:
 - exact prior reviewed-head hosted run 36063512416/job 107847776125: maintenance PASS, 1213 tests/5 skipped PASS, `VERSION_UNCLASSIFIED=[]`, `VERSION_LEGACY_HITS=[]`; reviewed HEAD was 959de8e2d91e46ff326b046ee39045afa04b952d, not the current repair candidate;
 - candidate-focused `.hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_rd13_story_t0_commentator`: 75 tests PASS;
 - `DEV/TOOLS/run_maintenance_audit.py`: PASS;
-- local canonical `.hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v`: 1218 tests, 5 skipped, 2 failures. `test_clean_checkout_metadata_records_exact_head` observed the expected dirty worktree before checkpoint publication; `test_census_has_zero_unclassified_hits` scanned local `.entire/logs/entire.log` and reported 66,111 local unclassified hits; `VERSION_LEGACY_HITS=[]`. This local census contamination is not claimed repaired. Rerun the canonical command after publication/read-back to re-evaluate the dirty-worktree failure;
+- post-publication canonical `.hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v`: 1218 tests, 5 skipped, 1 failure. `test_census_has_zero_unclassified_hits` scanned local `.entire/logs/entire.log` and reported 68,657 local unclassified hits; the dirty-worktree provenance test now passes; `VERSION_LEGACY_HITS=[]`. This local census contamination is not claimed repaired;
 - changed production Python modules pass Ruff; all changed Python files pass `ruff format --check`. Full changed test-file Ruff check retains two unrelated pre-existing SIM117 warnings at its earlier StoryProjectionTests and StoryRoot tests;
 - IRR-T04B-01 CLOSED; IRR-T04B-02 BLOCKED at the exact W03 producer-interface gate;
-- IRR-T07C-01/02 repairs implemented in the unpublished candidate; independent re-review and exact-candidate hosted verification remain pending.
+- IRR-T07C-01/02 repairs are published at the current safe checkpoint; independent re-review and exact-candidate hosted verification remain pending. GitHub CLI is not installed (`gh: command not found`), so current hosted-run evidence is unavailable; do not claim hosted PASS.
 
 VERSION_IMPACT:
 - T04B collaboration 1.0.18 remains candidate-only.
@@ -137,9 +137,9 @@ SYSTEM_IMPACT:
 - T04B IRR-T04B-02 is BLOCKED at the accepted W03 producer-interface boundary. `access_control.publish_forward_transition(...)` returns a pure closed-source forward view; it does not absorb/final-route the selected source. `live_state.freeze_campaign_absorption(...)` returns a `FrozenCampaignAbsorption.candidate_state`, while accepted absorption classification requires a separate owner-issued CAS acknowledgement tied to that candidate digest. Neither exposes a production W03-owned adapter/write-set composer for incorporating absorption/final routing into T04B's single W02 `path_operations` transaction. Production T04B currently calls only the forward-close proof and its operation builder has no absorption adapter. Implementing that missing composition would require a new/changed W03 boundary outside the T04B write envelope; do not manufacture it in Collaboration or publish CLOSED_UNABSORBED as completed revocation.
 - T04B repair stops here; T07C remains independently authorized because its production/test write set is disjoint.
 
-NEXT_EXACT_TASK: publish/read back the coherent T07C repair candidate; rerun the exact canonical full DEV unittest command from the clean published HEAD; then obtain independent T07C re-review. T04B resumes only after the owning W03 producer-interface gap receives an authorized resolution.
+NEXT_EXACT_TASK: obtain independent T07C re-review and exact-candidate hosted verification when that surface is available; do not start T07D before independent PASS. T04B resumes only after the owning W03 producer-interface gap receives an authorized resolution.
 KNOWN_BLOCKERS: T05C waits for T04B PASS; T07D waits for T07C PASS. Wave 04 not complete; Wave 05 not authorized.
-UNPUBLISHED_WORK: NONE after this coherent T07C candidate checkpoint is published and read back; independent re-review remains pending.
+UNPUBLISHED_WORK: NONE after this verification-status update is published and read back; independent re-review remains pending.
 
 STATUS_UPDATE_VERSION_IMPACT: NONE — documentation-only current-state reconciliation; no version-bearing owner or consumer changed.
 
