@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T04B-P0 PASS / PUBLISHED / READ BACK; T04B-P1 ELIGIBLE
-CURRENT_TASK: W04.T04B-P1 may resume only by consuming the P0 W02 owner validator; T07D remains independent; T04B/T05C remain blocked
-LAST_COMPLETED_TASK: W04.T07C independent PASS at df83bc7c37e1f1d0fdeebd583350bf377a4c8f37; T04A/T07B prior PASS retained
-LAST_SAFE_SHA: d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a — P0 implementation independently reviewed PASS and freshly read back from remote
+STATUS: EXECUTING — T04B-P0/P1 PASS / PUBLISHED / READ BACK; T04B AUTHORIZED NEXT
+CURRENT_TASK: W04.T04B same-closure authority/Collaboration publication and recovery; T07D remains independent; T05C waits for T04B PASS
+LAST_COMPLETED_TASK: W04.T04B-P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; W04.T04B-P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: a792d14894dcc3ba123191883e5647cc06808e85 — P1 implementation independently reviewed PASS and freshly read back from remote
 
 
 ## T04B Senior System-Impact resolution
@@ -64,17 +64,25 @@ T07C retains complete T0 factor values plus PUBLIC/PROTECTED historical classifi
 
 Hosted evidence: repair run 36076362491/job 107888337524 SUCCESS and current run 36078547787/job 107895116534 SUCCESS; maintenance PASS, 1218 tests / 5 skipped, zero version unclassified/legacy hits.
 
-## T04B-P1 ancestry-evidence finding — resolved by P0
+## T04B-P1 ancestry-evidence finding — resolved by P0; P1 accepted
 
 IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-ancestry-evidence-impact-brief.md`
 
-This records the pre-P0 review trigger. The unpublished P1 candidate had accepted a constructible W02 `PublicationOutcome` claiming `RECONCILED_ANCESTOR_CURRENT_CLOSURE` without owner-issued closure/ancestry provenance. The issue was resolved by the P0 Senior ruling below: W02 owns exact-outcome-instance acceptance evidence; P1 must consume that validator. The candidate remains unaccepted until it is resumed, repaired, verified, independently reviewed, and read back.
+This records the pre-P0 review trigger. The earlier unpublished P1 candidate accepted a constructible W02 `PublicationOutcome` claiming `RECONCILED_ANCESTOR_CURRENT_CLOSURE` without owner-issued closure/ancestry provenance. P0 resolved the evidence boundary: W02 owns exact-outcome-instance acceptance evidence; P1 consumes that validator and does not validate Git ancestry independently.
 
-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` is independently reviewed PASS and published/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`. P1 is eligible to resume within its existing W03 write scope by consuming the W02 validator, but it was not resumed in this P0 checkpoint. T04B remains blocked until P1 independent PASS/read-back. No control change reopens T04A/T07B/T07C or Wave 05.
+P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` passed independent review and remote read-back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`. P1 resumed only after that gate and remains within its existing W03 write scope.
 
-Historical P1-candidate evidence: its P1 class had 21 passed and RD09 had 192 passed. Direct/current mismatch was repaired, but the forged-ancestor gap remained at that time. Its initial full DEV run was on a dirty tree and is superseded for P0 by the clean exact-tree run below. Hosted CI unavailable.
+P1 OUTPUT: `W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`
 
-VERSION_IMPACT — P1 when resumed: expected `GAME/TOOLS/live_state.py 1.0.20 -> 1.0.21`; LIVE routing v4, native-state-pack v2, absorption-attempt v1, campaign-contract generation and storage generation unchanged, subject to a fresh gate.
+P1_CODE_COMMIT: `a792d14894dcc3ba123191883e5647cc06808e85`
+
+P1_INDEPENDENT_REVIEW: **PASS** — W03 validates exact P0 owner-issued acceptance evidence with its W03 operation subset; caller-constructed direct and ancestor outcomes are rejected; genuine RuntimeHost direct/current/ancestor evidence is accepted; no second ref transition is added.
+
+P1_REMOTE_READBACK: fresh fetch confirmed `origin/v1/engine-rearchitecture == a792d14894dcc3ba123191883e5647cc06808e85`.
+
+P1_VERIFICATION: P1 class 23 passed; RD09 194 passed; clean exact P1 full DEV suite 1268 passed, 5 skipped, 4 sequentially reproduced S6D catalog/contract failures outside P1 scope; clean exact maintenance audit PASS; scoped Ruff/format PASS. Hosted CI unavailable.
+
+VERSION_IMPACT — P1: `GAME/TOOLS/live_state.py 1.0.20 -> 1.0.21`; LIVE routing v4, native-state-pack v2, absorption-attempt v1, campaign-contract generation and storage generation unchanged. No migration or dual-read.
 
 ## W04.T04B-P0 accepted checkpoint — 2026-09-25
 
@@ -203,7 +211,7 @@ CURRENT_VERIFICATION_STATE:
 - current reviewed-head maintenance PASS and 1218 tests/5 skipped PASS;
 - VERSION_UNCLASSIFIED=[] and VERSION_LEGACY_HITS=[] on both hosted verification points;
 - IRR-T07C-01/02 independently CLOSED;
-- IRR-T04B-02 main producer gap remains resolved to T04B-P1; the nested ancestry-authenticity gate is now resolved to T04B-P0. P0/P1 implementation acceptance remains pending.
+- IRR-T04B-02 main producer gap remains assigned to T04B-P1; the nested ancestry-authenticity gate was resolved by T04B-P0. P0 and P1 outputs are independently accepted/read back.
 
 VERSION_IMPACT — T07C ACCEPTED:
 - History module 1.0.5;
@@ -230,13 +238,12 @@ CLS_HDM_RECONCILIATION:
 SYSTEM_IMPACT:
 - T07C NONE / accepted;
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
-- T04B-P0: AUTHORIZED W02 owner-evidence prerequisite;
 - T04B-P0: PASS / independently reviewed / published / read back;
-- T04B-P1: authorized to resume under existing W03 scope using the P0 validator; not resumed in this P0 checkpoint.
+- T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
 
-NEXT_EXACT_TASK: W04.T04B-P1 may resume from its locally preserved work only after its source is reconciled to the P0 W02 validator. T07D remains independently eligible. Do not resume T04B until P1 independent PASS/read-back; T05C still waits for T04B PASS.
-KNOWN_BLOCKERS: Four S6D catalog/contract tests fail in the clean P0 full-suite run and remain outside P0 scope. P1 and T04B are not accepted; T05C remains blocked. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: P1 candidate remains in local `stash@{0}` and was not resumed or included in P0. P0 source is published/read back; no P0 source work remains unpublished.
+NEXT_EXACT_TASK: W04.T04B may resume the same-closure authority/Collaboration publication and recovery task under the stable plan. T07D remains independently eligible. Do not start T05C until T04B independent PASS.
+KNOWN_BLOCKERS: Four S6D catalog/contract tests fail in the clean exact P0/P1 full-suite runs and remain outside their write scopes. T04B is the next authorized task; T05C waits for T04B PASS. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for P0/P1 source. Local `stash@{0}` remains as a duplicate recovery backup of the already-published P1 candidate and was not used by either checkpoint.
 
 ## Historical evidence retention
 

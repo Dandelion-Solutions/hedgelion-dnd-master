@@ -1,6 +1,6 @@
 # W04.T04B-P1 W02 ancestry-evidence implementation impact brief
 
-Status: **RESOLVED TO W04.T04B-P0 — P1 CANDIDATE REMAINS NOT ACCEPTED**
+Status: **RESOLVED — W04.T04B-P0 AND P1 ACCEPTED / PUBLISHED**
 
 Date: 2026-09-25
 
@@ -78,7 +78,7 @@ Full local DEV pytest: 1253 passed, 5 skipped, 9 failed before environment triag
 Hosted CI: not available in this runtime
 ```
 
-The P1 candidate remains uncommitted and unpublished in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py`. Current candidate module impact is `framework_module_version 1.0.20 -> 1.0.21`; LIVE routing schema v4, native-state-pack schema v2, absorption-attempt schema v1, campaign-contract generation, and storage generation remain unchanged. No P1 candidate acceptance or T04B resume is claimed.
+At the time this brief was first published, the P1 candidate in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py` was uncommitted and unaccepted. Its final accepted version impact was `framework_module_version 1.0.20 -> 1.0.21`; LIVE routing schema v4, native-state-pack schema v2, absorption-attempt schema v1, campaign-contract generation, and storage generation remained unchanged.
 
 `VERSION_IMPACT: NONE` for this design/control brief and cursor synchronization; they do not change a version/revision/schema/generation namespace.
 
@@ -86,4 +86,4 @@ The P1 candidate remains uncommitted and unpublished in `GAME/TOOLS/live_state.p
 
 The W02/W03 evidence-boundary issue is resolved by the accepted Senior ruling `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-publication-evidence-senior-ruling.md`: W02 now owns exact-outcome-instance acceptance evidence carrying the trusted closure/ancestry proof, and W03 must use the W02 validator rather than interpret common outcome fields. P0 reached independent PASS and was published/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`.
 
-This brief remains the historical trigger/evidence record. Its former proposed options are superseded by the accepted P0 ruling. P1 was not resumed as part of the P0 checkpoint; its local candidate remains preserved separately and must consume the new W02 owner validator when P1 resumes.
+This brief remains the historical trigger/evidence record. Its former proposed options are superseded by the accepted P0 ruling. P1 resumed only after P0 independent PASS/read-back, was repaired to consume the W02 owner validator, and was independently accepted at `a792d14894dcc3ba123191883e5647cc06808e85` as `W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`. T04B is now the next authorized Wave-04 task; no T04B implementation is included in that P1 checkpoint.

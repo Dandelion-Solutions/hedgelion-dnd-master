@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — T04B-P0 W02 EVIDENCE READY / INDEPENDENT PASS / REMOTE READ-BACK — T04B-P1 ELIGIBLE, T04B/T05C BLOCKED; T07D AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1 OUTPUTS INDEPENDENTLY ACCEPTED AND READ BACK — T04B AUTHORIZED NEXT; T05C BLOCKED; T07D AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
-LAST_CLOSED_UNIT: W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: W04.T04B-P1 may resume using the W02 owner validator; it was not resumed in the P0 checkpoint. W04.T07D remains independently authorized. T04B waits for P1 independent PASS/read-back; T05C waits for T04B PASS.
-REQUIRED_GATE: T04B-P1 implementation -> independent PASS/read-back -> T04B repair/review -> independent PASS -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
+LAST_CLOSED_UNIT: W04.T04B-P1 independently accepted/read back at `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
+NEXT_AUTHORIZED_UNIT: W04.T04B may resume its existing collaboration lane; W04.T07D remains independently authorized. Do not start T05C until T04B independent PASS.
+REQUIRED_GATE: T04B implementation -> independent PASS/read-back -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: T04B-P1 remains unaccepted and must resume by consuming the W02 owner-issued publication validator. T04B and T05C remain blocked until their producer/review gates. The clean P0 full DEV suite had four reproducible S6D catalog/contract failures outside P0 scope; they remain unresolved. T07D remains eligible. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: Four S6D catalog/contract tests fail in the clean full DEV suite and remain outside P0/P1 scope. T05C remains blocked until T04B PASS. T07D remains independently eligible. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -328,17 +328,17 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: EXECUTING — T04B-P0 PASS / T04B-P1 ELIGIBLE NEXT
-CURRENT_TASK: W04.T04B-P1 may resume within its existing W03 scope using P0's owner validator; it was not resumed in this P0 checkpoint. T07D remains independent; T04B waits for P1 independent PASS/read-back.
-LAST_COMPLETED_TASK: W04.T04B-P0 -> `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a` (`W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY`, independent PASS/read-back); T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a` — P0 implementation commit, freshly fetched and read back
+STATUS: EXECUTING — T04B-P0/P1 PASS; T04B NEXT
+CURRENT_TASK: W04.T04B same-closure collaboration publication/recovery is authorized after P1 independent PASS/read-back; T07D remains independent; T05C waits for T04B PASS.
+LAST_COMPLETED_TASK: W04.T04B-P1 -> `a792d14894dcc3ba123191883e5647cc06808e85` (independent PASS/read-back); W04.T04B-P0 -> `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a` (independent PASS/read-back); T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: `a792d14894dcc3ba123191883e5647cc06808e85` — P1 implementation commit freshly fetched/read back
 
-CURRENT_VERIFICATION_STATE: W02 publication + RuntimeHost suites: 68 passed; affected Collaboration, Story/T0 and ref-fence suites: 211 passed; clean P0 full DEV suite: 1245 passed, 5 skipped, 4 S6D failures; those four failures were reproduced sequentially. Clean exact P0 maintenance audit: PASS. Scoped Ruff/format checks: PASS; independent P0 review: PASS; fresh remote read-back: exact P0 HEAD. Hosted CI unavailable.
-VERSION_IMPACT: `GAME/TOOLS/publication.py` `1.0.4 -> 1.0.5`; `GAME/TOOLS/runtime_host.py` `1.0.8 -> 1.0.9`; persistent schemas, campaign-contract/storage/catalog generation, engine release, migration and dual-read: NONE. P0 control/status synchronization: `VERSION_IMPACT: NONE`.
-SYSTEM_IMPACT: P0 NONE under the accepted 2026-09-25 W02 publication-evidence Senior ruling. The former P1 ancestry-evidence trigger is resolved to P0; P1 must consume W02 owner-issued evidence and must not perform ancestry validation itself.
-NEXT_EXACT_TASK: W04.T04B-P1 may resume from its preserved local work using `validate_owner_issued_accepted_publication`; retain exact operation-subset binding and genuine RuntimeHost ancestor evidence. Do not resume T04B until P1 independent PASS/read-back; T05C remains blocked until T04B PASS.
-KNOWN_BLOCKERS: Four S6D catalog/contract tests fail in the clean P0 suite outside P0 write scope and remain unresolved. T04B-P1/T04B/T05C and Wave 05 are not accepted/authorized beyond their current gates; T07D remains independent.
-UNPUBLISHED_WORK: Unpublished P1 candidate remains preserved in local `stash@{0}` and was not resumed or included in P0. P0 source and current control state are published/read back; no P0 source work remains unpublished.
+CURRENT_VERIFICATION_STATE: P0: W02 publication + RuntimeHost suites 68 passed; affected Collaboration, Story/T0 and ref-fence suites 211 passed; clean exact P0 full DEV 1245 passed, 5 skipped, 4 S6D failures (sequentially reproduced); maintenance audit PASS; independent review PASS. P1: composed class 23 passed; RD09 194 passed; clean exact P1 full DEV 1268 passed, 5 skipped, same 4 sequentially reproduced S6D failures; maintenance audit PASS; scoped Ruff/format PASS; independent review PASS. P0/P1 remote read-backs exact. Hosted CI unavailable.
+VERSION_IMPACT: `GAME/TOOLS/publication.py` `1.0.4 -> 1.0.5`; `GAME/TOOLS/runtime_host.py` `1.0.8 -> 1.0.9`; `GAME/TOOLS/live_state.py` `1.0.20 -> 1.0.21`. No persistent schema, campaign-contract/storage/catalog generation, engine release, migration or dual-read change. This control/status update: `VERSION_IMPACT: NONE`.
+SYSTEM_IMPACT: P0 and P1 implemented within the accepted W02/W03 evidence boundary; no new System-Impact event. P1 consumes W02 owner-issued evidence and does not perform Git ancestry validation.
+NEXT_EXACT_TASK: W04.T04B same-closure collaboration publication/recovery. T07D remains independent. Do not start T05C until T04B independent PASS.
+KNOWN_BLOCKERS: Four S6D catalog/contract tests remain failing outside P0/P1 write scope. T05C waits for T04B PASS; Wave 05 remains unauthorized.
+UNPUBLISHED_WORK: P0/P1 source commits are published/read back. Local `stash@{0}` remains as a duplicate P1 backup; it was not part of either checkpoint.
 
 ## Historical Wave-04 progress retention
 
