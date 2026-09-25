@@ -228,13 +228,27 @@ Output: W04_AUTHORITY_COLLAB_RECONCILIATION_READY.
 
 Mandatory REDs: collaboration cannot grant or recover authorization; deactivation/reactivation/grant revocation/join-policy changes apply prospectively; creator uncertainty fails closed; only the bounded affected obligation set is reconciled.
 
+**W04.T04B-P1 - W03 composable absorption/final-routing producer prerequisite**
+
+Input: T04A PASS plus the accepted W03 LIVE routing/packing/absorption and W02 publication checkpoints. This is a Wave-04 prerequisite with W03 LIVE semantic ownership; it does not reopen Wave-03 closure.
+
+Direct writes: `GAME/TOOLS/live_state.py`, `DEV/TESTS/test_rd09_access_live.py`, and mechanically required version/control bookkeeping only. `native_storage.py`, W02 publication/runtime-host owners, access control, Collaboration and shared Wave-05 surfaces are read-only.
+
+Output: `W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`.
+
+The producer must expose the owner-issued `FrozenCampaignAbsorptionDelta` / composed-publication evidence boundary accepted by `DEV/docs/superpowers/design/2026-09-25-w04-t04b-irr-t04b-02-senior-ruling.md`. It must materialize the complete W03/native absorption plus final `STATE/RUNTIME/LIVE_ROUTING.yaml` campaign delta from exact final closed sources, fail closed on any unrepresentable required packed/handoff contribution, and never perform a campaign write itself.
+
+Mandatory REDs: single/multi-LIVE deterministic preparation; exact complete final-route removal; lossless owner-path coverage or fail-closed; stale/ACTIVE/partial/wrong-route/wrong-pack rejection; forged delta/evidence rejection; ACCEPTED W02 classification without second CAS; CONFLICT/REJECTED/INDETERMINATE do not become absorption; CLOSED_UNABSORBED alone is never accepted absorption.
+
 **W04.T04B - same-closure authority/collaboration publication and recovery**
 
-Input: T04A PASS. Same collaboration production/test lane.
+Inputs: T04A PASS plus independent PASS/read-back of T04B-P1 (`W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`). Same collaboration production/test lane.
 
 Output: original W04_AUTHORITY_COLLABORATION_RECONCILED.
 
-Mandatory REDs: duplicate reconciliation idempotent; crash before/after publication; campaign/body drift; stale obligation generation; recovery reproduces the same after-authority view; no reverse dependency into access control.
+The LIVE-sensitive path must collision-safely join the W03-owned absorption/final-routing path delta with PLAYER/access and Collaboration effects and submit the union once through the existing W02 campaign publication service. Collaboration does not create or reinterpret LIVE authority. No-LIVE behavior remains unchanged.
+
+Mandatory REDs: duplicate reconciliation idempotent; crash before/after publication; campaign/body drift; stale obligation generation; recovery reproduces the same after-authority view; no reverse dependency into access control; positive LIVE-sensitive closure contains W03 + PLAYER/access + Collaboration operations in one W02 transaction; CLOSED_UNABSORBED-only recovery is not success; no second campaign CAS or LIVE replay.
 
 ### Context and protected-emission lane - W04.T05-T06
 
