@@ -1,6 +1,6 @@
 # W04.T04B-P1 W02 ancestry-evidence implementation impact brief
 
-Status: **SENIOR_REVIEW_REQUIRED — P1 CANDIDATE NOT ACCEPTED**
+Status: **RESOLVED TO W04.T04B-P0 — P1 CANDIDATE REMAINS NOT ACCEPTED**
 
 Date: 2026-09-25
 
@@ -81,3 +81,9 @@ Hosted CI: not available in this runtime
 The P1 candidate remains uncommitted and unpublished in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py`. Current candidate module impact is `framework_module_version 1.0.20 -> 1.0.21`; LIVE routing schema v4, native-state-pack schema v2, absorption-attempt schema v1, campaign-contract generation, and storage generation remain unchanged. No P1 candidate acceptance or T04B resume is claimed.
 
 `VERSION_IMPACT: NONE` for this design/control brief and cursor synchronization; they do not change a version/revision/schema/generation namespace.
+
+## Resolution
+
+The W02/W03 evidence-boundary issue is resolved by the accepted Senior ruling `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-publication-evidence-senior-ruling.md`: W02 now owns exact-outcome-instance acceptance evidence carrying the trusted closure/ancestry proof, and W03 must use the W02 validator rather than interpret common outcome fields. P0 reached independent PASS and was published/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`.
+
+This brief remains the historical trigger/evidence record. Its former proposed options are superseded by the accepted P0 ruling. P1 was not resumed as part of the P0 checkpoint; its local candidate remains preserved separately and must consume the new W02 owner validator when P1 resumes.
