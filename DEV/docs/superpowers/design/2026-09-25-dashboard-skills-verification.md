@@ -1,6 +1,6 @@
 # HDM local dashboard skills - authoring and verification
 
-Status: IN_PROGRESS - architecture published; Python core verified; LLM baseline
+Status: IN_PROGRESS - LLM behavior verified; audit dashboard next
 
 ## Scope and authority
 
@@ -34,6 +34,8 @@ Superpowers writing-skills RED -> GREEN -> REFACTOR, one skill verified before t
 
 Fixtures combine imminent review pressure, sunk draft effort and attractive unsupported summary claims. They use invented repositories/hashes and contain no private source text. Real remote sources are not accessed by these isolated exercises.
 
+Replay inputs: [synthetic acceptance scenarios](2026-09-25-dashboard-skills-scenarios.md). Generated fixture outputs and authoring-host helpers remain local. Micro-samples abbreviate records and test decision/wording stability; only full artifacts receive complete envelope/reference checks.
+
 ### Architecture
 
 RED: five controls rejected the invented 92% score, but produced five incompatible projection shapes and no separate canonical/actual graph pair. Representative exact outputs: `"kind": "local-architecture-projection"`, `"schema": "local-architecture-projection/1"`, and a single `"relationships"` array. Useful prose did not provide an independently navigable canonical/actual comparison. The failure is output structure/interoperability, not an assertion that controls ignored authority rules.
@@ -44,10 +46,16 @@ GREEN: five fresh-context treatments used the common envelope and separate graph
 
 RED: five fresh-context controls preserved uncertainty around coverage/cycles. One conflated call evidence with source imports: `Observed imports: persistence -> mechanics; mechanics -> sqlite3` (arrow typography normalized). The fixture supplied a persistence call, not an import. GREEN adds typed edges, explicit composition and owner views, scoped diagnostics and obligation-to-assertion-to-run test mapping. Five treatments preserve the distinction. Full fixture JSON/HTML independently passed envelope/source/claim/endpoint/local-asset checks; reviewed diagnostics retain incomplete inventory/dynamic callback uncertainty and unexecuted test inventory. Frontmatter validator passed. Independent review of both skills/shared references returned no blocking findings; document review only, no fabricated visual execution.
 
+### LLM runtime
+
+RED: five controls correctly rejected six sequential calls and unsupported latency, but several retained the draft's unsupported role count. Exact examples: `"logical_roles": 6` and `one physical context hosting six logical roles`; the fixture owner established no role count. One control called Story an `Optional asynchronous branch` although only nonblocking policy was supplied. GREEN: five treatment samples preserve unknown role count and scheduling, static site versus invocation/latency evidence, and historical retry scope. Full fixture passed independent envelope/reference/local-HTML checks. REFACTOR: full output initially labeled cold/SAVE/LIVE/recovery metrics as ordinary response; guidance now requires distinct workloads even for unknown values. Fresh-context metric exercise and corrected full output preserve all five paths; parent re-check passed. Frontmatter and supporting-link checks passed; visual/Lavish checks remain unavailable.
+
 ## Current verification and continuation
 
-NEXT_EXACT_ACTION: complete LLM baseline, then author and verify that skill before audit dashboard.
+NEXT_EXACT_ACTION: audit dashboard baseline, then author and verify it before cockpit.
 PUBLICATION: architecture/shared contract/ignore checkpoint `962d0f3f18e2ed6e0b59016c0fd3e5aa056a5c36`; five files read back byte-for-byte, ref independently verified. Hosted Validate engine source run `36155537896`: completed/success at that exact HEAD.
+PYTHON_PUBLICATION: `36e4da1baafe55a6f11da7689a6c75ec0c733678`; skill and updated evidence record read back byte-for-byte, exact remote HEAD verified. An authoring-host text-encoding defect in the evidence record was corrected using explicit UTF-8 handling; skill guidance was unaffected.
+PYTHON_HOSTED_CI: Validate engine source run `36156252751`, completed/success at exact Python checkpoint.
 VERSION_IMPACT: NONE for existing HDM namespaces. New local projection `schema_version: 1` identifies only this development interchange format; no engine release, runtime module, campaign, storage, catalog, ruleset or digest generation transition. No campaign migration.
 SYSTEM_IMPACT: NONE within the PO-authorized local projection boundary.
 LIMITATIONS: the target VPS and installed Lavish review loop are not available on this authoring host; do not claim their execution. Full engine tests have not run for this documentation-only change.
