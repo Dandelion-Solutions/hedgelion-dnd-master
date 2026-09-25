@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T07C PASS / T04B-P1 W03 PREREQUISITE AUTHORIZED
-CURRENT_TASK: W04.T07D and W04.T04B-P1 may execute independently; T04B itself and T05C remain blocked until T04B-P1 independent PASS/read-back
+STATUS: SENIOR_REVIEW_REQUIRED — T04B-P1 W02 ancestry-outcome evidence boundary
+CURRENT_TASK: W04.T04B-P1 paused at a new System-Impact gate; T07D remains independently authorized; T04B and T05C remain blocked
 LAST_COMPLETED_TASK: W04.T07C independent PASS at df83bc7c37e1f1d0fdeebd583350bf377a4c8f37; T04A/T07B prior PASS retained
-LAST_SAFE_SHA: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37 — exact independently reviewed T07C state
+LAST_SAFE_SHA: c9dd3f4a8f33dbb48d228308a8457bb140b3a5e5 — freshly fetched current remote head before the unpublished P1 candidate
 
 
 ## T04B Senior System-Impact resolution
@@ -40,6 +40,18 @@ REVIEWED_HEAD: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37
 T07C retains complete T0 factor values plus PUBLIC/PROTECTED historical classification from exact native SemanticEvent evidence, without consulting later Actor/knowledge/disclosure state. Exact older pages at/below compatible coverage are idempotently acknowledged only after exact native revalidation.
 
 Hosted evidence: repair run 36076362491/job 107888337524 SUCCESS and current run 36078547787/job 107895116534 SUCCESS; maintenance PASS, 1218 tests / 5 skipped, zero version unclassified/legacy hits.
+
+## T04B-P1 System-Impact stop — 2026-09-25
+
+IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-ancestry-evidence-impact-brief.md`
+
+The P1 candidate is not accepted. Independent review found that the W03 classifier cannot authenticate a constructible W02 `PublicationOutcome` claiming `RECONCILED_ANCESTOR_CURRENT_CLOSURE`: W02 validates exact closure/ancestry before returning that cause, but the returned value carries neither owner provenance nor the ancestry proof. W03 currently accepts a different observed SHA with that cause and no ancestry evidence. Solving this while preserving the ruling’s valid ancestor-reconciliation path may require a W02-owned proof or a changed W03 consumer interface, both outside the current P1 write envelope.
+
+Disposition: stop P1 production changes pending Senior resolution of the W02/W03 evidence boundary. Do not resume T04B. No control change reopens T04A/T07B/T07C or Wave 05.
+
+Evidence: direct-confirmation/current-closure observed-SHA mismatch is rejected in the unpublished candidate; the valid W02 ancestor path is exercised; a review reproduction confirms caller-constructed ancestor-cause evidence with a different observed SHA and no ancestry evidence is still accepted. P1 class: 21 passed; RD09: 192 passed; scoped Ruff and P1-range formatting checks: PASS; maintenance audit after the bounded classifier repair: PASS. The initial full DEV pytest run (before that repair) returned 1253 passed, 5 skipped, 9 failures; four S6D contract failures reproduced sequentially outside P1 scope, release-builder failures passed after removal of test-created `GAME/TOOLS/__pycache__`, the clean-checkout metadata test saw the dirty candidate tree, and version census included ignored `.entire` logs. Hosted CI unavailable.
+
+VERSION_IMPACT: P1 candidate module `1.0.20 -> 1.0.21`; LIVE routing v4, native-state-pack v2, absorption-attempt v1, campaign-contract generation and storage generation unchanged. This gate is unresolved for P1 until the evidence boundary is settled. Brief/cursor synchronization: `VERSION_IMPACT: NONE`.
 
 Fresh CLS reconciliation: audit head 3bd4ffb1db0451d0079568d4ad58709372ef3a4d, feature head 2c5dc9f6a4f1c8a23b070e7520e7854491af5282. Current WP12-05 remains synthetic/normalized and REAL wire normalization remains WP12-08-owned. No public semantic reopen/write or current private WP12-05 repair is required; future REAL integration must consume T0 schema 2 / EVENTS schema 4 / E-EVT generation 2.
 
@@ -170,11 +182,11 @@ CLS_HDM_RECONCILIATION:
 SYSTEM_IMPACT:
 - T07C NONE / accepted;
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITE by the accepted Senior ruling;
-- T04B-P1 may implement only the admitted W03 LIVE producer boundary; a need for a new persistent owner/schema, RuntimeHost/RepositoryPort semantic broadening or any other new authority is a fresh System-Impact stop.
+- T04B-P1: SENIOR_REVIEW_REQUIRED for W02/W03 ancestor-outcome authenticity; see the linked Implementation Impact Brief. Do not expand P1 into W02 or change the classifier interface before that ruling.
 
-NEXT_EXACT_TASK: execute T07D and T04B-P1 independently. After T04B-P1 independent PASS/read-back, resume T04B immediately; T05C still waits for T04B PASS.
-KNOWN_BLOCKERS: T04B waits for T04B-P1; T05C waits for T04B PASS. T07D is unblocked. Wave 04 not complete; Wave 05 not authorized.
-UNPUBLISHED_WORK: NONE after this control-state synchronization.
+NEXT_EXACT_TASK: Senior disposition of the W02/W03 ancestor-outcome authenticity boundary in the linked Implementation Impact Brief; resume P1 only within that ruling. T07D remains independently eligible. T04B waits for P1 independent PASS/read-back; T05C waits for T04B PASS.
+KNOWN_BLOCKERS: P1 cannot safely accept W02 ancestor-current-closure outcomes from the current constructible `PublicationOutcome` without verifiable W02 origin/ancestry; implementation needs a new bounded ruling. Four sequential S6D suite failures are outside P1 scope; clean-tree DEV verification remains pending. T04B/T05C remain blocked; Wave 04 not complete; Wave 05 not authorized.
+UNPUBLISHED_WORK: P1 candidate in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py` remains uncommitted/unpublished; ancestor-outcome authenticity gap unresolved. The P1 independent review is TARGETED_REPAIR_REQUIRED; no candidate PASS/read-back exists.
 
 ## Historical evidence retention
 

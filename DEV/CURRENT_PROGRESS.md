@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T07C PASS / T04B-P1 W03 PREREQUISITE AUTHORIZED — T07D AUTHORIZED, T04B/T05C BLOCKED
+GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T07C PASS / T04B-P1 SENIOR SYSTEM-IMPACT REVIEW REQUIRED — T07D AUTHORIZED, T04B/T05C BLOCKED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T07C independently accepted on `df83bc7c37e1f1d0fdeebd583350bf377a4c8f37` with repair implementation `f114eb6a38c50d755cf71094d078c1d362f08bb4`; T04A/T07B prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: W04.T07D and W04.T04B-P1 may start independently; T04B-P1 implements the bounded W03-owned composable absorption/final-routing producer; resume T04B immediately after P1 independent PASS/read-back; do not start T05C until repaired T04B independent PASS
-REQUIRED_GATE: T07D independent PASS -> T07E -> T07-INTEGRATION; T04B-P1 implementation -> independent PASS/read-back -> T04B repair/review -> independent PASS -> T05C after accepted T02C+T05B; then remaining Wave-04 joins, exact-head verification and mandatory Senior Wave-04 integration audit before closure
+NEXT_AUTHORIZED_UNIT: Obtain Senior disposition of the W04.T04B-P1 W02/W03 outcome-authenticity System-Impact brief at `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-ancestry-evidence-impact-brief.md`; resume P1 only within that ruling. T07D remains independently authorized. T04B remains blocked until P1 independent PASS/read-back; T05C remains blocked until T04B independent PASS.
+REQUIRED_GATE: T07D independent PASS -> T07E -> T07-INTEGRATION; Senior disposition of the P1 ancestry-outcome evidence boundary -> finish P1 within ruling -> independent PASS/read-back -> T04B repair/review -> independent PASS -> T05C after accepted T02C+T05B; then remaining Wave-04 joins, exact-head verification and mandatory Senior Wave-04 integration audit before closure.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: IRR-T04B-02 Senior/design gate is resolved to bounded W03 prerequisite T04B-P1; T04B remains stopped until P1 independent PASS/read-back and T05C remains blocked until T04B PASS. T07C is accepted and T07D is eligible. Fresh CLS reconciliation records no current public reopen/write requirement; private REAL normalization must later consume T0 schema 2 / EVENTS schema 4 / E-EVT generation 2. OpenCode reviewer/task permission deny and local protected `.entire` census contamination remain environment limitations. Release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: The accepted IRR-T04B-02 ruling authorized bounded P1, but P1 has now hit a new System-Impact trigger: W03 cannot verify the origin/ancestry of a constructible W02 `RECONCILED_ANCESTOR_CURRENT_CLOSURE` outcome without changing the accepted evidence boundary. Senior disposition is required. T04B and T05C remain blocked; T07D remains eligible. Four sequential S6D DEV tests fail outside P1 write scope; local `.entire` contamination also affects version census. Release execution, gameplay bootstrap and Wave 05 remain unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -328,17 +328,17 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: EXECUTING
-CURRENT_TASK: W04.T07D and W04.T04B-P1 may execute independently; T04B waits for T04B-P1 independent PASS/read-back
+STATUS: SENIOR_REVIEW_REQUIRED
+CURRENT_TASK: W04.T04B-P1 paused at the new W02/W03 ancestry-evidence System-Impact gate; T07D remains independently eligible; T04B waits for P1 independent PASS/read-back
 LAST_COMPLETED_TASK: W04.T07C independent PASS at `df83bc7c37e1f1d0fdeebd583350bf377a4c8f37`; T04A/T07B prior PASS retained
-LAST_SAFE_SHA: `df83bc7c37e1f1d0fdeebd583350bf377a4c8f37` — exact independently reviewed T07C state
+LAST_SAFE_SHA: `c9dd3f4a8f33dbb48d228308a8457bb140b3a5e5` — freshly fetched current remote HEAD before unpublished P1 candidate edits
 
-CURRENT_VERIFICATION_STATE: exact T07C repair and reviewed-head hosted runs are SUCCESS; reviewed T07C head has maintenance PASS, 1218 tests/5 skipped PASS, and zero version unclassified/legacy hits. IRR-T07C-01/02 and IRR-T04B-01 are CLOSED. IRR-T04B-02 is resolved at design/control level; T04B-P1 has not yet been implemented or reviewed.
-VERSION_IMPACT: T07C accepted at History 1.0.5, T0 basis schema 2, Story 1.0.8, Story EVENTS schema 4 and E-EVT generation 2; outer SemanticEvent schema 1, Story projection-state schema 4, durability 1.0.4 and campaign contract generation 2 unchanged. No migration/dual-read. T04B Senior ruling/control publication: NONE.
-SYSTEM_IMPACT: IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITE / NO PRODUCT-SEMANTIC CHANGE. T04B-P1 is limited to the accepted W03 LIVE producer boundary; a need for a new persistent owner/schema, RuntimeHost/RepositoryPort semantic broadening or another authority is a fresh System-Impact stop. T07C cross-project refresh found no current public reopen/write requirement.
-NEXT_EXACT_TASK: execute T07D and T04B-P1 independently. After T04B-P1 independent PASS/read-back, resume T04B immediately. Do not start T05C until T04B PASS.
-KNOWN_BLOCKERS: T04B waits for T04B-P1; T05C waits for T04B PASS. T07D is unblocked. Final T07 integration, Wave-04 joins and mandatory Senior integration audit remain required. Wave 05 is unauthorized.
-UNPUBLISHED_WORK: NONE after this control-state publication/read-back.
+CURRENT_VERIFICATION_STATE: The P1 class has 21 passing tests; RD09 has 192 passing tests; scoped Ruff/import and P1-range formatting checks pass; maintenance audit after the bounded classifier repair passes. Independent review addressed the direct/current-closure observed-SHA mismatch but returned TARGETED_REPAIR_REQUIRED for caller-constructible ancestor outcomes without W02 provenance. The initial full local DEV pytest run (before that classifier repair) had 1253 passed, 5 skipped and 9 failures; four S6D failures reproduced sequentially outside P1 scope, three release-builder cache failures passed after generated GAME cache cleanup, clean-checkout metadata saw the dirty candidate, and version census included ignored `.entire` logs. Hosted CI unavailable.
+VERSION_IMPACT: P1 candidate `GAME/TOOLS/live_state.py` framework module `1.0.20 -> 1.0.21`; LIVE-routing schema v4, native-state-pack v2, absorption-attempt v1, campaign-contract generation and storage generation unchanged. P1 gate is unresolved pending Senior disposition. Impact-brief/cursor synchronization: `VERSION_IMPACT: NONE`.
+SYSTEM_IMPACT: `SENIOR_REVIEW_REQUIRED` — the authorized W03 classifier input has no verifiable W02-issued provenance/ancestry proof for `RECONCILED_ANCESTOR_CURRENT_CLOSURE`. See `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-ancestry-evidence-impact-brief.md`. Do not expand P1 into W02 or change the classifier contract until Senior ruling.
+NEXT_EXACT_TASK: Senior disposition of the W02/W03 evidence boundary in the linked brief; then continue P1 only within the ruling. Do not resume T04B or start T05C before their stated gates.
+KNOWN_BLOCKERS: P1 candidate not accepted or published; W02 ancestor outcome authenticity unresolved. Four sequential S6D failures remain outside scope; clean exact-tree full verification is pending. T04B/T05C blocked; Wave 05 unauthorized.
+UNPUBLISHED_WORK: P1 implementation/test candidate in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py` remains uncommitted/unpublished; independent review is TARGETED_REPAIR_REQUIRED. No P1 PASS/read-back exists.
 
 ## Historical Wave-04 progress retention
 
