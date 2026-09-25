@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVE 04 T07C PASS / T04B-P1 SENIOR SYSTEM-IMPACT REVIEW REQUIRED — T07D AUTHORIZED, T04B/T05C BLOCKED
+GLOBAL_STATE: R2.7 CLOSED — T04B-P0 W02 EVIDENCE PREREQUISITE AUTHORIZED — T04B-P1/T04B/T05C BLOCKED; T07D AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T07C independently accepted on `df83bc7c37e1f1d0fdeebd583350bf377a4c8f37` with repair implementation `f114eb6a38c50d755cf71094d078c1d362f08bb4`; T04A/T07B prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: Obtain Senior disposition of the W04.T04B-P1 W02/W03 outcome-authenticity System-Impact brief at `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-ancestry-evidence-impact-brief.md`; resume P1 only within that ruling. T07D remains independently authorized. T04B remains blocked until P1 independent PASS/read-back; T05C remains blocked until T04B independent PASS.
-REQUIRED_GATE: T07D independent PASS -> T07E -> T07-INTEGRATION; Senior disposition of the P1 ancestry-outcome evidence boundary -> finish P1 within ruling -> independent PASS/read-back -> T04B repair/review -> independent PASS -> T05C after accepted T02C+T05B; then remaining Wave-04 joins, exact-head verification and mandatory Senior Wave-04 integration audit before closure.
+NEXT_AUTHORIZED_UNIT: W04.T04B-P0 and W04.T07D may execute independently; P0 implements W02 owner-issued campaign-publication acceptance evidence; resume T04B-P1 immediately after P0 independent PASS/read-back; do not start T04B or T05C before their stated producer gates
+REQUIRED_GATE: T04B-P0 implementation -> independent PASS/read-back -> T04B-P1 resume -> independent PASS/read-back -> T04B repair/review -> independent PASS -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: The accepted IRR-T04B-02 ruling authorized bounded P1, but P1 has now hit a new System-Impact trigger: W03 cannot verify the origin/ancestry of a constructible W02 `RECONCILED_ANCESTOR_CURRENT_CLOSURE` outcome without changing the accepted evidence boundary. Senior disposition is required. T04B and T05C remain blocked; T07D remains eligible. Four sequential S6D DEV tests fail outside P1 write scope; local `.entire` contamination also affects version census. Release execution, gameplay bootstrap and Wave 05 remain unauthorized.
+KNOWN_BLOCKERS: P1 ancestor-outcome authenticity gate is Senior-resolved to bounded W02 prerequisite T04B-P0; T04B-P1 remains paused until P0 PASS, T04B remains paused until P1 PASS, and T05C remains blocked until T04B PASS. T07D remains eligible. The unpublished P1 candidate remains unaccepted. Local `.entire` census contamination and unrelated reproduced S6D failures are not claimed repaired. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`

@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED — T04B-P1 W02 ancestry-outcome evidence boundary
-CURRENT_TASK: W04.T04B-P1 paused at a new System-Impact gate; T07D remains independently authorized; T04B and T05C remain blocked
+STATUS: EXECUTING — T04B-P0 AUTHORIZED / T04B-P1 PAUSED
+CURRENT_TASK: W04.T04B-P0 and T07D may execute independently; T04B-P1 waits for P0 independent PASS/read-back; T04B/T05C remain blocked
 LAST_COMPLETED_TASK: W04.T07C independent PASS at df83bc7c37e1f1d0fdeebd583350bf377a4c8f37; T04A/T07B prior PASS retained
-LAST_SAFE_SHA: c9dd3f4a8f33dbb48d228308a8457bb140b3a5e5 — freshly fetched current remote head before the unpublished P1 candidate
+LAST_SAFE_SHA: 64eeb2a9fa876294b93e4d3267eec93f4ec03abb — impact brief/control checkpoint before P0 implementation
 
 
 ## T04B Senior System-Impact resolution
@@ -24,6 +24,29 @@ The accepted Step-5.8 law already requires exact final LIVE close -> absorption/
 W04.T04B-P1 is authorized with W03 LIVE semantic ownership. Its production write surface is limited to `GAME/TOOLS/live_state.py`; it must issue a complete owner-authenticated `FrozenCampaignAbsorptionDelta` plus group-aware accepted-publication evidence, using only existing admitted campaign owner paths. If any required packed/handoff contribution cannot be represented losslessly without a new persistent owner/schema or broader runtime/repository API, P1 stops at a new System-Impact event.
 
 T04B may resume immediately after P1 implementation + independent PASS/read-back. No PO or second Senior gate is required unless P1 discovers a new trigger. T04A/T07B/T07C remain closed; T07D is unaffected.
+
+## T04B-P1 W02 ancestry-evidence Senior resolution
+
+RULING: `DEV/docs/superpowers/design/2026-09-25-w04-t04b-p1-w02-publication-evidence-senior-ruling.md`
+
+Disposition: **RESOLVED TO BOUNDED W02 PREREQUISITE / NO PRODUCT-SEMANTIC CHANGE**.
+
+New prerequisite:
+
+```text
+W04.T04B-P0 — W02 verified campaign-publication acceptance evidence
+OUTPUT: W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY
+```
+
+P0 preserves `PublicationOutcome` as the ordinary constructible result value but adds exact-instance W02 owner-issued acceptance evidence bound to the exact `FrozenCampaignPublicationAttempt`. Direct acceptance binds the actual trusted ref result; reconciled current closure retains the trusted closure proof; reconciled ancestor closure retains both trusted closure and ancestry evidence. Raw/directly constructed/copied/equal-field outcomes are not owner evidence.
+
+Allowed P0 production writes: `GAME/TOOLS/publication.py`, `GAME/TOOLS/runtime_host.py`. Primary tests: `DEV/TESTS/test_rd06_durability_publication.py`, `DEV/TESTS/test_runtime_host_composition.py`.
+
+After P0 independent PASS/read-back, P1 resumes and must consume the W02 owner validator using its campaign/predecessor and W03 operation-digest subset. W03 does not re-run Git ancestry.
+
+Expected fresh Version Impact if baseline remains current: publication `1.0.4 -> 1.0.5`, runtime_host `1.0.8 -> 1.0.9`. No persistent schema/generation/migration change expected.
+
+No PO gate. T07D remains independent.
 
 ## Current independent review
 
@@ -88,8 +111,10 @@ No earlier accepted task is reopened. T07C is independently accepted. T04B-P1 is
 ```text
 READY IN PARALLEL:
   T07D
-  T04B-P1  (W03 LIVE semantic owner)
+  T04B-P0  (W02 publication semantic owner)
 
+T04B-P0 implementation -> independent PASS/read-back
+  -> T04B-P1 resumes immediately
 T04B-P1 implementation -> independent PASS/read-back
   -> T04B resumes immediately
   -> T04B repair/recovery verification -> independent PASS
@@ -106,7 +131,7 @@ T08C + all lane checkpoints -> Wave-04 FINAL_REVIEW
 mandatory Senior Wave-04 integration audit -> closure decision
 ```
 
-T07D and T04B-P1 may begin independently. T04B itself remains stopped until exact P1 independent PASS/read-back; T05C remains blocked until T04B PASS.
+T07D and T04B-P0 may begin independently. T04B-P1 remains stopped until exact P0 independent PASS/read-back; T04B remains stopped until P1 PASS/read-back; T05C remains blocked until T04B PASS.
 
 MAX_CONFIGURED_HDM_WORKERS: 5
 MAX_SAFE_WAVE04_PRODUCTION_WORKERS: 4
@@ -155,7 +180,7 @@ CURRENT_VERIFICATION_STATE:
 - current reviewed-head maintenance PASS and 1218 tests/5 skipped PASS;
 - VERSION_UNCLASSIFIED=[] and VERSION_LEGACY_HITS=[] on both hosted verification points;
 - IRR-T07C-01/02 independently CLOSED;
-- IRR-T04B-02 Senior/design gate is resolved to bounded prerequisite T04B-P1; no T04B acceptance is claimed; P1 implementation/review is pending.
+- IRR-T04B-02 main producer gap remains resolved to T04B-P1; the nested ancestry-authenticity gate is now resolved to T04B-P0. P0/P1 implementation acceptance remains pending.
 
 VERSION_IMPACT — T07C ACCEPTED:
 - History module 1.0.5;
@@ -181,11 +206,12 @@ CLS_HDM_RECONCILIATION:
 
 SYSTEM_IMPACT:
 - T07C NONE / accepted;
-- IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITE by the accepted Senior ruling;
-- T04B-P1: SENIOR_REVIEW_REQUIRED for W02/W03 ancestor-outcome authenticity; see the linked Implementation Impact Brief. Do not expand P1 into W02 or change the classifier interface before that ruling.
+- IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
+- T04B-P0: AUTHORIZED W02 owner-evidence prerequisite;
+- T04B-P1: PAUSED until P0 independent PASS/read-back; then resumes under its existing W03 scope.
 
-NEXT_EXACT_TASK: Senior disposition of the W02/W03 ancestor-outcome authenticity boundary in the linked Implementation Impact Brief; resume P1 only within that ruling. T07D remains independently eligible. T04B waits for P1 independent PASS/read-back; T05C waits for T04B PASS.
-KNOWN_BLOCKERS: P1 cannot safely accept W02 ancestor-current-closure outcomes from the current constructible `PublicationOutcome` without verifiable W02 origin/ancestry; implementation needs a new bounded ruling. Four sequential S6D suite failures are outside P1 scope; clean-tree DEV verification remains pending. T04B/T05C remain blocked; Wave 04 not complete; Wave 05 not authorized.
+NEXT_EXACT_TASK: implement T04B-P0 and obtain independent PASS/read-back; then resume P1 using only W02 owner-issued acceptance evidence. T07D remains independently eligible. T04B waits for P1 PASS/read-back; T05C waits for T04B PASS.
+KNOWN_BLOCKERS: P0 implementation/review pending; unpublished P1 candidate remains paused. Four sequential S6D suite failures are outside P1 scope; clean-tree P1 verification remains pending. T04B/T05C remain blocked; Wave 04 not complete; Wave 05 not authorized.
 UNPUBLISHED_WORK: P1 candidate in `GAME/TOOLS/live_state.py` and `DEV/TESTS/test_rd09_access_live.py` remains uncommitted/unpublished; ancestor-outcome authenticity gap unresolved. The P1 independent review is TARGETED_REPAIR_REQUIRED; no candidate PASS/read-back exists.
 
 ## Historical evidence retention

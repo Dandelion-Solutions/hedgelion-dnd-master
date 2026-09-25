@@ -228,9 +228,21 @@ Output: W04_AUTHORITY_COLLAB_RECONCILIATION_READY.
 
 Mandatory REDs: collaboration cannot grant or recover authorization; deactivation/reactivation/grant revocation/join-policy changes apply prospectively; creator uncertainty fails closed; only the bounded affected obligation set is reconciled.
 
+**W04.T04B-P0 - W02 verified campaign-publication acceptance evidence prerequisite**
+
+Input: T04A PASS plus the accepted W02 publication/reconciliation owner. This is a Wave-04 prerequisite with W02 semantic ownership; it does not reopen Wave-02 closure.
+
+Direct writes: `GAME/TOOLS/publication.py`, `GAME/TOOLS/runtime_host.py`, `DEV/TESTS/test_rd06_durability_publication.py`, `DEV/TESTS/test_runtime_host_composition.py`, and mechanically required version/control bookkeeping only.
+
+Output: `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY`.
+
+Preserve the common constructible `PublicationOutcome` result contract, but add exact-instance W02 owner-issued acceptance evidence bound to the frozen publication attempt and, where applicable, the trusted current-closure/ancestry evidence used by CampaignPublicationService. Raw/directly constructed outcomes are not authority.
+
+Mandatory REDs: direct/reconstructed/raw classifier outcomes cannot validate; trusted direct/current-closure/ancestor service outcomes do validate; ancestry binds exact intended/observed pair and attempt; required operation-digest subsets bind joined owner deltas; foreign attempt/campaign/predecessor and missing/changed closure fail; no second ref update; non-accepted outcomes never carry accepted evidence.
+
 **W04.T04B-P1 - W03 composable absorption/final-routing producer prerequisite**
 
-Input: T04A PASS plus the accepted W03 LIVE routing/packing/absorption and W02 publication checkpoints. This is a Wave-04 prerequisite with W03 LIVE semantic ownership; it does not reopen Wave-03 closure.
+Input: T04A PASS plus independent PASS/read-back of T04B-P0 (`W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY`) and the accepted W03 LIVE routing/packing/absorption checkpoints. This is a Wave-04 prerequisite with W03 LIVE semantic ownership; it does not reopen Wave-03 closure.
 
 Direct writes: `GAME/TOOLS/live_state.py`, `DEV/TESTS/test_rd09_access_live.py`, and mechanically required version/control bookkeeping only. `native_storage.py`, W02 publication/runtime-host owners, access control, Collaboration and shared Wave-05 surfaces are read-only.
 
@@ -238,7 +250,7 @@ Output: `W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`.
 
 The producer must expose the owner-issued `FrozenCampaignAbsorptionDelta` / composed-publication evidence boundary accepted by `DEV/docs/superpowers/design/2026-09-25-w04-t04b-irr-t04b-02-senior-ruling.md`. It must materialize the complete W03/native absorption plus final `STATE/RUNTIME/LIVE_ROUTING.yaml` campaign delta from exact final closed sources, fail closed on any unrepresentable required packed/handoff contribution, and never perform a campaign write itself.
 
-Mandatory REDs: single/multi-LIVE deterministic preparation; exact complete final-route removal; lossless owner-path coverage or fail-closed; stale/ACTIVE/partial/wrong-route/wrong-pack rejection; forged delta/evidence rejection; ACCEPTED W02 classification without second CAS; CONFLICT/REJECTED/INDETERMINATE do not become absorption; CLOSED_UNABSORBED alone is never accepted absorption.
+Mandatory REDs: single/multi-LIVE deterministic preparation; exact complete final-route removal; lossless owner-path coverage or fail-closed; stale/ACTIVE/partial/wrong-route/wrong-pack rejection; forged delta/evidence rejection; raw/caller-constructed PublicationOutcome (including forged ancestor cause) rejected; genuine T04B-P0 owner-issued direct/current/ancestor acceptance admitted without second CAS; CONFLICT/REJECTED/INDETERMINATE do not become absorption; CLOSED_UNABSORBED alone is never accepted absorption.
 
 **W04.T04B - same-closure authority/collaboration publication and recovery**
 
