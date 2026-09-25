@@ -1,6 +1,6 @@
-# HDM local dashboard skills РІР‚вЂќ authoring and verification
+# HDM local dashboard skills - authoring and verification
 
-Status: IN_PROGRESS РІР‚вЂќ architecture skill verification
+Status: IN_PROGRESS - architecture published; Python core verified; LLM baseline
 
 ## Scope and authority
 
@@ -36,14 +36,18 @@ Fixtures combine imminent review pressure, sunk draft effort and attractive unsu
 
 ### Architecture
 
-RED: five controls rejected the invented 92% score, but produced five incompatible projection shapes and no separate canonical/actual graph pair. Representative exact outputs: `"kind": "local-architecture-projection"`, `"schema": "local-architecture-projection/1"`, and a single `"relationships"` array. One output's visible order was `Snapshot РІвЂ вЂ™ Event ownership РІвЂ вЂ™ Persistence assurance РІвЂ вЂ™ Deferred Context РІвЂ вЂ™ Evidence limits`: useful prose, but no independently navigable canonical/actual comparison. The failure is output structure/interoperability, not an invented assertion that controls ignored authority rules.
+RED: five controls rejected the invented 92% score, but produced five incompatible projection shapes and no separate canonical/actual graph pair. Representative exact outputs: `"kind": "local-architecture-projection"`, `"schema": "local-architecture-projection/1"`, and a single `"relationships"` array. Useful prose did not provide an independently navigable canonical/actual comparison. The failure is output structure/interoperability, not an assertion that controls ignored authority rules.
 
 GREEN: five fresh-context treatments used the common envelope and separate graph planes. Full JSON/HTML fixture output was generated. One micro-sample and the full output incorrectly typed physical persistence as state ownership; another micro-sample left an edge endpoint implicit. REFACTOR explicitly distinguishes physical persists from semantic owns and requires endpoint resolution. Fresh-context graph re-test and regenerated full artifact now separate semantic ownership from physical persistence. Independent parent checks passed JSON parsing, required envelope, source/claim references, graph endpoints and ownership separation. Skill frontmatter validation passed. Browser policy denied local file opening; visual/interaction QA and installed Lavish review remain unavailable, not PASS.
 
+### Python core
+
+RED: five fresh-context controls preserved uncertainty around coverage/cycles. One conflated call evidence with source imports: `Observed imports: persistence -> mechanics; mechanics -> sqlite3` (arrow typography normalized). The fixture supplied a persistence call, not an import. GREEN adds typed edges, explicit composition and owner views, scoped diagnostics and obligation-to-assertion-to-run test mapping. Five treatments preserve the distinction. Full fixture JSON/HTML independently passed envelope/source/claim/endpoint/local-asset checks; reviewed diagnostics retain incomplete inventory/dynamic callback uncertainty and unexecuted test inventory. Frontmatter validator passed. Independent review of both skills/shared references returned no blocking findings; document review only, no fabricated visual execution.
+
 ## Current verification and continuation
 
-NEXT_EXACT_ACTION: Python core baseline, then author and verify that skill before LLM runtime.
-PUBLICATION: not yet performed.
+NEXT_EXACT_ACTION: complete LLM baseline, then author and verify that skill before audit dashboard.
+PUBLICATION: architecture/shared contract/ignore checkpoint `962d0f3f18e2ed6e0b59016c0fd3e5aa056a5c36`; five files read back byte-for-byte, ref independently verified. Hosted Validate engine source run `36155537896`: completed/success at that exact HEAD.
 VERSION_IMPACT: NONE for existing HDM namespaces. New local projection `schema_version: 1` identifies only this development interchange format; no engine release, runtime module, campaign, storage, catalog, ruleset or digest generation transition. No campaign migration.
 SYSTEM_IMPACT: NONE within the PO-authorized local projection boundary.
 LIMITATIONS: the target VPS and installed Lavish review loop are not available on this authoring host; do not claim their execution. Full engine tests have not run for this documentation-only change.
