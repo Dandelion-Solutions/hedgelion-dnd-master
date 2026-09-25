@@ -11,27 +11,33 @@ from __future__ import annotations
 
 import base64
 import binascii
+import hashlib
+import json
+import re
+import weakref
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import InitVar, dataclass, field, replace
 from enum import StrEnum
-import hashlib
-import json
-import re
 from types import MappingProxyType
-from typing import Final, TypeAlias
-import weakref
+from typing import TYPE_CHECKING, Final, TypeAlias
 
 from .recovery_roots import (
-    OperationalRootError,
+    OPERATIONAL_ROOT_SCHEMA_VERSION,
+    OperationalRoot,
     OperationalRootDelta,
+    OperationalRootError,
     OperationalRootHandoff,
     OperationalRootPage,
     _is_owner_issued_root_delta,
 )
 
-# framework_module_version: 1.0.20
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
+if TYPE_CHECKING:
+    from .publication import PublicationOutcome
+
+
+# framework_module_version: 1.0.21
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.21"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -42,6 +48,9 @@ LIVE_OPENING_PREPARATION_SCHEMA_VERSION: Final[int] = 1
 LIVE_OPENING_SEED_SCHEMA_VERSION: Final[int] = 2
 LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION: Final[int] = 2
 LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION: Final[int] = 1
+_CAMPAIGN_LIVE_ROUTING_PATH: Final[str] = "STATE/RUNTIME/LIVE_ROUTING.yaml"
+_CAMPAIGN_EVENT_INDEX_PATH: Final[str] = "INDEX/EVENT_INDEX.yaml"
+_ABSORPTION_PATH_SNAPSHOTS_KEY: Final[str] = "path_snapshots"
 
 SOURCE_NATIVE_LIVE_ENCODING: Final[str] = "framed_base32hex_v1"
 SOURCE_NATIVE_CURSOR_MAX: Final[int] = (1 << 64) - 1
@@ -2815,6 +2824,1003 @@ def freeze_campaign_absorption(
     )
 
 
+def _thaw_absorption_json(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _thaw_absorption_json(item) for key, item in value.items()}
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return [_thaw_absorption_json(item) for item in value]
+    return value
+
+
+def _freeze_absorption_json(value: object) -> object:
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {key: _freeze_absorption_json(item) for key, item in value.items()}
+        )
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return tuple(_freeze_absorption_json(item) for item in value)
+    return value
+
+
+def _campaign_path(value: object) -> str:
+    if not isinstance(value, str) or not value or value.startswith("/"):
+        raise LiveContractError("absorption path must be a relative campaign path")
+    parts = value.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        raise LiveContractError("absorption path is not normalized")
+    return value
+
+
+def _absorption_operation_digest(_path: str, value: object) -> str:
+    thawed = _thaw_absorption_json(value)
+    if not isinstance(thawed, Mapping):
+        raise LiveContractError(
+            "absorption operation digest requires an owner after-image"
+        )
+    # W02 maps this payload digest under its exact path key; keep the same digest
+    # so W03 operation subsets can be verified against a joined W02 attempt.
+    return _state_digest(thawed)
+
+
+def _campaign_absorption_delta_digest(
+    *,
+    campaign_id: str,
+    expected_campaign_revision: str,
+    proposed_campaign_revision: str,
+    selected_route: LiveRouting,
+    final_route: LiveRouting,
+    source_attempts: Sequence[FrozenCampaignAbsorption],
+    operation_digests: Mapping[str, str],
+) -> str:
+    return _state_digest(
+        {
+            "campaign_id": campaign_id,
+            "expected_campaign_revision": expected_campaign_revision,
+            "proposed_campaign_revision": proposed_campaign_revision,
+            "selected_route": selected_route.as_mapping(),
+            "final_route": final_route.as_mapping(),
+            "source_attempts": [attempt.as_mapping() for attempt in source_attempts],
+            "operation_digests": dict(operation_digests),
+        }
+    )
+
+
+def _absorption_campaign_basis(
+    campaign_state: object,
+    *,
+    campaign_id: str,
+    expected_campaign_revision: str,
+) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    state = _copy_json_mapping(campaign_state, "absorption campaign state")
+    if state.get("campaign_id") != campaign_id:
+        raise LiveContractError("absorption campaign state belongs to another campaign")
+    revisions = tuple(
+        state[field]
+        for field in ("revision", "campaign_revision", "current_revision")
+        if field in state
+    )
+    if not revisions or any(
+        not isinstance(value, str) or value != expected_campaign_revision
+        for value in revisions
+    ):
+        raise LiveContractError(
+            "absorption campaign state is not the exact pinned predecessor"
+        )
+    raw_snapshots = state.pop(_ABSORPTION_PATH_SNAPSHOTS_KEY, {})
+    if not isinstance(raw_snapshots, Mapping):
+        raise LiveContractError("absorption path snapshots must be an explicit mapping")
+    from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
+
+    allowed_paths = {
+        _CAMPAIGN_EVENT_INDEX_PATH,
+        OPERATIONAL_ROOT_MEMBERSHIP_PATH,
+    }
+    if any(path not in allowed_paths for path in raw_snapshots):
+        raise LiveContractError(
+            "absorption campaign basis contains an unregistered path snapshot"
+        )
+    snapshots = {
+        path: _copy_json_mapping(value, f"absorption path snapshot {path}")
+        for path, value in raw_snapshots.items()
+    }
+    return state, snapshots
+
+
+def _absorption_event_enrollment(
+    value: object,
+) -> tuple[tuple[int, str, dict[str, object]], ...]:
+    if not isinstance(value, Mapping) or set(value) != {
+        "complete",
+        "upper_ordinal",
+        "entries",
+    }:
+        raise LiveContractError(
+            "LIVE SemanticEvent pack is not a complete bounded enrollment"
+        )
+    if value.get("complete") is not True:
+        raise LiveContractError("LIVE SemanticEvent pack is incomplete")
+    upper_ordinal = value.get("upper_ordinal")
+    raw_entries = value.get("entries")
+    if (
+        type(upper_ordinal) is not int
+        or upper_ordinal < 0
+        or not isinstance(raw_entries, Sequence)
+        or isinstance(raw_entries, (str, bytes))
+        or len(raw_entries) != upper_ordinal
+    ):
+        raise LiveContractError("LIVE SemanticEvent pack upper bound is inconsistent")
+    from .native_storage import route_native_record
+
+    entries: list[tuple[int, str, dict[str, object]]] = []
+    event_ids: set[str] = set()
+    for expected_ordinal, raw_entry in enumerate(raw_entries, start=1):
+        if not isinstance(raw_entry, Mapping):
+            raise LiveContractError(
+                "LIVE SemanticEvent enrollment entry is not an object"
+            )
+        allowed_fields = {"ordinal", "event_id", "event_record", "path"}
+        if (
+            not {"ordinal", "event_id", "event_record"}.issubset(raw_entry)
+            or set(raw_entry) - allowed_fields
+        ):
+            raise LiveContractError(
+                "LIVE SemanticEvent enrollment fields are not registered"
+            )
+        ordinal = raw_entry["ordinal"]
+        event_id = raw_entry["event_id"]
+        raw_record = raw_entry["event_record"]
+        if (
+            type(ordinal) is not int
+            or ordinal != expected_ordinal
+            or not isinstance(event_id, str)
+            or not event_id
+            or not isinstance(raw_record, Mapping)
+            or raw_record.get("event_id") != event_id
+        ):
+            raise LiveContractError(
+                "LIVE SemanticEvent enrollment identity or ordinal differs"
+            )
+        if event_id in event_ids:
+            raise LiveContractError(
+                "LIVE SemanticEvent enrollment contains duplicate identities"
+            )
+        event_ids.add(event_id)
+        route_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        if raw_entry.get("path", route_path) != route_path:
+            raise LiveContractError(
+                "LIVE SemanticEvent path is not its exact native route"
+            )
+        event_record = _copy_json_mapping(raw_record, "LIVE SemanticEvent record")
+        if (
+            type(event_record.get("schema_version")) is not int
+            or event_record.get("schema_version") != 1
+            or type(event_record.get("semantic_order")) is not int
+            or event_record.get("semantic_order", 0) < 1
+            or not isinstance(event_record.get("kind"), str)
+            or not event_record.get("kind")
+            or not isinstance(event_record.get("provenance_refs"), Sequence)
+            or isinstance(event_record.get("provenance_refs"), (str, bytes))
+            or not isinstance(event_record.get("semantic_delta"), Mapping)
+        ):
+            raise LiveContractError(
+                "LIVE SemanticEvent record is not a typed accepted event"
+            )
+        entries.append((ordinal, event_id, event_record))
+    return tuple(entries)
+
+
+def _absorption_record_identity(
+    family: str,
+    raw_record: object,
+) -> tuple[tuple[str, ...], dict[str, object]]:
+    from .native_storage import (
+        FAMILY_ROOTS,
+        native_identity_from_record,
+        route_native_record,
+        validate_loaded_identity,
+    )
+
+    if family not in FAMILY_ROOTS:
+        raise LiveContractError(
+            f"LIVE absorption owner family has no admitted route: {family}"
+        )
+    if LIVE_BIRTH_ADMISSION_TABLE.get(family) in {None, "FORBIDDEN"}:
+        raise LiveContractError(
+            f"LIVE absorption owner family is not admitted: {family}"
+        )
+    record = _copy_json_mapping(raw_record, f"LIVE absorption owner {family}")
+    try:
+        if family == "runtime.semantic_event":
+            event_id = record.get("event_id")
+            if not isinstance(event_id, str) or not event_id:
+                raise LiveContractError(
+                    "SemanticEvent after-image lacks its exact event_id"
+                )
+            identity = (event_id,)
+        elif family == "world.thread":
+            if record.get("record_kind") != family:
+                raise LiveContractError(
+                    "world.thread after-image lacks its exact record_kind"
+                )
+            identity = native_identity_from_record(family, record)
+        elif family in {"world.knowledge", "runtime.disclosure"}:
+            identity = native_identity_from_record(family, record)
+        else:
+            identity = native_identity_from_record(family, record)
+            validate_loaded_identity(family, identity, record)
+        route_native_record(family, identity)
+    except (TypeError, ValueError) as error:
+        if isinstance(error, LiveContractError):
+            raise
+        raise LiveContractError(
+            f"LIVE absorption {family} owner identity is not routable"
+        ) from error
+    return identity, record
+
+
+def _absorption_operational_root_handoffs(
+    value: object,
+    *,
+    source: LiveEnvelope,
+) -> tuple[OperationalRootHandoff, ...]:
+    values = (
+        value
+        if isinstance(value, Sequence) and not isinstance(value, (str, bytes))
+        else (value,)
+    )
+    handoffs: list[OperationalRootHandoff] = []
+    for raw_handoff in values:
+        try:
+            handoff = OperationalRootHandoff.from_mapping(raw_handoff)
+        except (OperationalRootError, TypeError, ValueError) as error:
+            raise LiveContractError(
+                "unresolved operational-root handoff is not typed"
+            ) from error
+        if (
+            handoff.campaign_id != source.campaign_id
+            or handoff.source_scope != "LIVE"
+            or handoff.source_revision != source.source_revision
+            or handoff.source_key != source.source_key
+            or handoff.source_lifecycle != source.status.value
+        ):
+            raise LiveContractError(
+                "operational-root handoff differs from the exact final source"
+            )
+        handoffs.append(handoff)
+    if not handoffs:
+        raise LiveContractError("unresolved operational-root handoff set is empty")
+    return tuple(handoffs)
+
+
+def _absorption_records_for_family(
+    family: str,
+    value: object,
+    *,
+    category: str,
+    source: LiveEnvelope,
+) -> tuple[
+    tuple[tuple[tuple[str, ...], dict[str, object]], ...],
+    tuple[tuple[int, str, dict[str, object]], ...],
+]:
+    if family == "runtime.operational_root_handoff":
+        if category != "unresolved_work":
+            raise LiveContractError(
+                "operational-root handoff must remain in unresolved_work"
+            )
+        return (), ()
+    if family == "runtime.semantic_event":
+        events = _absorption_event_enrollment(value)
+        return (), events
+    if isinstance(value, Mapping):
+        raw_records = (value,)
+    elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        raw_records = tuple(value)
+    else:
+        raise LiveContractError(
+            f"LIVE absorption {category}.{family} is not a record set"
+        )
+    if not raw_records:
+        return (), ()
+    records = tuple(
+        _absorption_record_identity(family, raw_record) for raw_record in raw_records
+    )
+    if len({identity for identity, _record in records}) != len(records):
+        raise LiveContractError(
+            f"LIVE absorption {category}.{family} repeats an owner identity"
+        )
+    return records, ()
+
+
+def _campaign_event_index_after_image(
+    value: object,
+    *,
+    source_events: Sequence[tuple[LiveSourceKey, int, str]],
+) -> dict[str, object]:
+    if not isinstance(value, Mapping):
+        raise LiveContractError(
+            "LIVE SemanticEvent absorption requires the exact campaign event index"
+        )
+    index = _copy_json_mapping(value, "campaign EventIndex")
+    if (
+        type(index.get("schema_version")) is not int
+        or index.get("schema_version") != 1
+        or index.get("entity_type") != "EVENT"
+        or index.get("complete") is not True
+    ):
+        raise LiveContractError(
+            "campaign EventIndex is not a complete compatible owner snapshot"
+        )
+    raw_entries = index.get("entries")
+    if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
+        raise LiveContractError("campaign EventIndex entries are not an array")
+    upper = index.get("upper_ordinal")
+    if upper is None:
+        if raw_entries:
+            raise LiveContractError(
+                "empty campaign EventIndex upper conflicts with entries"
+            )
+    elif type(upper) is not int or upper < 1 or upper != len(raw_entries):
+        raise LiveContractError("campaign EventIndex upper differs from exact entries")
+    from .native_storage import route_native_record
+
+    existing_ids: set[str] = set()
+    entries: list[dict[str, object]] = []
+    for expected_ordinal, raw_entry in enumerate(raw_entries, start=1):
+        if not isinstance(raw_entry, Mapping):
+            raise LiveContractError("campaign EventIndex entry is not an object")
+        ordinal = raw_entry.get("ordinal")
+        event_id = raw_entry.get("event_id")
+        if type(ordinal) is not int or ordinal != expected_ordinal:
+            raise LiveContractError("campaign EventIndex ordinals are not contiguous")
+        if not isinstance(event_id, str) or not event_id or event_id in existing_ids:
+            raise LiveContractError(
+                "campaign EventIndex event identities are invalid or duplicated"
+            )
+        expected_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        if raw_entry.get("path", expected_path) != expected_path:
+            raise LiveContractError(
+                "campaign EventIndex entry path differs from its native owner"
+            )
+        existing_ids.add(event_id)
+        entries.append(deepcopy(dict(raw_entry)))
+    # This is deterministic event-index enrollment order only, never chronology.
+    ordered = sorted(
+        source_events,
+        key=lambda entry: (*_live_source_key_sort_key(entry[0]), entry[1]),
+    )
+    for _source_key, _ordinal, event_id in ordered:
+        if event_id in existing_ids:
+            raise LiveContractError(
+                "absorbed SemanticEvent already exists in campaign EventIndex"
+            )
+        existing_ids.add(event_id)
+        entries.append(
+            {
+                "ordinal": len(entries) + 1,
+                "event_id": event_id,
+                "path": route_native_record(
+                    "runtime.semantic_event", (event_id,)
+                ).relative_path,
+            }
+        )
+    index["entries"] = entries
+    index["complete"] = True
+    index["upper_ordinal"] = len(entries) if entries else None
+    return index
+
+
+def _root_from_campaign_mapping(value: object, campaign_id: str) -> OperationalRoot:
+    from .native_storage import route_native_record
+
+    if not isinstance(value, Mapping) or set(value) != {
+        "owner_kind",
+        "owner_id",
+        "route",
+    }:
+        raise LiveContractError(
+            "operational-root page member is not a strict owner route"
+        )
+    owner_kind = value.get("owner_kind")
+    owner_id = value.get("owner_id")
+    route_value = value.get("route")
+    if not isinstance(owner_kind, str) or not isinstance(owner_id, str):
+        raise LiveContractError("operational-root page member identity is malformed")
+    if not isinstance(route_value, Mapping):
+        raise LiveContractError("operational-root page member route is malformed")
+    identity = route_value.get("identity")
+    if (
+        route_value.get("family_key") != owner_kind
+        or not isinstance(identity, Sequence)
+        or isinstance(identity, (str, bytes))
+        or tuple(identity) != (owner_id,)
+    ):
+        raise LiveContractError("operational-root page member route identity differs")
+    root = OperationalRoot(
+        campaign_id=campaign_id,
+        owner_kind=owner_kind,
+        owner_id=owner_id,
+        relative_path=route_native_record(owner_kind, (owner_id,)).relative_path,
+    )
+    if route_value.get("relative_path") != root.relative_path:
+        raise LiveContractError(
+            "operational-root page member path differs from its owner"
+        )
+    return root
+
+
+def _operational_root_page_after_image(
+    value: object,
+    *,
+    campaign_id: str,
+    handoffs: Sequence[OperationalRootHandoff],
+    owner_paths: set[str],
+) -> dict[str, object]:
+    if not isinstance(value, Mapping):
+        raise LiveContractError(
+            "LIVE operational-root handoff requires the exact campaign root page"
+        )
+    page = _copy_json_mapping(value, "campaign operational-root page")
+    roots_value = page.get("roots")
+    if (
+        type(page.get("schema_version")) is not int
+        or page.get("schema_version") != OPERATIONAL_ROOT_SCHEMA_VERSION
+        or page.get("campaign_id") != campaign_id
+        or page.get("complete") is not True
+        or not isinstance(roots_value, Sequence)
+        or isinstance(roots_value, (str, bytes))
+    ):
+        raise LiveContractError(
+            "campaign operational-root page is incomplete or incompatible"
+        )
+    roots: dict[tuple[str, str], OperationalRoot] = {}
+    for raw_root in roots_value:
+        root = _root_from_campaign_mapping(raw_root, campaign_id)
+        key = (root.owner_kind, root.owner_id)
+        if key in roots:
+            raise LiveContractError(
+                "campaign operational-root page has duplicate owner identities"
+            )
+        roots[key] = root
+    incoming: dict[tuple[str, str], OperationalRoot] = {}
+    for handoff in handoffs:
+        if handoff.campaign_id != campaign_id:
+            raise LiveContractError(
+                "operational-root handoff campaign differs from absorption"
+            )
+        if handoff.source_scope != "LIVE" or handoff.source_lifecycle not in {
+            LiveLifecycle.CLOSED.value,
+            LiveLifecycle.CLOSED_UNABSORBED.value,
+        }:
+            raise LiveContractError(
+                "operational-root handoff is not from an exact final LIVE source"
+            )
+        for root in handoff.roots:
+            key = (root.owner_kind, root.owner_id)
+            if key in roots or key in incoming:
+                raise LiveContractError(
+                    "operational-root handoff duplicates a campaign owner root"
+                )
+            if root.relative_path not in owner_paths:
+                raise LiveContractError(
+                    "operational-root handoff root lacks its exact owner after-image"
+                )
+            incoming[key] = root
+    roots.update(incoming)
+    ordered_roots = sorted(
+        roots.values(), key=lambda root: (root.owner_kind, root.owner_id)
+    )
+    return {
+        "schema_version": OPERATIONAL_ROOT_SCHEMA_VERSION,
+        "campaign_id": campaign_id,
+        "complete": True,
+        "roots": [root.to_dict() for root in ordered_roots],
+    }
+
+
+def _live_source_key_sort_key(source_key: LiveSourceKey) -> tuple[bytes, bytes, bytes]:
+    return tuple(part.encode("utf-8") for part in source_key)  # type: ignore[return-value]
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True)
+class FrozenCampaignAbsorptionDelta:
+    """Ephemeral W03 after-image for one complete set of final LIVE sources."""
+
+    campaign_id: str
+    expected_campaign_revision: str
+    proposed_campaign_revision: str
+    selected_route: LiveRouting
+    final_route: LiveRouting
+    source_attempts: tuple[FrozenCampaignAbsorption, ...]
+    path_operations: Mapping[str, object | None]
+    operation_digests: Mapping[str, str]
+    delta_digest: str
+
+    def __post_init__(self) -> None:
+        campaign_id = _machine_id(self.campaign_id, "absorption delta campaign_id")
+        expected = _revision(
+            self.expected_campaign_revision, "absorption delta expected revision"
+        )
+        proposed = _revision(
+            self.proposed_campaign_revision, "absorption delta proposed revision"
+        )
+        if expected == proposed:
+            raise LiveContractError(
+                "campaign absorption delta must advance its predecessor"
+            )
+        if (
+            not isinstance(self.selected_route, LiveRouting)
+            or not self.selected_route.complete
+        ):
+            raise LiveContractError(
+                "campaign absorption delta requires a complete selected route"
+            )
+        if (
+            not isinstance(self.final_route, LiveRouting)
+            or not self.final_route.complete
+        ):
+            raise LiveContractError(
+                "campaign absorption delta requires a complete final route"
+            )
+        if (
+            self.selected_route.campaign_id != campaign_id
+            or self.final_route.campaign_id != campaign_id
+        ):
+            raise LiveContractError("campaign absorption delta crosses campaign scope")
+        validate_live_route_completeness(self.selected_route)
+        validate_live_route_completeness(self.final_route)
+        if not isinstance(self.source_attempts, Sequence) or isinstance(
+            self.source_attempts, (str, bytes)
+        ):
+            raise LiveContractError(
+                "campaign absorption source attempts must be an array"
+            )
+        attempts = tuple(self.source_attempts)
+        if not attempts or any(
+            not isinstance(attempt, FrozenCampaignAbsorption) for attempt in attempts
+        ):
+            raise LiveContractError(
+                "campaign absorption delta requires typed source attempts"
+            )
+        attempt_keys = tuple(attempt.source_key for attempt in attempts)
+        if len(attempt_keys) != len(set(attempt_keys)):
+            raise LiveContractError(
+                "campaign absorption delta has duplicate source attempts"
+            )
+        if attempt_keys != tuple(sorted(attempt_keys, key=_live_source_key_sort_key)):
+            raise LiveContractError(
+                "campaign absorption source attempts are not canonical"
+            )
+        selected_sources = {
+            entry.source_key: entry for entry in self.selected_route.entries
+        }
+        closed_route_keys = {
+            entry.source_key
+            for entry in self.selected_route.entries
+            if entry.status in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}
+        }
+        expected_absorbed_keys = set(attempt_keys)
+        if not expected_absorbed_keys.issubset(closed_route_keys):
+            raise LiveContractError(
+                "campaign absorption includes a non-final selected source"
+            )
+        for attempt in attempts:
+            if (
+                attempt.selected_route.as_mapping() != self.selected_route.as_mapping()
+                or attempt.expected_campaign_revision != expected
+                or attempt.proposed_campaign_revision != proposed
+            ):
+                raise LiveContractError(
+                    "campaign absorption source attempt is bound to another basis"
+                )
+            selected = selected_sources.get(attempt.source_key)
+            if (
+                selected is None
+                or selected.source_revision != attempt.source_revision
+                or selected.status
+                not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}
+            ):
+                raise LiveContractError(
+                    "campaign absorption source attempt differs from the exact route"
+                )
+        expected_final_route = build_live_route(
+            campaign_id,
+            tuple(
+                entry
+                for entry in self.selected_route.entries
+                if entry.source_key not in expected_absorbed_keys
+            ),
+        )
+        if self.final_route.as_mapping() != expected_final_route.as_mapping():
+            raise LiveContractError(
+                "campaign absorption final route has wrong membership"
+            )
+
+        raw_operations = _copy_json_mapping(
+            self.path_operations, "absorption path operations"
+        )
+        operations: dict[str, object | None] = {}
+        for raw_path, value in raw_operations.items():
+            path = _campaign_path(raw_path)
+            if path in {
+                "MANIFEST.yaml",
+                "CAMPAIGN_CARD.yaml",
+                "LIVE_STATE.yaml",
+            } or path.startswith("LIVE/"):
+                raise LiveContractError(
+                    "W03 absorption delta cannot write a manifest surrogate or LIVE source"
+                )
+            if path.startswith(("WORLD/PLAYERS/", "STATE/RUNTIME/COLLABORATION/")):
+                raise LiveContractError(
+                    "W03 absorption delta cannot write PLAYER or Collaboration state"
+                )
+            if value is None or not isinstance(value, Mapping):
+                raise LiveContractError(
+                    "W03 absorption path operations must be owner after-images"
+                )
+            operations[path] = _freeze_absorption_json(value)
+        if (
+            _thaw_absorption_json(operations.get(_CAMPAIGN_LIVE_ROUTING_PATH))
+            != self.final_route.as_mapping()
+        ):
+            raise LiveContractError(
+                "W03 absorption delta must include the exact final LIVE route"
+            )
+        object.__setattr__(self, "campaign_id", campaign_id)
+        object.__setattr__(self, "expected_campaign_revision", expected)
+        object.__setattr__(self, "proposed_campaign_revision", proposed)
+        object.__setattr__(self, "source_attempts", attempts)
+        object.__setattr__(self, "path_operations", MappingProxyType(operations))
+
+        supplied_digests = _copy_json_mapping(
+            self.operation_digests, "absorption operation digests"
+        )
+        expected_digests = {
+            path: _absorption_operation_digest(path, value)
+            for path, value in sorted(operations.items())
+        }
+        if supplied_digests != expected_digests:
+            raise LiveContractError("campaign absorption operation digests are stale")
+        object.__setattr__(
+            self, "operation_digests", MappingProxyType(expected_digests)
+        )
+        expected_delta_digest = _campaign_absorption_delta_digest(
+            campaign_id=campaign_id,
+            expected_campaign_revision=expected,
+            proposed_campaign_revision=proposed,
+            selected_route=self.selected_route,
+            final_route=self.final_route,
+            source_attempts=attempts,
+            operation_digests=expected_digests,
+        )
+        if self.delta_digest != expected_delta_digest:
+            raise LiveContractError("campaign absorption bundle digest is stale")
+
+    def as_mapping(self) -> dict[str, object]:
+        return {
+            "campaign_id": self.campaign_id,
+            "expected_campaign_revision": self.expected_campaign_revision,
+            "proposed_campaign_revision": self.proposed_campaign_revision,
+            "selected_route": self.selected_route.as_mapping(),
+            "final_route": self.final_route.as_mapping(),
+            "source_attempts": [
+                attempt.as_mapping() for attempt in self.source_attempts
+            ],
+            "path_operations": _thaw_absorption_json(self.path_operations),
+            "operation_digests": dict(self.operation_digests),
+            "delta_digest": self.delta_digest,
+        }
+
+
+_OWNER_ISSUED_ABSORPTION_DELTAS: dict[
+    int, tuple[weakref.ReferenceType[FrozenCampaignAbsorptionDelta], str]
+] = {}
+
+
+def _absorption_delta_fingerprint(delta: FrozenCampaignAbsorptionDelta) -> str:
+    return _state_digest(delta.as_mapping())
+
+
+def _mark_owner_issued_absorption_delta(
+    delta: FrozenCampaignAbsorptionDelta,
+) -> FrozenCampaignAbsorptionDelta:
+    delta_id = id(delta)
+
+    def remove(reference: weakref.ReferenceType[FrozenCampaignAbsorptionDelta]) -> None:
+        current = _OWNER_ISSUED_ABSORPTION_DELTAS.get(delta_id)
+        if current is not None and current[0] is reference:
+            _OWNER_ISSUED_ABSORPTION_DELTAS.pop(delta_id, None)
+
+    _OWNER_ISSUED_ABSORPTION_DELTAS[delta_id] = (
+        weakref.ref(delta, remove),
+        _absorption_delta_fingerprint(delta),
+    )
+    return delta
+
+
+def _is_owner_issued_absorption_delta(delta: object) -> bool:
+    if not isinstance(delta, FrozenCampaignAbsorptionDelta):
+        return False
+    current = _OWNER_ISSUED_ABSORPTION_DELTAS.get(id(delta))
+    return (
+        current is not None
+        and current[0]() is delta
+        and current[1] == _absorption_delta_fingerprint(delta)
+    )
+
+
+def freeze_campaign_absorption_delta(
+    sources: Sequence[LiveEnvelope],
+    *,
+    route: LiveRouting,
+    packed_states: Mapping[LiveSourceKey, LiveNativeStatePack],
+    campaign_state: Mapping[str, object],
+    expected_campaign_revision: str,
+    proposed_campaign_revision: str,
+) -> FrozenCampaignAbsorptionDelta:
+    """Freeze one W03-owned after-image for a complete set of final LIVE sources.
+
+    ``campaign_state`` is the exact pinned campaign body. If the source packs
+    contain LIVE SemanticEvent enrollment or an operational-root handoff, its
+    ``path_snapshots`` member must contain the exact pinned corresponding
+    campaign path body. Cross-cutting pack buckets are losslessly routed only
+    when they carry complete records keyed by an already admitted native family;
+    abstract summaries are rejected rather than retained in a synthetic
+    campaign aggregate.
+    """
+    from .native_storage import route_native_record
+
+    expected = _revision(expected_campaign_revision, "expected campaign revision")
+    proposed = _revision(proposed_campaign_revision, "proposed campaign revision")
+    if expected == proposed:
+        raise LiveContractError(
+            "campaign absorption must advance its exact predecessor"
+        )
+    if not isinstance(route, LiveRouting) or not route.complete:
+        raise LiveContractError(
+            "campaign absorption delta requires a complete selected route"
+        )
+    validate_live_route_completeness(route)
+    campaign_id = route.campaign_id
+    campaign_body, path_snapshots = _absorption_campaign_basis(
+        campaign_state,
+        campaign_id=campaign_id,
+        expected_campaign_revision=expected,
+    )
+    if not isinstance(sources, Sequence) or isinstance(sources, (str, bytes)):
+        raise LiveContractError(
+            "campaign absorption sources must be a typed finite sequence"
+        )
+    source_values = tuple(sources)
+    if not source_values or any(
+        not isinstance(source, LiveEnvelope) for source in source_values
+    ):
+        raise LiveContractError(
+            "campaign absorption requires exact owner-typed final sources"
+        )
+    source_keys = tuple(source.source_key for source in source_values)
+    if len(source_keys) != len(set(source_keys)):
+        raise LiveContractError(
+            "campaign absorption source set contains duplicate identities"
+        )
+    selected_sources = {entry.source_key: entry for entry in route.entries}
+    closed_route_keys = {
+        entry.source_key
+        for entry in route.entries
+        if entry.status in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}
+    }
+    if not set(source_keys).issubset(closed_route_keys):
+        raise LiveContractError(
+            "campaign absorption source set contains a non-final route member"
+        )
+    if not isinstance(packed_states, Mapping):
+        raise LiveContractError(
+            "campaign absorption packed states must be keyed by exact source"
+        )
+    if set(packed_states) != set(source_keys):
+        raise LiveContractError(
+            "campaign absorption pack set differs from the exact final sources"
+        )
+    ordered_sources = tuple(
+        sorted(
+            source_values,
+            key=lambda source: _live_source_key_sort_key(source.source_key),
+        )
+    )
+
+    attempts: list[FrozenCampaignAbsorption] = []
+    operations: dict[str, object | None] = {}
+    event_enrollments: list[tuple[LiveSourceKey, int, str]] = []
+    operational_handoffs: list[OperationalRootHandoff] = []
+    represented_native_ids: dict[LiveSourceKey, set[str]] = {
+        source.source_key: set() for source in ordered_sources
+    }
+
+    def add_owner_after_image(
+        path: str, payload: Mapping[str, object], label: str
+    ) -> None:
+        normalized_path = _campaign_path(path)
+        if normalized_path in operations:
+            raise LiveContractError(
+                f"campaign absorption has duplicate/conflicting owner after-image: {normalized_path} ({label})"
+            )
+        operations[normalized_path] = deepcopy(dict(payload))
+
+    for source in ordered_sources:
+        if source.campaign_id != campaign_id:
+            raise LiveContractError(
+                "campaign absorption source belongs to another campaign"
+            )
+        if source.status not in {LiveLifecycle.CLOSED, LiveLifecycle.CLOSED_UNABSORBED}:
+            raise LiveContractError(
+                "campaign absorption requires an exact final closed source"
+            )
+        selected = selected_sources.get(source.source_key)
+        if selected is None or not validate_exact_source(selected, source):
+            raise LiveContractError(
+                "campaign absorption source differs from the exact selected route"
+            )
+        packed = packed_states[source.source_key]
+        if not isinstance(packed, LiveNativeStatePack):
+            raise LiveContractError(
+                "campaign absorption requires a typed native-state pack"
+            )
+        if (
+            packed.source_key != source.source_key
+            or packed.source_revision != source.source_revision
+        ):
+            raise LiveContractError(
+                "campaign native-state pack is stale or belongs to another source"
+            )
+        _validate_opening_owner_families(source, packed.native_owner_states)
+        attempts.append(
+            freeze_campaign_absorption(
+                source,
+                route=route,
+                packed_state=packed,
+                campaign_state=campaign_body,
+                expected_campaign_revision=expected,
+                proposed_campaign_revision=proposed,
+            )
+        )
+
+        contributions: tuple[tuple[str, Mapping[str, object]], ...] = (
+            ("native_owner_states", packed.native_owner_states),
+            ("provenance", packed.provenance),
+            ("privacy", packed.privacy),
+            ("chronology", packed.chronology),
+            ("unresolved_work", packed.unresolved_work),
+        )
+        for category, bucket in contributions:
+            if not isinstance(bucket, Mapping):
+                raise LiveContractError(
+                    f"LIVE absorption {category} contribution is not typed"
+                )
+            for family in sorted(bucket):
+                if not isinstance(family, str) or not family:
+                    raise LiveContractError(
+                        f"LIVE absorption {category} family key is invalid"
+                    )
+                raw_contribution = bucket[family]
+                if family == "runtime.operational_root_handoff":
+                    if category != "unresolved_work":
+                        raise LiveContractError(
+                            "operational-root handoff must remain in unresolved_work"
+                        )
+                    operational_handoffs.extend(
+                        _absorption_operational_root_handoffs(
+                            raw_contribution, source=source
+                        )
+                    )
+                    continue
+                owner_records, events = _absorption_records_for_family(
+                    family,
+                    raw_contribution,
+                    category=category,
+                    source=source,
+                )
+                for identity, record in owner_records:
+                    path = route_native_record(family, identity).relative_path
+                    add_owner_after_image(path, record, f"{category}.{family}")
+                    represented_native_ids[source.source_key].update(identity)
+                for ordinal, event_id, event_record in events:
+                    path = route_native_record(
+                        "runtime.semantic_event", (event_id,)
+                    ).relative_path
+                    add_owner_after_image(
+                        path, event_record, f"{category}.runtime.semantic_event"
+                    )
+                    represented_native_ids[source.source_key].add(event_id)
+                    event_enrollments.append((source.source_key, ordinal, event_id))
+        missing_native_ids = set(packed.source_native_ids).difference(
+            represented_native_ids[source.source_key]
+        )
+        if missing_native_ids:
+            raise LiveContractError(
+                "LIVE native-state pack source-native IDs lack exact owner after-images"
+            )
+
+    used_path_snapshots: set[str] = set()
+    if event_enrollments:
+        event_index = path_snapshots.get(_CAMPAIGN_EVENT_INDEX_PATH)
+        if event_index is None:
+            raise LiveContractError(
+                "LIVE SemanticEvent absorption requires the pinned campaign EventIndex"
+            )
+        add_owner_after_image(
+            _CAMPAIGN_EVENT_INDEX_PATH,
+            _campaign_event_index_after_image(
+                event_index,
+                source_events=event_enrollments,
+            ),
+            "campaign.semantic_event EventIndex",
+        )
+        used_path_snapshots.add(_CAMPAIGN_EVENT_INDEX_PATH)
+    if operational_handoffs:
+        from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
+
+        root_page = path_snapshots.get(OPERATIONAL_ROOT_MEMBERSHIP_PATH)
+        if root_page is None:
+            raise LiveContractError(
+                "LIVE unresolved-work absorption requires the pinned operational-root page"
+            )
+        add_owner_after_image(
+            OPERATIONAL_ROOT_MEMBERSHIP_PATH,
+            _operational_root_page_after_image(
+                root_page,
+                campaign_id=campaign_id,
+                handoffs=operational_handoffs,
+                owner_paths=set(operations),
+            ),
+            "W03 operational-root handoff",
+        )
+        used_path_snapshots.add(OPERATIONAL_ROOT_MEMBERSHIP_PATH)
+    unused_snapshots = set(path_snapshots).difference(used_path_snapshots)
+    if unused_snapshots:
+        raise LiveContractError("campaign absorption received unused path snapshots")
+
+    final_route = build_live_route(
+        campaign_id,
+        tuple(
+            entry for entry in route.entries if entry.source_key not in set(source_keys)
+        ),
+    )
+    add_owner_after_image(
+        _CAMPAIGN_LIVE_ROUTING_PATH,
+        final_route.as_mapping(),
+        "W03 final LIVE routing",
+    )
+    ordered_operations = dict(sorted(operations.items()))
+    operation_digests = {
+        path: _absorption_operation_digest(path, value)
+        for path, value in ordered_operations.items()
+    }
+    delta_digest = _campaign_absorption_delta_digest(
+        campaign_id=campaign_id,
+        expected_campaign_revision=expected,
+        proposed_campaign_revision=proposed,
+        selected_route=route,
+        final_route=final_route,
+        source_attempts=tuple(attempts),
+        operation_digests=operation_digests,
+    )
+    delta = FrozenCampaignAbsorptionDelta(
+        campaign_id=campaign_id,
+        expected_campaign_revision=expected,
+        proposed_campaign_revision=proposed,
+        selected_route=route,
+        final_route=final_route,
+        source_attempts=tuple(attempts),
+        path_operations=ordered_operations,
+        operation_digests=operation_digests,
+        delta_digest=delta_digest,
+    )
+    return _mark_owner_issued_absorption_delta(delta)
+
+
 _ABSORPTION_RESULT_TOKEN = object()
 
 
@@ -2834,6 +3840,96 @@ class LiveAbsorptionPublication:
     @property
     def acknowledged(self) -> bool:
         return self.status is LiveAbsorptionStatus.ACCEPTED and self.authoritative
+
+
+_COMPOSED_ABSORPTION_RESULT_TOKEN = object()
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True)
+class ComposedCampaignAbsorptionPublication:
+    """Owner-issued W03 classification of the same joined W02 publication."""
+
+    status: LiveAbsorptionStatus
+    accepted_campaign_revision: str | None
+    delta: FrozenCampaignAbsorptionDelta
+    _issuer: object = field(default=None, repr=False, compare=False)
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.status, LiveAbsorptionStatus):
+            raise LiveContractError("composed absorption status is not registered")
+        if not isinstance(self.delta, FrozenCampaignAbsorptionDelta):
+            raise LiveContractError(
+                "composed absorption result requires a typed W03 delta"
+            )
+        if self.accepted_campaign_revision is not None:
+            object.__setattr__(
+                self,
+                "accepted_campaign_revision",
+                _revision(
+                    self.accepted_campaign_revision, "accepted campaign revision"
+                ),
+            )
+        if self.status is LiveAbsorptionStatus.ACCEPTED:
+            if self.accepted_campaign_revision is None:
+                raise LiveContractError(
+                    "accepted composed absorption requires current campaign revision"
+                )
+        elif self.accepted_campaign_revision is not None:
+            raise LiveContractError(
+                "non-accepted composed absorption cannot carry an accepted revision"
+            )
+
+
+_OWNER_ISSUED_COMPOSED_ABSORPTION_RESULTS: dict[
+    int, tuple[weakref.ReferenceType[ComposedCampaignAbsorptionPublication], str]
+] = {}
+
+
+def _composed_absorption_fingerprint(
+    result: ComposedCampaignAbsorptionPublication,
+) -> str:
+    return _state_digest(
+        {
+            "status": result.status.value,
+            "accepted_campaign_revision": result.accepted_campaign_revision,
+            "delta_fingerprint": _absorption_delta_fingerprint(result.delta),
+        }
+    )
+
+
+def _mark_owner_issued_composed_absorption_result(
+    result: ComposedCampaignAbsorptionPublication,
+) -> ComposedCampaignAbsorptionPublication:
+    object.__setattr__(result, "_issuer", _COMPOSED_ABSORPTION_RESULT_TOKEN)
+    result_id = id(result)
+
+    def remove(
+        reference: weakref.ReferenceType[ComposedCampaignAbsorptionPublication],
+    ) -> None:
+        current = _OWNER_ISSUED_COMPOSED_ABSORPTION_RESULTS.get(result_id)
+        if current is not None and current[0] is reference:
+            _OWNER_ISSUED_COMPOSED_ABSORPTION_RESULTS.pop(result_id, None)
+
+    _OWNER_ISSUED_COMPOSED_ABSORPTION_RESULTS[result_id] = (
+        weakref.ref(result, remove),
+        _composed_absorption_fingerprint(result),
+    )
+    return result
+
+
+def _is_owner_issued_composed_absorption_result(
+    result: object,
+) -> bool:
+    if not isinstance(result, ComposedCampaignAbsorptionPublication):
+        return False
+    current = _OWNER_ISSUED_COMPOSED_ABSORPTION_RESULTS.get(id(result))
+    return (
+        result._issuer is _COMPOSED_ABSORPTION_RESULT_TOKEN
+        and current is not None
+        and current[0]() is result
+        and current[1] == _composed_absorption_fingerprint(result)
+    )
+
 
 _OWNER_ISSUED_ABSORPTION_RESULTS: dict[
     int, weakref.ReferenceType[LiveAbsorptionPublication]
@@ -2865,44 +3961,111 @@ def validate_accepted_absorption_evidence(
     source_key: LiveSourceKey,
     source_revision: str,
     selected_route: LiveRouting | None = None,
-) -> LiveAbsorptionPublication:
-    """Validate the exact owner-issued campaign CAS proof for one LIVE source."""
+) -> LiveAbsorptionPublication | ComposedCampaignAbsorptionPublication:
+    """Validate exact owner-issued single-source or group absorption evidence."""
+
+    if isinstance(evidence, ComposedCampaignAbsorptionPublication):
+        if (
+            not _is_owner_issued_composed_absorption_result(evidence)
+            or evidence.status is not LiveAbsorptionStatus.ACCEPTED
+            or evidence.accepted_campaign_revision is None
+            or not _is_owner_issued_absorption_delta(evidence.delta)
+        ):
+            raise LiveContractError(
+                "composed absorption requires owner-issued accepted W02 publication evidence"
+            )
+        normalized_key = _source_key(source_key, "absorption source key")
+        normalized_revision = _revision(source_revision, "absorption source revision")
+        member_attempts = tuple(
+            attempt
+            for attempt in evidence.delta.source_attempts
+            if attempt.source_key == normalized_key
+        )
+        if (
+            len(member_attempts) != 1
+            or member_attempts[0].source_revision != normalized_revision
+        ):
+            raise LiveContractError(
+                "composed absorption evidence is not bound to this exact source member"
+            )
+        if selected_route is not None:
+            if not isinstance(selected_route, LiveRouting):
+                raise LiveContractError(
+                    "composed absorption evidence requires the typed selected route"
+                )
+            if (
+                selected_route.as_mapping()
+                != evidence.delta.selected_route.as_mapping()
+            ):
+                raise LiveContractError(
+                    "composed absorption evidence is bound to another selected route"
+                )
+        if select_live_source(evidence.delta.final_route, normalized_key) is not None:
+            raise LiveContractError(
+                "composed absorption final route still selects an absorbed source"
+            )
+        return evidence
 
     if not isinstance(evidence, LiveAbsorptionPublication):
-        raise LiveContractError("accepted absorption requires typed owner-issued CAS evidence")
+        raise LiveContractError(
+            "accepted absorption requires typed owner-issued CAS evidence"
+        )
     if (
         evidence._issuer is not _ABSORPTION_RESULT_TOKEN
         or not evidence.acknowledged
         or not _is_owner_issued_absorption_result(evidence)
     ):
-        raise LiveContractError("accepted absorption requires owner-issued accepted CAS evidence")
+        raise LiveContractError(
+            "accepted absorption requires owner-issued accepted CAS evidence"
+        )
     attempt = evidence.attempt
     if not isinstance(attempt, FrozenCampaignAbsorption):
-        raise LiveContractError("accepted absorption evidence lacks its frozen CAS attempt")
+        raise LiveContractError(
+            "accepted absorption evidence lacks its frozen CAS attempt"
+        )
     normalized_key = _source_key(source_key, "absorption source key")
     normalized_revision = _revision(source_revision, "absorption source revision")
-    if attempt.source_key != normalized_key or attempt.source_revision != normalized_revision:
-        raise LiveContractError("accepted absorption evidence is bound to another LIVE source")
+    if (
+        attempt.source_key != normalized_key
+        or attempt.source_revision != normalized_revision
+    ):
+        raise LiveContractError(
+            "accepted absorption evidence is bound to another LIVE source"
+        )
     if selected_route is not None:
         if not isinstance(selected_route, LiveRouting):
-            raise LiveContractError("accepted absorption evidence requires a typed selected route")
+            raise LiveContractError(
+                "accepted absorption evidence requires a typed selected route"
+            )
         if attempt.selected_route.as_mapping() != selected_route.as_mapping():
-            raise LiveContractError("accepted absorption evidence is bound to another selected route")
+            raise LiveContractError(
+                "accepted absorption evidence is bound to another selected route"
+            )
         expected_successor = _absorbed_successor_route(selected_route, normalized_key)
         if (
             evidence.successor_route is None
             or evidence.successor_route.as_mapping() != expected_successor.as_mapping()
         ):
-            raise LiveContractError("accepted absorption evidence has the wrong successor route")
-        closure = evidence.candidate_state.get("accepted_live_absorption") if evidence.candidate_state else None
+            raise LiveContractError(
+                "accepted absorption evidence has the wrong successor route"
+            )
+        closure = (
+            evidence.candidate_state.get("accepted_live_absorption")
+            if evidence.candidate_state
+            else None
+        )
         if not isinstance(closure, Mapping):
-            raise LiveContractError("accepted absorption evidence lacks the campaign closure")
+            raise LiveContractError(
+                "accepted absorption evidence lacks the campaign closure"
+            )
         if (
             closure.get("source_key") != list(normalized_key)
             or closure.get("source_revision") != normalized_revision
             or closure.get("successor_route") != expected_successor.as_mapping()
         ):
-            raise LiveContractError("accepted absorption evidence has an inconsistent campaign closure")
+            raise LiveContractError(
+                "accepted absorption evidence has an inconsistent campaign closure"
+            )
     return evidence
 
 
@@ -2982,6 +4145,93 @@ def classify_campaign_absorption(
         successor_route=attempt.successor_route,
         attempt=attempt,
     ))
+
+
+def classify_composed_campaign_absorption(
+    delta: FrozenCampaignAbsorptionDelta,
+    publication: PublicationOutcome,
+) -> ComposedCampaignAbsorptionPublication:
+    """Classify an owner-issued W02 outcome for an owner-issued W03 delta."""
+    from .publication import (
+        PublicationAcceptanceKind,
+        PublicationStatus,
+        validate_owner_issued_accepted_publication,
+    )
+    from .publication import PublicationOutcome as TypedPublicationOutcome
+
+    if not isinstance(
+        delta, FrozenCampaignAbsorptionDelta
+    ) or not _is_owner_issued_absorption_delta(delta):
+        raise LiveContractError(
+            "composed absorption requires W03-issued delta evidence"
+        )
+    if not isinstance(publication, TypedPublicationOutcome):
+        raise LiveContractError(
+            "composed absorption requires the typed W02 publication outcome"
+        )
+
+    if publication.status is PublicationStatus.ACCEPTED:
+        if publication.retry_with_force:
+            raise LiveContractError(
+                "LIVE absorption cannot accept a forced publication retry"
+            )
+        try:
+            acceptance = validate_owner_issued_accepted_publication(
+                publication,
+                campaign_id=delta.campaign_id,
+                expected_pinned_head_sha=delta.expected_campaign_revision,
+                required_operation_digests=delta.operation_digests,
+            )
+        except (TypeError, ValueError) as error:
+            raise LiveContractError(
+                "composed absorption requires W02 owner-issued publication evidence"
+            ) from error
+        if acceptance.intended_commit_sha != delta.proposed_campaign_revision:
+            raise LiveContractError(
+                "W02 publication evidence is bound to another W03 delta"
+            )
+        if acceptance.kind in {
+            PublicationAcceptanceKind.CONFIRMED_REF,
+            PublicationAcceptanceKind.RECONCILED_CURRENT_CLOSURE,
+        }:
+            if acceptance.observed_head_sha != acceptance.intended_commit_sha:
+                raise LiveContractError(
+                    "W02 current accepted HEAD differs from the intended commit"
+                )
+        elif (
+            acceptance.kind
+            is PublicationAcceptanceKind.RECONCILED_ANCESTOR_CURRENT_CLOSURE
+        ):
+            if (
+                acceptance.ancestry is None
+                or acceptance.ancestry.ancestor_sha != acceptance.intended_commit_sha
+                or acceptance.ancestry.descendant_sha != acceptance.observed_head_sha
+            ):
+                raise LiveContractError(
+                    "W02 ancestor acceptance lacks its owner-validated ancestry proof"
+                )
+        else:
+            raise LiveContractError("W02 publication evidence kind is not accepted")
+        status = LiveAbsorptionStatus.ACCEPTED
+        accepted_campaign_revision = acceptance.observed_head_sha
+    elif publication.status is PublicationStatus.CONFLICT:
+        status = LiveAbsorptionStatus.REJECTED_STALE
+        accepted_campaign_revision = None
+    elif publication.status is PublicationStatus.REJECTED:
+        status = LiveAbsorptionStatus.REJECTED
+        accepted_campaign_revision = None
+    elif publication.status is PublicationStatus.INDETERMINATE:
+        status = LiveAbsorptionStatus.INDETERMINATE
+        accepted_campaign_revision = None
+    else:
+        raise LiveContractError("W02 publication outcome status is not registered")
+    return _mark_owner_issued_composed_absorption_result(
+        ComposedCampaignAbsorptionPublication(
+            status=status,
+            accepted_campaign_revision=accepted_campaign_revision,
+            delta=delta,
+        )
+    )
 
 
 @dataclass(frozen=True, slots=True)

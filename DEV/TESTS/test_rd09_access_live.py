@@ -2,21 +2,23 @@
 
 from __future__ import annotations
 
-import base64
 import ast
+import base64
+import hashlib
+import json
+import unittest
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
-import hashlib
-import json
 from pathlib import Path
-import unittest
 
 from jsonschema import Draft202012Validator, RefResolver, ValidationError
-import GAME.TOOLS.recovery_roots as recovery_roots_module
+
 import GAME.TOOLS.access_control as access_control_module
 import GAME.TOOLS.history as history_module
-
+import GAME.TOOLS.live_state as live_state_module
+import GAME.TOOLS.publication as publication_module
+import GAME.TOOLS.recovery_roots as recovery_roots_module
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
     AdditiveAuthorizationDecision,
@@ -28,32 +30,25 @@ from GAME.TOOLS.access_control import (
     PrincipalPlayerRoute,
     RouteEntry,
     VerifiedPrincipal,
+    advance_multi_live_freeze,
     authorize_operation,
     build_principal_player_route,
     classify_additive_authorization_change,
     freeze_access_policy_transition,
     freeze_multi_live_forward_plan,
     freeze_player_access_transition,
-    advance_multi_live_freeze,
     publish_access_policy_transition,
     publish_forward_transition,
     resolve_player,
     resolve_principal,
 )
-from GAME.TOOLS.history import HistoryContractError, observe_first_initialization_history
+from GAME.TOOLS.durability import route_serialized_operation
+from GAME.TOOLS.history import (
+    HistoryContractError,
+    observe_first_initialization_history,
+)
 from GAME.TOOLS.live_state import (
     FRAMEWORK_MODULE_VERSION,
-    LiveClaim,
-    LiveContractError,
-    LiveEnvelope,
-    LiveLifecycle,
-    LivePublicationResult,
-    LivePublicationStatus,
-    LiveRouting,
-    LiveAbsorptionStatus,
-    LiveAbsorptionPublication,
-    FrozenCampaignAbsorption,
-    LiveNativeStatePack,
     LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION,
     LIVE_CLAIM_SCHEMA_VERSION,
     LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
@@ -63,48 +58,62 @@ from GAME.TOOLS.live_state import (
     LIVE_ROUTING_SCHEMA_VERSION,
     SOURCE_NATIVE_CURSOR_MAX,
     SOURCE_NATIVE_LIVE_ENCODING,
-    SourceNativeCursor,
-    SourceNativeCreation,
+    FrozenCampaignAbsorption,
+    FrozenCampaignAbsorptionDelta,
+    LiveAbsorptionPublication,
+    LiveAbsorptionStatus,
+    LiveClaim,
+    LiveContractError,
+    LiveEnvelope,
+    LiveLifecycle,
+    LiveNativeStatePack,
+    LivePublicationResult,
+    LivePublicationStatus,
+    LiveRouting,
     SourceNativeAllocationError,
+    SourceNativeCreation,
+    SourceNativeCursor,
+    absorb_live_state,
     advance_source_native_cursor,
     allocate_source_native_creations,
-    build_live_route,
-    build_live_ref,
     build_live_opening_seed,
-    classify_cas_result,
+    build_live_ref,
+    build_live_route,
     classify_campaign_absorption,
+    classify_cas_result,
     close_live_source,
     derive_live_epoch_id,
     encode_live_campaign_route_token,
     encode_live_scene_route_token,
     encode_source_native_live_id,
-    freeze_live_attempt,
     freeze_campaign_absorption,
+    freeze_campaign_absorption_delta,
+    freeze_live_attempt,
+    handoff_operational_roots_to_campaign,
     handoff_temporal_route_to_campaign,
     handoff_temporal_route_to_live,
-    handoff_operational_roots_to_campaign,
     lookup_write_authority,
+    mark_closed_unabsorbed,
     normalize_source_native_creations,
-    parse_source_native_live_id,
     pack_live_native_state,
+    parse_source_native_live_id,
     prepare_live_opening,
     publish_live_opening,
-    recover_closed_unabsorbed,
     reconcile_indeterminate,
+    recover_closed_unabsorbed,
     select_live_source,
-    validate_live_route_identity,
-    validate_live_route_completeness,
-    validate_exact_source,
-    absorb_live_state,
-    mark_closed_unabsorbed,
     unpack_live_native_state,
+    validate_exact_source,
+    validate_live_route_completeness,
+    validate_live_route_identity,
 )
+from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.recovery_roots import (
-    OperationalRootError,
+    OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION,
     OperationalRoot,
+    OperationalRootError,
     OperationalRootHandoff,
     OperationalRootPage,
-    OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION,
     derive_operational_root_delta,
     enumerate_operational_root_page,
     handoff_operational_roots_to_live,
@@ -115,8 +124,6 @@ from GAME.TOOLS.temporal import (
     rebuild_temporal_agenda_from_route,
     reconcile_temporal_route_membership,
 )
-from GAME.TOOLS.native_storage import route_native_record
-
 
 ROOT = Path(__file__).resolve().parents[2]
 ROUTE_TEMPLATE = ROOT / "GAME/CAMPAIGN/STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"
@@ -788,7 +795,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.20")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.21")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1932,6 +1939,253 @@ def _accepted_absorption_publication(source: LiveEnvelope) -> LiveAbsorptionPubl
     )
 
 
+P1_PROPOSED_REVISION = LIVE_H3
+P1_EVENT_INDEX_PATH = "INDEX/EVENT_INDEX.yaml"
+P1_LIVE_ROUTING_PATH = "STATE/RUNTIME/LIVE_ROUTING.yaml"
+P1_OPERATIONAL_ROOT_PATH = publication_module.OPERATIONAL_ROOT_MEMBERSHIP_PATH
+
+
+def _p1_source(
+    scene_id: str,
+    *,
+    actor_id: str,
+    source_revision: str = LIVE_H1,
+    status: LiveLifecycle = LiveLifecycle.CLOSED_UNABSORBED,
+    source_native_ids: tuple[str, ...] = (),
+) -> LiveEnvelope:
+    claims = (LiveClaim.exact_owner("world.actor", actor_id),)
+    epoch_id = derive_live_epoch_id("campaign-frostfall", scene_id, LIVE_H0, claims)
+    return LiveEnvelope(
+        campaign_id="campaign-frostfall",
+        scene_id=scene_id,
+        epoch_id=epoch_id,
+        opening_campaign_revision=LIVE_H0,
+        source_ref=build_live_ref("campaign-frostfall", scene_id, epoch_id),
+        source_revision=source_revision,
+        claims=claims,
+        status=status,
+        next_source_native_creation_ordinal=len(source_native_ids) + 1,
+        source_native_ids=source_native_ids,
+    )
+
+
+def _p1_owner_record(
+    family: str,
+    identity: tuple[str, ...],
+    marker: str,
+) -> dict[str, object]:
+    if family == "world.knowledge":
+        return {
+            "knower_id": identity[0],
+            "fact_id": identity[1],
+            "stance": "epistemic.known",
+            "supporting_source_refs": [f"source.{marker}"],
+        }
+    if family == "runtime.disclosure":
+        return {
+            "player_id": identity[0],
+            "fact_id": identity[1],
+            "statement_exposed": True,
+            "source_refs": [f"source.{marker}"],
+        }
+    if family == "world.thread":
+        return {
+            "record_kind": family,
+            "id": identity[0],
+            "state_revision": 1,
+            "status": "active",
+            "kind": "countdown",
+            "state": {"stage": marker, "progress": {"segments": 1}},
+        }
+    if family == "runtime.semantic_event":
+        return {
+            "schema_version": 1,
+            "event_id": identity[0],
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": [marker],
+            "semantic_delta": {"marker": marker},
+        }
+    if family == "runtime.continuation":
+        return {
+            "kind": family,
+            "id": identity[0],
+            "state": {
+                "generation": 1,
+                "root_command_id": "command-p1",
+                "resolution_id": "resolution-p1",
+                "activity_id": "activity.p1",
+                "actor_id": "actor-1",
+                "ruleset_set_digest_generation": 1,
+                "ruleset_set_sha256": "a" * 64,
+                "catalog_context_fingerprint_generation": 1,
+                "catalog_context_fingerprint": "b" * 64,
+                "execution_cursor": "step.p1",
+                "safe_recompute_phase": "determine",
+                "invocation_facts": [],
+                "fixed_rng_results": [],
+                "prior_step_exports": {},
+                "committed_segment_refs": [],
+                "dependency_frontier_refs": [],
+                "expected_child_resolution_ids": [],
+                "future_rng_frontier": "rng-p1",
+            },
+        }
+    state = (
+        {"details": {"marker": marker}}
+        if family == "world.asset"
+        else {"concept": marker}
+    )
+    return {"schema_version": 1, "kind": family, "id": identity[0], "state": state}
+
+
+def _p1_pack(
+    source: LiveEnvelope,
+    *,
+    native_owner_states: dict[str, object] | None = None,
+    provenance: dict[str, object] | None = None,
+    privacy: dict[str, object] | None = None,
+    chronology: dict[str, object] | None = None,
+    unresolved_work: dict[str, object] | None = None,
+) -> LiveNativeStatePack:
+    return LiveNativeStatePack(
+        source_key=source.source_key,
+        source_revision=source.source_revision,
+        next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+        source_native_ids=source.source_native_ids,
+        native_owner_states=(
+            {"world.actor": _p1_owner_record("world.actor", ("actor-1",), "live")}
+            if native_owner_states is None
+            else native_owner_states
+        ),
+        provenance={} if provenance is None else provenance,
+        privacy={} if privacy is None else privacy,
+        chronology={} if chronology is None else chronology,
+        unresolved_work={} if unresolved_work is None else unresolved_work,
+    )
+
+
+def _p1_campaign_state(
+    *,
+    revision: str = LIVE_H0,
+    event_index: dict[str, object] | None = None,
+    operational_roots: dict[str, object] | None = None,
+) -> dict[str, object]:
+    state: dict[str, object] = {
+        "campaign_id": "campaign-frostfall",
+        "revision": revision,
+    }
+    if event_index is not None:
+        state["path_snapshots"] = {P1_EVENT_INDEX_PATH: deepcopy(event_index)}
+    if operational_roots is not None:
+        path_snapshots = dict(state.get("path_snapshots", {}))
+        path_snapshots[P1_OPERATIONAL_ROOT_PATH] = deepcopy(operational_roots)
+        state["path_snapshots"] = path_snapshots
+    return state
+
+
+def _p1_empty_event_index(
+    entries: tuple[dict[str, object], ...] = (),
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "entity_type": "EVENT",
+        "complete": True,
+        "upper_ordinal": len(entries) if entries else None,
+        "entries": [deepcopy(entry) for entry in entries],
+    }
+
+
+def _p1_operational_root_page(
+    roots: tuple[OperationalRoot, ...] = (),
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "campaign_id": "campaign-frostfall",
+        "complete": True,
+        "roots": [root.to_dict() for root in roots],
+    }
+
+
+def _p1_freeze_delta(
+    sources: tuple[LiveEnvelope, ...],
+    *,
+    route: LiveRouting,
+    packed_states: dict[tuple[str, str, str], LiveNativeStatePack],
+    campaign_state: dict[str, object],
+) -> FrozenCampaignAbsorptionDelta:
+    return freeze_campaign_absorption_delta(
+        sources,
+        route=route,
+        packed_states=packed_states,
+        campaign_state=campaign_state,
+        expected_campaign_revision=LIVE_H0,
+        proposed_campaign_revision=P1_PROPOSED_REVISION,
+    )
+
+
+def _p1_w02_publication(
+    delta: FrozenCampaignAbsorptionDelta, *, result: str
+) -> tuple[publication_module.PublicationOutcome, object]:
+    from DEV.TESTS import test_runtime_host_composition as runtime_host_tests
+
+    if delta.campaign_id != runtime_host_tests.CAMPAIGN_ID:
+        raise AssertionError(
+            "P1 source must use the bound RuntimeHost campaign fixture"
+        )
+    repository = runtime_host_tests.PublicationRepository(
+        runtime_host_tests.CAMPAIGN_ID
+    )
+    repository.current_revision = delta.expected_campaign_revision
+    repository.path_overrides.update(delta.path_operations)
+    transport = runtime_host_tests.PublicationTransport(repository)
+    transport.next_head = delta.proposed_campaign_revision
+    host, _repository, _live = runtime_host_tests._compose(
+        repository, publication=transport
+    )
+    basis = None
+    if result == "ACCEPTED":
+        transport.response_status = "accepted"
+    elif result == "CURRENT_CLOSURE":
+        transport.response_status = "indeterminate"
+    elif result == "ANCESTOR":
+        transport.response_status = "indeterminate"
+        transport.reconciliation_head = LIVE_H2
+        repository.ancestry_relation = "ANCESTOR"
+    elif result == "CONFLICT":
+        basis = host._begin_operation()
+        repository.current_revision = LIVE_H2
+    elif result == "REJECTED":
+        transport.response_status = "rejected"
+    elif result == "INDETERMINATE":
+        transport.response_status = "indeterminate"
+        transport.reconciliation_pin_revision = LIVE_H2
+    else:
+        raise AssertionError(f"unregistered P1 W02 test result: {result}")
+
+    first_attempt = delta.source_attempts[0]
+    actor_record = first_attempt.packed_state.native_owner_states["world.actor"]
+    actor_id = actor_record.get("id") if isinstance(actor_record, Mapping) else None
+    if not isinstance(actor_id, str):
+        raise TypeError("P1 fixture requires an exact native Actor owner record")
+    routed_operation = route_serialized_operation("world.actor", actor_id, actor_record)
+    outcome = host.publication.publish_owner_delta(
+        routed_operation=routed_operation,
+        path_operations=delta.path_operations,
+        owner_generations={},
+        publication_reason="test-composed-live-absorption",
+        basis=basis,
+    )
+    return outcome, transport
+
+
+def _p1_w02_outcome(
+    delta: FrozenCampaignAbsorptionDelta, *, result: str
+) -> publication_module.PublicationOutcome:
+    outcome, _transport = _p1_w02_publication(delta, result=result)
+    return outcome
+
+
 class LiveOpeningPreparationTests(unittest.TestCase):
     def test_opening_preparation_requires_an_explicit_source_revision(self) -> None:
         with self.assertRaises(TypeError):
@@ -2478,6 +2732,886 @@ class LiveAbsorptionMaterializationTests(unittest.TestCase):
         self.assertEqual(pending.status, LiveAbsorptionStatus.CLOSED_UNABSORBED)
         self.assertEqual(recover_closed_unabsorbed(pending.route, closed.source_key), closed)
         self.assertEqual(pending.campaign_state, {"native_owner_states": {}})
+
+
+class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
+    def _single_source_delta(self):
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "live")
+            },
+        )
+        route = build_live_route(source.campaign_id, (source,))
+        delta = _p1_freeze_delta(
+            (source,),
+            route=route,
+            packed_states={source.source_key: pack},
+            campaign_state=_p1_campaign_state(),
+        )
+        return source, route, pack, delta
+
+    def test_live_module_version_advances_without_schema_projection_changes(
+        self,
+    ) -> None:
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.21")
+        self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
+        self.assertEqual(LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION, 2)
+        self.assertEqual(LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION, 1)
+        self.assertEqual(
+            live_state_module.LIVE_BIRTH_ADMISSION_TABLE["world.player"],
+            "FORBIDDEN",
+        )
+
+    def test_single_source_delta_is_deterministic_and_owner_issued(self) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "live")
+            },
+        )
+        route = build_live_route(source.campaign_id, (source,))
+        campaign = _p1_campaign_state()
+
+        first = _p1_freeze_delta(
+            (source,),
+            route=route,
+            packed_states={source.source_key: pack},
+            campaign_state=campaign,
+        )
+        retry = _p1_freeze_delta(
+            (source,),
+            route=route,
+            packed_states={source.source_key: pack},
+            campaign_state=campaign,
+        )
+
+        self.assertEqual(len(first.source_attempts), 1)
+        self.assertEqual(first.source_attempts[0].source_key, source.source_key)
+        self.assertEqual(first.expected_campaign_revision, LIVE_H0)
+        self.assertEqual(first.proposed_campaign_revision, P1_PROPOSED_REVISION)
+        self.assertEqual(first.selected_route.as_mapping(), route.as_mapping())
+        self.assertEqual(
+            first.final_route.as_mapping(), _empty_live_route().as_mapping()
+        )
+        self.assertEqual(first.delta_digest, retry.delta_digest)
+        self.assertEqual(dict(first.path_operations), dict(retry.path_operations))
+        self.assertEqual(dict(first.operation_digests), dict(retry.operation_digests))
+        self.assertEqual(len(first.delta_digest), 64)
+        self.assertEqual(set(first.operation_digests), set(first.path_operations))
+        self.assertIn(P1_LIVE_ROUTING_PATH, first.path_operations)
+
+    def test_multi_source_delta_removes_complete_closed_set_and_preserves_unaffected_route(
+        self,
+    ) -> None:
+        first = _p1_source("scene-p1-a", actor_id="actor-a", source_revision=LIVE_H1)
+        second = _p1_source(
+            "scene-p1-b",
+            actor_id="actor-b",
+            source_revision=LIVE_H2,
+            status=LiveLifecycle.CLOSED,
+        )
+        unaffected = _p1_source(
+            "scene-p1-c",
+            actor_id="actor-c",
+            source_revision="4" * 40,
+            status=LiveLifecycle.ACTIVE,
+        )
+        pending_unaffected = _p1_source(
+            "scene-p1-d",
+            actor_id="actor-d",
+            source_revision="5" * 40,
+            status=LiveLifecycle.CLOSED_UNABSORBED,
+        )
+        route = build_live_route(
+            "campaign-frostfall", (unaffected, pending_unaffected, second, first)
+        )
+        packs = {
+            first.source_key: _p1_pack(
+                first,
+                native_owner_states={
+                    "world.actor": _p1_owner_record("world.actor", ("actor-a",), "a")
+                },
+            ),
+            second.source_key: _p1_pack(
+                second,
+                native_owner_states={
+                    "world.actor": _p1_owner_record("world.actor", ("actor-b",), "b")
+                },
+            ),
+        }
+
+        delta = _p1_freeze_delta(
+            (second, first),
+            route=route,
+            packed_states=packs,
+            campaign_state=_p1_campaign_state(),
+        )
+        reversed_delta = _p1_freeze_delta(
+            (first, second),
+            route=route,
+            packed_states=packs,
+            campaign_state=_p1_campaign_state(),
+        )
+        expected_final_route = build_live_route(
+            "campaign-frostfall", (unaffected, pending_unaffected)
+        )
+
+        self.assertEqual(
+            tuple(attempt.source_key for attempt in delta.source_attempts),
+            tuple(sorted((first.source_key, second.source_key))),
+        )
+        self.assertEqual(
+            delta.final_route.as_mapping(), expected_final_route.as_mapping()
+        )
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][P1_LIVE_ROUTING_PATH],
+            expected_final_route.as_mapping(),
+        )
+        self.assertEqual(delta.delta_digest, reversed_delta.delta_digest)
+        self.assertEqual(
+            dict(delta.path_operations), dict(reversed_delta.path_operations)
+        )
+        self.assertEqual(
+            {entry.source_key for entry in delta.final_route.entries},
+            {unaffected.source_key, pending_unaffected.source_key},
+        )
+
+    def test_native_and_crosscutting_pack_contributions_are_physicalized_losslessly(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        native_owner_states = {
+            "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor"),
+        }
+        provenance = {
+            "runtime.message": _p1_owner_record(
+                "runtime.message", ("message-p1",), "provenance"
+            )
+        }
+        privacy = {
+            "world.knowledge": _p1_owner_record(
+                "world.knowledge", ("actor-1", "fact-p1"), "knowledge"
+            ),
+            "runtime.disclosure": _p1_owner_record(
+                "runtime.disclosure", ("player-1", "fact-p1"), "disclosure"
+            ),
+        }
+        chronology = {
+            "world.thread": _p1_owner_record(
+                "world.thread", ("THREAD_p1",), "chronology"
+            )
+        }
+        unresolved_work = {
+            "runtime.continuation": _p1_owner_record(
+                "runtime.continuation", ("continuation-p1",), "unresolved"
+            )
+        }
+        pack = _p1_pack(
+            source,
+            native_owner_states=native_owner_states,
+            provenance=provenance,
+            privacy=privacy,
+            chronology=chronology,
+            unresolved_work=unresolved_work,
+        )
+
+        delta = _p1_freeze_delta(
+            (source,),
+            route=_live_route(source),
+            packed_states={source.source_key: pack},
+            campaign_state=_p1_campaign_state(),
+        )
+
+        expected_records = (
+            native_owner_states,
+            provenance,
+            privacy,
+            chronology,
+            unresolved_work,
+        )
+        for contribution in expected_records:
+            for family, record in contribution.items():
+                identity = (
+                    (record["knower_id"], record["fact_id"])
+                    if family == "world.knowledge"
+                    else (record["player_id"], record["fact_id"])
+                    if family == "runtime.disclosure"
+                    else (record["event_id"],)
+                    if family == "runtime.semantic_event"
+                    else (record["id"],)
+                )
+                path = route_native_record(family, identity).relative_path
+                self.assertEqual(delta.as_mapping()["path_operations"][path], record)
+
+    def test_live_semantic_event_enrollment_and_campaign_index_are_moved_together(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        event_id = "live-event-p1"
+        event_record = _p1_owner_record(
+            "runtime.semantic_event", (event_id,), "semantic-event"
+        )
+        event_pack = {
+            "complete": True,
+            "upper_ordinal": 1,
+            "entries": [
+                {"ordinal": 1, "event_id": event_id, "event_record": event_record}
+            ],
+        }
+        previous_event_id = "campaign-event-before-live"
+        previous_index_entry = {
+            "ordinal": 1,
+            "event_id": previous_event_id,
+            "path": route_native_record(
+                "runtime.semantic_event", (previous_event_id,)
+            ).relative_path,
+        }
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor"),
+                "runtime.semantic_event": event_pack,
+            },
+        )
+
+        delta = _p1_freeze_delta(
+            (source,),
+            route=_live_route(source),
+            packed_states={source.source_key: pack},
+            campaign_state=_p1_campaign_state(
+                event_index=_p1_empty_event_index((previous_index_entry,))
+            ),
+        )
+
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][event_path], event_record
+        )
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][P1_EVENT_INDEX_PATH],
+            {
+                "schema_version": 1,
+                "entity_type": "EVENT",
+                "complete": True,
+                "upper_ordinal": 2,
+                "entries": [
+                    previous_index_entry,
+                    {
+                        "ordinal": 2,
+                        "event_id": event_id,
+                        "path": event_path,
+                    },
+                ],
+            },
+        )
+
+    def test_unresolved_operational_handoff_is_materialized_on_existing_root_route(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        retained_root = OperationalRoot(
+            "campaign-frostfall",
+            "runtime.command",
+            "command-unaffected",
+            route_native_record(
+                "runtime.command", ("command-unaffected",)
+            ).relative_path,
+        )
+        absorbed_root = OperationalRoot(
+            "campaign-frostfall",
+            "runtime.procedure",
+            "procedure-p1",
+            route_native_record("runtime.procedure", ("procedure-p1",)).relative_path,
+        )
+        handoff = OperationalRootHandoff(
+            campaign_id="campaign-frostfall",
+            source_scope="LIVE",
+            source_revision=source.source_revision,
+            roots=(absorbed_root,),
+            source_key=source.source_key,
+            source_lifecycle=source.status.value,
+            complete=True,
+        )
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor")
+            },
+            unresolved_work={
+                "runtime.procedure": _p1_owner_record(
+                    "runtime.procedure", ("procedure-p1",), "running"
+                ),
+                "runtime.operational_root_handoff": handoff.to_dict(),
+            },
+        )
+
+        delta = _p1_freeze_delta(
+            (source,),
+            route=_live_route(source),
+            packed_states={source.source_key: pack},
+            campaign_state=_p1_campaign_state(
+                operational_roots=_p1_operational_root_page((retained_root,))
+            ),
+        )
+
+        procedure_path = route_native_record(
+            "runtime.procedure", ("procedure-p1",)
+        ).relative_path
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][procedure_path],
+            pack.unresolved_work["runtime.procedure"],
+        )
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][P1_OPERATIONAL_ROOT_PATH],
+            _p1_operational_root_page((retained_root, absorbed_root)),
+        )
+
+    def test_unrepresentable_required_pack_contributions_fail_closed(self) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        base = {
+            "native_owner_states": {
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor")
+            }
+        }
+        for category in ("provenance", "privacy", "chronology", "unresolved_work"):
+            values = dict(base)
+            values[category] = {
+                "summary_without_native_owner": {"value": "must-not-drop"}
+            }
+            with self.subTest(category=category), self.assertRaises(LiveContractError):
+                pack = _p1_pack(source, **values)
+                _p1_freeze_delta(
+                    (source,),
+                    route=_live_route(source),
+                    packed_states={source.source_key: pack},
+                    campaign_state=_p1_campaign_state(),
+                )
+
+    def test_active_source_and_wrong_selected_route_are_rejected(self) -> None:
+        active = _p1_source("scene-p1", actor_id="actor-1", status=LiveLifecycle.ACTIVE)
+        active_pack = _p1_pack(
+            active,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor")
+            },
+        )
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (active,),
+                route=_live_route(active),
+                packed_states={active.source_key: active_pack},
+                campaign_state=_p1_campaign_state(),
+            )
+
+        final_source = _p1_source("scene-p1", actor_id="actor-1")
+        wrong_route_member = replace(final_source, source_revision=LIVE_H2)
+        pack = _p1_pack(
+            final_source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor")
+            },
+        )
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (final_source,),
+                route=_live_route(wrong_route_member),
+                packed_states={final_source.source_key: pack},
+                campaign_state=_p1_campaign_state(),
+            )
+
+    def test_stale_campaign_body_and_wrong_or_incomplete_packs_are_rejected(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        route = _live_route(source)
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor")
+            },
+        )
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (source,),
+                route=route,
+                packed_states={source.source_key: pack},
+                campaign_state=_p1_campaign_state(revision=LIVE_H1),
+            )
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (source,),
+                route=route,
+                packed_states={},
+                campaign_state=_p1_campaign_state(),
+            )
+        extra_key = ("campaign-frostfall", "scene-extra", "epoch-extra")
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (source,),
+                route=route,
+                packed_states={source.source_key: pack, extra_key: pack},
+                campaign_state=_p1_campaign_state(),
+            )
+        wrong_pack = LiveNativeStatePack(
+            source_key=source.source_key,
+            source_revision=LIVE_H2,
+            next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+            source_native_ids=source.source_native_ids,
+            native_owner_states=pack.native_owner_states,
+            provenance=pack.provenance,
+            privacy=pack.privacy,
+            chronology=pack.chronology,
+            unresolved_work=pack.unresolved_work,
+        )
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (source,),
+                route=route,
+                packed_states={source.source_key: wrong_pack},
+                campaign_state=_p1_campaign_state(),
+            )
+
+    def test_incomplete_source_set_is_rejected(self) -> None:
+        first = _p1_source("scene-p1-a", actor_id="actor-a")
+        second = _p1_source("scene-p1-b", actor_id="actor-b", source_revision=LIVE_H2)
+        route = build_live_route("campaign-frostfall", (first, second))
+        pack = _p1_pack(
+            first,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-a",), "actor")
+            },
+        )
+
+        with self.assertRaises(LiveContractError):
+            _p1_freeze_delta(
+                (first, second),
+                route=route,
+                packed_states={first.source_key: pack},
+                campaign_state=_p1_campaign_state(),
+            )
+
+    def test_duplicate_or_conflicting_owner_after_images_are_rejected(self) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        actor = _p1_owner_record("world.actor", ("actor-1",), "actor")
+        for provenance_record in (
+            deepcopy(actor),
+            _p1_owner_record("world.actor", ("actor-1",), "conflicting-actor"),
+        ):
+            with (
+                self.subTest(provenance_record=provenance_record),
+                self.assertRaises(LiveContractError),
+            ):
+                pack = _p1_pack(
+                    source,
+                    native_owner_states={"world.actor": actor},
+                    provenance={"world.actor": provenance_record},
+                )
+                _p1_freeze_delta(
+                    (source,),
+                    route=_live_route(source),
+                    packed_states={source.source_key: pack},
+                    campaign_state=_p1_campaign_state(),
+                )
+
+    def test_w03_delta_contains_no_manifest_player_or_collaboration_writes(
+        self,
+    ) -> None:
+        _source, _route, _pack, delta = self._single_source_delta()
+        paths = set(delta.path_operations)
+
+        self.assertIn(P1_LIVE_ROUTING_PATH, paths)
+        self.assertNotIn("MANIFEST.yaml", paths)
+        self.assertFalse(any(path.startswith("WORLD/PLAYERS/") for path in paths))
+        self.assertFalse(
+            any(path.startswith("STATE/RUNTIME/COLLABORATION/") for path in paths)
+        )
+        self.assertFalse(
+            any(
+                "live_routing" in path.lower()
+                for path in paths
+                if path != P1_LIVE_ROUTING_PATH
+            )
+        )
+
+    def test_forbidden_player_and_collaboration_pack_families_cannot_enter_p1(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        for family, identity in (
+            ("world.player", ("player-1",)),
+            ("runtime.collaboration_obligation", ("obligation-1",)),
+        ):
+            with self.subTest(family=family), self.assertRaises(LiveContractError):
+                pack = _p1_pack(
+                    source,
+                    native_owner_states={
+                        "world.actor": _p1_owner_record(
+                            "world.actor", ("actor-1",), "actor"
+                        ),
+                        family: _p1_owner_record(family, identity, "forbidden"),
+                    },
+                )
+                _p1_freeze_delta(
+                    (source,),
+                    route=_live_route(source),
+                    packed_states={source.source_key: pack},
+                    campaign_state=_p1_campaign_state(),
+                )
+
+    def test_absorbed_source_native_ids_are_materialized_on_their_owner_route(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        native_id = encode_source_native_live_id(
+            source.source_key, "world.asset", 1, SOURCE_NATIVE_POLICY
+        )
+        source = replace(
+            source,
+            next_source_native_creation_ordinal=2,
+            source_native_ids=(native_id,),
+        )
+        pack = _p1_pack(
+            source,
+            native_owner_states={
+                "world.actor": _p1_owner_record("world.actor", ("actor-1",), "actor"),
+                "world.asset": _p1_owner_record("world.asset", (native_id,), "asset"),
+            },
+        )
+
+        delta = _p1_freeze_delta(
+            (source,),
+            route=_live_route(source),
+            packed_states={source.source_key: pack},
+            campaign_state=_p1_campaign_state(),
+        )
+
+        asset_path = route_native_record("world.asset", (native_id,)).relative_path
+        self.assertEqual(
+            delta.as_mapping()["path_operations"][asset_path],
+            pack.native_owner_states["world.asset"],
+        )
+        self.assertEqual(
+            delta.source_attempts[0].packed_state.source_native_ids, (native_id,)
+        )
+
+    def test_w02_accepted_publication_issues_owner_composed_absorption_evidence(
+        self,
+    ) -> None:
+        source, route, _pack, delta = self._single_source_delta()
+        outcome, transport = _p1_w02_publication(delta, result="ACCEPTED")
+        w02_evidence = publication_module.validate_owner_issued_accepted_publication(
+            outcome,
+            campaign_id=delta.campaign_id,
+            expected_pinned_head_sha=delta.expected_campaign_revision,
+            required_operation_digests=delta.operation_digests,
+        )
+        self.assertTrue(
+            set(delta.path_operations).issubset(
+                set(w02_evidence.attempt.path_operations)
+            )
+        )
+        classify = getattr(
+            live_state_module, "classify_composed_campaign_absorption", None
+        )
+        self.assertTrue(callable(classify))
+
+        evidence = classify(delta, outcome)
+
+        self.assertEqual(evidence.status, LiveAbsorptionStatus.ACCEPTED)
+        self.assertEqual(evidence.accepted_campaign_revision, P1_PROPOSED_REVISION)
+        self.assertIs(evidence.delta, delta)
+        self.assertFalse(hasattr(evidence, "absorbed"))
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("update_ref"), 1
+        )
+        self.assertIs(
+            live_state_module.validate_accepted_absorption_evidence(
+                evidence,
+                source_key=source.source_key,
+                source_revision=source.source_revision,
+                selected_route=route,
+            ),
+            evidence,
+        )
+
+    def test_w02_reconciled_indeterminate_acceptance_uses_the_same_commit_without_rewrite(
+        self,
+    ) -> None:
+        source, route, _pack, delta = self._single_source_delta()
+        reconciled, current_transport = _p1_w02_publication(
+            delta, result="CURRENT_CLOSURE"
+        )
+        current_owner_evidence = (
+            publication_module.validate_owner_issued_accepted_publication(
+                reconciled,
+                campaign_id=delta.campaign_id,
+                expected_pinned_head_sha=delta.expected_campaign_revision,
+                required_operation_digests=delta.operation_digests,
+            )
+        )
+        classify = getattr(
+            live_state_module, "classify_composed_campaign_absorption", None
+        )
+        self.assertTrue(callable(classify))
+
+        evidence = classify(delta, reconciled)
+
+        self.assertEqual(
+            reconciled.status, publication_module.PublicationStatus.ACCEPTED
+        )
+        self.assertEqual(reconciled.cause, "RECONCILED_CURRENT_CLOSURE")
+        self.assertFalse(reconciled.dispatched)
+        self.assertEqual(
+            current_owner_evidence.kind,
+            publication_module.PublicationAcceptanceKind.RECONCILED_CURRENT_CLOSURE,
+        )
+        self.assertEqual(evidence.status, LiveAbsorptionStatus.ACCEPTED)
+        self.assertEqual(evidence.accepted_campaign_revision, P1_PROPOSED_REVISION)
+        self.assertEqual(
+            [name for name, _value in current_transport.calls].count("update_ref"),
+            1,
+        )
+        self.assertIs(
+            live_state_module.validate_accepted_absorption_evidence(
+                evidence,
+                source_key=source.source_key,
+                source_revision=source.source_revision,
+                selected_route=route,
+            ),
+            evidence,
+        )
+
+        reconciled_ancestor, ancestor_transport = _p1_w02_publication(
+            delta, result="ANCESTOR"
+        )
+        ancestor_owner_evidence = (
+            publication_module.validate_owner_issued_accepted_publication(
+                reconciled_ancestor,
+                campaign_id=delta.campaign_id,
+                expected_pinned_head_sha=delta.expected_campaign_revision,
+                required_operation_digests=delta.operation_digests,
+            )
+        )
+        ancestor_evidence = classify(delta, reconciled_ancestor)
+
+        self.assertEqual(
+            reconciled_ancestor.status, publication_module.PublicationStatus.ACCEPTED
+        )
+        self.assertEqual(
+            reconciled_ancestor.cause,
+            "RECONCILED_ANCESTOR_CURRENT_CLOSURE",
+        )
+        self.assertEqual(
+            ancestor_owner_evidence.kind,
+            publication_module.PublicationAcceptanceKind.RECONCILED_ANCESTOR_CURRENT_CLOSURE,
+        )
+        self.assertEqual(ancestor_evidence.status, LiveAbsorptionStatus.ACCEPTED)
+        self.assertEqual(ancestor_evidence.accepted_campaign_revision, LIVE_H2)
+        self.assertEqual(
+            [name for name, _value in ancestor_transport.calls].count("update_ref"),
+            1,
+        )
+
+    def test_unissued_mismatched_direct_w02_acceptance_cannot_accept_absorption(
+        self,
+    ) -> None:
+        _source, _route, _pack, delta = self._single_source_delta()
+        mismatched = publication_module.PublicationOutcome(
+            status=publication_module.PublicationStatus.ACCEPTED,
+            intended_commit_sha=delta.proposed_campaign_revision,
+            observed_head_sha=LIVE_H2,
+            cause="CONFIRMED_ACCEPTED",
+            dispatched=True,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "owner-issued|W02"):
+            live_state_module.classify_composed_campaign_absorption(delta, mismatched)
+
+    def test_caller_constructed_direct_w02_acceptance_is_not_owner_evidence(
+        self,
+    ) -> None:
+        _source, _route, _pack, delta = self._single_source_delta()
+        forged = publication_module.PublicationOutcome(
+            status=publication_module.PublicationStatus.ACCEPTED,
+            intended_commit_sha=delta.proposed_campaign_revision,
+            observed_head_sha=delta.proposed_campaign_revision,
+            cause="CONFIRMED_ACCEPTED",
+            dispatched=True,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "owner-issued|W02"):
+            live_state_module.classify_composed_campaign_absorption(delta, forged)
+
+    def test_caller_constructed_ancestor_outcome_is_not_owner_evidence(self) -> None:
+        _source, _route, _pack, delta = self._single_source_delta()
+        forged = publication_module.PublicationOutcome(
+            status=publication_module.PublicationStatus.ACCEPTED,
+            intended_commit_sha=delta.proposed_campaign_revision,
+            observed_head_sha=LIVE_H2,
+            cause="RECONCILED_ANCESTOR_CURRENT_CLOSURE",
+            dispatched=False,
+        )
+
+        with self.assertRaisesRegex(LiveContractError, "owner-issued|W02"):
+            live_state_module.classify_composed_campaign_absorption(delta, forged)
+
+    def test_w02_conflict_rejection_and_unresolved_indeterminate_never_accept_absorption(
+        self,
+    ) -> None:
+        source, route, _pack, delta = self._single_source_delta()
+        classify = getattr(
+            live_state_module, "classify_composed_campaign_absorption", None
+        )
+        self.assertTrue(callable(classify))
+        expected_status = {
+            "CONFLICT": LiveAbsorptionStatus.REJECTED_STALE,
+            "REJECTED": LiveAbsorptionStatus.REJECTED,
+            "INDETERMINATE": LiveAbsorptionStatus.INDETERMINATE,
+        }
+
+        for result, expected in expected_status.items():
+            with self.subTest(result=result):
+                outcome = _p1_w02_outcome(delta, result=result)
+                evidence = classify(delta, outcome)
+                self.assertEqual(evidence.status, expected)
+                self.assertIsNone(evidence.accepted_campaign_revision)
+                with self.assertRaises(LiveContractError):
+                    live_state_module.validate_accepted_absorption_evidence(
+                        evidence,
+                        source_key=source.source_key,
+                        source_revision=source.source_revision,
+                        selected_route=route,
+                    )
+
+    def test_group_evidence_requires_exact_member_revision_and_selected_route(
+        self,
+    ) -> None:
+        first = _p1_source("scene-p1-a", actor_id="actor-a", source_revision=LIVE_H1)
+        second = _p1_source("scene-p1-b", actor_id="actor-b", source_revision=LIVE_H2)
+        route = build_live_route("campaign-frostfall", (first, second))
+        packs = {
+            first.source_key: _p1_pack(
+                first,
+                native_owner_states={
+                    "world.actor": _p1_owner_record("world.actor", ("actor-a",), "a")
+                },
+            ),
+            second.source_key: _p1_pack(
+                second,
+                native_owner_states={
+                    "world.actor": _p1_owner_record("world.actor", ("actor-b",), "b")
+                },
+            ),
+        }
+        delta = _p1_freeze_delta(
+            (first, second),
+            route=route,
+            packed_states=packs,
+            campaign_state=_p1_campaign_state(),
+        )
+        classify = getattr(
+            live_state_module, "classify_composed_campaign_absorption", None
+        )
+        self.assertTrue(callable(classify))
+        evidence = classify(delta, _p1_w02_outcome(delta, result="ACCEPTED"))
+
+        for source in (first, second):
+            self.assertIs(
+                live_state_module.validate_accepted_absorption_evidence(
+                    evidence,
+                    source_key=source.source_key,
+                    source_revision=source.source_revision,
+                    selected_route=route,
+                ),
+                evidence,
+            )
+        with self.assertRaises(LiveContractError):
+            live_state_module.validate_accepted_absorption_evidence(
+                evidence,
+                source_key=("campaign-frostfall", "scene-foreign", "epoch-foreign"),
+                source_revision=LIVE_H1,
+                selected_route=route,
+            )
+        with self.assertRaises(LiveContractError):
+            live_state_module.validate_accepted_absorption_evidence(
+                evidence,
+                source_key=first.source_key,
+                source_revision=LIVE_H2,
+                selected_route=route,
+            )
+        with self.assertRaises(LiveContractError):
+            live_state_module.validate_accepted_absorption_evidence(
+                evidence,
+                source_key=first.source_key,
+                source_revision=first.source_revision,
+                selected_route=_live_route(first),
+            )
+
+    def test_direct_or_forged_delta_and_composed_evidence_are_not_authority(
+        self,
+    ) -> None:
+        source, route, _pack, delta = self._single_source_delta()
+        delta_type = getattr(live_state_module, "FrozenCampaignAbsorptionDelta", None)
+        composed_type = getattr(
+            live_state_module, "ComposedCampaignAbsorptionPublication", None
+        )
+        self.assertIsNotNone(delta_type)
+        self.assertIsNotNone(composed_type)
+        classify = getattr(
+            live_state_module, "classify_composed_campaign_absorption", None
+        )
+        self.assertTrue(callable(classify))
+
+        with self.assertRaises(LiveContractError):
+            classify(
+                delta_type(
+                    campaign_id=delta.campaign_id,
+                    expected_campaign_revision=delta.expected_campaign_revision,
+                    proposed_campaign_revision=delta.proposed_campaign_revision,
+                    selected_route=delta.selected_route,
+                    final_route=delta.final_route,
+                    source_attempts=delta.source_attempts,
+                    path_operations=delta.path_operations,
+                    operation_digests=delta.operation_digests,
+                    delta_digest=delta.delta_digest,
+                ),
+                _p1_w02_outcome(delta, result="ACCEPTED"),
+            )
+
+        forged = composed_type(
+            status=LiveAbsorptionStatus.ACCEPTED,
+            accepted_campaign_revision=P1_PROPOSED_REVISION,
+            delta=delta,
+        )
+        with self.assertRaises(LiveContractError):
+            live_state_module.validate_accepted_absorption_evidence(
+                forged,
+                source_key=source.source_key,
+                source_revision=source.source_revision,
+                selected_route=route,
+            )
+
+    def test_closed_unabsorbed_source_and_route_alone_are_not_absorption_evidence(
+        self,
+    ) -> None:
+        source = _p1_source("scene-p1", actor_id="actor-1")
+        route = _live_route(source)
+        for untrusted in (source, route, {"absorbed": True}):
+            with (
+                self.subTest(untrusted=type(untrusted).__name__),
+                self.assertRaises(LiveContractError),
+            ):
+                live_state_module.validate_accepted_absorption_evidence(
+                    untrusted,
+                    source_key=source.source_key,
+                    source_revision=source.source_revision,
+                    selected_route=route,
+                )
 
 
 def _temporal_root() -> dict[str, object]:
