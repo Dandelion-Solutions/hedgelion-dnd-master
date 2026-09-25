@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED — T04B post-publication recovery evidence
-CURRENT_TASK: W04.T04B paused at the new recovery-evidence System-Impact gate; T07D remains independent; T05C remains blocked
+STATUS: EXECUTING — T04B-P0R AUTHORIZED / T04B PAUSED
+CURRENT_TASK: implement/review T04B-P0R; T07D may proceed independently; T04B resumes only after P0R independent PASS/read-back
 LAST_COMPLETED_TASK: W04.T04B-P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; W04.T04B-P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: 250120a7b7c886ffb7174990a77fa4cd02c149d — P1 acceptance/status checkpoint freshly fetched before unpublished T04B candidate edits
+LAST_SAFE_SHA: ed3131681955830ee640ed79bca8398d2de86c53 — recovery-evidence impact brief/control checkpoint before P0R implementation
 
 
 ## T04B Senior System-Impact resolution
@@ -45,6 +45,29 @@ Allowed P0 production writes: `GAME/TOOLS/publication.py`, `GAME/TOOLS/runtime_h
 After P0 independent PASS/read-back, P1 resumes and must consume the W02 owner validator using its campaign/predecessor and W03 operation-digest subset. W03 does not re-run Git ancestry.
 
 Expected fresh Version Impact if baseline remains current: publication `1.0.4 -> 1.0.5`, runtime_host `1.0.8 -> 1.0.9`. No persistent schema/generation/migration change expected.
+
+No PO gate. T07D remains independent.
+
+## T04B post-publication recovery evidence Senior resolution
+
+RULING: DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-senior-ruling.md
+
+Disposition: **RESOLVED TO BOUNDED W02 READ-ONLY PREREQUISITE / NO PRODUCT-SEMANTIC CHANGE**.
+
+New prerequisite:
+
+    W04.T04B-P0R — W02 read-only post-publication acceptance revalidation
+    OUTPUT: W02_POSTPUBLICATION_REVALIDATION_READY
+
+P0R re-proves an already-published H -> C closure from repository authority after process loss, then issues a fresh exact-instance P0-style PublicationOutcome/acceptance evidence pair. It performs no create_tree/create_commit/update_ref and persists no receipt.
+
+The nominated predecessor H and intended commit C are not trusted inputs. W02 must prove exact predecessor tree, direct single-parent C, exact changed-path/write closure, current D closure and C->D ancestry where applicable. Existing Step-5.6 RepositoryPort exact commit/tree/path and bounded changed-path/ancestry capability is sufficient; no new RepositoryPort method or authority is authorized.
+
+Same-process-only recovery is rejected because it violates the accepted Step-5.6 cold-recovery law. Durable evidence persistence is not authorized because repository authority can re-prove the closure without adding a journal/schema.
+
+After P0R independent PASS/read-back, the existing T04B candidate may resume. It rederives P1 delta + full joined W02 operations, calls P0R, passes the fresh W02-issued outcome through unchanged P1 composed-absorption classification, and validates final after-images without a second W02 write or LIVE replay.
+
+Expected fresh P0R Version Impact if baselines remain current: publication 1.0.5 -> 1.0.6; runtime_host 1.0.9 -> 1.0.10. No persistent schema/generation/migration change.
 
 No PO gate. T07D remains independent.
 
@@ -154,6 +177,7 @@ No earlier accepted task is reopened. T07C is independently accepted. T04B-P1 is
 ```text
 READY IN PARALLEL:
   T07D
+  T04B-P0R  (W02 read-only recovery owner)
   T04B-P0  (W02 publication semantic owner)
 
 T04B-P0 implementation -> independent PASS/read-back
@@ -252,10 +276,10 @@ SYSTEM_IMPACT:
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
 - T04B-P0: PASS / independently reviewed / published / read back;
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
-- T04B: SENIOR_REVIEW_REQUIRED for post-process-loss owner-evidence reissuance; see the linked Implementation Impact Brief.
+- T04B-P0R: AUTHORIZED W02 read-only recovery prerequisite; T04B remains paused until P0R independent PASS/read-back.
 
 NEXT_EXACT_TASK: Senior disposition of the T04B recovery-evidence boundary; resume T04B only within that ruling. T07D remains independently eligible. T05C waits for T04B independent PASS.
-KNOWN_BLOCKERS: T04B process-loss recovery evidence reissuance unresolved; four S6D catalog/contract tests fail outside P0/P1/T04B scope. T05C waits for T04B PASS. Wave 04 is not complete; Wave 05 is not authorized.
+KNOWN_BLOCKERS: P0R implementation/review pending; T04B/T05C remain blocked until their gates. Four S6D catalog/contract tests remain outside P0/P1/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
 UNPUBLISHED_WORK: T04B candidate remains uncommitted/unpublished in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`. P0/P1 source is published/read back; local `stash@{0}` is a duplicate P1 backup.
 
 ## Historical evidence retention

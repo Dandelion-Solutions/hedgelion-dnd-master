@@ -252,15 +252,29 @@ The producer must expose the owner-issued `FrozenCampaignAbsorptionDelta` / comp
 
 Mandatory REDs: single/multi-LIVE deterministic preparation; exact complete final-route removal; lossless owner-path coverage or fail-closed; stale/ACTIVE/partial/wrong-route/wrong-pack rejection; forged delta/evidence rejection; raw/caller-constructed PublicationOutcome (including forged ancestor cause) rejected; genuine T04B-P0 owner-issued direct/current/ancestor acceptance admitted without second CAS; CONFLICT/REJECTED/INDETERMINATE do not become absorption; CLOSED_UNABSORBED alone is never accepted absorption.
 
+**W04.T04B-P0R - W02 read-only post-publication acceptance revalidation prerequisite**
+
+Inputs: independently accepted T04B-P0 and T04B-P1 plus the accepted Step-5.6 cold-recovery law. Semantic owner remains W02 campaign publication/reconciliation.
+
+Direct writes: GAME/TOOLS/publication.py, GAME/TOOLS/runtime_host.py, DEV/TESTS/test_rd06_durability_publication.py, DEV/TESTS/test_runtime_host_composition.py, and mechanically required version/control bookkeeping only.
+
+Output: W02_POSTPUBLICATION_REVALIDATION_READY.
+
+Implement the read-only recovery proof accepted by DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-senior-ruling.md. A nominated H/C pair is never authority: W02 must prove exact predecessor tree, direct single-parent C, exact C changed-path/write closure, current D closure and C->D ancestry where applicable before issuing a fresh exact-instance P0-style accepted outcome/evidence pair.
+
+The path must issue no create_tree/create_commit/update_ref, must not pretend to recover the historical acting principal, must add no persisted receipt/schema and must use only the already accepted RepositoryPort exact commit/tree/path plus bounded changed-path/ancestry capability. Insufficient repository evidence fails closed.
+
+Mandatory REDs: current and ancestor revalidation without writes; non-direct C; extra C path; changed/missing C closure; overlapping D; C absent lineage; unavailable commit/tree/change/ancestry proof; foreign campaign/ref/predecessor; copied outcome rejection; operation-subset validation; no acting-principal reauthorization; zero Git write calls.
+
 **W04.T04B - same-closure authority/collaboration publication and recovery**
 
-Inputs: T04A PASS plus independent PASS/read-back of T04B-P1 (`W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`). Same collaboration production/test lane.
+Inputs: T04A PASS plus independent PASS/read-back of T04B-P1 (`W03_COMPOSABLE_CAMPAIGN_ABSORPTION_DELTA_READY`) and T04B-P0R (`W02_POSTPUBLICATION_REVALIDATION_READY`). Same collaboration production/test lane.
 
 Output: original W04_AUTHORITY_COLLABORATION_RECONCILED.
 
 The LIVE-sensitive path must collision-safely join the W03-owned absorption/final-routing path delta with PLAYER/access and Collaboration effects and submit the union once through the existing W02 campaign publication service. Collaboration does not create or reinterpret LIVE authority. No-LIVE behavior remains unchanged.
 
-Mandatory REDs: duplicate reconciliation idempotent; crash before/after publication; campaign/body drift; stale obligation generation; recovery reproduces the same after-authority view; no reverse dependency into access control; positive LIVE-sensitive closure contains W03 + PLAYER/access + Collaboration operations in one W02 transaction; CLOSED_UNABSORBED-only recovery is not success; no second campaign CAS or LIVE replay.
+Mandatory REDs: duplicate reconciliation idempotent; crash before/after publication including process loss; campaign/body drift; stale obligation generation; recovery rederives exact joined operations and uses T04B-P0R to obtain fresh W02 evidence; intended current and compatible ancestor recovery perform zero writes; overlapping/foreign/ambiguous recovery fails closed; no reverse dependency into access control; positive LIVE-sensitive closure contains W03 + PLAYER/access + Collaboration operations in one W02 transaction; CLOSED_UNABSORBED-only recovery is not success; no second campaign CAS or LIVE replay.
 
 ### Context and protected-emission lane - W04.T05-T06
 

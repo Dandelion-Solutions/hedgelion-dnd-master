@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1 OUTPUTS INDEPENDENTLY ACCEPTED/READ BACK — T04B SYSTEM-IMPACT REVIEW REQUIRED; T05C BLOCKED; T07D AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1 ACCEPTED — T04B-P0R READ-ONLY RECOVERY PREREQUISITE AUTHORIZED; T04B/T05C BLOCKED; T07D AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T04B-P1 independently accepted/read back at `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: Obtain Senior disposition of the post-publication W02/W03 recovery-evidence System-Impact brief at `DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-impact-brief.md`; resume T04B only within that ruling. W04.T07D remains independently authorized. T05C waits for T04B independent PASS/read-back.
-REQUIRED_GATE: Senior disposition of the T04B recovery-evidence boundary -> finish/review/publish T04B -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
+NEXT_AUTHORIZED_UNIT: implement W04.T04B-P0R under the accepted post-publication recovery ruling and obtain independent PASS/read-back; then resume the existing local T04B candidate. W04.T07D remains independently authorized. T05C waits for T04B independent PASS/read-back.
+REQUIRED_GATE: T04B-P0R implementation -> independent PASS/read-back -> finish/review/publish T04B -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: T04B has a new System-Impact stop: recovery after process loss cannot reacquire the ephemeral P0/P1 owner-issued evidence through the current W02 interface; Senior disposition is required. T05C remains blocked. Four S6D tests fail in clean P0/P1 DEV runs outside their scope. T07D remains independently eligible. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: the post-process-loss evidence gap is Senior-resolved to bounded W02 read-only prerequisite T04B-P0R. T04B remains paused until P0R PASS/read-back; T05C remains blocked. P0/P1 remain accepted. Four S6D tests previously failed outside P0/P1/T04B scope; local `.entire`/`__pycache__` verification contamination is not claimed repaired. T07D remains independently eligible. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
