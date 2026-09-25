@@ -1,6 +1,6 @@
 # HDM local dashboard skills - authoring and verification
 
-Status: IN_PROGRESS - LLM behavior verified; audit dashboard next
+Status: AUTHORING_COMPLETE - all five skills behaviorally and statically verified; target visual/Lavish verification unavailable
 
 ## Scope and authority
 
@@ -54,14 +54,23 @@ RED: five controls correctly rejected six sequential calls and unsupported laten
 
 RED: five no-skill controls preserved scoped PASS, author-repair versus re-review, and dormant-trigger semantics. No false claim of a baseline authority violation is made. The observable failure was interchange/operational structure: controls emitted mutually incompatible `assurance`, `scopedEvidence` or prose/table projections without the shared envelope, claim references or explicit per-report typed currency. Cockpit cannot safely consume these as a stable audit projection. GREEN supplies that structure while preserving the controls' sound scope cautions. Five treatments preserve report-specific baselines, scoped closure, missing independent re-review and dormant triggers. Full JSON/HTML passed independent envelope/reference/local-asset checks and manual payload inspection; aggregate currency and whole-project open inventory remain UNKNOWN. Visual/Lavish checks are unavailable.
 
+### PO cockpit
+
+RED: five fresh-context controls correctly rejected the unsupported completion percentage, separated PO/Senior status and retained stale audit qualifications, but all promoted raw task A/B/C state onto the initial attention/meeting surface without an established product consequence. Representative exact output: `"type": "Authorized work", "item": "C", "status": "AUTHORIZED"` inside `initial_screen`. Several also placed task nodes in the architecture map despite absent subsystem topology. Output shapes lacked the shared envelope and internal development projection. GREEN adds consequence-first selection, task-only explanation details, explicit companion validation and separate capability stages. Five treatments keep task identifiers in explanation details, missing/unsupported companions visible, metadata descriptions distinct from validated payloads, and first-view/PO/Senior/deferred states separate. Full development and cockpit JSON plus HTML passed parent envelope/reference/local-asset checks and manual payload inspection. REFACTOR: the full output initially copied stale audit verdict currency into source freshness. Explicit guidance now prohibits this; corrected JSON/HTML retain UNKNOWN unverified source freshness separately from STALE verdict currency. Fresh narrow re-test preserved the distinction; parent re-validation passed.
+
+### Final bounded checks
+
+All five skill frontmatters and relative supporting links passed validation. All six full fixture envelopes (five specialist/cockpit outputs plus internal development) passed required fields, unique source/claim identities, reference resolution and applicable graph endpoint checks. Five generated HTML artifacts passed static local-anchor and external-asset checks; no browser result is inferred. Public staging contains no generated runtime state or private audit identities/content. The local private-source configuration is outside staging. An independent final document review found no blocking findings across the five skills/shared references/privacy/scope; it was not an engine or visual audit.
+
 ## Current verification and continuation
 
-NEXT_EXACT_ACTION: cockpit baseline, then author and verify the fifth skill.
+NEXT_EXACT_ACTION: no further skill authoring. The publisher must read back this checkpoint and verify its remote HEAD/hosted checks; those post-commit results belong in the delivery receipt. When these skills are first applied on the approved target, perform the unavailable visual/interaction/Lavish review before calling that generated dashboard visually verified.
 PUBLICATION: architecture/shared contract/ignore checkpoint `962d0f3f18e2ed6e0b59016c0fd3e5aa056a5c36`; five files read back byte-for-byte, ref independently verified. Hosted Validate engine source run `36155537896`: completed/success at that exact HEAD.
 PYTHON_PUBLICATION: `36e4da1baafe55a6f11da7689a6c75ec0c733678`; skill and updated evidence record read back byte-for-byte, exact remote HEAD verified. An authoring-host text-encoding defect in the evidence record was corrected using explicit UTF-8 handling; skill guidance was unaffected.
 PYTHON_HOSTED_CI: Validate engine source run `36156252751`, completed/success at exact Python checkpoint.
 LLM_PUBLICATION: `8eaa6d34ad962310b9604f0ef9b497c8755a2af1`; three files including synthetic replay scenarios read back byte-for-byte; exact remote HEAD verified.
 LLM_HOSTED_CI: Validate engine source run `36156865014`, completed/success at exact LLM checkpoint.
+AUDIT_PUBLICATION: 9a25022e7a682a685043fec9fed64eb45e5e5da5; skill and report read back byte-for-byte; exact remote HEAD verified. Hosted Validate engine source run 36157648784: completed/success at that exact checkpoint.
 VERSION_IMPACT: NONE for existing HDM namespaces. New local projection `schema_version: 1` identifies only this development interchange format; no engine release, runtime module, campaign, storage, catalog, ruleset or digest generation transition. No campaign migration.
 SYSTEM_IMPACT: NONE within the PO-authorized local projection boundary.
 LIMITATIONS: the target VPS and installed Lavish review loop are not available on this authoring host; do not claim their execution. Full engine tests have not run for this documentation-only change.
