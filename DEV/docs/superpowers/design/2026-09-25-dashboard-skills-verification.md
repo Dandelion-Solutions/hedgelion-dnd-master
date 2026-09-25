@@ -6,7 +6,7 @@ Status: IN_PROGRESS - LLM behavior verified; audit dashboard next
 
 The Product Owner explicitly authorized five project-local dashboard skills using the agreed projection design: PO cockpit, architecture, Python core, LLM runtime and independent audit view. The cockpit presents product capabilities and exceptions; task/wave records explain them on drill-down. This is bounded development-infrastructure guidance, not production runtime implementation, audit execution, or a new product authority. It does not advance the engine's global execution cursor.
 
-Allowed files: the five `.agents/skills/hdm-*` folders, shared references inside the architecture skill, `.gitignore`, and this development-only verification record. Generated `.hdm-dashboard/` state/HTML/history/configuration remain local and untracked. No public GAME/DEV semantic owners or execution gates are changed.
+Allowed files: the five `.agents/skills/hdm-*` folders, shared references inside the architecture skill, `.gitignore`, this development-only verification record and its synthetic replay scenarios. Generated `.hdm-dashboard/` state/HTML/history/configuration remain local and untracked. No public GAME/DEV semantic owners or execution gates are changed.
 
 ## Source manifest / evidence boundary
 
@@ -50,12 +50,18 @@ RED: five fresh-context controls preserved uncertainty around coverage/cycles. O
 
 RED: five controls correctly rejected six sequential calls and unsupported latency, but several retained the draft's unsupported role count. Exact examples: `"logical_roles": 6` and `one physical context hosting six logical roles`; the fixture owner established no role count. One control called Story an `Optional asynchronous branch` although only nonblocking policy was supplied. GREEN: five treatment samples preserve unknown role count and scheduling, static site versus invocation/latency evidence, and historical retry scope. Full fixture passed independent envelope/reference/local-HTML checks. REFACTOR: full output initially labeled cold/SAVE/LIVE/recovery metrics as ordinary response; guidance now requires distinct workloads even for unknown values. Fresh-context metric exercise and corrected full output preserve all five paths; parent re-check passed. Frontmatter and supporting-link checks passed; visual/Lavish checks remain unavailable.
 
+### Audit dashboard
+
+RED: five no-skill controls preserved scoped PASS, author-repair versus re-review, and dormant-trigger semantics. No false claim of a baseline authority violation is made. The observable failure was interchange/operational structure: controls emitted mutually incompatible `assurance`, `scopedEvidence` or prose/table projections without the shared envelope, claim references or explicit per-report typed currency. Cockpit cannot safely consume these as a stable audit projection. GREEN supplies that structure while preserving the controls' sound scope cautions. Five treatments preserve report-specific baselines, scoped closure, missing independent re-review and dormant triggers. Full JSON/HTML passed independent envelope/reference/local-asset checks and manual payload inspection; aggregate currency and whole-project open inventory remain UNKNOWN. Visual/Lavish checks are unavailable.
+
 ## Current verification and continuation
 
-NEXT_EXACT_ACTION: audit dashboard baseline, then author and verify it before cockpit.
+NEXT_EXACT_ACTION: cockpit baseline, then author and verify the fifth skill.
 PUBLICATION: architecture/shared contract/ignore checkpoint `962d0f3f18e2ed6e0b59016c0fd3e5aa056a5c36`; five files read back byte-for-byte, ref independently verified. Hosted Validate engine source run `36155537896`: completed/success at that exact HEAD.
 PYTHON_PUBLICATION: `36e4da1baafe55a6f11da7689a6c75ec0c733678`; skill and updated evidence record read back byte-for-byte, exact remote HEAD verified. An authoring-host text-encoding defect in the evidence record was corrected using explicit UTF-8 handling; skill guidance was unaffected.
 PYTHON_HOSTED_CI: Validate engine source run `36156252751`, completed/success at exact Python checkpoint.
+LLM_PUBLICATION: `8eaa6d34ad962310b9604f0ef9b497c8755a2af1`; three files including synthetic replay scenarios read back byte-for-byte; exact remote HEAD verified.
+LLM_HOSTED_CI: Validate engine source run `36156865014`, completed/success at exact LLM checkpoint.
 VERSION_IMPACT: NONE for existing HDM namespaces. New local projection `schema_version: 1` identifies only this development interchange format; no engine release, runtime module, campaign, storage, catalog, ruleset or digest generation transition. No campaign migration.
 SYSTEM_IMPACT: NONE within the PO-authorized local projection boundary.
 LIMITATIONS: the target VPS and installed Lavish review loop are not available on this authoring host; do not claim their execution. Full engine tests have not run for this documentation-only change.
