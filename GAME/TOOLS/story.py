@@ -29,8 +29,8 @@ _PREFIX_LAYERS = {"T": "TRANSCRIPT", "E": "EVENTS", "M": "MECHANICS", "N": "NARR
 _LOCAL_SOURCE_KEY = re.compile(r"^[A-Za-z][A-Za-z0-9_-]*$")
 _LIVE_ORIGIN = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 
 
 class StoryIdentityComponent(StrEnum):
@@ -53,7 +53,7 @@ class StoryCardinalityPolicy(StrEnum):
 
 @dataclass(frozen=True, slots=True)
 class StorySourceRegistration:
-    """One closed generation-1 layer/source projection contract."""
+    """One fixed layer/source projection contract and its semantic generation."""
 
     registration_id: str
     layer: str
@@ -104,6 +104,7 @@ STORY_SOURCE_REGISTRATIONS: Final[Mapping[str, StorySourceRegistration]] = (
                     StoryRequirementPolicy.SOURCE_CLASSIFIED,
                     StoryCardinalityPolicy.ONE_OR_MORE_PER_CANDIDATE,
                     ("TECHNICAL_ONLY_EVENT",),
+                    semantic_contract_generation=2,
                 ),
                 StorySourceRegistration(
                     "E-REL",
@@ -179,7 +180,7 @@ STORY_SOURCE_REGISTRATIONS: Final[Mapping[str, StorySourceRegistration]] = (
 STORY_UNIT_SCHEMA_VERSIONS: Final[Mapping[str, int]] = MappingProxyType(
     {
         "TRANSCRIPT": 2,
-        "EVENTS": 3,
+        "EVENTS": 4,
         "MECHANICS": 4,
         "NARRATIVE": 3,
     }
@@ -1546,6 +1547,7 @@ def _materialize_event_unit(
     event_id = _nonempty_string(normalized_event["event_id"], "event_id")
     basis = extract_t0_basis_from_semantic_event(normalized_event)
     candidate_id = encode_candidate_id("E-EVT", [event_id])
+    registration = story_source_registration("E-EVT")
     unit: dict[str, object] = {
         "schema_version": STORY_UNIT_SCHEMA_VERSIONS["EVENTS"],
         "story_id": story_id,
@@ -1561,7 +1563,9 @@ def _materialize_event_unit(
         "projection_basis": [
             {
                 "source_domain": source_domain,
-                "semantic_contract_generation": 1,
+                "semantic_contract_generation": (
+                    registration.semantic_contract_generation
+                ),
                 "candidate_ids": [candidate_id],
             }
         ],
@@ -1688,11 +1692,7 @@ def publish_story_event_window(
             None if previous is None else expected_coverage["through"],  # type: ignore[arg-type]
             (),
         )
-    if previous_ordinal is not None and native_upper < previous_ordinal:
-        raise StoryContractError(
-            "native Story source upper moved behind persisted Story coverage"
-        )
-    if previous_ordinal is not None and native_upper == previous_ordinal:
+    if previous_ordinal is not None and native_upper <= previous_ordinal:
         return StoryPublicationResult(
             StoryPublicationStatus.ALREADY_COVERED,
             basis.pinned_campaign.revision,
@@ -1783,8 +1783,9 @@ def publish_story_event_window(
         story_ids.append(story_id)
 
     through = proposed_coverage["through"]
+    registration = story_source_registration("E-EVT")
     coverage[source_domain] = {
-        "semantic_contract_generation": 1,
+        "semantic_contract_generation": registration.semantic_contract_generation,
         "terminal_coverage": {"kind": "CONTIGUOUS", "through": through},
     }
     next_state = validate_story_projection_state(

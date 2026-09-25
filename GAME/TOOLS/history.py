@@ -24,11 +24,24 @@ _LIVE_ORIGIN: Final = re.compile(r"^LIVE:[A-Za-z0-9_.:-]+$")
 _HISTORY_SOURCE_DOMAIN: Final[str] = "campaign.semantic_events@S"
 _HISTORY_LANE: Final[str] = "evt"
 _HISTORY_CONTRACT_GENERATION: Final[int] = 1
+T0_BASIS_SCHEMA_VERSION: Final[int] = 2
+T0_AVAILABILITY_CLASSIFICATIONS: Final[frozenset[str]] = frozenset(
+    {"PUBLIC", "PROTECTED"}
+)
+_T0_FACTOR_FIELDS: Final[frozenset[str]] = frozenset(
+    {
+        "owner_family",
+        "factor_id",
+        "t0_value",
+        "provenance_refs",
+        "availability_classification",
+    }
+)
 _NATIVE_HISTORY_KIND: Final[str] = "runtime.native_history"
 _MISSING_HOST_TOKEN: Final[object] = object()
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 
 class HistoryContractError(ValueError):
@@ -1172,6 +1185,12 @@ def _schema_version(value: object) -> int:
     return 1
 
 
+def _t0_schema_version(value: object) -> int:
+    if type(value) is not int or value != T0_BASIS_SCHEMA_VERSION:
+        raise HistoryContractError("unsupported T0 basis schema_version")
+    return T0_BASIS_SCHEMA_VERSION
+
+
 def _unique_strings(value: object, label: str) -> list[str]:
     if not isinstance(value, Sequence) or isinstance(value, str):
         raise HistoryContractError(f"{label} must be an array")
@@ -1247,12 +1266,20 @@ def validate_t0_basis(value: object) -> dict[str, object]:
     factor_ids: set[str] = set()
     for raw_factor in raw_factors:
         factor = _mapping(raw_factor, "T0 factor")
-        if set(factor) != {"owner_family", "factor_id", "t0_value", "provenance_refs"}:
+        if set(factor) != _T0_FACTOR_FIELDS:
             raise HistoryContractError("T0 factor has unsupported or missing fields")
         factor_id = _nonempty_string(factor["factor_id"], "factor_id")
         if factor_id in factor_ids:
             raise HistoryContractError("T0 factor identities must be unique")
         factor_ids.add(factor_id)
+        availability_classification = factor["availability_classification"]
+        if (
+            not isinstance(availability_classification, str)
+            or availability_classification not in T0_AVAILABILITY_CLASSIFICATIONS
+        ):
+            raise HistoryContractError(
+                "T0 factor availability_classification is unsupported"
+            )
         factors.append(
             {
                 "owner_family": _nonempty_string(
@@ -1263,10 +1290,11 @@ def validate_t0_basis(value: object) -> dict[str, object]:
                 "provenance_refs": _unique_strings(
                     factor["provenance_refs"], "provenance_refs"
                 ),
+                "availability_classification": availability_classification,
             }
         )
     return {
-        "schema_version": _schema_version(basis["schema_version"]),
+        "schema_version": _t0_schema_version(basis["schema_version"]),
         "event_id": _nonempty_string(basis["event_id"], "event_id"),
         "actor_id": _nonempty_string(basis["actor_id"], "actor_id"),
         "factors": factors,

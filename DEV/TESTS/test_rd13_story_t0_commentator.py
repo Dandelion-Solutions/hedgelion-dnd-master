@@ -94,7 +94,7 @@ def _semantic_event() -> dict[str, object]:
 
 def _t0_basis() -> dict[str, object]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "event_id": "event.gate_opened",
         "actor_id": "actor.guard",
         "factors": [
@@ -103,6 +103,7 @@ def _t0_basis() -> dict[str, object]:
                 "factor_id": "fact.party_authorized",
                 "t0_value": "epistemic.known",
                 "provenance_refs": ["fact.party_authorized"],
+                "availability_classification": "PUBLIC",
             }
         ],
     }
@@ -801,10 +802,30 @@ class T0BasisTests(unittest.TestCase):
         basis = build_t0_basis(event, _t0_basis())
 
         self.assertEqual(basis["factors"][0]["t0_value"], "epistemic.known")
+        self.assertEqual(basis["factors"][0]["availability_classification"], "PUBLIC")
         with self.assertRaises(HistoryContractError):
             validate_t0_basis(
                 {**_t0_basis(), "factors": [{"factor_id": "fact.party_authorized"}]}
             )
+
+    def test_t0_factor_protection_classification_is_required_and_registered(
+        self,
+    ) -> None:
+        basis = _t0_basis()
+        missing = deepcopy(basis)
+        missing["factors"][0].pop("availability_classification")  # type: ignore[index]
+        malformed_values = (None, True, "PRIVATE", "", 1)
+
+        with self.assertRaises(HistoryContractError):
+            validate_t0_basis(missing)
+        for classification in malformed_values:
+            with self.subTest(classification=classification):
+                malformed = deepcopy(basis)
+                malformed["factors"][0]["availability_classification"] = (  # type: ignore[index]
+                    classification
+                )
+                with self.assertRaises(HistoryContractError):
+                    validate_t0_basis(malformed)
 
     def test_t0_basis_is_extracted_only_from_its_exact_native_semantic_event(
         self,
@@ -930,10 +951,12 @@ class StorySourceRegistrationTests(unittest.TestCase):
             },
         )
         self.assertEqual(len(registrations), 8)
+        self.assertEqual(registrations["E-EVT"].semantic_contract_generation, 2)
         self.assertTrue(
             all(
                 registration.semantic_contract_generation == 1
-                for registration in registrations.values()
+                for registration_id, registration in registrations.items()
+                if registration_id != "E-EVT"
             )
         )
 
@@ -1301,7 +1324,7 @@ class StorySourceRegistrationTests(unittest.TestCase):
         event_two = story_module.encode_candidate_id("E-EVT", ["event-2"])
         window = {
             "source_domain": "campaign.semantic_events@LOCAL",
-            "semantic_contract_generation": 1,
+            "semantic_contract_generation": 2,
             "source_basis": {
                 "origin": "LOCAL",
                 "lane": "evt",
@@ -1338,7 +1361,7 @@ class StorySourceRegistrationTests(unittest.TestCase):
         with self.assertRaises(StoryContractError):
             story_module.validate_story_source_window(
                 "E-EVT",
-                window | {"semantic_contract_generation": 2},
+                window | {"semantic_contract_generation": 1},
             )
         with self.assertRaises(StoryContractError):
             story_module.validate_story_source_window(
@@ -1385,6 +1408,9 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
         "NARRATIVE": ("N-EVT", [source_id]),
     }[layer]
     candidate_id = story_module.encode_candidate_id(registration_id, candidate_identity)
+    semantic_contract_generation = story_module.story_source_registration(
+        registration_id
+    ).semantic_contract_generation
     payload: dict[str, object]
     if layer == "TRANSCRIPT":
         payload = {
@@ -1433,7 +1459,7 @@ def _registered_story_unit(layer: str) -> dict[str, object]:
         "projection_basis": [
             {
                 "source_domain": source_domain,
-                "semantic_contract_generation": 1,
+                "semantic_contract_generation": semantic_contract_generation,
                 "candidate_ids": [candidate_id],
             }
         ],
@@ -1760,8 +1786,10 @@ class StoryT0MaterializationTests(unittest.TestCase):
                 "factor_id": "goal.protect_the_gate",
                 "t0_value": {"goal": "protect the gate"},
                 "provenance_refs": ["goal.protect_the_gate"],
+                "availability_classification": "PROTECTED",
             }
         )
+        native_basis["factors"][0]["availability_classification"] = "PROTECTED"  # type: ignore[index]
         event["semantic_delta"]["actor_decision_basis"] = native_basis  # type: ignore[index]
         event["semantic_delta"]["factual_changes"] = [  # type: ignore[index]
             {"summary": "The guard opened the gate."}
@@ -1769,11 +1797,31 @@ class StoryT0MaterializationTests(unittest.TestCase):
         event["semantic_delta"]["private_offscreen"] = True  # type: ignore[index]
         repository = _StoryPublicationRepository([event])
         actor_path = route_native_record("world.actor", ("actor.guard",)).relative_path
+        knowledge_path = route_native_record(
+            "world.knowledge", ("actor.guard", "fact.party_authorized")
+        ).relative_path
+        disclosure_path = route_native_record(
+            "runtime.disclosure", ("player.aria", "fact.party_authorized")
+        ).relative_path
         repository.records[actor_path] = {
             "kind": "world.actor",
             "id": "actor.guard",
             "campaign_id": "campaign.main",
             "state": {"current_goal": "epistemic.rejected"},
+        }
+        repository.records[knowledge_path] = {
+            "kind": "world.knowledge",
+            "knower_id": "actor.guard",
+            "fact_id": "fact.party_authorized",
+            "campaign_id": "campaign.main",
+            "stance": "epistemic.rejected",
+        }
+        repository.records[disclosure_path] = {
+            "kind": "runtime.disclosure",
+            "player_id": "player.aria",
+            "fact_id": "fact.party_authorized",
+            "campaign_id": "campaign.main",
+            "status": "DISCLOSED",
         }
         transport = _StoryPublicationTransport(repository)
         host = compose_runtime_host(
@@ -1795,6 +1843,13 @@ class StoryT0MaterializationTests(unittest.TestCase):
         state = repository.records[state_path]
         self.assertEqual(stored["payload"]["t0_basis"], native_basis)
         self.assertEqual(
+            [
+                factor["availability_classification"]
+                for factor in stored["payload"]["t0_basis"]["factors"]
+            ],
+            ["PROTECTED", "PROTECTED"],
+        )
+        self.assertEqual(
             stored["availability"],
             {
                 "requires_story_refs": [],
@@ -1807,6 +1862,12 @@ class StoryT0MaterializationTests(unittest.TestCase):
             },
         )
         self.assertEqual(state["story_id_allocator_high_water"], 1)
+        self.assertEqual(
+            state["coverage_by_source_domain"]["campaign.semantic_events@LOCAL"][
+                "semantic_contract_generation"
+            ],
+            2,
+        )
         self.assertEqual(
             state["coverage_by_source_domain"]["campaign.semantic_events@LOCAL"][
                 "terminal_coverage"
@@ -1834,6 +1895,8 @@ class StoryT0MaterializationTests(unittest.TestCase):
             actor_path,
             repository.read_paths,
         )
+        self.assertNotIn(knowledge_path, repository.read_paths)
+        self.assertNotIn(disclosure_path, repository.read_paths)
 
     def test_story_publication_retry_uses_current_coverage_without_a_second_write(
         self,
@@ -1861,6 +1924,11 @@ class StoryT0MaterializationTests(unittest.TestCase):
 
         self.assertEqual(first.status, "PUBLISHED")
         self.assertEqual(recovered.status, "ALREADY_COVERED")
+        stored = repository.records[story_record_path("STORY", "E000001").as_posix()]
+        self.assertEqual(
+            stored["payload"]["t0_basis"]["factors"][0]["availability_classification"],
+            "PUBLIC",
+        )
         self.assertEqual(
             len([name for name, _ in transport.calls if name == "update_ref"]), 1
         )
@@ -1901,6 +1969,207 @@ class StoryT0MaterializationTests(unittest.TestCase):
                 "coverage_by_source_domain"
             ]["campaign.semantic_events@LOCAL"]["terminal_coverage"]["through"],
             "evt:2",
+        )
+
+    def test_exact_older_page_is_already_covered_after_coverage_advances(self) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        second = _semantic_event() | {
+            "event_id": "event-2",
+            "semantic_order": 2,
+            "semantic_delta": {"gate": "secured"},
+        }
+        repository = _StoryPublicationRepository([first, second])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        first_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=None, max_items=1
+        )
+        first_result = story_module.publish_story_event_window(
+            host,
+            publication=first_page,
+            event_bodies={"event-1": "The guard considered the party."},
+        )
+        second_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=1, max_items=1
+        )
+        second_result = story_module.publish_story_event_window(
+            host,
+            publication=second_page,
+            event_bodies={"event-2": "The gate was secured."},
+        )
+        calls_before_retry = len(transport.calls)
+
+        retry = story_module.publish_story_event_window(
+            host,
+            publication=first_page,
+            event_bodies={"event-1": "The guard considered the party."},
+        )
+
+        self.assertEqual(first_result.status, "PUBLISHED")
+        self.assertEqual(second_result.status, "PUBLISHED")
+        self.assertEqual(retry.status, "ALREADY_COVERED")
+        self.assertEqual(retry.story_ids, ())
+        self.assertEqual(len(transport.calls), calls_before_retry)
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 2
+        )
+        self.assertEqual(
+            repository.records["STORY/EVENTS/PROJECTION_STATE.yaml"][
+                "story_id_allocator_high_water"
+            ],
+            2,
+        )
+
+    def test_mutated_exact_older_page_is_rejected_after_coverage_advances(self) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        second = _semantic_event() | {
+            "event_id": "event-2",
+            "semantic_order": 2,
+            "semantic_delta": {"gate": "secured"},
+        }
+        repository = _StoryPublicationRepository([first, second])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        first_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=None, max_items=1
+        )
+        story_module.publish_story_event_window(
+            host,
+            publication=first_page,
+            event_bodies={"event-1": "The guard considered the party."},
+        )
+        second_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=1, max_items=1
+        )
+        story_module.publish_story_event_window(
+            host,
+            publication=second_page,
+            event_bodies={"event-2": "The gate was secured."},
+        )
+        first_path = route_native_record(
+            "runtime.semantic_event", ("event-1",)
+        ).relative_path
+        changed_first = deepcopy(first)
+        changed_first["semantic_delta"]["actor_decision_basis"]["factors"][0][  # type: ignore[index]
+            "t0_value"
+        ] = "epistemic.rejected"
+        repository.records[first_path] = changed_first
+        repository.parents["f" * 40] = repository.revision
+        repository.revision = "f" * 40
+        repository.tree_sha = "1" * 40
+        repository.trees[repository.revision] = repository.tree_sha
+        updates_before_retry = len(
+            [name for name, _ in transport.calls if name == "update_ref"]
+        )
+        trees_before_retry = len(
+            [name for name, _ in transport.calls if name == "create_tree"]
+        )
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=first_page,
+                event_bodies={"event-1": "The guard considered the party."},
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]),
+            updates_before_retry,
+        )
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "create_tree"]),
+            trees_before_retry,
+        )
+        self.assertEqual(repository.records[first_path], changed_first)
+
+    def test_incompatible_coverage_generation_cannot_acknowledge_an_older_page(
+        self,
+    ) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        repository = _StoryPublicationRepository([first])
+        repository.records["STORY/EVENTS/PROJECTION_STATE.yaml"] = {
+            "schema_version": story_module.STORY_PROJECTION_STATE_SCHEMA_VERSION,
+            "layer": "EVENTS",
+            "story_id_allocator_high_water": 1,
+            "coverage_by_source_domain": {
+                "campaign.semantic_events@LOCAL": {
+                    "semantic_contract_generation": 1,
+                    "terminal_coverage": {
+                        "kind": "CONTIGUOUS",
+                        "through": "evt:2",
+                    },
+                }
+            },
+            "lookup": {},
+        }
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        first_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=None, max_items=1
+        )
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=first_page,
+                event_bodies={"event-1": "The guard considered the party."},
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]), 0
+        )
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "create_tree"]), 0
+        )
+
+    def test_uncovered_gap_page_is_not_acknowledged_as_covered(self) -> None:
+        first = _event_with_t0("event-1", ordinal=1)
+        second = _semantic_event() | {
+            "event_id": "event-2",
+            "semantic_order": 2,
+            "semantic_delta": {"gate": "secured"},
+        }
+        third = _semantic_event() | {
+            "event_id": "event-3",
+            "semantic_order": 3,
+            "semantic_delta": {"gate": "warded"},
+        }
+        repository = _StoryPublicationRepository([first, second, third])
+        transport = _StoryPublicationTransport(repository)
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport(), transport
+        )
+        first_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=None, max_items=1
+        )
+        gap_page = history_module.read_native_history_window(
+            host, lower_exclusive_ordinal=2, max_items=1
+        )
+        story_module.publish_story_event_window(
+            host,
+            publication=first_page,
+            event_bodies={"event-1": "The guard considered the party."},
+        )
+        updates_before_gap = len(
+            [name for name, _ in transport.calls if name == "update_ref"]
+        )
+
+        with self.assertRaises(StoryContractError):
+            story_module.publish_story_event_window(
+                host,
+                publication=gap_page,
+                event_bodies={"event-3": "The gate was warded."},
+            )
+
+        self.assertEqual(
+            len([name for name, _ in transport.calls if name == "update_ref"]),
+            updates_before_gap,
         )
 
     def test_changed_native_event_basis_rejects_stale_story_window(self) -> None:
@@ -2037,7 +2306,7 @@ class StoryT0MaterializationTests(unittest.TestCase):
         covered = deepcopy(state)
         covered["coverage_by_source_domain"] = {
             "campaign.semantic_events@LOCAL": {
-                "semantic_contract_generation": 1,
+                "semantic_contract_generation": 2,
                 "terminal_coverage": {"kind": "CONTIGUOUS", "through": "evt:2"},
             }
         }
@@ -2050,7 +2319,7 @@ class StoryT0MaterializationTests(unittest.TestCase):
             | {
                 "coverage_by_source_domain": {
                     "campaign.semantic_events@LOCAL": {
-                        "semantic_contract_generation": 2,
+                        "semantic_contract_generation": 1,
                         "terminal_coverage": {
                             "kind": "CONTIGUOUS",
                             "through": "evt:2",
@@ -2062,7 +2331,7 @@ class StoryT0MaterializationTests(unittest.TestCase):
             | {
                 "coverage_by_source_domain": {
                     "campaign.semantic_events@LOCAL": {
-                        "semantic_contract_generation": 1,
+                        "semantic_contract_generation": 2,
                         "terminal_coverage": {
                             "kind": "CONTIGUOUS",
                             "through": "evt:02",
@@ -2330,12 +2599,12 @@ class DramaturgRebaseTests(unittest.TestCase):
 
 
 class StorySchemaTests(unittest.TestCase):
-    def test_owner_local_schemas_are_strict_and_use_initial_local_versions(
+    def test_owner_local_schemas_are_strict_and_use_current_local_versions(
         self,
     ) -> None:
-        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.8")
         self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.4")
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -2401,10 +2670,10 @@ class StorySchemaTests(unittest.TestCase):
             "native-history-publication.schema.json": 1,
             "story-projection-state.schema.json": 4,
             "story-transcript-unit.schema.json": 2,
-            "story-event-unit.schema.json": 3,
+            "story-event-unit.schema.json": 4,
             "story-narrative-unit.schema.json": 3,
             "story-mechanics-unit.schema.json": 4,
-            "semantic-event-t0-basis.schema.json": 1,
+            "semantic-event-t0-basis.schema.json": 2,
             "commentator-snapshot.schema.json": 1,
             "commentator-control-projection.schema.json": 1,
             "commentator-view.schema.json": 1,
@@ -2494,7 +2763,7 @@ class StorySchemaTests(unittest.TestCase):
         candidate_id = story_module.encode_candidate_id("E-EVT", ["event-1"])
         value = {
             "source_domain": "campaign.semantic_events@LOCAL",
-            "semantic_contract_generation": 1,
+            "semantic_contract_generation": 2,
             "source_basis": {
                 "origin": "LOCAL",
                 "lane": "evt",
@@ -2555,7 +2824,7 @@ class StorySchemaTests(unittest.TestCase):
         sparse_state = state | {
             "coverage_by_source_domain": {
                 "campaign.semantic_events@LOCAL": {
-                    "semantic_contract_generation": 1,
+                    "semantic_contract_generation": 2,
                     "terminal_coverage": {
                         "kind": "SPARSE",
                         "evidence": {"uncovered": ["evt:2"]},
@@ -2567,8 +2836,8 @@ class StorySchemaTests(unittest.TestCase):
 
 
 class SchemaVersionTests(unittest.TestCase):
-    def test_history_module_starts_at_its_first_material_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.4")
+    def test_history_module_version_tracks_its_material_revision(self) -> None:
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
@@ -2588,7 +2857,7 @@ class SchemaVersionTests(unittest.TestCase):
         self.assertEqual(
             validate_semantic_event_draft(_semantic_event())["schema_version"], 1
         )
-        self.assertEqual(validate_t0_basis(_t0_basis())["schema_version"], 1)
+        self.assertEqual(validate_t0_basis(_t0_basis())["schema_version"], 2)
         self.assertEqual(
             validate_story_projection(_story_projection(), layer="EVENTS")[
                 "schema_version"
@@ -2609,39 +2878,52 @@ class SchemaVersionTests(unittest.TestCase):
 
         invalid_versions: tuple[object, ...] = (1.0, True, "1", None, 2)
         for version in invalid_versions:
-            with self.subTest(version=version, ingress="semantic event"):
-                with self.assertRaises(HistoryContractError):
-                    validate_semantic_event_draft(
-                        {**_semantic_event(), "schema_version": version}
-                    )
-            with self.subTest(version=version, ingress="T0 basis"):
-                with self.assertRaises(HistoryContractError):
-                    validate_t0_basis({**_t0_basis(), "schema_version": version})
-            with self.subTest(version=version, ingress="Story projection"):
-                with self.assertRaises(StoryContractError):
-                    validate_story_projection(
-                        {**_story_projection(), "schema_version": version},
-                        layer="EVENTS",
-                    )
-            with self.subTest(version=version, ingress="Commentator control"):
-                with self.assertRaises(CommentatorContractError):
-                    build_commentator_snapshot(
-                        [_story_projection()],
-                        {
-                            "schema_version": version,
-                            "controls": {"player.aria": {"story_ids": []}},
-                        },
-                    )
-            with self.subTest(version=version, ingress="Commentator snapshot"):
-                with self.assertRaises(CommentatorContractError):
-                    filter_commentator_request(
-                        {**valid_snapshot, "schema_version": version}, "player.aria"
-                    )
-            with self.subTest(version=version, ingress="Dramaturg horizon"):
-                with self.assertRaises(DramaturgContractError):
-                    validate_dramaturg_horizon(
-                        {**valid_horizon, "schema_version": version}
-                    )
+            with (
+                self.subTest(version=version, ingress="semantic event"),
+                self.assertRaises(HistoryContractError),
+            ):
+                validate_semantic_event_draft(
+                    {**_semantic_event(), "schema_version": version}
+                )
+            with (
+                self.subTest(version=version, ingress="Story projection"),
+                self.assertRaises(StoryContractError),
+            ):
+                validate_story_projection(
+                    {**_story_projection(), "schema_version": version},
+                    layer="EVENTS",
+                )
+        for version in (1.0, True, "2", None, 1, 3):
+            with (
+                self.subTest(version=version, ingress="T0 basis"),
+                self.assertRaises(HistoryContractError),
+            ):
+                validate_t0_basis({**_t0_basis(), "schema_version": version})
+
+        for version in invalid_versions:
+            with (
+                self.subTest(version=version, ingress="Commentator control"),
+                self.assertRaises(CommentatorContractError),
+            ):
+                build_commentator_snapshot(
+                    [_story_projection()],
+                    {
+                        "schema_version": version,
+                        "controls": {"player.aria": {"story_ids": []}},
+                    },
+                )
+            with (
+                self.subTest(version=version, ingress="Commentator snapshot"),
+                self.assertRaises(CommentatorContractError),
+            ):
+                filter_commentator_request(
+                    {**valid_snapshot, "schema_version": version}, "player.aria"
+                )
+            with (
+                self.subTest(version=version, ingress="Dramaturg horizon"),
+                self.assertRaises(DramaturgContractError),
+            ):
+                validate_dramaturg_horizon({**valid_horizon, "schema_version": version})
 
     def test_draft_2020_12_structural_validation_accepts_numeric_one_point_zero(
         self,
@@ -2686,6 +2968,16 @@ class SchemaVersionTests(unittest.TestCase):
             "t0_value"
         )
         self.assertFalse(validator.is_valid(invalid))
+        missing_protection = deepcopy(event)
+        missing_protection["semantic_delta"]["actor_decision_basis"]["factors"][0].pop(  # type: ignore[index]
+            "availability_classification"
+        )
+        self.assertFalse(validator.is_valid(missing_protection))
+        unsupported_protection = deepcopy(event)
+        unsupported_protection["semantic_delta"]["actor_decision_basis"]["factors"][0][  # type: ignore[index]
+            "availability_classification"
+        ] = "PRIVATE"
+        self.assertFalse(validator.is_valid(unsupported_protection))
 
     def test_owner_local_validators_reject_noninteger_schema_version_one_point_zero(
         self,
@@ -2727,11 +3019,13 @@ class SchemaVersionTests(unittest.TestCase):
                 }
             )
 
-    def test_owner_local_validators_reject_unsupported_schema_version_two(self) -> None:
+    def test_owner_local_validators_reject_unsupported_event_and_t0_versions(
+        self,
+    ) -> None:
         with self.assertRaises(HistoryContractError):
             validate_semantic_event_draft({**_semantic_event(), "schema_version": 2})
         with self.assertRaises(HistoryContractError):
-            validate_t0_basis({**_t0_basis(), "schema_version": 2})
+            validate_t0_basis({**_t0_basis(), "schema_version": 3})
         with self.assertRaises(StoryContractError):
             validate_story_projection(
                 {**_story_projection(), "schema_version": 2}, layer="EVENTS"

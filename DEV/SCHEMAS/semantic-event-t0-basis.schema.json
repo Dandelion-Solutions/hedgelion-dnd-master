@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": ["schema_version", "event_id", "actor_id", "factors"],
   "properties": {
-    "schema_version": {"type": "integer", "const": 1},
+    "schema_version": {"type": "integer", "const": 2},
     "event_id": {"type": "string", "minLength": 1},
     "actor_id": {"type": "string", "minLength": 1},
     "factors": {
@@ -15,12 +15,13 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["owner_family", "factor_id", "t0_value", "provenance_refs"],
+        "required": ["owner_family", "factor_id", "t0_value", "provenance_refs", "availability_classification"],
         "properties": {
           "owner_family": {"type": "string", "minLength": 1},
           "factor_id": {"type": "string", "minLength": 1},
           "t0_value": {},
-          "provenance_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+          "provenance_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "availability_classification": {"enum": ["PUBLIC", "PROTECTED"]}
         }
       }
     }

@@ -8,7 +8,7 @@
       "type": "object",
       "required": ["payload"],
       "properties": {
-        "schema_version": {"const": 3},
+        "schema_version": {"const": 4},
         "story_id": {
           "$ref": "story-unit-common.schema.json#/$defs/eventStoryRef"
         },
