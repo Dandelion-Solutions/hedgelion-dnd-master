@@ -296,16 +296,17 @@ SYSTEM_IMPACT:
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
 - T04B-P0R: AUTHORIZED W02 read-only recovery prerequisite; T04B remains paused until P0R independent PASS/read-back.
 
-P0R_IMPLEMENTATION_STATE: production implementation, focused verification, and independent review are complete locally; exact-clean full DEV verification and coherent publication/read-back remain.
-P0R_OUTPUT: pending final clean exact-tree verification/publication — `W02_POSTPUBLICATION_REVALIDATION_READY`.
+P0R_IMPLEMENTATION_STATE: production implementation, focused verification, independent review, and clean exact-tree full DEV verification are complete locally; coherent publication/read-back remains.
+P0R_OUTPUT: pending coherent publication/read-back — `W02_POSTPUBLICATION_REVALIDATION_READY`.
 P0R_INDEPENDENT_REVIEW: **PASS** — repository-identity mismatch negative witness was added and scoped re-review marked it ADDRESSED.
 P0R_FOCUSED_VERIFICATION: RD06 + RuntimeHost + LiveComposedCampaignAbsorptionDelta + publication-ref-fence suites: 112 passed; maintenance audit: PASS.
+P0R_CLEAN_EXACT_FULL_DEV: 1281 passed, 5 skipped, 4 known S6D failures outside P0R scope; clean exact maintenance audit PASS; version census zero unclassified hits; clean package provenance PASS.
 P0R_RUFF: all changed-range format checks PASS. Whole-file Ruff reports only three findings confirmed present at implementation BASE_SHA: RD06 unused `promise`, `publication.py` NaN self-compare and nested immutable-campaign identity condition. Whole-file formatting remains non-clean in pre-existing sections of `publication.py` and RD06 tests; P0R changed ranges are formatted.
-P0R_DIRTY_WORKTREE_FULL_DEV: prior run before the final reviewer-only test addition: 1277 passed, 5 skipped, 6 failed. Four failures are known S6D cases; the other two were traced to local `.entire/`/`DEV/.lavish/` version-census contamination and expected dirty-worktree package provenance. The clean exact-tree run remains pending.
+P0R_DIRTY_WORKTREE_FULL_DEV: diagnostic run before the final reviewer-only test addition: 1277 passed, 5 skipped, 6 failed. Four failures are known S6D cases; the other two were traced to local `.entire/`/`DEV/.lavish/` version-census contamination and expected dirty-worktree package provenance, and disappeared in the clean exact-tree run.
 P0R_VERSION_IMPACT: `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9 -> 1.0.10`; schema, campaign-contract, storage/catalog/engine generations, migration, and dual-read: NONE.
 
-NEXT_EXACT_TASK: run clean exact-tree full DEV verification on the reviewed P0R commit, then publish/read back and record `W02_POSTPUBLICATION_REVALIDATION_READY`. Resume the preserved T04B candidate only after that PASS/read-back. T07D remains independently eligible.
-KNOWN_BLOCKERS: clean exact P0R full DEV verification and publication/read-back pending; four S6D catalog/contract tests remain outside P0R scope. T04B/T05C remain blocked until their gates. Wave 04 is not complete; Wave 05 is not authorized.
+NEXT_EXACT_TASK: publish/read back the reviewed P0R checkpoint and record `W02_POSTPUBLICATION_REVALIDATION_READY`. Resume the preserved T04B candidate only after that PASS/read-back. T07D remains independently eligible.
+KNOWN_BLOCKERS: P0R remote publication/read-back pending; four S6D catalog/contract tests remain outside P0R scope. T04B/T05C remain blocked until their gates. Wave 04 is not complete; Wave 05 is not authorized.
 UNPUBLISHED_WORK: the P0R code/test/control checkpoint remains local-only pending clean exact-tree verification and remote publication; its authorized files are the publication and RuntimeHost owners/tests plus these progress/status cursors. The T04B candidate remains preserved in the local P0R-exclusion stash and must not enter P0R. The unrelated untracked `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
