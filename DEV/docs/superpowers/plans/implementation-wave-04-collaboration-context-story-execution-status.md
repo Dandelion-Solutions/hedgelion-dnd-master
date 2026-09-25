@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T04B-P0/P1 PASS / PUBLISHED / READ BACK; T04B AUTHORIZED NEXT
-CURRENT_TASK: W04.T04B same-closure authority/Collaboration publication and recovery; T07D remains independent; T05C waits for T04B PASS
+STATUS: SENIOR_REVIEW_REQUIRED — T04B post-publication recovery evidence
+CURRENT_TASK: W04.T04B paused at the new recovery-evidence System-Impact gate; T07D remains independent; T05C remains blocked
 LAST_COMPLETED_TASK: W04.T04B-P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; W04.T04B-P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: a792d14894dcc3ba123191883e5647cc06808e85 — P1 implementation independently reviewed PASS and freshly read back from remote
+LAST_SAFE_SHA: 250120a7b7c886ffb7174990a77fa4cd02c149d — P1 acceptance/status checkpoint freshly fetched before unpublished T04B candidate edits
 
 
 ## T04B Senior System-Impact resolution
@@ -106,6 +106,18 @@ VERIFICATION:
 The full-suite failures are recorded, not repaired under P0’s write scope. The P0 code commit contains only its two authorized W02 production files and two primary test files.
 
 Exact failing node IDs (correcting the hyphenated shorthand above): `test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`; `test_real_activity_action_request_binding_matrix_and_freeze`; `test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`; `test_route_rows_ids_and_embedding_edges_are_machine_verified`.
+
+## T04B post-publication recovery System-Impact stop — 2026-09-25
+
+IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-impact-brief.md`
+
+The uncommitted T04B candidate validates same-process recovery when the exact W03 composed-absorption object is retained. That result and the W02 exact-outcome proof are ephemeral. After process loss, a newly reconstructed reconciliation has no composed result, and current W02 exposes no read-only owner path to reissue exact closure/ancestry evidence without another publication. The accepted crash-after-publication/recovery case is therefore not complete.
+
+Disposition: stop T04B production changes pending Senior resolution of whether/how W02 may reissue owner-authenticated evidence for an existing commit through bounded current-ref/closure/ancestry reads. Do not persist a receipt or broaden W02/RuntimeHost within the current T04B write scope without that ruling. T05C remains blocked; T07D remains independent.
+
+Evidence: RD12 focused suite: 142 passed; worker combined relevant suites: 404 passed; independent review: TARGETED_REPAIR_REQUIRED for post-process-loss recovery evidence; maintenance audit was blocked by the ignored `GAME/TOOLS/__pycache__` release-boundary finding. P0/P1 remain independently accepted/published; no T04B checkpoint exists.
+
+VERSION_IMPACT: T04B candidate Collaboration module `1.0.18 -> 1.0.19` if baseline remains current; schema v3 and other namespaces unchanged. This candidate impact is provisional while the gate is open.
 
 Fresh CLS reconciliation: audit head 3bd4ffb1db0451d0079568d4ad58709372ef3a4d, feature head 2c5dc9f6a4f1c8a23b070e7520e7854491af5282. Current WP12-05 remains synthetic/normalized and REAL wire normalization remains WP12-08-owned. No public semantic reopen/write or current private WP12-05 repair is required; future REAL integration must consume T0 schema 2 / EVENTS schema 4 / E-EVT generation 2.
 
@@ -240,10 +252,11 @@ SYSTEM_IMPACT:
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
 - T04B-P0: PASS / independently reviewed / published / read back;
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
+- T04B: SENIOR_REVIEW_REQUIRED for post-process-loss owner-evidence reissuance; see the linked Implementation Impact Brief.
 
-NEXT_EXACT_TASK: W04.T04B may resume the same-closure authority/Collaboration publication and recovery task under the stable plan. T07D remains independently eligible. Do not start T05C until T04B independent PASS.
-KNOWN_BLOCKERS: Four S6D catalog/contract tests fail in the clean exact P0/P1 full-suite runs and remain outside their write scopes. T04B is the next authorized task; T05C waits for T04B PASS. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for P0/P1 source. Local `stash@{0}` remains as a duplicate recovery backup of the already-published P1 candidate and was not used by either checkpoint.
+NEXT_EXACT_TASK: Senior disposition of the T04B recovery-evidence boundary; resume T04B only within that ruling. T07D remains independently eligible. T05C waits for T04B independent PASS.
+KNOWN_BLOCKERS: T04B process-loss recovery evidence reissuance unresolved; four S6D catalog/contract tests fail outside P0/P1/T04B scope. T05C waits for T04B PASS. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: T04B candidate remains uncommitted/unpublished in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`. P0/P1 source is published/read back; local `stash@{0}` is a duplicate P1 backup.
 
 ## Historical evidence retention
 
