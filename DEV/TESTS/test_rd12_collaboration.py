@@ -8,12 +8,14 @@ from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
+from unittest import mock
 
 import yaml
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
 from GAME.TOOLS import collaboration as collaboration_module
+from GAME.TOOLS import live_state as live_state_module
 from GAME.TOOLS.access_control import (
     AccessControlContractError,
     PlayerRecord,
@@ -58,13 +60,16 @@ from GAME.TOOLS.live_state import (
     LiveClaim,
     LiveEnvelope,
     LiveLifecycle,
+    LiveNativeStatePack,
     LiveRouting,
     build_live_ref,
     build_live_route,
     derive_live_epoch_id,
+    freeze_campaign_absorption_delta,
 )
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
+from GAME.TOOLS.recovery_roots import OperationalRoot, OperationalRootHandoff
 from GAME.TOOLS.runtime_execution import NativeOrderingEvidence
 from GAME.TOOLS.runtime_host import compose_runtime_host
 
@@ -183,6 +188,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
         self.pin_calls = 0
         self._snapshots: dict[str, tuple[str, dict[str, object]]] = {}
         self._parents: dict[str, str] = {}
+        self._changed_paths: dict[str, tuple[str, ...]] = {}
         super().__init__(clause)
         self.records["MANIFEST.yaml"] = {
             "campaign_id": CAMPAIGN_ID,
@@ -229,6 +235,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
             "revision": revision,
             "tree_sha": snapshot[0],
             "parent_revision": self._parents.get(revision),
+            "changed_paths": list(self._changed_paths.get(revision, ())),
         }
 
     def compare_ancestry(
@@ -247,6 +254,19 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
     def capture_current_revision(self, *, parent_revision: str | None = None) -> None:
         if parent_revision is not None:
             self._parents[self.current_revision] = parent_revision
+        parent = self._parents.get(self.current_revision)
+        previous = self._snapshots.get(parent) if parent is not None else None
+        if previous is None:
+            previous = self._snapshots.get(self.current_revision)
+        prior_records = {} if previous is None else previous[1]
+        missing = object()
+        self._changed_paths[self.current_revision] = tuple(
+            sorted(
+                path
+                for path in set(prior_records) | set(self.records)
+                if prior_records.get(path, missing) != self.records.get(path, missing)
+            )
+        )
         self._snapshots[self.current_revision] = (
             self.current_tree,
             deepcopy(self.records),
@@ -261,6 +281,7 @@ class CampaignPublicationTransport:
         self.calls: list[tuple[str, object]] = []
         self.response_status = "accepted"
         self.next_head = "d" * 40
+        self.reconciliation_head: str | None = None
         self.ref_revision_override: str | None = None
         self._pending_operations: dict[str, object | None] = {}
 
@@ -303,6 +324,13 @@ class CampaignPublicationTransport:
                 else:
                     self.repository.records[path] = _thaw_for_test(payload)
             self.repository.capture_current_revision(parent_revision=parent_revision)
+            if (
+                self.response_status == "indeterminate"
+                and self.reconciliation_head is not None
+                and self.reconciliation_head != new_commit_sha
+            ):
+                self.repository.current_revision = self.reconciliation_head
+                self.repository.capture_current_revision(parent_revision=new_commit_sha)
         return {
             "status": self.response_status,
             "head_sha": (
@@ -404,8 +432,15 @@ def _creator_provenance():
 
 
 class LiveFixture:
-    def __init__(self, route: LiveRouting | None = None) -> None:
+    def __init__(
+        self,
+        route: LiveRouting | None = None,
+        *,
+        source_packs: Mapping[tuple[str, str, str], LiveNativeStatePack] | None = None,
+    ) -> None:
         self.route = route
+        self.source_packs = dict(source_packs or {})
+        self.source_pack_reads: list[tuple[str, str, str]] = []
 
     def read_selected_live(
         self, campaign_id: str, pinned: PinnedCampaign
@@ -416,6 +451,51 @@ class LiveFixture:
             if self.route is not None
             else LiveRouting(campaign_id=campaign_id, entries=())
         )
+
+    def read_selected_live_source(
+        self, route: LiveRouting, source: LiveEnvelope
+    ) -> LiveNativeStatePack:
+        if route.campaign_id != source.campaign_id:
+            raise KeyError("foreign selected LIVE source")
+        self.source_pack_reads.append(source.source_key)
+        return self.source_packs[source.source_key]
+
+
+class TransitioningLiveFixture:
+    """Host fixture that follows the exact pre/post campaign route revisions."""
+
+    def __init__(
+        self,
+        *,
+        predecessor_revision: str,
+        predecessor_route: LiveRouting,
+        final_route: LiveRouting,
+        source_packs: Mapping[tuple[str, str, str], LiveNativeStatePack] | None = None,
+    ) -> None:
+        self.predecessor_revision = predecessor_revision
+        self.predecessor_route = predecessor_route
+        self.final_route = final_route
+        self.source_packs = dict(source_packs or {})
+        self.source_pack_reads: list[tuple[str, str, str]] = []
+
+    def read_selected_live(
+        self, campaign_id: str, pinned: PinnedCampaign
+    ) -> LiveRouting:
+        if campaign_id != self.predecessor_route.campaign_id:
+            raise KeyError(campaign_id)
+        return (
+            self.predecessor_route
+            if pinned.revision == self.predecessor_revision
+            else self.final_route
+        )
+
+    def read_selected_live_source(
+        self, route: LiveRouting, source: LiveEnvelope
+    ) -> LiveNativeStatePack:
+        if route.campaign_id != source.campaign_id:
+            raise KeyError("foreign selected LIVE source")
+        self.source_pack_reads.append(source.source_key)
+        return self.source_packs[source.source_key]
 
 
 def _player_record(
@@ -799,6 +879,115 @@ def _live_source(scene_id: str) -> LiveEnvelope:
         source_revision=LIVE_SOURCE_REVISION,
         claims=claims,
     )
+
+
+def _live_absorption_delta(
+    route: LiveRouting,
+    *,
+    expected_campaign_revision: str,
+    proposed_campaign_revision: str,
+    event_index: Mapping[str, object] | None = None,
+    operational_roots: Mapping[str, object] | None = None,
+) -> live_state_module.FrozenCampaignAbsorptionDelta:
+    sources = tuple(route.entries)
+    packed_states: dict[tuple[str, str, str], LiveNativeStatePack] = {}
+    for source in sources:
+        actor_id = f"actor-{source.scene_id}"
+        native_owner_states: dict[str, object] = {
+            "world.actor": {
+                "schema_version": 1,
+                "kind": "world.actor",
+                "id": actor_id,
+                "state": {"concept": source.scene_id},
+            }
+        }
+        if event_index is not None:
+            event_id = f"live-event-{source.scene_id}"
+            event_record = {
+                "schema_version": 1,
+                "event_id": event_id,
+                "semantic_order": 1,
+                "kind": "event.action",
+                "provenance_refs": ["source.live"],
+                "semantic_delta": {"scene_id": source.scene_id},
+            }
+            native_owner_states["runtime.semantic_event"] = {
+                "complete": True,
+                "upper_ordinal": 1,
+                "entries": [
+                    {
+                        "ordinal": 1,
+                        "event_id": event_id,
+                        "event_record": event_record,
+                    }
+                ],
+            }
+        unresolved_work: dict[str, object] = {}
+        if operational_roots is not None:
+            absorbed_root = OperationalRoot(
+                CAMPAIGN_ID,
+                "runtime.procedure",
+                "procedure-live-absorption",
+                route_native_record(
+                    "runtime.procedure", ("procedure-live-absorption",)
+                ).relative_path,
+            )
+            handoff = OperationalRootHandoff(
+                campaign_id=CAMPAIGN_ID,
+                source_scope="LIVE",
+                source_revision=source.source_revision,
+                roots=(absorbed_root,),
+                source_key=source.source_key,
+                source_lifecycle=source.status.value,
+                complete=True,
+            )
+            unresolved_work = {
+                "runtime.procedure": {
+                    "schema_version": 1,
+                    "kind": "runtime.procedure",
+                    "id": "procedure-live-absorption",
+                    "state": {"concept": source.scene_id},
+                },
+                "runtime.operational_root_handoff": handoff.to_dict(),
+            }
+        packed_states[source.source_key] = LiveNativeStatePack(
+            source_key=source.source_key,
+            source_revision=source.source_revision,
+            next_source_native_creation_ordinal=source.next_source_native_creation_ordinal,
+            source_native_ids=source.source_native_ids,
+            native_owner_states=native_owner_states,
+            provenance={},
+            privacy={},
+            chronology={},
+            unresolved_work=unresolved_work,
+        )
+    campaign_state = _access_campaign(revision=expected_campaign_revision)
+    if event_index is not None:
+        campaign_state["path_snapshots"] = {
+            "INDEX/EVENT_INDEX.yaml": deepcopy(dict(event_index))
+        }
+    if operational_roots is not None:
+        path_snapshots = dict(campaign_state.get("path_snapshots", {}))
+        path_snapshots["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"] = deepcopy(
+            dict(operational_roots)
+        )
+        campaign_state["path_snapshots"] = path_snapshots
+    return freeze_campaign_absorption_delta(
+        sources,
+        route=route,
+        packed_states=packed_states,
+        campaign_state=campaign_state,
+        expected_campaign_revision=expected_campaign_revision,
+        proposed_campaign_revision=proposed_campaign_revision,
+    )
+
+
+def _live_delta_packs(
+    delta: live_state_module.FrozenCampaignAbsorptionDelta,
+) -> dict[tuple[str, str, str], LiveNativeStatePack]:
+    return {
+        attempt.source_key: attempt.packed_state for attempt in delta.source_attempts
+    }
 
 
 def _accepted_live_close_ack(attempt: object) -> dict[str, object]:
@@ -3039,7 +3228,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.18")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.19")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -3814,6 +4003,1045 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             progress,
         )
 
+    def _publish_live_closure_for_cold_recovery(self):
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            predecessor_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        delta = _live_absorption_delta(
+            predecessor_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=predecessor_route,
+            final_route=delta.final_route,
+            source_packs=_live_delta_packs(delta),
+        )
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=delta,
+        )
+        if published.composed_absorption is None:
+            raise AssertionError("LIVE publication did not retain composed evidence")
+        return (
+            repository,
+            transport,
+            transition,
+            predecessor_route,
+            delta,
+            live,
+            published,
+        )
+
+    def test_live_w03_delta_is_joined_once_and_bound_to_actual_w02_revision(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+            source_packs=_live_delta_packs(absorption_delta),
+        )
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        composed = published.composed_absorption
+        self.assertIsNotNone(composed)
+        assert composed is not None
+        self.assertEqual(composed.status.value, "ACCEPTED")
+        self.assertEqual(composed.delta.proposed_campaign_revision, transport.next_head)
+        self.assertEqual(
+            dict(composed.delta.path_operations), dict(absorption_delta.path_operations)
+        )
+        self.assertEqual(
+            dict(composed.delta.operation_digests),
+            dict(absorption_delta.operation_digests),
+        )
+        for attempt in composed.delta.source_attempts:
+            self.assertIs(
+                live_state_module.validate_accepted_absorption_evidence(
+                    composed,
+                    source_key=attempt.source_key,
+                    source_revision=attempt.source_revision,
+                    selected_route=composed.delta.selected_route,
+                ),
+                composed,
+            )
+
+        operations = next(
+            payload for name, payload in transport.calls if name == "create_tree"
+        )
+        self.assertIsInstance(operations, Mapping)
+        self.assertEqual(
+            {name for name, _payload in transport.calls}.intersection(
+                {"create_tree", "create_commit", "update_ref"}
+            ),
+            {"create_tree", "create_commit", "update_ref"},
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "create_tree"]),
+            1,
+        )
+        self.assertEqual(
+            len(
+                [name for name, _payload in transport.calls if name == "create_commit"]
+            ),
+            1,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+        for path, payload in absorption_delta.path_operations.items():
+            self.assertEqual(operations[path], payload)
+        self.assertIn(
+            route_native_record("world.player", ("player-bob",)).relative_path,
+            operations,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation",
+                (reconciliation.obligations[0].obligation_id,),
+            ).relative_path,
+            operations,
+        )
+        self.assertEqual(
+            repository.records["STATE/RUNTIME/LIVE_ROUTING.yaml"],
+            absorption_delta.final_route.as_mapping(),
+        )
+        duplicate = collaboration_module.publish_collaboration_access_reconciliation(
+            published,
+            host=_host(
+                repository,
+                transport,
+                LiveFixture(absorption_delta.final_route),
+            ),
+        )
+        self.assertEqual(duplicate, published)
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+
+    def test_live_event_index_snapshot_is_reused_for_actual_revision_binding(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        previous_event_id = "campaign-event-before-live"
+        previous_event_path = route_native_record(
+            "runtime.semantic_event", (previous_event_id,)
+        ).relative_path
+        event_index: dict[str, object] = {
+            "schema_version": 1,
+            "entity_type": "EVENT",
+            "complete": True,
+            "upper_ordinal": 1,
+            "entries": [
+                {
+                    "ordinal": 1,
+                    "event_id": previous_event_id,
+                    "path": previous_event_path,
+                }
+            ],
+        }
+        repository.records["INDEX/EVENT_INDEX.yaml"] = event_index
+        repository.capture_current_revision()
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+            event_index=event_index,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+            source_packs=_live_delta_packs(absorption_delta),
+        )
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        assert published.composed_absorption is not None
+        rebound = published.composed_absorption.delta
+        self.assertEqual(rebound.proposed_campaign_revision, transport.next_head)
+        self.assertEqual(
+            dict(rebound.operation_digests), dict(absorption_delta.operation_digests)
+        )
+        event_id = "live-event-scene-live-0"
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        operations = next(
+            payload for name, payload in transport.calls if name == "create_tree"
+        )
+        self.assertEqual(operations[event_path]["event_id"], event_id)
+        self.assertEqual(operations["INDEX/EVENT_INDEX.yaml"]["upper_ordinal"], 2)
+        cold = replace(
+            published,
+            transition=replace(published.transition),
+            composed_absorption=None,
+        )
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            cold, host=_host(repository, transport, live)
+        )
+        self.assertIsNotNone(recovered.composed_absorption)
+        assert recovered.composed_absorption is not None
+        self.assertEqual(
+            recovered.composed_absorption.delta.path_operations[
+                "INDEX/EVENT_INDEX.yaml"
+            ]["upper_ordinal"],
+            2,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+
+    def test_live_operational_root_snapshot_is_reused_for_actual_revision_binding(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        retained_root = OperationalRoot(
+            CAMPAIGN_ID,
+            "runtime.command",
+            "command-unaffected",
+            route_native_record(
+                "runtime.command", ("command-unaffected",)
+            ).relative_path,
+        )
+        root_page: dict[str, object] = {
+            "schema_version": 1,
+            "campaign_id": CAMPAIGN_ID,
+            "complete": True,
+            "roots": [retained_root.to_dict()],
+        }
+        root_path = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
+        repository.records[root_path] = root_page
+        repository.capture_current_revision()
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+            operational_roots=root_page,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+            source_packs=_live_delta_packs(absorption_delta),
+        )
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        assert published.composed_absorption is not None
+        self.assertEqual(
+            published.composed_absorption.delta.proposed_campaign_revision,
+            transport.next_head,
+        )
+        self.assertEqual(
+            dict(published.composed_absorption.delta.operation_digests),
+            dict(absorption_delta.operation_digests),
+        )
+        expected_roots = tuple(
+            sorted(
+                (
+                    retained_root.to_dict(),
+                    OperationalRoot(
+                        CAMPAIGN_ID,
+                        "runtime.procedure",
+                        "procedure-live-absorption",
+                        route_native_record(
+                            "runtime.procedure",
+                            ("procedure-live-absorption",),
+                        ).relative_path,
+                    ).to_dict(),
+                ),
+                key=lambda item: (item["owner_kind"], item["owner_id"]),
+            )
+        )
+        self.assertEqual(repository.records[root_path]["roots"], list(expected_roots))
+        cold = replace(
+            published,
+            transition=replace(published.transition),
+            composed_absorption=None,
+        )
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            cold, host=_host(repository, transport, live)
+        )
+        self.assertIsNotNone(recovered.composed_absorption)
+        assert recovered.composed_absorption is not None
+        self.assertEqual(
+            _thaw_for_test(
+                recovered.composed_absorption.delta.path_operations[root_path]["roots"]
+            ),
+            list(expected_roots),
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+
+    def test_live_transition_without_owner_issued_p1_delta_fails_before_w02(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "create_tree"], []
+        )
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"], []
+        )
+        self.assertEqual(transport.calls, [])
+
+    def test_non_owner_p1_delta_is_rejected_before_w02_dispatch(self) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        issued_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        reconstructed_delta = live_state_module.FrozenCampaignAbsorptionDelta(
+            campaign_id=issued_delta.campaign_id,
+            expected_campaign_revision=issued_delta.expected_campaign_revision,
+            proposed_campaign_revision=issued_delta.proposed_campaign_revision,
+            selected_route=issued_delta.selected_route,
+            final_route=issued_delta.final_route,
+            source_attempts=issued_delta.source_attempts,
+            path_operations=_thaw_for_test(issued_delta.path_operations),
+            operation_digests=dict(issued_delta.operation_digests),
+            delta_digest=issued_delta.delta_digest,
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+                absorption_delta=reconstructed_delta,
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "create_tree"], []
+        )
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"], []
+        )
+        self.assertEqual(transport.calls, [])
+
+    def test_tampered_owner_p1_delta_is_rejected_before_w02_dispatch(self) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        tampered_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        object.__setattr__(tampered_delta, "delta_digest", "0" * 64)
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+                absorption_delta=tampered_delta,
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "create_tree"], []
+        )
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"], []
+        )
+        self.assertEqual(transport.calls, [])
+
+    def test_closed_unabsorbed_only_state_is_not_live_absorption_recovery(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        self._advance_deactivation_after_state(
+            repository,
+            transport,
+            obsolete_ids=tuple(
+                obligation.obligation_id for obligation in reconciliation.obligations
+            ),
+            cleanup_ids=tuple(
+                obligation.obligation_id for obligation in reconciliation.obligations
+            ),
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"],
+            ["update_ref"],
+        )
+
+    def test_indeterminate_w02_acknowledgement_uses_same_closure_without_second_write(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        transport.response_status = "indeterminate"
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+        )
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        assert published.composed_absorption is not None
+        self.assertEqual(
+            published.composed_absorption.delta.proposed_campaign_revision,
+            transport.next_head,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "read_ref"]),
+            2,
+        )
+        self.assertEqual(
+            repository.records["STATE/RUNTIME/LIVE_ROUTING.yaml"],
+            published.composed_absorption.delta.final_route.as_mapping(),
+        )
+
+    def test_ancestor_w02_reconciliation_binds_p1_to_intended_not_observed_head(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        transport.response_status = "indeterminate"
+        transport.reconciliation_head = "9" * 40
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+        )
+
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        assert published.composed_absorption is not None
+        self.assertEqual(
+            published.composed_absorption.delta.proposed_campaign_revision,
+            transport.next_head,
+        )
+        self.assertEqual(
+            published.composed_absorption.accepted_campaign_revision,
+            transport.reconciliation_head,
+        )
+        self.assertNotEqual(
+            published.composed_absorption.delta.proposed_campaign_revision,
+            published.composed_absorption.accepted_campaign_revision,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+
+    def test_w02_conflict_never_becomes_p1_accepted_absorption(self) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        transport.ref_revision_override = "f" * 40
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+                absorption_delta=absorption_delta,
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"], []
+        )
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "create_commit"],
+            [],
+        )
+
+    def test_conflict_retry_rebases_same_final_live_sources_without_reclosing(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        original_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        transport.ref_revision_override = "f" * 40
+
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+                absorption_delta=original_delta,
+            )
+
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "create_commit"],
+            [],
+        )
+        self.assertEqual(
+            [name for name, _payload in transport.calls if name == "update_ref"], []
+        )
+
+        unrelated_path = route_native_record(
+            "world.scene", ("scene-unrelated",)
+        ).relative_path
+        external_revision = "e" * 40
+        transport.ref_revision_override = None
+        transport.next_head = external_revision
+        transport._pending_operations = {
+            unrelated_path: {
+                "schema_version": 1,
+                "kind": "world.scene",
+                "id": "scene-unrelated",
+                "state": {"marker": "disjoint"},
+            }
+        }
+        transport.update_ref("campaign/frostfall", external_revision, force=False)
+        transport.calls.clear()
+        retry_proposed_revision = "9" * 40
+        current_campaign = _access_campaign(revision=external_revision)
+        retry_plan = freeze_multi_live_forward_plan(
+            closed_route,
+            current_campaign=current_campaign,
+            expected_campaign_revision=external_revision,
+            proposed_campaign_revision=retry_proposed_revision,
+            proposed_source_revisions={
+                source.source_key: source.source_revision
+                for source in closed_route.entries
+            },
+        )
+        retry_progress = advance_multi_live_freeze(retry_plan)
+        forward = publish_forward_transition(
+            retry_plan,
+            retry_progress,
+            current_campaign_revision=external_revision,
+            campaign_state=current_campaign,
+        )
+        proposed_campaign = deepcopy(dict(forward.campaign_state))
+        proposed_campaign.pop("access_transition", None)
+        proposed_campaign.pop("live_routing", None)
+        player_path = route_native_record("world.player", ("player-bob",)).relative_path
+        current_player = deepcopy(repository.records[player_path])
+        proposed_player = deepcopy(current_player)
+        proposed_player["status"] = "inactive"
+        proposed_player["deactivated_by"] = "self"
+        principal = _bob_principal()
+        resolution = resolve_player(
+            principal,
+            _route(),
+            lambda player_id: repository.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ],
+            campaign_id=CAMPAIGN_ID,
+        )
+        retry_transition = freeze_player_access_transition(
+            principal,
+            resolution,
+            operation="deactivate_self",
+            current_player=current_player,
+            proposed_player=proposed_player,
+            current_campaign=current_campaign,
+            proposed_campaign=proposed_campaign,
+            expected_campaign_revision=external_revision,
+            proposed_campaign_revision=retry_proposed_revision,
+            current_live_route=closed_route,
+            proposed_live_route=forward.route,
+        )
+        retry_reconciliation = (
+            collaboration_module.reconcile_collaboration_for_player_access_transition(
+                retry_transition,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+            )
+        )
+        retry_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=external_revision,
+            proposed_campaign_revision=retry_proposed_revision,
+        )
+        transport.next_head = "a" * 40
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            retry_reconciliation,
+            host=_host(
+                repository,
+                transport,
+                TransitioningLiveFixture(
+                    predecessor_revision=external_revision,
+                    predecessor_route=closed_route,
+                    final_route=retry_delta.final_route,
+                ),
+            ),
+            live_forward_plan=retry_plan,
+            live_freeze_progress=retry_progress,
+            absorption_delta=retry_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        assert published.composed_absorption is not None
+        self.assertEqual(
+            tuple(
+                (attempt.source_key, attempt.source_revision)
+                for attempt in published.composed_absorption.delta.source_attempts
+            ),
+            tuple(
+                (attempt.source_key, attempt.source_revision)
+                for attempt in original_delta.source_attempts
+            ),
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+
+    def test_live_process_loss_rederives_p1_and_revalidates_exact_final_route(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        live = TransitioningLiveFixture(
+            predecessor_revision=transition.expected_campaign_revision,
+            predecessor_route=closed_route,
+            final_route=absorption_delta.final_route,
+            source_packs=_live_delta_packs(absorption_delta),
+        )
+        published = collaboration_module.publish_collaboration_access_reconciliation(
+            reconciliation,
+            host=_host(repository, transport, live),
+            live_forward_plan=plan,
+            live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
+        )
+
+        self.assertIsNotNone(published.composed_absorption)
+        cold_reconciliation = replace(
+            published,
+            transition=replace(published.transition),
+            composed_absorption=None,
+        )
+        recovered_after_process_loss = (
+            collaboration_module.recover_collaboration_access_reconciliation(
+                cold_reconciliation,
+                host=_host(repository, transport, live),
+            )
+        )
+        self.assertIsNotNone(recovered_after_process_loss.composed_absorption)
+        assert recovered_after_process_loss.composed_absorption is not None
+        self.assertEqual(
+            recovered_after_process_loss.composed_absorption.delta,
+            published.composed_absorption.delta,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "create_tree"]),
+            1,
+        )
+        self.assertEqual(
+            len(
+                [name for name, _payload in transport.calls if name == "create_commit"]
+            ),
+            1,
+        )
+        self.assertEqual(
+            set(live.source_pack_reads),
+            set(transition.impact.live_source_keys),
+        )
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                published,
+                host=_host(repository, transport, LiveFixture(closed_route)),
+            )
+        assert published.composed_absorption is not None
+        reconstructed_composed = replace(published.composed_absorption)
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                replace(published, composed_absorption=reconstructed_composed),
+                host=_host(
+                    repository,
+                    transport,
+                    LiveFixture(absorption_delta.final_route),
+                ),
+            )
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            published,
+            host=_host(
+                repository,
+                transport,
+                LiveFixture(absorption_delta.final_route),
+            ),
+        )
+
+        self.assertEqual(recovered, published)
+        self.assertEqual(
+            len([name for name, _payload in transport.calls if name == "update_ref"]),
+            1,
+        )
+        actor_path = route_native_record(
+            "world.actor", ("actor-scene-live-0",)
+        ).relative_path
+        actor_after = deepcopy(repository.records[actor_path])
+        actor_after["state"]["concept"] = "tampered"  # type: ignore[index]
+        repository.records[actor_path] = actor_after
+        with self.assertRaises(CollaborationAdmissionError):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                published,
+                host=_host(
+                    repository,
+                    transport,
+                    LiveFixture(absorption_delta.final_route),
+                ),
+            )
+
+    def test_cold_p1_revalidation_accepts_compatible_disjoint_descendant(self) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            _predecessor_route,
+            delta,
+            live,
+            published,
+        ) = self._publish_live_closure_for_cold_recovery()
+        intended = published.transition.proposed_campaign_revision
+        descendant = "9" * 40
+        repository.current_revision = descendant
+        repository.current_tree = "f" * 40
+        repository.records["STATE/RUNTIME/P0R_DISJOINT.yaml"] = {
+            "kind": "runtime.p0r_disjoint",
+            "revision": 1,
+        }
+        repository.capture_current_revision(parent_revision=intended)
+        transport.calls.clear()
+        cold_reconciliation = replace(
+            published,
+            transition=replace(published.transition),
+            composed_absorption=None,
+        )
+
+        recovered = collaboration_module.recover_collaboration_access_reconciliation(
+            cold_reconciliation,
+            host=_host(repository, transport, live),
+        )
+
+        self.assertIsNotNone(recovered.composed_absorption)
+        assert recovered.composed_absorption is not None
+        self.assertEqual(recovered.composed_absorption.status.value, "ACCEPTED")
+        self.assertEqual(
+            recovered.composed_absorption.accepted_campaign_revision, descendant
+        )
+        self.assertEqual(
+            dict(recovered.composed_absorption.delta.path_operations),
+            dict(delta.path_operations),
+        )
+        writes = [
+            name
+            for name, _payload in transport.calls
+            if name in {"create_tree", "create_commit", "update_ref"}
+        ]
+        self.assertEqual(writes, [])
+        self.assertEqual(
+            set(live.source_pack_reads),
+            {attempt.source_key for attempt in delta.source_attempts},
+        )
+
+    def test_cold_p1_revalidation_rejects_overlapping_descendant_without_writes(
+        self,
+    ) -> None:
+        (
+            repository,
+            transport,
+            _transition,
+            _predecessor_route,
+            delta,
+            live,
+            published,
+        ) = self._publish_live_closure_for_cold_recovery()
+        intended = published.transition.proposed_campaign_revision
+        descendant = "9" * 40
+        overlapping_path = next(iter(delta.path_operations))
+        repository.current_revision = descendant
+        repository.current_tree = "f" * 40
+        repository.records[overlapping_path] = {
+            "kind": "runtime.p0r_overlap",
+            "revision": 2,
+        }
+        repository.capture_current_revision(parent_revision=intended)
+        transport.calls.clear()
+        cold_reconciliation = replace(
+            published,
+            transition=replace(published.transition),
+            composed_absorption=None,
+        )
+
+        with self.assertRaisesRegex(
+            CollaborationAdmissionError, "W02 did not revalidate"
+        ):
+            collaboration_module.recover_collaboration_access_reconciliation(
+                cold_reconciliation,
+                host=_host(repository, transport, live),
+            )
+
+        writes = [
+            name
+            for name, _payload in transport.calls
+            if name in {"create_tree", "create_commit", "update_ref"}
+        ]
+        self.assertEqual(writes, [])
+
+    def test_owner_operation_collision_fails_closed(self) -> None:
+        with self.assertRaisesRegex(CollaborationAdmissionError, "collision"):
+            collaboration_module._join_campaign_path_operations(
+                {"same/path.yaml": {"owner": "W03"}},
+                {"same/path.yaml": {"owner": "access"}},
+            )
+
+    def test_live_path_collision_fails_before_w02_dispatch(self) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            reconciliation,
+            _active_route,
+            closed_route,
+            plan,
+            progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        collision_path = next(iter(absorption_delta.path_operations))
+
+        with (
+            mock.patch.object(
+                collaboration_module,
+                "_build_access_reconciliation_operations",
+                return_value=(
+                    {collision_path: {"owner": "access/Collaboration"}},
+                    None,
+                    {},
+                ),
+            ),
+            self.assertRaisesRegex(CollaborationAdmissionError, "collision"),
+        ):
+            collaboration_module.publish_collaboration_access_reconciliation(
+                reconciliation,
+                host=_host(
+                    repository,
+                    transport,
+                    TransitioningLiveFixture(
+                        predecessor_revision=transition.expected_campaign_revision,
+                        predecessor_route=closed_route,
+                        final_route=absorption_delta.final_route,
+                    ),
+                ),
+                live_forward_plan=plan,
+                live_freeze_progress=progress,
+                absorption_delta=absorption_delta,
+            )
+
+        self.assertEqual(transport.calls, [])
+
     def test_access_and_obsolete_obligation_publish_in_one_campaign_closure(
         self,
     ) -> None:
@@ -3844,6 +5072,7 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         self.assertEqual(repository.records[alice_path]["collaboration_route_refs"], [])
         self.assertEqual(repository.records[obligation_path]["lifecycle"], "OBSOLETE")
         self.assertEqual(published.obligations[0].lifecycle, "OBSOLETE")
+        self.assertIsNone(published.composed_absorption)
         self.assertEqual(
             published.after_authority_view["campaign"]["revision"],
             repository.current_revision,
@@ -4191,7 +5420,7 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         (
             repository,
             transport,
-            _transition,
+            transition,
             reconciliation,
             active_route,
             closed_route,
@@ -4206,12 +5435,26 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             )
         )
 
-        host = _host(repository, transport, LiveFixture(closed_route))
+        absorption_delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        host = _host(
+            repository,
+            transport,
+            TransitioningLiveFixture(
+                predecessor_revision=transition.expected_campaign_revision,
+                predecessor_route=closed_route,
+                final_route=absorption_delta.final_route,
+            ),
+        )
         published = collaboration_module.publish_collaboration_access_reconciliation(
             reconciliation,
             host=host,
             live_forward_plan=plan,
             live_freeze_progress=progress,
+            absorption_delta=absorption_delta,
         )
 
         self.assertNotEqual(active_route.as_mapping(), closed_route.as_mapping())
@@ -4224,8 +5467,10 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         )
         self.assertNotIn("MANIFEST.yaml", operations)
         recovered = collaboration_module.recover_collaboration_access_reconciliation(
-            reconciliation,
-            host=_host(repository, transport, LiveFixture(closed_route)),
+            published,
+            host=_host(
+                repository, transport, LiveFixture(absorption_delta.final_route)
+            ),
         )
         self.assertEqual(recovered, published)
 
@@ -4235,17 +5480,31 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         (
             repository,
             transport,
-            _transition,
+            transition,
             reconciliation,
             _active,
             closed,
             _plan,
             _progress,
         ) = self._live_reconciliation(complete_forward=True)
+        absorption_delta = _live_absorption_delta(
+            closed,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
 
         published = collaboration_module.publish_collaboration_access_reconciliation(
             reconciliation,
-            host=_host(repository, transport, LiveFixture(closed)),
+            host=_host(
+                repository,
+                transport,
+                TransitioningLiveFixture(
+                    predecessor_revision=transition.expected_campaign_revision,
+                    predecessor_route=closed,
+                    final_route=absorption_delta.final_route,
+                ),
+            ),
+            absorption_delta=absorption_delta,
         )
 
         self.assertEqual(

@@ -7,7 +7,7 @@ BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 STATUS: EXECUTING — W04.T04B AUTHORIZED BY P0R PASS / READ-BACK
 CURRENT_TASK: resume W04.T04B same-closure recovery using the accepted P0R W02 read-only revalidation route
 LAST_COMPLETED_TASK: W04.T04B-P0R independent PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: 94bfddf475cd5ffa21049e6333188aa32126635b — P0R code/status checkpoint freshly read back
+LAST_SAFE_SHA: 29289288798fb4ba71578610cd83676b878510b6 — P0R acceptance and T04B-resume cursor freshly read back
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -26,6 +26,24 @@ VERSION IMPACT: expected `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9
 SCHEMA / CATALOG / CHECKPOINT IMPACT: NONE expected; no persisted receipt/evidence.
 MIGRATION IMPACT: NONE expected.
 CURRENTNESS RE-READ SET BEFORE WRITE: fresh remote HEAD, this cursor, stable Wave-04 plan, P0R Senior ruling, impact brief, current publication/RuntimeHost owners, W02 primary tests, Step-5.6 and versioning owners.
+
+## W04.T04B implementation impact envelope
+
+SPEC / APPROVED DESIGN: W04.T04B row in `implementation-wave-04-collaboration-context-story.md`, P0/P1 owner rulings, and P0R Senior ruling `DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-senior-ruling.md`.
+IMPLEMENTATION START HEAD: `29289288798fb4ba71578610cd83676b878510b6`.
+PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/collaboration.py`, `DEV/TESTS/test_rd12_collaboration.py`.
+
+EXPECTED OWNERS TO CHANGE: Collaboration's already-admitted consumer/recovery path only; W03 LIVE and access remain read-only producers; W02 P0R remains a read-only accepted service.
+EXPECTED CONSUMERS TO CHANGE: same-closure collaboration access publication/recovery tests; P0R and the existing P1 composed-absorption classifier are consumed unchanged.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: no new cross-owner API; T04B rederives the exact P1 delta and joined write set, calls existing `CampaignPublicationService.revalidate_published_owner_delta(...)`, then consumes the fresh W02 outcome through existing P1 classification.
+
+PROTECTED ARCHITECTURE INVARIANTS: one initial W02 transaction; cold recovery issues no create_tree/create_commit/update_ref, no LIVE CAS, no mechanics/RNG replay, and no acting-principal reauthorization; only exact P1 final route/source members and all joined W03 + PLAYER/access + Collaboration after-images are accepted; reconstructed P0/P1 values remain non-authoritative; no reverse access-control dependency.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD12 T04B recovery suite; RD09 composed-absorption consumer suite; P0R RuntimeHost/publication suites; zero-write and exact-source/currentness checks; clean full DEV and maintenance audit.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: W02 publication/runtime-host, W03 live_state/access_control, story/history, RepositoryPort protocol, persisted schemas, and Wave-05 shared surfaces.
+VERSION IMPACT: fresh baseline confirms Collaboration `1.0.18 -> 1.0.19` is the task's single module bump. P0R `publication.py 1.0.6` and `runtime_host.py 1.0.10` remain unchanged; no schema, campaign-contract, storage/catalog/engine generation, migration, or dual-read change.
+SCHEMA / CATALOG / CHECKPOINT IMPACT: NONE expected.
+MIGRATION IMPACT: NONE expected.
+CURRENTNESS RE-READ SET BEFORE WRITE: fresh `v1/engine-rearchitecture` HEAD `292892...`; current collaboration.py/test_rd12 candidate and neighboring T04B consumers; current P1/P0R accepted owners; stable Wave-04 plan; P0R ruling and Step-5.8 recovery law; module versioning owner.
 
 
 ## T04B Senior System-Impact resolution
@@ -307,9 +325,17 @@ P0R_RUFF: all changed-range format checks PASS. Whole-file Ruff reports only thr
 P0R_DIRTY_WORKTREE_FULL_DEV: diagnostic run before the final reviewer-only test addition: 1277 passed, 5 skipped, 6 failed. Four failures are known S6D cases; the other two were traced to local `.entire/`/`DEV/.lavish/` version-census contamination and expected dirty-worktree package provenance, and disappeared in the clean exact-tree run.
 P0R_VERSION_IMPACT: `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9 -> 1.0.10`; schema, campaign-contract, storage/catalog/engine generations, migration, and dual-read: NONE.
 
-NEXT_EXACT_TASK: continue the restored T04B candidate, rederive the exact P1 absorption delta and complete W03 + PLAYER/access + Collaboration operation set, call P0R, pass its fresh W02 outcome through the unchanged P1 classifier, validate final route/source/after-images, and recover with zero writes. T07D remains independently eligible.
-KNOWN_BLOCKERS: T04B remains unaccepted pending its recovery/verification/review checkpoint; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R scope. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: P0R code/test/control checkpoint is published/read back. The original T04B candidate is restored locally in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`, remains uncommitted/unpublished, and is preserved in its local stash backup; it was not included in P0R. `DEV/.lavish/` remains untouched.
+T04B_TDD_RED: cold recovery with `composed_absorption=None` failed at the missing owner-issued P1 evidence guard before P0R consumption; after the bounded P0R rederivation path, the current-closure case is GREEN.
+T04B_FOCUSED_VERIFICATION: RD12 collaboration suite 144 passed; combined RD12 + RD06 + RuntimeHost + W03 composed-absorption + ref-fence suites 256 passed.
+T04B_MAINTENANCE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS.
+T04B_RUFF: `ruff check` and `ruff format --check` for `collaboration.py` and `test_rd12_collaboration.py` — PASS.
+T04B_VERSION_IMPACT: Collaboration `1.0.18 -> 1.0.19`; schema v3 unchanged; P0R `publication.py 1.0.6` and `runtime_host.py 1.0.10` unchanged; campaign, storage/catalog/engine generations, migration and dual-read: NONE.
+T04B_INDEPENDENT_REVIEW: **PASS** for spec compliance and code quality; no findings; reviewer verified no new System-Impact trigger.
+T04B_CLEAN_FULL_DEV: pending clean exact-tree run; main-worktree `.entire/` and `DEV/.lavish/` contamination will be excluded.
+
+NEXT_EXACT_TASK: run clean exact-tree full DEV verification on the reviewed T04B checkpoint, then publish/read back `W04_AUTHORITY_COLLABORATION_RECONCILED`. T07D remains independent.
+KNOWN_BLOCKERS: T04B clean exact full DEV and publication/read-back pending; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: P0R code/test/control checkpoint is published/read back. T04B changes are local/uncommitted in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`; the original candidate remains preserved in its local stash backup and is excluded from P0R. `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
 

@@ -34,6 +34,13 @@ from .access_control import (
     resolve_player,
 )
 from .durability import RoutedSerializedOperation, route_serialized_operation
+from .live_state import (
+    ComposedCampaignAbsorptionPublication,
+    FrozenCampaignAbsorption,
+    FrozenCampaignAbsorptionDelta,
+    LiveEnvelope,
+    LiveNativeStatePack,
+)
 from .native_storage import (
     FAMILY_ROOTS,
     IdentityMismatch,
@@ -51,8 +58,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.18
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.18"
+# framework_module_version: 1.0.19
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -1204,6 +1211,7 @@ class CollaborationAccessReconciliation:
     after_authority_view: Mapping[str, object]
     affected_obligation_ids: tuple[tuple[str, int], ...]
     obligations: tuple[CollaborationObligation, ...]
+    composed_absorption: ComposedCampaignAbsorptionPublication | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.transition, FrozenAccessPolicyTransition):
@@ -1255,6 +1263,12 @@ class CollaborationAccessReconciliation:
         if actual_ids != tuple(normalized_ids):
             raise CollaborationAdmissionError(
                 "reconciled obligations do not match the affected identity set"
+            )
+        if self.composed_absorption is not None and not isinstance(
+            self.composed_absorption, ComposedCampaignAbsorptionPublication
+        ):
+            raise CollaborationAdmissionError(
+                "T04B result requires typed W03 composed absorption evidence"
             )
 
 
@@ -3141,6 +3155,7 @@ def _read_current_obligation(
     host: RuntimeHost,
     *,
     basis: _OperationBasis | None = None,
+    historical_predecessor: bool = False,
 ) -> tuple[_OperationBasis, CollaborationObligation]:
     """Load one obligation through its exact native route for recovery/closure."""
     _id(obligation_id, "current collaboration obligation_id")
@@ -3169,10 +3184,19 @@ def _read_current_obligation(
         raise CollaborationAdmissionError(
             "current collaboration obligation belongs to another campaign"
         )
-    obligation = CollaborationObligation._from_persisted_owner(
-        current, host=host, basis=basis
-    )
-    _revalidate_host_basis(host, basis)
+    if historical_predecessor:
+        obligation = CollaborationObligation._from_mapping(
+            current,
+            host=host,
+            basis=basis,
+            historical_owner=True,
+            revalidate_historical_currentness=False,
+        )
+    else:
+        obligation = CollaborationObligation._from_persisted_owner(
+            current, host=host, basis=basis
+        )
+        _revalidate_host_basis(host, basis)
     return basis, obligation
 
 
@@ -3374,6 +3398,7 @@ def _build_access_reconciliation_operations(
     host: RuntimeHost,
     *,
     basis: _OperationBasis,
+    historical_predecessor: bool = False,
 ) -> tuple[dict[str, object | None], RoutedSerializedOperation, dict[str, int]]:
     transition = reconciliation.transition
     current_manifest = _read_current_campaign_manifest(host, basis)
@@ -3396,7 +3421,10 @@ def _build_access_reconciliation_operations(
     route_removals: dict[str, set[tuple[str, int]]] = {}
     for candidate in reconciliation.obligations:
         _obligation_basis, current = _read_current_obligation(
-            candidate.obligation_id, host, basis=basis
+            candidate.obligation_id,
+            host,
+            basis=basis,
+            historical_predecessor=historical_predecessor,
         )
         if (
             current.campaign_id != transition.campaign_id
@@ -3486,7 +3514,8 @@ def _build_access_reconciliation_operations(
         raise CollaborationAdmissionError(
             "T04B routed PLAYER operation is missing from the campaign closure"
         )
-    _revalidate_host_basis(host, basis)
+    if not historical_predecessor:
+        _revalidate_host_basis(host, basis)
     return operations, routed_operation, owner_generations
 
 
@@ -3996,6 +4025,579 @@ def _validate_access_live_forward_boundary(
         )
 
 
+def _absorption_rebind_inputs(
+    delta: FrozenCampaignAbsorptionDelta,
+    host: RuntimeHost,
+    basis: _OperationBasis,
+    campaign_body: Mapping[str, object],
+) -> dict[str, object]:
+    """Retain exact pinned W03 source inputs for post-W02 revision binding."""
+    from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
+
+    state = deepcopy(dict(campaign_body))
+    snapshots: dict[str, dict[str, object]] = {}
+    for path in (
+        "INDEX/EVENT_INDEX.yaml",
+        OPERATIONAL_ROOT_MEMBERSHIP_PATH,
+    ):
+        if path not in delta.path_operations:
+            continue
+        try:
+            value = host._repository.read_exact_path(basis.pinned_campaign, path)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                f"exact W03 absorption predecessor path is unavailable: {path}"
+            ) from exc
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError(
+                f"exact W03 absorption predecessor path is not typed: {path}"
+            )
+        snapshots[path] = deepcopy(dict(value))
+    if snapshots:
+        state["path_snapshots"] = snapshots
+    return state
+
+
+def _freeze_absorption_delta_for_revision(
+    delta: FrozenCampaignAbsorptionDelta,
+    *,
+    campaign_body: Mapping[str, object],
+    proposed_campaign_revision: str,
+) -> FrozenCampaignAbsorptionDelta:
+    """Owner-reissue one exact W03 delta with a known W02 intended commit SHA."""
+    from .live_state import freeze_campaign_absorption_delta
+
+    selected_sources = {
+        source.source_key: source for source in delta.selected_route.entries
+    }
+    try:
+        sources = tuple(
+            selected_sources[attempt.source_key] for attempt in delta.source_attempts
+        )
+    except KeyError as exc:
+        raise CollaborationAdmissionError(
+            "W03 absorption delta lacks one exact selected source"
+        ) from exc
+    packed_states = {
+        attempt.source_key: attempt.packed_state for attempt in delta.source_attempts
+    }
+    try:
+        rebound = freeze_campaign_absorption_delta(
+            sources,
+            route=delta.selected_route,
+            packed_states=packed_states,
+            campaign_state=campaign_body,
+            expected_campaign_revision=delta.expected_campaign_revision,
+            proposed_campaign_revision=proposed_campaign_revision,
+        )
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "W03 absorption delta could not be rebound to the exact W02 commit"
+        ) from exc
+
+    def candidate_without_campaign_revision(
+        attempt: FrozenCampaignAbsorption,
+    ) -> tuple[dict[str, object], dict[str, object], object]:
+        candidate = _thaw(attempt.candidate_state)
+        if not isinstance(candidate, dict):
+            raise CollaborationAdmissionError(
+                "W03 source attempt campaign candidate is malformed"
+            )
+        closure = candidate.pop("accepted_live_absorption", None)
+        if not isinstance(closure, Mapping):
+            raise CollaborationAdmissionError(
+                "W03 source attempt lacks its accepted absorption closure"
+            )
+        normalized_closure = dict(closure)
+        campaign_revision = normalized_closure.pop("campaign_revision", None)
+        return candidate, normalized_closure, campaign_revision
+
+    attempts_unchanged = len(rebound.source_attempts) == len(delta.source_attempts)
+    if attempts_unchanged:
+        for previous, current in zip(
+            delta.source_attempts, rebound.source_attempts, strict=True
+        ):
+            previous_candidate, previous_closure, previous_revision = (
+                candidate_without_campaign_revision(previous)
+            )
+            current_candidate, current_closure, current_revision = (
+                candidate_without_campaign_revision(current)
+            )
+            if (
+                previous.source_key != current.source_key
+                or previous.source_revision != current.source_revision
+                or previous.packed_state != current.packed_state
+                or previous.successor_route.as_mapping()
+                != current.successor_route.as_mapping()
+                or previous_candidate != current_candidate
+                or previous_closure != current_closure
+                or previous_revision != delta.proposed_campaign_revision
+                or current_revision != proposed_campaign_revision
+            ):
+                attempts_unchanged = False
+                break
+    if (
+        rebound.campaign_id != delta.campaign_id
+        or rebound.expected_campaign_revision != delta.expected_campaign_revision
+        or rebound.selected_route.as_mapping() != delta.selected_route.as_mapping()
+        or rebound.final_route.as_mapping() != delta.final_route.as_mapping()
+        or tuple(
+            (attempt.source_key, attempt.source_revision)
+            for attempt in rebound.source_attempts
+        )
+        != tuple(
+            (attempt.source_key, attempt.source_revision)
+            for attempt in delta.source_attempts
+        )
+        or not attempts_unchanged
+        or _thaw(rebound.path_operations) != _thaw(delta.path_operations)
+        or dict(rebound.operation_digests) != dict(delta.operation_digests)
+    ):
+        raise CollaborationAdmissionError(
+            "W03 revision binding changed the exact submitted operation subset"
+        )
+    return rebound
+
+
+def _validate_prepublication_absorption_delta(
+    delta: FrozenCampaignAbsorptionDelta | None,
+    transition: FrozenAccessPolicyTransition,
+    host: RuntimeHost,
+    basis: _OperationBasis,
+    campaign_body: Mapping[str, object],
+) -> dict[str, object]:
+    """Require exact P1 issuance/basis before any W02 publication dispatch."""
+    from .live_state import (
+        FrozenCampaignAbsorptionDelta,
+        _is_owner_issued_absorption_delta,
+    )
+
+    if not isinstance(delta, FrozenCampaignAbsorptionDelta) or not (
+        _is_owner_issued_absorption_delta(delta)
+    ):
+        raise CollaborationAdmissionError(
+            "LIVE-sensitive T04B publication requires owner-issued P1 absorption delta"
+        )
+    if (
+        delta.campaign_id != transition.campaign_id
+        or delta.campaign_id != basis.pinned_campaign.campaign_id
+        or delta.expected_campaign_revision != transition.expected_campaign_revision
+        or delta.expected_campaign_revision != basis.pinned_campaign.revision
+        or delta.proposed_campaign_revision != transition.proposed_campaign_revision
+    ):
+        raise CollaborationAdmissionError(
+            "P1 absorption delta differs from the exact W03 access predecessor/proposal"
+        )
+    selected_route = basis.selected_live
+    if selected_route is None or (
+        delta.selected_route.as_mapping() != selected_route.as_mapping()
+    ):
+        raise CollaborationAdmissionError(
+            "P1 absorption delta differs from the exact selected LIVE route"
+        )
+    expected_source_keys = set(transition.impact.live_source_keys)
+    delta_source_keys = {attempt.source_key for attempt in delta.source_attempts}
+    if len(delta_source_keys) != len(delta.source_attempts) or (
+        delta_source_keys != expected_source_keys
+    ):
+        raise CollaborationAdmissionError(
+            "P1 absorption delta does not cover the exact W03 affected source set"
+        )
+    rebind_inputs = _absorption_rebind_inputs(delta, host, basis, campaign_body)
+    probe_revision = next(
+        candidate
+        for candidate in ("0" * 40, "1" * 40, "2" * 40)
+        if candidate
+        not in {
+            delta.expected_campaign_revision,
+            delta.proposed_campaign_revision,
+        }
+    )
+    probe = _freeze_absorption_delta_for_revision(
+        delta,
+        campaign_body=rebind_inputs,
+        proposed_campaign_revision=probe_revision,
+    )
+    if _thaw(probe.path_operations) != _thaw(delta.path_operations) or dict(
+        probe.operation_digests
+    ) != dict(delta.operation_digests):
+        raise CollaborationAdmissionError(
+            "P1 proposal revision changes the W03 operation subset before W02"
+        )
+    return rebind_inputs
+
+
+def _read_p1_recovery_source_pack(
+    host: RuntimeHost,
+    route: object,
+    source: LiveEnvelope,
+) -> LiveNativeStatePack:
+    """Read and type the exact final-source pack through the bound LIVE transport."""
+    from .live_state import LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION
+
+    reader = getattr(host._live_transport, "read_selected_live_source", None)
+    if not callable(reader):
+        raise CollaborationAdmissionError(
+            "exact W03 final-source pack reader is unavailable"
+        )
+    try:
+        value = reader(route, source)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "exact W03 final-source pack is unavailable"
+        ) from exc
+    if isinstance(value, LiveNativeStatePack):
+        pack = value
+    else:
+        if not isinstance(value, Mapping) or set(value) != {
+            "schema_version",
+            "kind",
+            "source_key",
+            "source_revision",
+            "next_source_native_creation_ordinal",
+            "source_native_ids",
+            "native_owner_states",
+            "provenance",
+            "privacy",
+            "chronology",
+            "unresolved_work",
+        }:
+            raise CollaborationAdmissionError(
+                "exact W03 final-source pack fields are not registered"
+            )
+        source_key = value.get("source_key")
+        if (
+            type(value.get("schema_version")) is not int
+            or value.get("schema_version") != LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION
+            or value.get("kind") != "runtime.live_native_state_pack"
+            or not isinstance(source_key, Sequence)
+            or isinstance(source_key, (str, bytes))
+            or tuple(source_key) != source.source_key
+            or value.get("source_revision") != source.source_revision
+        ):
+            raise CollaborationAdmissionError(
+                "exact W03 final-source pack identity or schema differs"
+            )
+        try:
+            pack = LiveNativeStatePack(
+                source_key=tuple(source_key),
+                source_revision=source.source_revision,
+                next_source_native_creation_ordinal=value.get(
+                    "next_source_native_creation_ordinal"
+                ),
+                source_native_ids=value.get("source_native_ids"),
+                native_owner_states=_mapping(
+                    value.get("native_owner_states"),
+                    "W03 final-source native owner states",
+                ),
+                provenance=_mapping(value.get("provenance"), "W03 source provenance"),
+                privacy=_mapping(value.get("privacy"), "W03 source privacy"),
+                chronology=_mapping(value.get("chronology"), "W03 source chronology"),
+                unresolved_work=_mapping(
+                    value.get("unresolved_work"), "W03 source unresolved work"
+                ),
+            )
+        except (TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "exact W03 final-source pack is malformed"
+            ) from exc
+    if (
+        pack.source_key != source.source_key
+        or pack.source_revision != source.source_revision
+    ):
+        raise CollaborationAdmissionError(
+            "exact W03 final-source pack belongs to another source revision"
+        )
+    return pack
+
+
+def _rederive_p1_absorption_delta_for_recovery(
+    reconciliation: CollaborationAccessReconciliation,
+    host: RuntimeHost,
+    basis: _OperationBasis,
+) -> tuple[FrozenCampaignAbsorptionDelta, _OperationBasis]:
+    """Rebuild W03 P1 from exact H route/sources after loss of ephemeral evidence."""
+    from .live_state import (
+        LiveLifecycle,
+        LiveRouting,
+        freeze_campaign_absorption_delta,
+        select_live_source,
+        validate_live_route_completeness,
+    )
+    from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
+
+    transition = reconciliation.transition
+    predecessor_basis = _access_predecessor_basis(transition, host, basis)
+    route_reader = getattr(host._live_transport, "read_selected_live", None)
+    if not callable(route_reader):
+        raise CollaborationAdmissionError(
+            "exact W03 predecessor LIVE route reader is unavailable"
+        )
+    try:
+        route_value = route_reader(
+            transition.campaign_id, predecessor_basis.pinned_campaign
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "exact W03 predecessor LIVE route is unavailable"
+        ) from exc
+    if not isinstance(route_value, LiveRouting):
+        raise CollaborationAdmissionError(
+            "exact W03 predecessor LIVE route is not owner-typed"
+        )
+    route = route_value
+    if route.campaign_id != transition.campaign_id:
+        raise CollaborationAdmissionError(
+            "exact W03 predecessor LIVE route belongs to another campaign"
+        )
+    try:
+        validate_live_route_completeness(route)
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "exact W03 predecessor LIVE route is incomplete"
+        ) from exc
+
+    expected_source_keys = tuple(transition.impact.live_source_keys)
+    if not expected_source_keys or len(expected_source_keys) != len(
+        set(expected_source_keys)
+    ):
+        raise CollaborationAdmissionError(
+            "T04B recovery lacks the exact unique W03 affected source set"
+        )
+    sources: list[LiveEnvelope] = []
+    packed_states: dict[tuple[str, str, str], LiveNativeStatePack] = {}
+    for source_key in sorted(expected_source_keys):
+        source = select_live_source(route, source_key)
+        if source is None or source.status not in {
+            LiveLifecycle.CLOSED,
+            LiveLifecycle.CLOSED_UNABSORBED,
+        }:
+            raise CollaborationAdmissionError(
+                "exact W03 predecessor lacks a final closed source member"
+            )
+        sources.append(source)
+        packed_states[source_key] = _read_p1_recovery_source_pack(host, route, source)
+
+    campaign_body = dict(_read_current_campaign_body(host, predecessor_basis))
+    needs_event_index = False
+    for pack in packed_states.values():
+        for bucket in (
+            pack.native_owner_states,
+            pack.provenance,
+            pack.privacy,
+            pack.chronology,
+            pack.unresolved_work,
+        ):
+            enrollment = bucket.get("runtime.semantic_event")
+            if not isinstance(enrollment, Mapping):
+                continue
+            entries = enrollment.get("entries")
+            if (
+                isinstance(entries, Sequence)
+                and not isinstance(entries, (str, bytes))
+                and entries
+            ):
+                needs_event_index = True
+                break
+        if needs_event_index:
+            break
+    needs_operational_roots = any(
+        "runtime.operational_root_handoff" in pack.unresolved_work
+        for pack in packed_states.values()
+    )
+    path_snapshots: dict[str, Mapping[str, object]] = {}
+    required_snapshot_paths: list[str] = []
+    if needs_event_index:
+        required_snapshot_paths.append("INDEX/EVENT_INDEX.yaml")
+    if needs_operational_roots:
+        required_snapshot_paths.append(OPERATIONAL_ROOT_MEMBERSHIP_PATH)
+    for path in required_snapshot_paths:
+        try:
+            value = host._repository.read_exact_path(
+                predecessor_basis.pinned_campaign, path
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                f"exact W03 predecessor path snapshot is unavailable: {path}"
+            ) from exc
+        path_snapshots[path] = deepcopy(
+            dict(_mapping(value, f"exact W03 predecessor {path}"))
+        )
+    campaign_body.pop("path_snapshots", None)
+    if path_snapshots:
+        campaign_body["path_snapshots"] = path_snapshots
+
+    try:
+        delta = freeze_campaign_absorption_delta(
+            tuple(sources),
+            route=route,
+            packed_states=packed_states,
+            campaign_state=campaign_body,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "exact W03 final sources did not rederive a complete P1 absorption delta"
+        ) from exc
+    if {attempt.source_key for attempt in delta.source_attempts} != set(
+        expected_source_keys
+    ):
+        raise CollaborationAdmissionError(
+            "rederived P1 delta does not cover the exact W03 affected source set"
+        )
+    return delta, predecessor_basis
+
+
+def _reissue_cold_composed_absorption(
+    reconciliation: CollaborationAccessReconciliation,
+    host: RuntimeHost,
+    basis: _OperationBasis,
+) -> ComposedCampaignAbsorptionPublication:
+    """Use P0R to reissue W02 proof for a freshly rederived complete T04B join."""
+    from .live_state import classify_composed_campaign_absorption
+
+    transition = reconciliation.transition
+    delta, predecessor_basis = _rederive_p1_absorption_delta_for_recovery(
+        reconciliation, host, basis
+    )
+    if (
+        delta.expected_campaign_revision != transition.expected_campaign_revision
+        or delta.proposed_campaign_revision != transition.proposed_campaign_revision
+    ):
+        raise CollaborationAdmissionError(
+            "rederived P1 proposal differs from the exact T04B H/C pair"
+        )
+    access_operations, routed_operation, owner_generations = (
+        _build_access_reconciliation_operations(
+            reconciliation,
+            host,
+            basis=predecessor_basis,
+            historical_predecessor=True,
+        )
+    )
+    joined_operations = _join_campaign_path_operations(
+        delta.path_operations, access_operations
+    )
+    try:
+        outcome = host.publication.revalidate_published_owner_delta(
+            routed_operation=routed_operation,
+            path_operations=joined_operations,
+            owner_generations=owner_generations,
+            publication_reason="collaboration-access-reconciliation",
+            expected_pinned_head_sha=transition.expected_campaign_revision,
+            intended_commit_sha=delta.proposed_campaign_revision,
+        )
+    except (AttributeError, TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "W02 cold publication revalidation failed closed"
+        ) from exc
+    if not isinstance(outcome, PublicationOutcome) or (
+        outcome.status is not PublicationStatus.ACCEPTED
+    ):
+        raise CollaborationAdmissionError(
+            "W02 did not revalidate the exact cold T04B campaign closure"
+        )
+    try:
+        composed = classify_composed_campaign_absorption(delta, outcome)
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "fresh W02 revalidation did not authorize exact W03 absorption"
+        ) from exc
+    if composed.status.value != "ACCEPTED":
+        raise CollaborationAdmissionError(
+            "W03 rejected the fresh W02 cold-recovery evidence"
+        )
+    return composed
+
+
+def _join_campaign_path_operations(
+    live_operations: Mapping[str, object | None],
+    access_collaboration_operations: Mapping[str, object | None],
+) -> dict[str, object | None]:
+    """Union disjoint owner write sets; any path overlap fails closed."""
+    joined: dict[str, object | None] = {}
+    for owner, operations in (
+        ("W03 LIVE", live_operations),
+        ("W03 access/Collaboration", access_collaboration_operations),
+    ):
+        if not isinstance(operations, Mapping):
+            raise CollaborationAdmissionError(f"{owner} operations are not a mapping")
+        for path, payload in operations.items():
+            if not isinstance(path, str) or not path:
+                raise CollaborationAdmissionError(f"{owner} operation path is invalid")
+            if path in joined:
+                raise CollaborationAdmissionError(
+                    f"campaign owner-operation path collision: {path}"
+                )
+            joined[path] = payload
+    return dict(sorted(joined.items()))
+
+
+def _validate_live_absorption_recovery(
+    reconciliation: CollaborationAccessReconciliation,
+    host: RuntimeHost,
+    basis: _OperationBasis,
+) -> None:
+    """Require exact W03 evidence, final route and W03 path after-images."""
+    from .live_state import validate_accepted_absorption_evidence
+
+    composed = reconciliation.composed_absorption
+    if composed is None:
+        raise CollaborationAdmissionError(
+            "CLOSED_UNABSORBED alone is not accepted campaign absorption evidence"
+        )
+    delta = composed.delta
+    transition = reconciliation.transition
+    if (
+        composed.status.value != "ACCEPTED"
+        or composed.accepted_campaign_revision != basis.pinned_campaign.revision
+        or delta.campaign_id != transition.campaign_id
+        or delta.expected_campaign_revision != transition.expected_campaign_revision
+        or {attempt.source_key for attempt in delta.source_attempts}
+        != set(transition.impact.live_source_keys)
+    ):
+        raise CollaborationAdmissionError(
+            "P1 composed evidence does not bind the exact current W03 boundary"
+        )
+    selected_route = basis.selected_live
+    if (
+        selected_route is None
+        or selected_route.as_mapping() != delta.final_route.as_mapping()
+    ):
+        raise CollaborationAdmissionError(
+            "current campaign route is not the exact P1 final route"
+        )
+    for attempt in delta.source_attempts:
+        try:
+            validated = validate_accepted_absorption_evidence(
+                composed,
+                source_key=attempt.source_key,
+                source_revision=attempt.source_revision,
+                selected_route=delta.selected_route,
+            )
+        except (TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "P1 composed evidence is not owner-issued for every exact source"
+            ) from exc
+        if validated is not composed:
+            raise CollaborationAdmissionError(
+                "P1 evidence validator returned another composed result"
+            )
+    for path, expected in delta.path_operations.items():
+        try:
+            actual = host._repository.read_exact_path(basis.pinned_campaign, path)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                f"exact current P1 owner after-image is unavailable: {path}"
+            ) from exc
+        if _thaw(actual) != _thaw(expected):
+            raise CollaborationAdmissionError(
+                f"current P1 owner after-image differs from accepted delta: {path}"
+            )
+    _revalidate_host_basis(host, basis)
+
+
 def _recover_access_reconciliation_after_publication(
     reconciliation: CollaborationAccessReconciliation,
     host: RuntimeHost,
@@ -4038,18 +4640,36 @@ def _recover_access_reconciliation_after_publication(
         raise CollaborationAdmissionError(
             "W03 after-authority campaign body is not the recovered current owner"
         ) from exc
-    _validate_access_live_forward_boundary(
-        rebased_transition,
-        basis,
-        campaign_body=current_campaign,
-        recovered=True,
-    )
+    if (
+        rebased_transition.live_rollover
+        is AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED
+    ):
+        if reconciliation.composed_absorption is None:
+            reconciliation = replace(
+                reconciliation,
+                composed_absorption=_reissue_cold_composed_absorption(
+                    reconciliation, host, basis
+                ),
+            )
+        _validate_live_absorption_recovery(reconciliation, host, basis)
+    else:
+        if reconciliation.composed_absorption is not None:
+            raise CollaborationAdmissionError(
+                "no-LIVE access recovery cannot consume composed absorption evidence"
+            )
+        _validate_access_live_forward_boundary(
+            rebased_transition,
+            basis,
+            campaign_body=current_campaign,
+            recovered=True,
+        )
     _rederive_access_reconciliation_effects(reconciliation, host, basis=basis)
     return CollaborationAccessReconciliation(
         transition=rebased_transition,
         after_authority_view=after_view,
         affected_obligation_ids=reconciliation.affected_obligation_ids,
         obligations=reconciliation.obligations,
+        composed_absorption=reconciliation.composed_absorption,
     )
 
 
@@ -4075,6 +4695,7 @@ def publish_collaboration_access_reconciliation(
     host: RuntimeHost,
     live_forward_plan: FrozenMultiLiveForwardPlan | None = None,
     live_freeze_progress: MultiLiveFreezeProgress | None = None,
+    absorption_delta: FrozenCampaignAbsorptionDelta | None = None,
 ) -> CollaborationAccessReconciliation:
     """Publish W03 access authority and T04A effects in one W02 campaign closure."""
     if not isinstance(reconciliation, CollaborationAccessReconciliation):
@@ -4082,6 +4703,10 @@ def publish_collaboration_access_reconciliation(
             "typed T04A reconciliation is required for same-closure publication"
         )
     basis = _operation_basis(host, None)
+    if reconciliation.composed_absorption is not None:
+        return _recover_access_reconciliation_after_publication(
+            reconciliation, host, basis=basis
+        )
     transition = reconciliation.transition
     if basis.pinned_campaign.revision != transition.expected_campaign_revision:
         return _recover_access_reconciliation_after_publication(
@@ -4101,9 +4726,31 @@ def publish_collaboration_access_reconciliation(
         live_forward_plan=live_forward_plan,
         live_freeze_progress=live_freeze_progress,
     )
+    live_sensitive = (
+        transition.live_rollover
+        is AdditiveAuthorizationDecision.LIVE_TRANSITION_REQUIRED
+    )
+    rebind_inputs: dict[str, object] | None = None
+    if live_sensitive:
+        rebind_inputs = _validate_prepublication_absorption_delta(
+            absorption_delta,
+            transition,
+            host,
+            basis,
+            current_campaign,
+        )
+    elif absorption_delta is not None:
+        raise CollaborationAdmissionError(
+            "no-LIVE access transition cannot consume a W03 absorption delta"
+        )
     operations, routed_operation, owner_generations = (
         _build_access_reconciliation_operations(canonical, host, basis=basis)
     )
+    if live_sensitive:
+        assert absorption_delta is not None
+        operations = _join_campaign_path_operations(
+            absorption_delta.path_operations, operations
+        )
     try:
         outcome = host.publication.publish_owner_delta(
             routed_operation=routed_operation,
@@ -4119,6 +4766,48 @@ def publish_collaboration_access_reconciliation(
     if not isinstance(outcome, PublicationOutcome):
         raise CollaborationAdmissionError(
             "same-closure publication result is not W02 owner-typed"
+        )
+    if live_sensitive:
+        if outcome.status is not PublicationStatus.ACCEPTED:
+            raise CollaborationAdmissionError(
+                "W02 did not accept/reconcile the complete LIVE/access/Collaboration closure"
+            )
+        assert absorption_delta is not None
+        assert rebind_inputs is not None
+        from .live_state import classify_composed_campaign_absorption
+        from .publication import validate_owner_issued_accepted_publication
+
+        try:
+            acceptance = validate_owner_issued_accepted_publication(
+                outcome,
+                campaign_id=absorption_delta.campaign_id,
+                expected_pinned_head_sha=(absorption_delta.expected_campaign_revision),
+                required_operation_digests=absorption_delta.operation_digests,
+            )
+            rebound_delta = _freeze_absorption_delta_for_revision(
+                absorption_delta,
+                campaign_body=rebind_inputs,
+                proposed_campaign_revision=acceptance.intended_commit_sha,
+            )
+            composed_absorption = classify_composed_campaign_absorption(
+                rebound_delta, outcome
+            )
+        except (TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "same-closure publication lacks matching W02/P1 owner evidence"
+            ) from exc
+        if composed_absorption.status.value != "ACCEPTED":
+            raise CollaborationAdmissionError(
+                "W03 did not accept the exact W02 campaign closure"
+            )
+        accepted_reconciliation = replace(
+            canonical,
+            composed_absorption=composed_absorption,
+        )
+        return _recover_access_reconciliation_after_publication(
+            accepted_reconciliation,
+            host,
+            basis=_operation_basis(host, None),
         )
     try:
         return _recover_access_reconciliation_after_publication(
