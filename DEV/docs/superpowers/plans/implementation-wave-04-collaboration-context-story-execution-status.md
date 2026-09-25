@@ -4,11 +4,26 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T07C PASS / T04B SYSTEM-IMPACT SENIOR GATE
-CURRENT_TASK: start W04.T07D; route T04B missing W03 absorption-to-W02 composition interface to Senior/design; T05C remains blocked
+STATUS: EXECUTING — T07C PASS / T04B-P1 W03 PREREQUISITE AUTHORIZED
+CURRENT_TASK: W04.T07D and W04.T04B-P1 may execute independently; T04B itself and T05C remain blocked until T04B-P1 independent PASS/read-back
 LAST_COMPLETED_TASK: W04.T07C independent PASS at df83bc7c37e1f1d0fdeebd583350bf377a4c8f37; T04A/T07B prior PASS retained
 LAST_SAFE_SHA: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37 — exact independently reviewed T07C state
 
+
+## T04B Senior System-Impact resolution
+
+RULING: DEV/docs/superpowers/design/2026-09-25-w04-t04b-irr-t04b-02-senior-ruling.md
+RULING_BASE: 186da5a81a9bc760ebf7cc87ccbf629cf0f630aa
+RULING_PUBLICATION: 2128702e1c1a257f825b4b5b2f70dd3dc3c33dd2
+PLAN_SYNC: bf7fdfcae43e43588d16579b50f92c2d6027d762
+
+IRR-T04B-02 disposition: **RESOLVED TO BOUNDED PREREQUISITE / NO PRODUCT-SEMANTIC CHANGE**.
+
+The accepted Step-5.8 law already requires exact final LIVE close -> absorption/final routing -> PLAYER/access + Collaboration transition -> one same-campaign W02 transaction. The missing W03 producer boundary is therefore an implementation-boundary prerequisite, not a new product/authority decision.
+
+W04.T04B-P1 is authorized with W03 LIVE semantic ownership. Its production write surface is limited to `GAME/TOOLS/live_state.py`; it must issue a complete owner-authenticated `FrozenCampaignAbsorptionDelta` plus group-aware accepted-publication evidence, using only existing admitted campaign owner paths. If any required packed/handoff contribution cannot be represented losslessly without a new persistent owner/schema or broader runtime/repository API, P1 stops at a new System-Impact event.
+
+T04B may resume immediately after P1 implementation + independent PASS/read-back. No PO or second Senior gate is required unless P1 discovers a new trigger. T04A/T07B/T07C remain closed; T07D is unaffected.
 
 ## Current independent review
 
@@ -18,7 +33,7 @@ REVIEWED_HEAD: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37
 | Task | Candidate / repair | Independent disposition |
 |---|---|---|
 | W04.T04A | accepted prior chain | Prior PASS preserved |
-| W04.T04B | 6bb8723ff5ef8f3508d53303ba614d42222393d3 | SYSTEM_IMPACT / SENIOR_DESIGN_REQUIRED; IRR-T04B-01 CLOSED, IRR-T04B-02 awaits missing W03 producer interface |
+| W04.T04B | 6bb8723ff5ef8f3508d53303ba614d42222393d3 | NOT ACCEPTED; IRR-T04B-01 CLOSED; IRR-T04B-02 Senior gate resolved to T04B-P1 W03 prerequisite |
 | W04.T07B | 55fb0a52a933b90a15ad2bc8b0af624635edaf26 | Prior PASS preserved |
 | W04.T07C | f114eb6a38c50d755cf71094d078c1d362f08bb4 | PASS / GO; IRR-T07C-01/02 CLOSED |
 
@@ -53,32 +68,33 @@ W04_AUTHORITY_COLLABORATION_RECONCILED: NOT ACCEPTED
 W04_STORY_SOURCE_CONTRACTS_READY: ACCEPTED
 W04_T0_STORY_READY: ACCEPTED
 
-No earlier accepted task is reopened. T07C implementation now materializes source-bound T0 EVENT records and layer-local coverage through exact W02 publication; its candidate is not accepted until independent PASS.
+No earlier accepted task is reopened. T07C is independently accepted. T04B-P1 is a new bounded W03-owned prerequisite for the still-unaccepted T04B candidate, not a Wave-03 reopen.
 
 
 ## Scheduling and gates
 
 ```text
-READY:
+READY IN PARALLEL:
   T07D
+  T04B-P1  (W03 LIVE semantic owner)
 
-SENIOR/DESIGN GATE:
-  T04B missing W03 absorption/final-routing -> W02 composition interface
+T04B-P1 implementation -> independent PASS/read-back
+  -> T04B resumes immediately
+  -> T04B repair/recovery verification -> independent PASS
 
-T04B Senior resolution -> bounded implementation/review -> independent PASS
-T05B + T02C + T04B -> T05C -> T06A -> T06B
+T05B + T02C + T04B PASS -> T05C -> T06A -> T06B
 
 T07C PASS -> T07D -> independent PASS -> T07E
 T07A..T07E -> T07-INTEGRATION independent review
 
-T04B + T02C + T07-INTEGRATION -> T08A
+T04B PASS + T02C + T07-INTEGRATION -> T08A
 T06B + accepted W03 currentness -> T08B
 T08A + T08B + T03A -> T08C
 T08C + all lane checkpoints -> Wave-04 FINAL_REVIEW
 mandatory Senior Wave-04 integration audit -> closure decision
 ```
 
-T07D may begin immediately under its existing task scope. T05C remains blocked by T04B. Do not let the T04B System-Impact gate stall the independent Story lane.
+T07D and T04B-P1 may begin independently. T04B itself remains stopped until exact P1 independent PASS/read-back; T05C remains blocked until T04B PASS.
 
 MAX_CONFIGURED_HDM_WORKERS: 5
 MAX_SAFE_WAVE04_PRODUCTION_WORKERS: 4
@@ -96,7 +112,7 @@ The unchanged W03 full-body guard consumes an independently read pinned MANIFEST
 
 T04A remains read-only preparation. T04B owns the physical same-campaign-closure authority/obligation/PLAYER-route publication and its complete recovery. Agreement between a carrier's affected IDs and its candidate tuple does not prove effect-set completeness. Repeated/advanced-head recovery must not skip omitted effects.
 
-T04B must preserve Step-5.8 revocation law. The current repair now proves the source close but still omits positive W03 absorption/final-routing from its W02 write-set and accepts CLOSED_UNABSORBED during recovery. Repair the positive same-boundary handoff without creating Collaboration-owned LIVE authority. If W03 exposes no admitted concrete write-set interface, stop at that exact System-Impact producer gap.
+T04B must preserve Step-5.8 revocation law. The current repair proves source close but omits positive W03 absorption/final-routing from its W02 write-set and accepts CLOSED_UNABSORBED during recovery. The Senior ruling resolves the producer gap by requiring T04B-P1 to add the W03-owned composable delta/evidence boundary first. T04B then only consumes that owner-issued delta in the same W02 closure; Collaboration still may not create LIVE authority. CLOSED_UNABSORBED remains pending absorption, not a successful recovery state.
 
 ## Preserved Story and cross-project limits
 
@@ -127,7 +143,7 @@ CURRENT_VERIFICATION_STATE:
 - current reviewed-head maintenance PASS and 1218 tests/5 skipped PASS;
 - VERSION_UNCLASSIFIED=[] and VERSION_LEGACY_HITS=[] on both hosted verification points;
 - IRR-T07C-01/02 independently CLOSED;
-- T04B remains at a Senior/design System-Impact gate; no T04B acceptance is claimed.
+- IRR-T04B-02 Senior/design gate is resolved to bounded prerequisite T04B-P1; no T04B acceptance is claimed; P1 implementation/review is pending.
 
 VERSION_IMPACT — T07C ACCEPTED:
 - History module 1.0.5;
@@ -153,11 +169,12 @@ CLS_HDM_RECONCILIATION:
 
 SYSTEM_IMPACT:
 - T07C NONE / accepted;
-- T04B remains blocked at the exact missing W03 producer interface. No new boundary is authorized by this review.
+- IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITE by the accepted Senior ruling;
+- T04B-P1 may implement only the admitted W03 LIVE producer boundary; a need for a new persistent owner/schema, RuntimeHost/RepositoryPort semantic broadening or any other new authority is a fresh System-Impact stop.
 
-NEXT_EXACT_TASK: T07D may execute now; T04B requires Senior/design disposition before implementation resumes.
-KNOWN_BLOCKERS: T04B -> T05C. T07D is unblocked. Wave 04 not complete; Wave 05 not authorized.
-UNPUBLISHED_WORK: NONE after review publication/read-back.
+NEXT_EXACT_TASK: execute T07D and T04B-P1 independently. After T04B-P1 independent PASS/read-back, resume T04B immediately; T05C still waits for T04B PASS.
+KNOWN_BLOCKERS: T04B waits for T04B-P1; T05C waits for T04B PASS. T07D is unblocked. Wave 04 not complete; Wave 05 not authorized.
+UNPUBLISHED_WORK: NONE after this control-state synchronization.
 
 ## Historical evidence retention
 
