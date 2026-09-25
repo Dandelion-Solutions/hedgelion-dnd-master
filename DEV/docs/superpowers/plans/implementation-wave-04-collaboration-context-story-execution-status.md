@@ -4,29 +4,29 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T04B SYSTEM-IMPACT GATE / T07C INDEPENDENT REVIEW PENDING
-CURRENT_TASK: obtain independent re-review of the published T07C IRR-T07C-01/02 candidate; T04B IRR-T04B-02 blocked at the missing accepted W03 producer interface; T05C/T07D remain blocked
-LAST_COMPLETED_TASK: T07B independent PASS at a5cd9c517913bcf04d7acfbe895be49cdf941111; T04A prior PASS retained
-LAST_SAFE_SHA: f114eb6a38c50d755cf71094d078c1d362f08bb4 — coherent T07C candidate checkpoint published/read back; independent acceptance remains pending
+STATUS: EXECUTING — T07C PASS / T04B SYSTEM-IMPACT SENIOR GATE
+CURRENT_TASK: start W04.T07D; route T04B missing W03 absorption-to-W02 composition interface to Senior/design; T05C remains blocked
+LAST_COMPLETED_TASK: W04.T07C independent PASS at df83bc7c37e1f1d0fdeebd583350bf377a4c8f37; T04A/T07B prior PASS retained
+LAST_SAFE_SHA: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37 — exact independently reviewed T07C state
 
 
 ## Current independent review
 
-REPORT: DEV/docs/superpowers/design/2026-09-25-w04-t04b-t07c-independent-review.md
-REVIEWED_HEAD: 959de8e2d91e46ff326b046ee39045afa04b952d
+REPORT: DEV/docs/superpowers/design/2026-09-25-w04-t07c-independent-rereview.md
+REVIEWED_HEAD: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37
 
 | Task | Candidate / repair | Independent disposition |
 |---|---|---|
 | W04.T04A | accepted prior chain | Prior PASS preserved |
-| W04.T04B | 6bb8723ff5ef8f3508d53303ba614d42222393d3 | FAIL / TARGETED_REPAIR_REQUIRED; IRR-T04B-01 CLOSED, IRR-T04B-02 BLOCKING |
+| W04.T04B | 6bb8723ff5ef8f3508d53303ba614d42222393d3 | SYSTEM_IMPACT / SENIOR_DESIGN_REQUIRED; IRR-T04B-01 CLOSED, IRR-T04B-02 awaits missing W03 producer interface |
 | W04.T07B | 55fb0a52a933b90a15ad2bc8b0af624635edaf26 | Prior PASS preserved |
-| W04.T07C | f5732ed31c7b3b5288dd43b62bf6847dc96f4702 + 0c5cbc78174ca3545d4342674ba9afe9ae50622c | FAIL / TARGETED_REPAIR_REQUIRED; IRR-T07C-01/02 BLOCKING |
+| W04.T07C | f114eb6a38c50d755cf71094d078c1d362f08bb4 | PASS / GO; IRR-T07C-01/02 CLOSED |
 
-T04B effect-set completeness is independently rederived. Remaining LIVE path proves source close but omits W03 absorption/final-routing from the same W02 closure and accepts CLOSED_UNABSORBED recovery as completed.
+T07C retains complete T0 factor values plus PUBLIC/PROTECTED historical classification from exact native SemanticEvent evidence, without consulting later Actor/knowledge/disclosure state. Exact older pages at/below compatible coverage are idempotently acknowledged only after exact native revalidation.
 
-T07C copies exact native T0 and publishes atomically, but retained T0 has no historical protection/availability classification and old exact pages are not idempotent once later coverage has advanced.
+Hosted evidence: repair run 36076362491/job 107888337524 SUCCESS and current run 36078547787/job 107895116534 SUCCESS; maintenance PASS, 1218 tests / 5 skipped, zero version unclassified/legacy hits.
 
-Exact-head hosted CI: run 36063512416, job 107847776125, maintenance PASS, 1213 tests / 5 skipped, zero version unclassified/legacy hits. New negative witnesses required by this review were not added/run by the reviewer.
+Fresh CLS reconciliation: audit head 3bd4ffb1db0451d0079568d4ad58709372ef3a4d, feature head 2c5dc9f6a4f1c8a23b070e7520e7854491af5282. Current WP12-05 remains synthetic/normalized and REAL wire normalization remains WP12-08-owned. No public semantic reopen/write or current private WP12-05 repair is required; future REAL integration must consume T0 schema 2 / EVENTS schema 4 / E-EVT generation 2.
 
 ## Accepted producer checkpoints retained
 
@@ -46,42 +46,45 @@ Exact-head hosted CI: run 36063512416, job 107847776125, maintenance PASS, 1213 
 | W04.T02C | dd0783c4eca20a94431b17844ca09ac64f8ba2cf |
 | W04.T04A | 0d190a9db11129a02f07c71a812996c78a8d33cf — independently accepted at combined reviewed HEAD 3c1a9ca1e31e46f8101944ee668a52bd3d3678ff |
 | W04.T07B | 55fb0a52a933b90a15ad2bc8b0af624635edaf26 — independently accepted at combined reviewed HEAD a5cd9c517913bcf04d7acfbe895be49cdf941111; prior source-contract repair chain retained |
+| W04.T07C | f114eb6a38c50d755cf71094d078c1d362f08bb4 — independently accepted at reviewed HEAD df83bc7c37e1f1d0fdeebd583350bf377a4c8f37 |
 
 W04_AUTHORITY_COLLAB_RECONCILIATION_READY: ACCEPTED
 W04_AUTHORITY_COLLABORATION_RECONCILED: NOT ACCEPTED
 W04_STORY_SOURCE_CONTRACTS_READY: ACCEPTED
-W04_T0_STORY_READY: NOT ACCEPTED — IRR-T07C-01/02 BLOCKING
+W04_T0_STORY_READY: ACCEPTED
 
 No earlier accepted task is reopened. T07C implementation now materializes source-bound T0 EVENT records and layer-local coverage through exact W02 publication; its candidate is not accepted until independent PASS.
 
 
 ## Scheduling and gates
 
-    READY:
-      T04B bounded repair of IRR-T04B-02
-      T07C bounded repair of IRR-T07C-01/02
+```text
+READY:
+  T07D
 
-    T04B repair -> independent PASS
-    T05B + T02C + T04B -> T05C -> T06A -> T06B
+SENIOR/DESIGN GATE:
+  T04B missing W03 absorption/final-routing -> W02 composition interface
 
-    T07C repair -> independent PASS -> T07D -> independent PASS -> T07E
-    T07A..T07E -> T07-INTEGRATION independent review
+T04B Senior resolution -> bounded implementation/review -> independent PASS
+T05B + T02C + T04B -> T05C -> T06A -> T06B
 
-    T04B + T02C + T07-INTEGRATION -> T08A
-    T06B + accepted W03 currentness -> T08B
-    T08A + T08B + T03A -> T08C
-    T08C + all lane checkpoints -> Wave-04 FINAL_REVIEW
-    mandatory Senior Wave-04 integration audit -> closure decision
+T07C PASS -> T07D -> independent PASS -> T07E
+T07A..T07E -> T07-INTEGRATION independent review
 
-T04B and T07C repairs may execute in parallel while their production/test write sets remain disjoint. Do not start T05C before T04B PASS or T07D before T07C PASS.
+T04B + T02C + T07-INTEGRATION -> T08A
+T06B + accepted W03 currentness -> T08B
+T08A + T08B + T03A -> T08C
+T08C + all lane checkpoints -> Wave-04 FINAL_REVIEW
+mandatory Senior Wave-04 integration audit -> closure decision
+```
+
+T07D may begin immediately under its existing task scope. T05C remains blocked by T04B. Do not let the T04B System-Impact gate stall the independent Story lane.
 
 MAX_CONFIGURED_HDM_WORKERS: 5
 MAX_SAFE_WAVE04_PRODUCTION_WORKERS: 4
 REVIEWER_LIMIT: NONE; reviewers do not consume worker slots
 SAME_PRODUCTION_OR_PRIMARY_TEST_FILE_WRITERS: SERIALIZED
 DEPENDENT_TASK_START: only after exact producer independent PASS is published/read back
-
-OpenCode reviewer/task permission denial remains an environment limitation. Do not change/bypass that permission or self-approve.
 
 ## Preserved T04A clarification and T04B obligations
 
@@ -110,45 +113,57 @@ The mandatory pre-T07 CLS-HDM preflight retains its recorded PASS and explicit s
 
 ## Wave-04 independent-review verification and Version Impact
 
-    REVIEWED_HEAD: 959de8e2d91e46ff326b046ee39045afa04b952d
-    T04B_REPAIR_CANDIDATE: 6bb8723ff5ef8f3508d53303ba614d42222393d3
-    T07C_FEATURE_COMMIT: f5732ed31c7b3b5288dd43b62bf6847dc96f4702
-    T07C_EXACT_PAGE_CORRECTION: 0c5cbc78174ca3545d4342674ba9afe9ae50622c
-    HOSTED_RUN: 36063512416
-    HOSTED_JOB: 107847776125
+```text
+REVIEWED_HEAD: df83bc7c37e1f1d0fdeebd583350bf377a4c8f37
+T07C_REPAIR: f114eb6a38c50d755cf71094d078c1d362f08bb4
+HOSTED_REPAIR_RUN: 36076362491
+HOSTED_REPAIR_JOB: 107888337524
+HOSTED_CURRENT_RUN: 36078547787
+HOSTED_CURRENT_JOB: 107895116534
+```
 
 CURRENT_VERIFICATION_STATE:
-- exact prior reviewed-head hosted run 36063512416/job 107847776125: maintenance PASS, 1213 tests/5 skipped PASS, `VERSION_UNCLASSIFIED=[]`, `VERSION_LEGACY_HITS=[]`; reviewed HEAD was 959de8e2d91e46ff326b046ee39045afa04b952d, not the current repair candidate;
-- candidate-focused `.hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_rd13_story_t0_commentator`: 75 tests PASS;
-- current-status/routing checks `.hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_current_progress_authority DEV.TESTS.test_product_owner_routing_consistency`: 7 tests PASS;
-- `DEV/TOOLS/run_maintenance_audit.py`: PASS;
-- clean-tree full DEV discovery at exact published HEAD `11c64ddb7903c21e31b138db12a5d3c5a609ad71`, using `.hdm-devtools/venv/bin/python -m unittest discover -s /tmp/opencode/hdm-w04-t07c-final-verify/DEV/TESTS -v`: 1218 tests, 5 skipped, PASS; `VERSION_UNCLASSIFIED=[]`, `VERSION_LEGACY_HITS=[]`. Test discovery used the detached clean worktree at the same exact HEAD as the main checkout;
-- ordinary local checkout full discovery: 1218 tests, 5 skipped, 1 failure because `test_census_has_zero_unclassified_hits` scans the protected local `.entire/logs/entire.log` and reports 68,657 unclassified hits. The dirty-worktree provenance failure cleared after publication. This local census contamination is not claimed repaired;
-- changed production Python modules pass Ruff; all changed Python files pass `ruff format --check`. Full changed test-file Ruff check retains two unrelated pre-existing SIM117 warnings at its earlier StoryProjectionTests and StoryRoot tests;
-- IRR-T04B-01 CLOSED; IRR-T04B-02 BLOCKED at the exact W03 producer-interface gate;
-- IRR-T07C-01/02 repairs are published at the current safe checkpoint; independent re-review and exact-candidate hosted verification remain pending. GitHub CLI is not installed (`gh: command not found`), so current hosted-run evidence is unavailable; do not claim hosted PASS.
+- repair commit exact-head maintenance PASS and 1218 tests/5 skipped PASS;
+- current reviewed-head maintenance PASS and 1218 tests/5 skipped PASS;
+- VERSION_UNCLASSIFIED=[] and VERSION_LEGACY_HITS=[] on both hosted verification points;
+- IRR-T07C-01/02 independently CLOSED;
+- T04B remains at a Senior/design System-Impact gate; no T04B acceptance is claimed.
 
-VERSION_IMPACT:
-- T04B collaboration 1.0.18 remains candidate-only.
-- T07C repair: History module 1.0.4 -> 1.0.5; embedded T0 basis schema 1 -> 2; Story module 1.0.7 -> 1.0.8; Story EVENTS unit schema 3 -> 4; E-EVT semantic contract generation 1 -> 2.
-- SemanticEvent outer schema remains 1, Story projection-state schema remains 4, and durability module remains 1.0.4; their shapes/owners did not materially change.
-- `campaign_contract_generation` remains 2: the changed T0/Story shapes are pre-release, unshipped task candidates; canonical Story/versioning owners require local schema versions and explicitly do not require a pre-release shim solely for an obsolete unshipped shape. No campaign migration was executed. Older T0 schema / Story E-EVT generation values fail closed; any released data found to require conversion needs its own authorized explicit migration/adoption edge before consumption.
-- this review/control publication: NONE.
+VERSION_IMPACT — T07C ACCEPTED:
+- History module 1.0.5;
+- embedded T0 basis schema 2;
+- Story module 1.0.8;
+- Story EVENTS unit schema 4;
+- E-EVT semantic contract generation 2;
+- runtime.semantic_event outer schema 1 unchanged;
+- Story projection-state schema 4 unchanged;
+- durability 1.0.4 unchanged;
+- campaign_contract_generation 2 unchanged;
+- migration/dual-read NONE under the current pre-release clean-slate policy.
+
+CLS_HDM_RECONCILIATION:
+- audit current head 3bd4ffb1db0451d0079568d4ad58709372ef3a4d;
+- private feature current head 2c5dc9f6a4f1c8a23b070e7520e7854491af5282;
+- current WP12-05 synthetic/normalized implementation does not hard-bind REAL public wire versions;
+- WP12-08 remains owner of REAL source/content/control normalization;
+- PUBLIC_HDM_SEMANTIC_REOPEN_REQUIRED=NO;
+- PUBLIC_HDM_WRITE_REQUIRED_BY_CLS=NO;
+- CURRENT_PRIVATE_WP12_05_REPAIR_REQUIRED=NO;
+- FUTURE_REAL_NORMALIZATION_OBLIGATION=YES.
 
 SYSTEM_IMPACT:
-- T04B IRR-T04B-02 is BLOCKED at the accepted W03 producer-interface boundary. `access_control.publish_forward_transition(...)` returns a pure closed-source forward view; it does not absorb/final-route the selected source. `live_state.freeze_campaign_absorption(...)` returns a `FrozenCampaignAbsorption.candidate_state`, while accepted absorption classification requires a separate owner-issued CAS acknowledgement tied to that candidate digest. Neither exposes a production W03-owned adapter/write-set composer for incorporating absorption/final routing into T04B's single W02 `path_operations` transaction. Production T04B currently calls only the forward-close proof and its operation builder has no absorption adapter. Implementing that missing composition would require a new/changed W03 boundary outside the T04B write envelope; do not manufacture it in Collaboration or publish CLOSED_UNABSORBED as completed revocation.
-- T04B repair stops here; T07C remains independently authorized because its production/test write set is disjoint.
+- T07C NONE / accepted;
+- T04B remains blocked at the exact missing W03 producer interface. No new boundary is authorized by this review.
 
-NEXT_EXACT_TASK: obtain independent T07C re-review and exact-candidate hosted verification when that surface is available; do not start T07D before independent PASS. T04B resumes only after the owning W03 producer-interface gap receives an authorized resolution.
-KNOWN_BLOCKERS: T05C waits for T04B PASS; T07D waits for T07C PASS. Wave 04 not complete; Wave 05 not authorized.
-UNPUBLISHED_WORK: NONE after this verification-status update is published and read back; independent re-review remains pending.
-
-STATUS_UPDATE_VERSION_IMPACT: NONE — documentation-only current-state reconciliation; no version-bearing owner or consumer changed.
+NEXT_EXACT_TASK: T07D may execute now; T04B requires Senior/design disposition before implementation resumes.
+KNOWN_BLOCKERS: T04B -> T05C. T07D is unblocked. Wave 04 not complete; Wave 05 not authorized.
+UNPUBLISHED_WORK: NONE after review publication/read-back.
 
 ## Historical evidence retention
 
 Earlier review/candidate evidence is retained verbatim at this cursor path:
 
+- Commit `df83bc7c37e1f1d0fdeebd583350bf377a4c8f37`, blob `bf2f796710c6c6892588687b57e543e1f30a6bb2`: submitted T07C repair verification and T04B System-Impact gate state.
 - Commit `959de8e2d91e46ff326b046ee39045afa04b952d`, blob `d12e3bc60a4feb6ba7067526f12f4cf0c86b9236`: submitted T04B/T07C candidates and worker verification evidence.
 - Commit `a5cd9c517913bcf04d7acfbe895be49cdf941111`, blob `be512b4f01e745c62b44fdd719b68672749dbe1a`: submitted T04B/T07B candidates, author verification and pre-review gates.
 - Commit `3c1a9ca1e31e46f8101944ee668a52bd3d3678ff`, blob `7485d887226b93896c03c71fe64aa6177524afe7`: earlier repair candidates, local verification limitations and previous findings.
