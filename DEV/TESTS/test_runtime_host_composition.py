@@ -5,8 +5,9 @@ from __future__ import annotations
 import json
 import pickle
 import unittest
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 
+import GAME.TOOLS.publication as publication_module
 from GAME.TOOLS.durability import route_serialized_operation
 from GAME.TOOLS.live_state import (
     LiveClaim,
@@ -18,6 +19,11 @@ from GAME.TOOLS.live_state import (
 )
 from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import PinnedCampaign
+from GAME.TOOLS.publication import (
+    PublicationAcceptanceEvidence,
+    PublicationOutcome,
+    validate_owner_issued_accepted_publication,
+)
 from GAME.TOOLS.runtime_host import (
     FRAMEWORK_MODULE_VERSION,
     NativeOrderingStatus,
@@ -26,6 +32,21 @@ from GAME.TOOLS.runtime_host import (
 )
 
 CAMPAIGN_ID = "campaign-frostfall"
+
+
+def _validate_owner_publication(
+    outcome: PublicationOutcome,
+    *,
+    campaign_id: str,
+    expected_pinned_head_sha: str,
+    required_operation_digests: Mapping[str, str] | None = None,
+) -> PublicationAcceptanceEvidence:
+    return validate_owner_issued_accepted_publication(
+        outcome,
+        campaign_id=campaign_id,
+        expected_pinned_head_sha=expected_pinned_head_sha,
+        required_operation_digests=required_operation_digests,
+    )
 
 
 def _candidate(candidate_id: str = "candidate-1") -> dict[str, object]:
@@ -116,6 +137,7 @@ class PublicationRepository(DeploymentRepository):
         super().__init__(campaign_id)
         self.current_revision = "a" * 40
         self.current_tree = "b" * 40
+        self.pin_revision_override: str | None = None
         self.records: dict[str, object] = {
             "MANIFEST.yaml": {
                 "campaign_id": campaign_id,
@@ -128,6 +150,10 @@ class PublicationRepository(DeploymentRepository):
                 "campaign_name": "The Frostfall",
             },
         }
+        self.path_overrides: dict[str, object] = {}
+        self.ancestry_relation = "EQUAL"
+        self.read_exact_commit_calls: list[tuple[str, str]] = []
+        self.ancestry_calls: list[tuple[str, str, str]] = []
 
     def repository_identity(self) -> str:
         return "github.com/example/campaigns"
@@ -136,14 +162,28 @@ class PublicationRepository(DeploymentRepository):
         self.pin_calls.append(campaign_id)
         return PinnedCampaign(
             campaign_id=self.campaign_id,
-            revision=self.current_revision,
+            revision=self.pin_revision_override or self.current_revision,
             tree_sha=self.current_tree,
         )
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        if path in self.path_overrides:
+            return self.path_overrides[path]
         if path in self.records:
             return self.records[path]
         return {"id": "obligation-1", "kind": "runtime.collaboration_obligation"}
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
+        self.read_exact_commit_calls.append((campaign_ref, revision))
+        return {"revision": revision}
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> object:
+        self.ancestry_calls.append(
+            (repository_ref, ancestor_revision, descendant_revision)
+        )
+        return {"relation": self.ancestry_relation}
 
 
 class PublicationTransport:
@@ -154,6 +194,8 @@ class PublicationTransport:
         self.calls: list[tuple[str, object]] = []
         self.response_status = "accepted"
         self.next_head = "c" * 40
+        self.reconciliation_head: str | None = None
+        self.reconciliation_pin_revision: str | None = None
 
     def repository_identity(self) -> str:
         return "github.com/example/campaigns"
@@ -182,7 +224,10 @@ class PublicationTransport:
     ) -> object:
         self.calls.append(("update_ref", (target_ref, new_commit_sha, force)))
         if self.response_status == "indeterminate":
-            self.repository.current_revision = new_commit_sha
+            self.repository.current_revision = (
+                self.reconciliation_head or new_commit_sha
+            )
+            self.repository.pin_revision_override = self.reconciliation_pin_revision
         return {
             "status": self.response_status,
             "head_sha": new_commit_sha if self.response_status != "rejected" else None,
@@ -375,7 +420,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.8")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.9")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -507,7 +552,68 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         )
 
         self.assertEqual(outcome.kind, "accepted")
-        self.assertIsInstance(outcome, object)
+        self.assertIsInstance(outcome, publication_module.PublicationOutcome)
+        evidence = _validate_owner_publication(
+            outcome,
+            campaign_id=CAMPAIGN_ID,
+            expected_pinned_head_sha="a" * 40,
+        )
+        self.assertEqual(evidence.kind.value, "CONFIRMED_REF")
+        self.assertEqual(evidence.attempt.campaign_id, CAMPAIGN_ID)
+        self.assertEqual(evidence.attempt.pinned_head_sha, "a" * 40)
+        self.assertIsNone(evidence.current_closure)
+        self.assertIsNone(evidence.ancestry)
+        digests = evidence.attempt.publication_operation_digests()
+        path, digest = next(iter(digests.items()))
+        self.assertIs(
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+                required_operation_digests={path: digest},
+            ),
+            evidence,
+        )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+                required_operation_digests={path: "0" * 64},
+            )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+                required_operation_digests={"unowned/path": digest},
+            )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id="campaign-other",
+                expected_pinned_head_sha="a" * 40,
+            )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="f" * 40,
+            )
+        copied_outcome = publication_module.PublicationOutcome(
+            outcome.status,
+            outcome.intended_commit_sha,
+            outcome.observed_head_sha,
+            outcome.cause,
+            outcome.dispatched,
+            outcome.retry_with_force,
+        )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                copied_outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+            )
         self.assertEqual(
             [name for name, _value in transport.calls],
             ["create_tree", "read_ref", "create_commit", "update_ref"],
@@ -537,9 +643,150 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         )
 
         self.assertEqual(outcome.kind, "accepted")
+        evidence = _validate_owner_publication(
+            outcome,
+            campaign_id=CAMPAIGN_ID,
+            expected_pinned_head_sha="a" * 40,
+        )
+        self.assertEqual(evidence.kind.value, "RECONCILED_CURRENT_CLOSURE")
+        self.assertEqual(evidence.current_closure.base_revision, "a" * 40)
+        self.assertEqual(evidence.current_closure.head_sha, outcome.intended_commit_sha)
+        self.assertIsNone(evidence.ancestry)
+        self.assertEqual(
+            dict(evidence.current_closure.operation_digests),
+            evidence.attempt.publication_operation_digests(),
+        )
         self.assertEqual(
             [name for name, _value in transport.calls].count("update_ref"), 1
         )
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("read_ref"), 2
+        )
+
+    def test_ancestor_reconciliation_retains_the_bound_closure_and_ancestry_proofs(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        repository.ancestry_relation = "ANCESTOR"
+        transport = PublicationTransport(repository)
+        transport.response_status = "indeterminate"
+        transport.reconciliation_head = "e" * 40
+        host, _repository, _live = _compose(repository, publication=transport)
+        payload, path_operations = _publication_delta()
+
+        outcome = host.publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+
+        evidence = _validate_owner_publication(
+            outcome,
+            campaign_id=CAMPAIGN_ID,
+            expected_pinned_head_sha="a" * 40,
+        )
+        self.assertEqual(outcome.kind, "accepted")
+        self.assertEqual(outcome.observed_head_sha, "e" * 40)
+        self.assertEqual(evidence.kind.value, "RECONCILED_ANCESTOR_CURRENT_CLOSURE")
+        self.assertEqual(evidence.current_closure.base_revision, "a" * 40)
+        self.assertEqual(evidence.current_closure.head_sha, "e" * 40)
+        self.assertEqual(evidence.ancestry.ancestor_sha, outcome.intended_commit_sha)
+        self.assertEqual(evidence.ancestry.descendant_sha, "e" * 40)
+        self.assertEqual(
+            evidence.attempt.campaign_id,
+            CAMPAIGN_ID,
+        )
+        self.assertEqual(repository.pin_calls, [CAMPAIGN_ID, CAMPAIGN_ID])
+        self.assertEqual(
+            repository.read_exact_commit_calls,
+            [("campaign/frostfall", "e" * 40)],
+        )
+        self.assertEqual(
+            repository.ancestry_calls,
+            [("campaign/frostfall", outcome.intended_commit_sha, "e" * 40)],
+        )
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("update_ref"), 1
+        )
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("read_ref"), 2
+        )
+
+    def test_nonaccepted_publication_results_do_not_have_owner_issued_evidence(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        transport.response_status = "rejected"
+        host, _repository, _live = _compose(repository, publication=transport)
+        payload, path_operations = _publication_delta()
+        rejected = host.publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+        self.assertEqual(rejected.kind, "rejected")
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                rejected,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+            )
+
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        transport.response_status = "indeterminate"
+        route = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-1",)
+        ).relative_path
+        repository.path_overrides[route] = {
+            "id": "obligation-1",
+            "kind": "runtime.collaboration_obligation",
+            "changed": True,
+        }
+        host, _repository, _live = _compose(repository, publication=transport)
+        conflicting = host.publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+        self.assertEqual(conflicting.kind, "conflict")
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                conflicting,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+            )
+
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        transport.response_status = "indeterminate"
+        transport.reconciliation_pin_revision = "f" * 40
+        host, _repository, _live = _compose(repository, publication=transport)
+        unresolved = host.publication.publish_owner_delta(
+            routed_operation=route_serialized_operation(
+                "runtime.collaboration_obligation", "obligation-1", payload
+            ),
+            path_operations=path_operations,
+            owner_generations={"runtime.collaboration_obligation": 1},
+            publication_reason="collaboration-close",
+        )
+        self.assertEqual(unresolved.kind, "indeterminate")
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                unresolved,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha="a" * 40,
+            )
 
     def test_publication_rejects_an_intervening_ref_against_prepared_host_basis(
         self,

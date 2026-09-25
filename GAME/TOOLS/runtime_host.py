@@ -38,14 +38,15 @@ from .publication import (
     PublicationCurrentClosureEvidence,
     PublicationOutcome,
     PublicationStatus,
+    _issue_owner_issued_accepted_publication,
     build_connector_git_plan,
     classify_ref_transition,
     freeze_campaign_publication_attempt,
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -458,6 +459,17 @@ class CampaignPublicationService(_BoundService):
             ) from exc
         if outcome.status is PublicationStatus.INDETERMINATE:
             return self._reconcile_indeterminate(attempt, transport, commit_sha)
+        if outcome.status is PublicationStatus.ACCEPTED:
+            try:
+                _issue_owner_issued_accepted_publication(
+                    outcome,
+                    attempt,
+                    intended_commit_sha=commit_sha,
+                )
+            except PublicationContractError as exc:
+                raise RuntimeHostError(
+                    "confirmed campaign publication lacks valid W02 acceptance evidence"
+                ) from exc
         return outcome
 
     def _read_exact_path(
@@ -513,7 +525,10 @@ class CampaignPublicationService(_BoundService):
         transport: CampaignPublicationTransport,
         intended_commit_sha: str,
     ) -> PublicationOutcome:
+        current_evidence: Mapping[str, object] | None = None
+
         def read_current() -> Mapping[str, object]:
+            nonlocal current_evidence
             try:
                 observed = self._read_ref(transport, attempt.target_ref)
                 commit_evidence = self._host._repository.read_exact_commit(
@@ -555,6 +570,7 @@ class CampaignPublicationService(_BoundService):
                             ancestor_sha=intended_commit_sha,
                             descendant_sha=observed,
                         )
+                current_evidence = evidence
                 return evidence
             except (
                 AttributeError,
@@ -567,7 +583,7 @@ class CampaignPublicationService(_BoundService):
                 return {}
 
         try:
-            return reconcile_indeterminate_publication(
+            outcome = reconcile_indeterminate_publication(
                 attempt,
                 read_current,
                 intended_commit_sha=intended_commit_sha,
@@ -576,6 +592,26 @@ class CampaignPublicationService(_BoundService):
             raise RuntimeHostError(
                 "indeterminate publication reconciliation failed"
             ) from exc
+        if outcome.status is PublicationStatus.ACCEPTED:
+            closure = (
+                None if current_evidence is None else current_evidence.get("closure")
+            )
+            ancestry = (
+                None if current_evidence is None else current_evidence.get("ancestry")
+            )
+            try:
+                _issue_owner_issued_accepted_publication(
+                    outcome,
+                    attempt,
+                    intended_commit_sha=intended_commit_sha,
+                    current_closure=closure,
+                    ancestry=ancestry,
+                )
+            except PublicationContractError as exc:
+                raise RuntimeHostError(
+                    "reconciled campaign publication lacks valid W02 acceptance evidence"
+                ) from exc
+        return outcome
 
 
 class SemanticEventSourceAdapter(_BoundService):

@@ -7,13 +7,14 @@ currentness, policy, lifecycle, or storage metadata.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
-from copy import deepcopy
-from dataclasses import dataclass
-from enum import Enum
 import hashlib
 import json
 import re
+import weakref
+from collections.abc import Callable, Mapping, Sequence
+from copy import deepcopy
+from dataclasses import dataclass
+from enum import Enum, StrEnum
 from types import MappingProxyType
 from typing import Final
 
@@ -29,9 +30,8 @@ from .recovery_roots import (
     validate_operational_root_delta,
 )
 
-
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -700,7 +700,7 @@ def build_connector_git_plan(attempt: FrozenCampaignPublicationAttempt) -> Conne
     )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class PublicationOutcome:
     status: PublicationStatus
     intended_commit_sha: str | None
@@ -731,6 +731,228 @@ class PublicationOutcome:
                 "indeterminate/rejected publication cannot be acknowledged as saved"
             )
         return True
+
+
+class PublicationAcceptanceKind(StrEnum):
+    """W02-owned proof route that supports one accepted publication outcome."""
+
+    CONFIRMED_REF = "CONFIRMED_REF"
+    RECONCILED_CURRENT_CLOSURE = "RECONCILED_CURRENT_CLOSURE"
+    RECONCILED_ANCESTOR_CURRENT_CLOSURE = "RECONCILED_ANCESTOR_CURRENT_CLOSURE"
+
+
+@dataclass(frozen=True, slots=True)
+class PublicationAcceptanceEvidence:
+    """Ephemeral W02 proof bound to one frozen attempt and exact outcome instance."""
+
+    kind: PublicationAcceptanceKind
+    attempt: FrozenCampaignPublicationAttempt
+    intended_commit_sha: str
+    observed_head_sha: str
+    current_closure: PublicationCurrentClosureEvidence | None
+    ancestry: CommitAncestryEvidence | None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.kind, PublicationAcceptanceKind):
+            raise PublicationContractError(
+                "publication acceptance proof kind is invalid"
+            )
+        if not isinstance(self.attempt, FrozenCampaignPublicationAttempt):
+            raise PublicationContractError(
+                "publication acceptance attempt is not frozen"
+            )
+        _revision(self.intended_commit_sha, "acceptance intended commit")
+        _revision(self.observed_head_sha, "acceptance observed head")
+        if self.current_closure is not None and not isinstance(
+            self.current_closure, PublicationCurrentClosureEvidence
+        ):
+            raise PublicationContractError(
+                "publication current closure proof is not typed"
+            )
+        if self.ancestry is not None and not isinstance(
+            self.ancestry, CommitAncestryEvidence
+        ):
+            raise PublicationContractError("publication ancestry proof is not typed")
+
+
+_OWNER_ISSUED_PUBLICATION_ACCEPTANCES: dict[
+    int,
+    tuple[weakref.ReferenceType[PublicationOutcome], PublicationAcceptanceEvidence],
+] = {}
+
+
+def _validate_acceptance_proof(
+    outcome: PublicationOutcome, evidence: PublicationAcceptanceEvidence
+) -> None:
+    """Validate cause/proof correspondence against one immutable W02 attempt."""
+
+    if outcome.status is not PublicationStatus.ACCEPTED:
+        raise PublicationContractError("publication outcome is not accepted")
+    attempt = evidence.attempt
+    intended = _revision(outcome.intended_commit_sha, "publication intended commit")
+    observed = _revision(outcome.observed_head_sha, "publication observed head")
+    if (
+        evidence.intended_commit_sha != intended
+        or evidence.observed_head_sha != observed
+    ):
+        raise PublicationContractError("publication outcome SHA differs from its proof")
+
+    expected_digests = attempt.publication_operation_digests()
+    closure = evidence.current_closure
+    ancestry = evidence.ancestry
+    if evidence.kind is PublicationAcceptanceKind.CONFIRMED_REF:
+        if (
+            outcome.cause != "CONFIRMED_ACCEPTED"
+            or outcome.dispatched is not True
+            or intended != observed
+            or closure is not None
+            or ancestry is not None
+        ):
+            raise PublicationContractError(
+                "confirmed-ref publication proof does not match result"
+            )
+        return
+
+    if (
+        outcome.dispatched is not False
+        or closure is None
+        or closure.base_revision != attempt.pinned_head_sha
+        or closure.head_sha != observed
+    ):
+        raise PublicationContractError(
+            "publication current-closure proof does not bind attempt"
+        )
+    closure_digests = dict(closure.operation_digests)
+    if any(
+        closure_digests.get(path) != digest for path, digest in expected_digests.items()
+    ):
+        raise PublicationContractError(
+            "publication current closure omits or changes an attempted operation"
+        )
+
+    if evidence.kind is PublicationAcceptanceKind.RECONCILED_CURRENT_CLOSURE:
+        if (
+            outcome.cause != "RECONCILED_CURRENT_CLOSURE"
+            or intended != observed
+            or ancestry is not None
+            or set(closure_digests) != set(expected_digests)
+        ):
+            raise PublicationContractError(
+                "current-closure publication proof does not match result"
+            )
+        return
+
+    if evidence.kind is PublicationAcceptanceKind.RECONCILED_ANCESTOR_CURRENT_CLOSURE:
+        if (
+            outcome.cause != "RECONCILED_ANCESTOR_CURRENT_CLOSURE"
+            or intended == observed
+            or not isinstance(ancestry, CommitAncestryEvidence)
+            or ancestry.ancestor_sha != intended
+            or ancestry.descendant_sha != observed
+        ):
+            raise PublicationContractError(
+                "ancestor publication proof does not bind exact commits"
+            )
+        return
+
+    raise PublicationContractError("unsupported publication acceptance proof kind")
+
+
+def _issue_owner_issued_accepted_publication(
+    outcome: PublicationOutcome,
+    attempt: FrozenCampaignPublicationAttempt,
+    *,
+    intended_commit_sha: str,
+    current_closure: PublicationCurrentClosureEvidence | None = None,
+    ancestry: CommitAncestryEvidence | None = None,
+) -> PublicationAcceptanceEvidence:
+    """Privately bind trusted CampaignPublicationService proof to one result object."""
+
+    if not isinstance(outcome, PublicationOutcome):
+        raise PublicationContractError("campaign publication result is not typed")
+    if not isinstance(attempt, FrozenCampaignPublicationAttempt):
+        raise PublicationContractError("campaign publication attempt is not frozen")
+    intended = _revision(intended_commit_sha, "service intended commit")
+    if outcome.intended_commit_sha != intended:
+        raise PublicationContractError("service result differs from its created commit")
+    if outcome.cause == "CONFIRMED_ACCEPTED":
+        kind = PublicationAcceptanceKind.CONFIRMED_REF
+    elif outcome.cause == "RECONCILED_CURRENT_CLOSURE":
+        kind = PublicationAcceptanceKind.RECONCILED_CURRENT_CLOSURE
+    elif outcome.cause == "RECONCILED_ANCESTOR_CURRENT_CLOSURE":
+        kind = PublicationAcceptanceKind.RECONCILED_ANCESTOR_CURRENT_CLOSURE
+    else:
+        raise PublicationContractError(
+            "accepted publication cause has no W02 proof kind"
+        )
+    evidence = PublicationAcceptanceEvidence(
+        kind=kind,
+        attempt=attempt,
+        intended_commit_sha=intended,
+        observed_head_sha=_revision(outcome.observed_head_sha, "service observed head"),
+        current_closure=current_closure,
+        ancestry=ancestry,
+    )
+    _validate_acceptance_proof(outcome, evidence)
+
+    outcome_id = id(outcome)
+
+    def remove(reference: weakref.ReferenceType[PublicationOutcome]) -> None:
+        registered = _OWNER_ISSUED_PUBLICATION_ACCEPTANCES.get(outcome_id)
+        if registered is not None and registered[0] is reference:
+            _OWNER_ISSUED_PUBLICATION_ACCEPTANCES.pop(outcome_id, None)
+
+    _OWNER_ISSUED_PUBLICATION_ACCEPTANCES[outcome_id] = (
+        weakref.ref(outcome, remove),
+        evidence,
+    )
+    return evidence
+
+
+def validate_owner_issued_accepted_publication(
+    outcome: PublicationOutcome,
+    *,
+    campaign_id: str,
+    expected_pinned_head_sha: str,
+    required_operation_digests: Mapping[str, str] | None = None,
+) -> PublicationAcceptanceEvidence:
+    """Return W02 evidence only for the exact accepted result the owner issued."""
+
+    if not isinstance(outcome, PublicationOutcome):
+        raise PublicationContractError("publication result is not typed")
+    registered = _OWNER_ISSUED_PUBLICATION_ACCEPTANCES.get(id(outcome))
+    if registered is None or registered[0]() is not outcome:
+        raise PublicationContractError(
+            "publication result has no W02 owner-issued evidence"
+        )
+    evidence = registered[1]
+    _validate_acceptance_proof(outcome, evidence)
+    if evidence.attempt.campaign_id != _machine_id(
+        campaign_id, "expected publication campaign"
+    ):
+        raise PublicationContractError(
+            "publication evidence belongs to another campaign"
+        )
+    if evidence.attempt.pinned_head_sha != _revision(
+        expected_pinned_head_sha, "expected pinned publication head"
+    ):
+        raise PublicationContractError(
+            "publication evidence has another predecessor head"
+        )
+    if required_operation_digests is not None:
+        if not isinstance(required_operation_digests, Mapping):
+            raise PublicationContractError(
+                "required publication operation subset must be a mapping"
+            )
+        attempted_digests = evidence.attempt.publication_operation_digests()
+        for path, digest in required_operation_digests.items():
+            normalized_path = _path(path)
+            normalized_digest = _sha256(digest, "required operation digest")
+            if attempted_digests.get(normalized_path) != normalized_digest:
+                raise PublicationContractError(
+                    "required operation digest is not an exact subset of the W02 attempt"
+                )
+    return evidence
 
 
 def classify_ref_transition(

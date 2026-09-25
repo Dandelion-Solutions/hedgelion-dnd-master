@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import unittest
 from dataclasses import replace
 from pathlib import Path
-import unittest
 
+import GAME.TOOLS.publication as publication_module
 from GAME.TOOLS.durability import (
     DurabilityContractError,
     ExecutionDurabilityJoin,
@@ -18,28 +19,43 @@ from GAME.TOOLS.durability import (
     project_durable_generations,
     route_serialized_operation,
 )
+from GAME.TOOLS.native_storage import route_native_record
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence, PinnedCampaign
 from GAME.TOOLS.publication import (
     CommitAncestryEvidence,
+    PublicationAcceptanceEvidence,
     PublicationContractError,
     PublicationCurrentClosureEvidence,
+    PublicationOutcome,
     PublicationStatus,
     build_connector_git_plan,
     classify_ref_transition,
     freeze_campaign_publication_attempt,
     reconcile_indeterminate_publication,
+    validate_owner_issued_accepted_publication,
 )
 from GAME.TOOLS.recovery_roots import (
     OperationalRootDelta,
     derive_operational_root_delta,
 )
-from GAME.TOOLS.native_storage import route_native_record
-
 
 ROOT = Path(__file__).resolve().parents[2]
 H = "0123456789abcdef0123456789abcdef01234567"
 T = "abcdef0123456789abcdef0123456789abcdef01"
 C = "fedcba9876543210fedcba9876543210fedcba98"
+
+
+def _validate_owner_publication(
+    outcome: PublicationOutcome,
+    *,
+    campaign_id: str,
+    expected_pinned_head_sha: str,
+) -> PublicationAcceptanceEvidence:
+    return validate_owner_issued_accepted_publication(
+        outcome,
+        campaign_id=campaign_id,
+        expected_pinned_head_sha=expected_pinned_head_sha,
+    )
 
 
 def _accepted_command() -> dict[str, object]:
@@ -392,6 +408,231 @@ class PublicationPlanTests(unittest.TestCase):
 
 
 class PublicationOutcomeTests(unittest.TestCase):
+    def test_constructible_accepted_outcome_is_not_owner_issued(self) -> None:
+        outcome = PublicationOutcome(
+            PublicationStatus.ACCEPTED,
+            C,
+            C,
+            "CONFIRMED_ACCEPTED",
+            True,
+        )
+
+        self.assertTrue(outcome.acknowledge())
+        with self.assertRaises(PublicationContractError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id="campaign-000001",
+                expected_pinned_head_sha=H,
+            )
+
+    def test_direct_classifier_result_is_not_owner_issued(self) -> None:
+        attempt = _attempt()
+        outcome = classify_ref_transition(
+            {"dispatched": True, "status": "accepted", "head_sha": C},
+            intended_commit_sha=C,
+        )
+
+        with self.assertRaises(PublicationContractError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id=attempt.campaign_id,
+                expected_pinned_head_sha=attempt.pinned_head_sha,
+            )
+
+    def test_direct_reconciliation_result_with_constructible_proofs_is_not_owner_issued(
+        self,
+    ) -> None:
+        attempt = _attempt()
+        closure = _current_closure(attempt, head_sha=C)
+        outcome = reconcile_indeterminate_publication(
+            attempt,
+            lambda: {"closure": closure},
+            intended_commit_sha=C,
+        )
+
+        self.assertEqual(outcome.status, PublicationStatus.ACCEPTED)
+        with self.assertRaises(PublicationContractError):
+            _validate_owner_publication(
+                outcome,
+                campaign_id=attempt.campaign_id,
+                expected_pinned_head_sha=attempt.pinned_head_sha,
+            )
+
+        descendant = "a" * 40
+        ancestor_outcome = reconcile_indeterminate_publication(
+            attempt,
+            lambda: {
+                "closure": _current_closure(attempt, head_sha=descendant),
+                "ancestry": CommitAncestryEvidence(
+                    ancestor_sha=C, descendant_sha=descendant
+                ),
+            },
+            intended_commit_sha=C,
+        )
+        self.assertEqual(ancestor_outcome.status, PublicationStatus.ACCEPTED)
+        with self.assertRaises(PublicationContractError):
+            _validate_owner_publication(
+                ancestor_outcome,
+                campaign_id=attempt.campaign_id,
+                expected_pinned_head_sha=attempt.pinned_head_sha,
+            )
+
+    def test_owner_issuance_rejects_mismatched_closure_and_ancestry_proofs(
+        self,
+    ) -> None:
+        attempt = _attempt()
+        digests = attempt.publication_operation_digests()
+        intended = C
+        descendant = "a" * 40
+
+        invalid_proofs = (
+            (
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    intended,
+                    intended,
+                    "RECONCILED_CURRENT_CLOSURE",
+                    False,
+                ),
+                PublicationCurrentClosureEvidence(
+                    base_revision=T,
+                    head_sha=intended,
+                    tree_sha=T,
+                    operation_digests=digests,
+                ),
+                None,
+            ),
+            (
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    intended,
+                    intended,
+                    "RECONCILED_CURRENT_CLOSURE",
+                    False,
+                ),
+                PublicationCurrentClosureEvidence(
+                    base_revision=H,
+                    head_sha=descendant,
+                    tree_sha=T,
+                    operation_digests=digests,
+                ),
+                None,
+            ),
+            (
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    intended,
+                    intended,
+                    "RECONCILED_CURRENT_CLOSURE",
+                    False,
+                ),
+                PublicationCurrentClosureEvidence(
+                    base_revision=H,
+                    head_sha=intended,
+                    tree_sha=T,
+                    operation_digests={
+                        path: digest
+                        for index, (path, digest) in enumerate(digests.items())
+                        if index > 0
+                    },
+                ),
+                None,
+            ),
+            (
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    intended,
+                    intended,
+                    "RECONCILED_CURRENT_CLOSURE",
+                    False,
+                ),
+                PublicationCurrentClosureEvidence(
+                    base_revision=H,
+                    head_sha=intended,
+                    tree_sha=T,
+                    operation_digests=digests | {next(iter(digests)): "0" * 64},
+                ),
+                None,
+            ),
+            (
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    intended,
+                    descendant,
+                    "RECONCILED_ANCESTOR_CURRENT_CLOSURE",
+                    False,
+                ),
+                PublicationCurrentClosureEvidence(
+                    base_revision=H,
+                    head_sha=descendant,
+                    tree_sha=T,
+                    operation_digests=digests,
+                ),
+                CommitAncestryEvidence(ancestor_sha=H, descendant_sha=descendant),
+            ),
+        )
+
+        for outcome, closure, ancestry in invalid_proofs:
+            with self.subTest(cause=outcome.cause, closure=closure.to_dict()):
+                with self.assertRaises(PublicationContractError):
+                    publication_module._issue_owner_issued_accepted_publication(
+                        outcome,
+                        attempt,
+                        intended_commit_sha=intended,
+                        current_closure=closure,
+                        ancestry=ancestry,
+                    )
+                with self.assertRaises(PublicationContractError):
+                    _validate_owner_publication(
+                        outcome,
+                        campaign_id=attempt.campaign_id,
+                        expected_pinned_head_sha=attempt.pinned_head_sha,
+                    )
+
+    def test_owner_issued_ancestor_evidence_preserves_additional_disjoint_paths(
+        self,
+    ) -> None:
+        attempt = _attempt()
+        intended = C
+        descendant = "a" * 40
+        extra_path = "independent/owner.yaml"
+        closure = PublicationCurrentClosureEvidence(
+            base_revision=attempt.pinned_head_sha,
+            head_sha=descendant,
+            tree_sha=T,
+            operation_digests={
+                **attempt.publication_operation_digests(),
+                extra_path: "d" * 64,
+            },
+        )
+        outcome = PublicationOutcome(
+            PublicationStatus.ACCEPTED,
+            intended,
+            descendant,
+            "RECONCILED_ANCESTOR_CURRENT_CLOSURE",
+            False,
+        )
+
+        issued = publication_module._issue_owner_issued_accepted_publication(
+            outcome,
+            attempt,
+            intended_commit_sha=intended,
+            current_closure=closure,
+            ancestry=CommitAncestryEvidence(
+                ancestor_sha=intended, descendant_sha=descendant
+            ),
+        )
+
+        validated = _validate_owner_publication(
+            outcome,
+            campaign_id=attempt.campaign_id,
+            expected_pinned_head_sha=attempt.pinned_head_sha,
+        )
+        self.assertIs(validated, issued)
+        self.assertEqual(
+            validated.current_closure.operation_digests[extra_path], "d" * 64
+        )
+
     def test_acceptance_is_typed_and_acknowledgeable(self) -> None:
         outcome = classify_ref_transition(
             {"dispatched": True, "status": "accepted", "head_sha": C},
