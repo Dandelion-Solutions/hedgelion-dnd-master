@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — T04B-P0R AUTHORIZED / T04B PAUSED
-CURRENT_TASK: W04.T04B-P0R — W02 read-only post-publication acceptance revalidation
-LAST_COMPLETED_TASK: W04.T04B-P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; W04.T04B-P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: cfa6c907189dd22741954303dae51d36f7bc4962 — current remote ruling/status handoff before P0R RED
+STATUS: EXECUTING — W04.T04B AUTHORIZED BY P0R PASS / READ-BACK
+CURRENT_TASK: resume W04.T04B same-closure recovery using the accepted P0R W02 read-only revalidation route
+LAST_COMPLETED_TASK: W04.T04B-P0R independent PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: 94bfddf475cd5ffa21049e6333188aa32126635b — P0R code/status checkpoint freshly read back
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -294,20 +294,22 @@ SYSTEM_IMPACT:
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
 - T04B-P0: PASS / independently reviewed / published / read back;
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
-- T04B-P0R: AUTHORIZED W02 read-only recovery prerequisite; T04B remains paused until P0R independent PASS/read-back.
+- T04B-P0R: ACCEPTED W02 read-only recovery prerequisite; independent PASS and exact remote read-back complete; T04B may resume under the ruling.
 
-P0R_IMPLEMENTATION_STATE: production implementation, focused verification, independent review, and clean exact-tree full DEV verification are complete locally; coherent publication/read-back remains.
-P0R_OUTPUT: pending coherent publication/read-back — `W02_POSTPUBLICATION_REVALIDATION_READY`.
+P0R_IMPLEMENTATION_STATE: PASS — implementation, focused and clean exact-tree verification, independent review, publication and remote read-back complete.
+P0R_OUTPUT: `W02_POSTPUBLICATION_REVALIDATION_READY` — ACCEPTED / independent PASS / remote read-back.
+P0R_CODE_COMMIT: `d053dbbc01351c0ef5a356110542b0a86d3f923c`.
+P0R_REMOTE_READBACK: fresh fetch confirmed `origin/v1/engine-rearchitecture == 94bfddf475cd5ffa21049e6333188aa32126635b`; P0R code and cursor files match local HEAD.
 P0R_INDEPENDENT_REVIEW: **PASS** — repository-identity mismatch negative witness was added and scoped re-review marked it ADDRESSED.
 P0R_FOCUSED_VERIFICATION: RD06 + RuntimeHost + LiveComposedCampaignAbsorptionDelta + publication-ref-fence suites: 112 passed; maintenance audit: PASS.
-P0R_CLEAN_EXACT_FULL_DEV: 1281 passed, 5 skipped, 4 known S6D failures outside P0R scope; clean exact maintenance audit PASS; version census zero unclassified hits; clean package provenance PASS.
+P0R_CLEAN_EXACT_FULL_DEV: 1281 passed, 5 skipped, 4 known S6D failures outside P0R scope; clean exact maintenance audit PASS; version census zero unclassified hits; clean package provenance PASS. Ran from detached clean worktree at code commit `d053dbbc01351c0ef5a356110542b0a86d3f923c`.
 P0R_RUFF: all changed-range format checks PASS. Whole-file Ruff reports only three findings confirmed present at implementation BASE_SHA: RD06 unused `promise`, `publication.py` NaN self-compare and nested immutable-campaign identity condition. Whole-file formatting remains non-clean in pre-existing sections of `publication.py` and RD06 tests; P0R changed ranges are formatted.
 P0R_DIRTY_WORKTREE_FULL_DEV: diagnostic run before the final reviewer-only test addition: 1277 passed, 5 skipped, 6 failed. Four failures are known S6D cases; the other two were traced to local `.entire/`/`DEV/.lavish/` version-census contamination and expected dirty-worktree package provenance, and disappeared in the clean exact-tree run.
 P0R_VERSION_IMPACT: `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9 -> 1.0.10`; schema, campaign-contract, storage/catalog/engine generations, migration, and dual-read: NONE.
 
-NEXT_EXACT_TASK: publish/read back the reviewed P0R checkpoint and record `W02_POSTPUBLICATION_REVALIDATION_READY`. Resume the preserved T04B candidate only after that PASS/read-back. T07D remains independently eligible.
-KNOWN_BLOCKERS: P0R remote publication/read-back pending; four S6D catalog/contract tests remain outside P0R scope. T04B/T05C remain blocked until their gates. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: the P0R code/test/control checkpoint remains local-only pending clean exact-tree verification and remote publication; its authorized files are the publication and RuntimeHost owners/tests plus these progress/status cursors. The T04B candidate remains preserved in the local P0R-exclusion stash and must not enter P0R. The unrelated untracked `DEV/.lavish/` remains untouched.
+NEXT_EXACT_TASK: continue the restored T04B candidate, rederive the exact P1 absorption delta and complete W03 + PLAYER/access + Collaboration operation set, call P0R, pass its fresh W02 outcome through the unchanged P1 classifier, validate final route/source/after-images, and recover with zero writes. T07D remains independently eligible.
+KNOWN_BLOCKERS: T04B remains unaccepted pending its recovery/verification/review checkpoint; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R scope. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: P0R code/test/control checkpoint is published/read back. The original T04B candidate is restored locally in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`, remains uncommitted/unpublished, and is preserved in its local stash backup; it was not included in P0R. `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
 

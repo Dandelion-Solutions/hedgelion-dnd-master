@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1 ACCEPTED — T04B-P0R READ-ONLY RECOVERY PREREQUISITE AUTHORIZED; T04B/T05C BLOCKED; T07D AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1 ACCEPTED — T04B-P0R `W02_POSTPUBLICATION_REVALIDATION_READY` ACCEPTED/READ BACK — T04B AUTHORIZED; T05C BLOCKED; T07D AUTHORIZED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
-LAST_CLOSED_UNIT: W04.T04B-P1 independently accepted/read back at `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: implement W04.T04B-P0R under the accepted post-publication recovery ruling and obtain independent PASS/read-back; then resume the existing local T04B candidate. W04.T07D remains independently authorized. T05C waits for T04B independent PASS/read-back.
-REQUIRED_GATE: T04B-P0R implementation -> independent PASS/read-back -> finish/review/publish T04B -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
+LAST_CLOSED_UNIT: W04.T04B-P0R output `W02_POSTPUBLICATION_REVALIDATION_READY` implemented at `d053dbbc01351c0ef5a356110542b0a86d3f923c`, independently reviewed PASS, clean exact DEV verification completed, and remote read-back confirmed at `94bfddf475cd5ffa21049e6333188aa32126635b`; W04.T04B-P1 independently accepted/read back at `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
+NEXT_AUTHORIZED_UNIT: resume the preserved W04.T04B candidate; rederive the exact P1 absorption delta and complete W03 + PLAYER/access + Collaboration operation set, call P0R, and recover without a second write or LIVE replay. W04.T07D remains independently authorized. T05C waits for T04B independent PASS/read-back.
+REQUIRED_GATE: finish/review/publish T04B -> T05C after accepted T02C+T05B; T07D independent PASS -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: the post-process-loss evidence gap is Senior-resolved to bounded W02 read-only prerequisite T04B-P0R. T04B remains paused until P0R PASS/read-back; T05C remains blocked. P0/P1 remain accepted. Four S6D tests previously failed outside P0/P1/T04B scope; local `.entire`/`__pycache__` verification contamination is not claimed repaired. T07D remains independently eligible. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: T04B remains unaccepted; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R scope. T07D remains independently eligible. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -328,17 +328,17 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: EXECUTING — W04.T04B-P0R read-only acceptance revalidation
-CURRENT_TASK: P0R implementation/review and clean exact-tree full DEV verification complete locally; coherent publication/read-back remain. T04B stays paused until P0R PASS/read-back; T07D remains independent.
-LAST_COMPLETED_TASK: W04.T04B-P1 -> `a792d14894dcc3ba123191883e5647cc06808e85` (independent PASS/read-back); W04.T04B-P0 -> `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a` (independent PASS/read-back); T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `cfa6c907189dd22741954303dae51d36f7bc4962` — fresh P0R ruling/status handoff
+STATUS: EXECUTING — W04.T04B same-closure recovery/publication
+CURRENT_TASK: resume the preserved T04B candidate under accepted P0R; keep its Collaboration/test changes outside the P0R checkpoint. T07D remains independent; T05C waits for T04B PASS.
+LAST_COMPLETED_TASK: W04.T04B-P0R -> `d053dbbc01351c0ef5a356110542b0a86d3f923c` (independent PASS, clean exact DEV evidence, remote read-back); W04.T04B-P1 -> `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 -> `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: `94bfddf475cd5ffa21049e6333188aa32126635b` — P0R code and status checkpoint freshly read back
 
 CURRENT_VERIFICATION_STATE: P0/P1 remain independently accepted/read back. P0R focused W02/RuntimeHost/W03-consumer/ref-fence suites: 112 passed; clean exact P0R full DEV suite: 1281 passed, 5 skipped, the same four out-of-scope S6D failures; clean exact maintenance audit: PASS; version census: zero unclassified hits; RuntimePackageProvenance clean-head check: PASS; independent review and repository-identity scoped re-review: PASS. Scoped Ruff format checks pass for changed blocks; whole-file Ruff reports three findings confirmed unchanged at `BASE_SHA`; full-file formatting remains unclean in pre-existing sections of `publication.py` and RD06 tests. The dirty main checkout's separate full-suite run had two extra local-artifact/dirty-worktree failures, which disappeared in the clean exact-tree run. Hosted CI unavailable.
 VERSION_IMPACT: P0 `publication.py 1.0.4 -> 1.0.5`, `runtime_host.py 1.0.8 -> 1.0.9`; P1 `live_state.py 1.0.20 -> 1.0.21`; P0R `publication.py 1.0.5 -> 1.0.6`, `runtime_host.py 1.0.9 -> 1.0.10`. Persisted schema, campaign contract, storage/catalog/engine generations, migration and dual-read: NONE. T04B Collaboration `1.0.18 -> 1.0.19` remains provisional/unpublished.
 SYSTEM_IMPACT: NONE — P0R is within the accepted W02 read-only prerequisite ruling; no new RepositoryPort method/authority, persistence, principal reconstruction, or write path was introduced.
-NEXT_EXACT_TASK: publish/read back the verified P0R checkpoint and record `W02_POSTPUBLICATION_REVALIDATION_READY`; only then resume the preserved T04B candidate. T07D remains independent; T05C waits for T04B PASS.
-KNOWN_BLOCKERS: P0R remote publication/read-back pending. Four S6D failures remain outside P0R scope; Wave 05 unauthorized.
-UNPUBLISHED_WORK: P0R code/tests/control checkpoint is local-only pending clean exact-tree verification and remote publication. T04B candidate remains separately preserved in the local P0R-exclusion stash, not in the P0R diff. Unrelated `DEV/.lavish/` remains untouched.
+NEXT_EXACT_TASK: execute T04B cold recovery through P0R, validate final routing/source/owner after-images, then run T04B integration verification and independent review. T07D remains independent; T05C waits for T04B PASS.
+KNOWN_BLOCKERS: T04B remains unaccepted until its recovery/verification/review checkpoint. Four S6D failures remain outside P0R scope; Wave 05 unauthorized.
+UNPUBLISHED_WORK: the original T04B candidate is restored locally in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`; it remains uncommitted/unpublished, with its preserved stash backup in place. Unrelated `DEV/.lavish/` remains untouched.
 
 ## Historical Wave-04 progress retention
 
