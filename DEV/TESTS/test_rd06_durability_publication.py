@@ -408,6 +408,125 @@ class PublicationPlanTests(unittest.TestCase):
 
 
 class PublicationOutcomeTests(unittest.TestCase):
+    def test_revalidated_recovery_basis_issues_exact_instance_w02_evidence(
+        self,
+    ) -> None:
+        freeze_recovery_basis = getattr(
+            publication_module, "freeze_campaign_publication_recovery_basis", None
+        )
+        self.assertTrue(callable(freeze_recovery_basis))
+        if not callable(freeze_recovery_basis):
+            return
+        operation = route_serialized_operation(
+            "runtime.collaboration_obligation",
+            "obligation-000001",
+            {"id": "obligation-000001", "kind": "runtime.collaboration_obligation"},
+        )
+        recovery_basis = freeze_recovery_basis(
+            repository_id="github.com/example/campaigns",
+            target_ref="campaign/20260916",
+            campaign_id="campaign-000001",
+            pinned_head_sha=H,
+            base_tree_sha=T,
+            intended_commit_sha=C,
+            manifest={
+                "campaign_id": "campaign-000001",
+                "campaign_name": "The Frostfall",
+                "branch": "campaign/20260916",
+                "created_at": "2026-09-16T12:00:00Z",
+            },
+            campaign_card={
+                "campaign_id": "campaign-000001",
+                "campaign_name": "The Frostfall",
+            },
+            path_operations={operation.relative_path: operation.payload},
+            owner_generations={"runtime.collaboration_obligation:obligation-000001": 4},
+            routed_operation=operation,
+            publication_reason="collaboration-close",
+        )
+        outcome = PublicationOutcome(
+            PublicationStatus.ACCEPTED,
+            C,
+            C,
+            "RECONCILED_CURRENT_CLOSURE",
+            False,
+        )
+        closure = PublicationCurrentClosureEvidence(
+            base_revision=H,
+            head_sha=C,
+            tree_sha=T,
+            operation_digests=recovery_basis.publication_operation_digests(),
+        )
+
+        issued = publication_module._issue_owner_issued_accepted_publication(
+            outcome,
+            recovery_basis,
+            intended_commit_sha=C,
+            current_closure=closure,
+        )
+
+        evidence = _validate_owner_publication(
+            outcome,
+            campaign_id="campaign-000001",
+            expected_pinned_head_sha=H,
+        )
+        self.assertIs(evidence, issued)
+        recovery_basis_type = getattr(
+            publication_module, "FrozenCampaignPublicationRecoveryBasis", None
+        )
+        self.assertIsInstance(
+            evidence.attempt,
+            recovery_basis_type,
+        )
+        self.assertFalse(hasattr(evidence.attempt, "acting_principal"))
+        path, digest = next(
+            iter(recovery_basis.publication_operation_digests().items())
+        )
+        self.assertIs(
+            validate_owner_issued_accepted_publication(
+                outcome,
+                campaign_id="campaign-000001",
+                expected_pinned_head_sha=H,
+                required_operation_digests={path: digest},
+            ),
+            evidence,
+        )
+        copied = PublicationOutcome(
+            outcome.status,
+            outcome.intended_commit_sha,
+            outcome.observed_head_sha,
+            outcome.cause,
+            outcome.dispatched,
+            outcome.retry_with_force,
+        )
+        with self.assertRaises(PublicationContractError):
+            _validate_owner_publication(
+                copied,
+                campaign_id="campaign-000001",
+                expected_pinned_head_sha=H,
+            )
+        other_intended = "a" * 40
+        other_outcome = PublicationOutcome(
+            PublicationStatus.ACCEPTED,
+            other_intended,
+            other_intended,
+            "RECONCILED_CURRENT_CLOSURE",
+            False,
+        )
+        other_closure = PublicationCurrentClosureEvidence(
+            base_revision=H,
+            head_sha=other_intended,
+            tree_sha=T,
+            operation_digests=recovery_basis.publication_operation_digests(),
+        )
+        with self.assertRaisesRegex(PublicationContractError, "intended commit"):
+            publication_module._issue_owner_issued_accepted_publication(
+                other_outcome,
+                recovery_basis,
+                intended_commit_sha=other_intended,
+                current_closure=other_closure,
+            )
+
     def test_constructible_accepted_outcome_is_not_owner_issued(self) -> None:
         outcome = PublicationOutcome(
             PublicationStatus.ACCEPTED,

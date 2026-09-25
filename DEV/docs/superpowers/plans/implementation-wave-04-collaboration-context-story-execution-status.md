@@ -5,9 +5,27 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: EXECUTING — T04B-P0R AUTHORIZED / T04B PAUSED
-CURRENT_TASK: implement/review T04B-P0R; T07D may proceed independently; T04B resumes only after P0R independent PASS/read-back
+CURRENT_TASK: W04.T04B-P0R — W02 read-only post-publication acceptance revalidation
 LAST_COMPLETED_TASK: W04.T04B-P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; W04.T04B-P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: ed3131681955830ee640ed79bca8398d2de86c53 — recovery-evidence impact brief/control checkpoint before P0R implementation
+LAST_SAFE_SHA: cfa6c907189dd22741954303dae51d36f7bc4962 — current remote ruling/status handoff before P0R RED
+
+## W04.T04B-P0R implementation impact envelope
+
+SPEC / APPROVED DESIGN: `DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-senior-ruling.md`; stable task `W04.T04B-P0R` in `implementation-wave-04-collaboration-context-story.md`.
+IMPLEMENTATION START HEAD: `cfa6c907189dd22741954303dae51d36f7bc4962`.
+PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/publication.py`, `GAME/TOOLS/runtime_host.py`.
+
+EXPECTED OWNERS TO CHANGE: W02 publication evidence and bound RuntimeHost read-side revalidation only.
+EXPECTED CONSUMERS TO CHANGE: W02 publication and RuntimeHost primary tests; existing P1 owner validator remains the consumer contract.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: bounded `CampaignPublicationService.revalidate_published_owner_delta(...)`; ephemeral recovery-basis and exact-instance W02 evidence realization. No RepositoryPort protocol change.
+
+PROTECTED ARCHITECTURE INVARIANTS: H/C remain nominations until exact repository proof; C is a direct single-parent child of H with exact changed-path closure; D retains every attempted after-image and, where D != C, exact C-to-D ancestry. No field-equality authority, historical-principal reconstruction, persistence, second repository authority, or Git write.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD06 publication suite, RuntimeHost composition suite, relevant cross-owner tests, maintenance audit, scoped Ruff/format, clean exact-tree full DEV suite.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: `live_state.py`, `collaboration.py`, `access_control.py`, `story.py`, `durability.py`, RepositoryPort protocol, persisted schemas, Wave-05 shared surfaces. The unpublished T04B candidate remains preserved locally and excluded from P0R.
+VERSION IMPACT: expected `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9 -> 1.0.10`; fresh verification required. Persisted schema, campaign contract, storage/catalog/engine generations, and migration expected NONE.
+SCHEMA / CATALOG / CHECKPOINT IMPACT: NONE expected; no persisted receipt/evidence.
+MIGRATION IMPACT: NONE expected.
+CURRENTNESS RE-READ SET BEFORE WRITE: fresh remote HEAD, this cursor, stable Wave-04 plan, P0R Senior ruling, impact brief, current publication/RuntimeHost owners, W02 primary tests, Step-5.6 and versioning owners.
 
 
 ## T04B Senior System-Impact resolution
@@ -278,9 +296,17 @@ SYSTEM_IMPACT:
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
 - T04B-P0R: AUTHORIZED W02 read-only recovery prerequisite; T04B remains paused until P0R independent PASS/read-back.
 
-NEXT_EXACT_TASK: Senior disposition of the T04B recovery-evidence boundary; resume T04B only within that ruling. T07D remains independently eligible. T05C waits for T04B independent PASS.
-KNOWN_BLOCKERS: P0R implementation/review pending; T04B/T05C remain blocked until their gates. Four S6D catalog/contract tests remain outside P0/P1/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: T04B candidate remains uncommitted/unpublished in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`. P0/P1 source is published/read back; local `stash@{0}` is a duplicate P1 backup.
+P0R_IMPLEMENTATION_STATE: production implementation, focused verification, and independent review are complete locally; exact-clean full DEV verification and coherent publication/read-back remain.
+P0R_OUTPUT: pending final clean exact-tree verification/publication — `W02_POSTPUBLICATION_REVALIDATION_READY`.
+P0R_INDEPENDENT_REVIEW: **PASS** — repository-identity mismatch negative witness was added and scoped re-review marked it ADDRESSED.
+P0R_FOCUSED_VERIFICATION: RD06 + RuntimeHost + LiveComposedCampaignAbsorptionDelta + publication-ref-fence suites: 112 passed; maintenance audit: PASS.
+P0R_RUFF: all changed-range format checks PASS. Whole-file Ruff reports only three findings confirmed present at implementation BASE_SHA: RD06 unused `promise`, `publication.py` NaN self-compare and nested immutable-campaign identity condition. Whole-file formatting remains non-clean in pre-existing sections of `publication.py` and RD06 tests; P0R changed ranges are formatted.
+P0R_DIRTY_WORKTREE_FULL_DEV: prior run before the final reviewer-only test addition: 1277 passed, 5 skipped, 6 failed. Four failures are known S6D cases; the other two were traced to local `.entire/`/`DEV/.lavish/` version-census contamination and expected dirty-worktree package provenance. The clean exact-tree run remains pending.
+P0R_VERSION_IMPACT: `publication.py 1.0.5 -> 1.0.6`; `runtime_host.py 1.0.9 -> 1.0.10`; schema, campaign-contract, storage/catalog/engine generations, migration, and dual-read: NONE.
+
+NEXT_EXACT_TASK: run clean exact-tree full DEV verification on the reviewed P0R commit, then publish/read back and record `W02_POSTPUBLICATION_REVALIDATION_READY`. Resume the preserved T04B candidate only after that PASS/read-back. T07D remains independently eligible.
+KNOWN_BLOCKERS: clean exact P0R full DEV verification and publication/read-back pending; four S6D catalog/contract tests remain outside P0R scope. T04B/T05C remain blocked until their gates. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: the P0R code/test/control checkpoint remains local-only pending clean exact-tree verification and remote publication; its authorized files are the publication and RuntimeHost owners/tests plus these progress/status cursors. The T04B candidate remains preserved in the local P0R-exclusion stash and must not enter P0R. The unrelated untracked `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
 

@@ -137,6 +137,7 @@ class PublicationRepository(DeploymentRepository):
         super().__init__(campaign_id)
         self.current_revision = "a" * 40
         self.current_tree = "b" * 40
+        self.repository_identity_value = "github.com/example/campaigns"
         self.pin_revision_override: str | None = None
         self.records: dict[str, object] = {
             "MANIFEST.yaml": {
@@ -154,9 +155,12 @@ class PublicationRepository(DeploymentRepository):
         self.ancestry_relation = "EQUAL"
         self.read_exact_commit_calls: list[tuple[str, str]] = []
         self.ancestry_calls: list[tuple[str, str, str]] = []
+        self.read_path_calls: list[tuple[str, str]] = []
+        self.revision_records: dict[str, dict[str, object]] = {}
+        self.exact_commit_evidence: dict[str, dict[str, object]] = {}
 
     def repository_identity(self) -> str:
-        return "github.com/example/campaigns"
+        return self.repository_identity_value
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
         self.pin_calls.append(campaign_id)
@@ -167,14 +171,19 @@ class PublicationRepository(DeploymentRepository):
         )
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
+        self.read_path_calls.append((pinned.revision, path))
         if path in self.path_overrides:
             return self.path_overrides[path]
+        if pinned.revision in self.revision_records:
+            return self.revision_records[pinned.revision][path]
         if path in self.records:
             return self.records[path]
         return {"id": "obligation-1", "kind": "runtime.collaboration_obligation"}
 
     def read_exact_commit(self, campaign_ref: str, revision: str) -> object:
         self.read_exact_commit_calls.append((campaign_ref, revision))
+        if revision in self.exact_commit_evidence:
+            return self.exact_commit_evidence[revision]
         return {"revision": revision}
 
     def compare_ancestry(
@@ -196,6 +205,7 @@ class PublicationTransport:
         self.next_head = "c" * 40
         self.reconciliation_head: str | None = None
         self.reconciliation_pin_revision: str | None = None
+        self.principal_resolution_calls = 0
 
     def repository_identity(self) -> str:
         return "github.com/example/campaigns"
@@ -203,6 +213,7 @@ class PublicationTransport:
     def resolve_authenticated_acting_principal(
         self, campaign_id: str, pinned_campaign: PinnedCampaign
     ) -> object:
+        self.principal_resolution_calls += 1
         from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence
 
         return AuthenticatedPrincipalEvidence("principal-1")
@@ -243,6 +254,50 @@ def _publication_delta() -> tuple[dict[str, object], dict[str, object]]:
     payload = _publication_payload()
     route = route_native_record("runtime.collaboration_obligation", ("obligation-1",))
     return payload, {route.relative_path: payload}
+
+
+def _postpublication_revalidation_fixture():
+    repository = PublicationRepository()
+    transport = PublicationTransport(repository)
+    payload, path_operations = _publication_delta()
+    routed_operation = route_serialized_operation(
+        "runtime.collaboration_obligation", "obligation-1", payload
+    )
+    predecessor = "a" * 40
+    intended = "c" * 40
+    predecessor_tree = "b" * 40
+    intended_tree = "d" * 40
+    base_records = dict(repository.records)
+    repository.current_revision = intended
+    repository.current_tree = intended_tree
+    repository.revision_records = {
+        predecessor: base_records,
+        intended: base_records | path_operations,
+    }
+    repository.exact_commit_evidence = {
+        predecessor: {
+            "revision": predecessor,
+            "tree_sha": predecessor_tree,
+            "changed_paths": [],
+        },
+        intended: {
+            "revision": intended,
+            "tree_sha": intended_tree,
+            "parent_revision": predecessor,
+            "changed_paths": sorted(path_operations),
+        },
+    }
+    host, _repository, _live = _compose(repository, publication=transport)
+    return (
+        host,
+        repository,
+        transport,
+        routed_operation,
+        path_operations,
+        {"runtime.collaboration_obligation:obligation-1": 2},
+        predecessor,
+        intended,
+    )
 
 
 def _semantic_event(event_id: str, ordinal: int) -> dict[str, object]:
@@ -420,7 +475,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.9")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.10")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -1029,6 +1084,442 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         self.assertEqual(len(window.entries), 1)
         self.assertEqual(window.entries[0]["event_id"], "live-event-1")
         self.assertEqual(live.oversized_entries.accesses, 1)
+
+
+class PostPublicationRevalidationTests(unittest.TestCase):
+    def _revalidate(self, fixture):
+        (
+            host,
+            _repository,
+            _transport,
+            routed_operation,
+            path_operations,
+            owner_generations,
+            predecessor,
+            intended,
+        ) = fixture
+        revalidate = getattr(host.publication, "revalidate_published_owner_delta", None)
+        self.assertTrue(
+            callable(revalidate),
+            "CampaignPublicationService must expose read-only P0R revalidation",
+        )
+        if not callable(revalidate):
+            return None
+        return revalidate(
+            routed_operation=routed_operation,
+            path_operations=path_operations,
+            owner_generations=owner_generations,
+            publication_reason="collaboration-close",
+            expected_pinned_head_sha=predecessor,
+            intended_commit_sha=intended,
+        )
+
+    @staticmethod
+    def _assert_no_repository_writes(
+        test_case: unittest.TestCase, transport: PublicationTransport
+    ) -> None:
+        names = [name for name, _value in transport.calls]
+        test_case.assertNotIn("create_tree", names)
+        test_case.assertNotIn("create_commit", names)
+        test_case.assertNotIn("update_ref", names)
+
+    def _assert_not_accepted(self, fixture) -> None:
+        _host, _repository, transport, *_rest = fixture
+        try:
+            outcome = self._revalidate(fixture)
+        except RuntimeHostError:
+            outcome = None
+        if outcome is not None:
+            self.assertIn(
+                outcome.status,
+                {
+                    publication_module.PublicationStatus.CONFLICT,
+                    publication_module.PublicationStatus.INDETERMINATE,
+                },
+            )
+            with self.assertRaises(ValueError):
+                _validate_owner_publication(
+                    outcome,
+                    campaign_id=CAMPAIGN_ID,
+                    expected_pinned_head_sha=fixture[-2],
+                )
+        self._assert_no_repository_writes(self, transport)
+
+    def test_exact_current_commit_revalidates_with_fresh_owner_evidence_and_zero_writes(
+        self,
+    ) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        _host, repository, transport, _route, path_operations, generations, h, c = (
+            fixture
+        )
+
+        outcome = self._revalidate(fixture)
+
+        self.assertIsNotNone(outcome)
+        if outcome is None:
+            return
+        self.assertEqual(outcome.status, publication_module.PublicationStatus.ACCEPTED)
+        self.assertEqual(outcome.cause, "RECONCILED_CURRENT_CLOSURE")
+        self.assertFalse(outcome.dispatched)
+        self.assertEqual(
+            (outcome.intended_commit_sha, outcome.observed_head_sha), (c, c)
+        )
+        evidence = _validate_owner_publication(
+            outcome, campaign_id=CAMPAIGN_ID, expected_pinned_head_sha=h
+        )
+        self.assertEqual(evidence.kind.value, "RECONCILED_CURRENT_CLOSURE")
+        self.assertEqual(
+            evidence.attempt.path_operations.keys(), path_operations.keys()
+        )
+        self.assertEqual(evidence.attempt.owner_generations, generations)
+        self.assertEqual(evidence.attempt.publication_reason, "collaboration-close")
+        self.assertFalse(hasattr(evidence.attempt, "acting_principal"))
+        self.assertEqual(
+            dict(evidence.current_closure.operation_digests),
+            evidence.attempt.publication_operation_digests(),
+        )
+        path, digest = next(
+            iter(evidence.attempt.publication_operation_digests().items())
+        )
+        self.assertIs(
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha=h,
+                required_operation_digests={path: digest},
+            ),
+            evidence,
+        )
+        copied = PublicationOutcome(
+            outcome.status,
+            outcome.intended_commit_sha,
+            outcome.observed_head_sha,
+            outcome.cause,
+            outcome.dispatched,
+            outcome.retry_with_force,
+        )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                copied, campaign_id=CAMPAIGN_ID, expected_pinned_head_sha=h
+            )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome, campaign_id="campaign-other", expected_pinned_head_sha=h
+            )
+        with self.assertRaises(ValueError):
+            _validate_owner_publication(
+                outcome, campaign_id=CAMPAIGN_ID, expected_pinned_head_sha="f" * 40
+            )
+        self.assertIn((h, "MANIFEST.yaml"), repository.read_path_calls)
+        self.assertIn((h, "CAMPAIGN_CARD.yaml"), repository.read_path_calls)
+        self.assertIn(("campaign/frostfall", h), repository.read_exact_commit_calls)
+        self.assertIn(("campaign/frostfall", c), repository.read_exact_commit_calls)
+        self.assertIn((h, next(iter(path_operations))), repository.read_path_calls)
+        self.assertEqual(transport.principal_resolution_calls, 0)
+        self.assertEqual(
+            [name for name, _value in transport.calls].count("update_ref"), 0
+        )
+        self._assert_no_repository_writes(self, transport)
+
+    def test_compatible_descendant_revalidates_exact_ancestry_without_writes(
+        self,
+    ) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        _host, repository, transport, _route, _path_operations, _generations, h, c = (
+            fixture
+        )
+        descendant = "e" * 40
+        descendant_tree = "f" * 40
+        repository.current_revision = descendant
+        repository.current_tree = descendant_tree
+        repository.ancestry_relation = "ANCESTOR"
+        repository.revision_records[descendant] = repository.revision_records[c] | {
+            "unrelated/owner.yaml": {"revision": 2}
+        }
+        repository.exact_commit_evidence[descendant] = {
+            "revision": descendant,
+            "tree_sha": descendant_tree,
+            "parent_revision": c,
+            "changed_paths": ["unrelated/owner.yaml"],
+        }
+
+        outcome = self._revalidate(fixture)
+
+        self.assertIsNotNone(outcome)
+        if outcome is None:
+            return
+        self.assertEqual(outcome.status, publication_module.PublicationStatus.ACCEPTED)
+        self.assertEqual(outcome.cause, "RECONCILED_ANCESTOR_CURRENT_CLOSURE")
+        self.assertEqual(
+            (outcome.intended_commit_sha, outcome.observed_head_sha), (c, descendant)
+        )
+        evidence = _validate_owner_publication(
+            outcome, campaign_id=CAMPAIGN_ID, expected_pinned_head_sha=h
+        )
+        self.assertEqual(evidence.ancestry.ancestor_sha, c)
+        self.assertEqual(evidence.ancestry.descendant_sha, descendant)
+        self.assertEqual(
+            dict(evidence.current_closure.operation_digests),
+            evidence.attempt.publication_operation_digests(),
+        )
+        self.assertEqual(
+            repository.ancestry_calls,
+            [("campaign/frostfall", c, descendant)],
+        )
+        self.assertEqual(transport.principal_resolution_calls, 0)
+        self._assert_no_repository_writes(self, transport)
+
+    def test_nondirect_commit_and_extra_changed_paths_fail_closed(self) -> None:
+        for mutation in (
+            "wrong-parent",
+            "multiple-parents",
+            "same-tree",
+            "extra-changed-path",
+            "duplicate-changed-path",
+        ):
+            with self.subTest(mutation=mutation):
+                fixture = _postpublication_revalidation_fixture()
+                repository = fixture[1]
+                _host, _repository, _transport, _route, path_operations, _gens, h, c = (
+                    fixture
+                )
+                commit = dict(repository.exact_commit_evidence[c])
+                if mutation == "wrong-parent":
+                    commit["parent_revision"] = "e" * 40
+                elif mutation == "multiple-parents":
+                    commit["parents"] = [h, "e" * 40]
+                elif mutation == "same-tree":
+                    commit["tree_sha"] = repository.exact_commit_evidence[h]["tree_sha"]
+                elif mutation == "extra-changed-path":
+                    commit["changed_paths"] = [*path_operations, "extra/path.yaml"]
+                else:
+                    path = next(iter(path_operations))
+                    commit["changed_paths"] = [path, path]
+                repository.exact_commit_evidence[c] = commit
+                self._assert_not_accepted(fixture)
+
+    def test_operation_already_present_at_predecessor_is_not_a_normalized_delta(
+        self,
+    ) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        repository = fixture[1]
+        predecessor = fixture[-2]
+        path = next(iter(fixture[4]))
+        repository.revision_records[predecessor][path] = fixture[4][path]
+
+        self._assert_not_accepted(fixture)
+
+    def test_exact_current_commit_revalidates_deleted_after_image_as_absent(
+        self,
+    ) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        repository = fixture[1]
+        predecessor, intended = fixture[-2:]
+        deleted_path = "STATE/DEPRECATED.yaml"
+        repository.revision_records[predecessor][deleted_path] = {"state": "old"}
+        path_operations = dict(fixture[4]) | {deleted_path: None}
+        repository.revision_records[intended].pop(deleted_path, None)
+        repository.exact_commit_evidence[intended]["changed_paths"] = sorted(
+            path_operations
+        )
+        fixture = (*fixture[:4], path_operations, *fixture[5:])
+
+        outcome = self._revalidate(fixture)
+
+        self.assertIsNotNone(outcome)
+        if outcome is None:
+            return
+        self.assertEqual(outcome.status, publication_module.PublicationStatus.ACCEPTED)
+        evidence = _validate_owner_publication(
+            outcome, campaign_id=CAMPAIGN_ID, expected_pinned_head_sha=predecessor
+        )
+        delete_digest = evidence.attempt.publication_operation_digests()[deleted_path]
+        self.assertIs(
+            _validate_owner_publication(
+                outcome,
+                campaign_id=CAMPAIGN_ID,
+                expected_pinned_head_sha=predecessor,
+                required_operation_digests={deleted_path: delete_digest},
+            ),
+            evidence,
+        )
+        self.assertIsNone(evidence.attempt.path_operations[deleted_path])
+        self.assertIn((intended, deleted_path), repository.read_path_calls)
+        self._assert_no_repository_writes(self, fixture[2])
+
+    def test_missing_or_changed_operation_body_at_intended_commit_fails_closed(
+        self,
+    ) -> None:
+        for changed in (False, True):
+            with self.subTest(changed=changed):
+                fixture = _postpublication_revalidation_fixture()
+                repository = fixture[1]
+                path = next(iter(fixture[4]))
+                if changed:
+                    repository.revision_records[fixture[-1]][path] = {
+                        "id": "obligation-1",
+                        "kind": "runtime.collaboration_obligation",
+                        "changed": True,
+                    }
+                else:
+                    del repository.revision_records[fixture[-1]][path]
+                self._assert_not_accepted(fixture)
+
+    def test_descendant_changing_required_operation_fails_closed(self) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        repository = fixture[1]
+        transport = fixture[2]
+        c = fixture[-1]
+        descendant = "e" * 40
+        path = next(iter(fixture[4]))
+        repository.current_revision = descendant
+        repository.current_tree = "f" * 40
+        repository.ancestry_relation = "ANCESTOR"
+        repository.revision_records[descendant] = repository.revision_records[c] | {
+            path: {
+                "id": "obligation-1",
+                "kind": "runtime.collaboration_obligation",
+                "changed": True,
+            }
+        }
+        repository.exact_commit_evidence[descendant] = {
+            "revision": descendant,
+            "tree_sha": "f" * 40,
+            "parent_revision": c,
+            "changed_paths": [path],
+        }
+
+        self._assert_not_accepted(fixture)
+        self.assertEqual(
+            repository.ancestry_calls, [("campaign/frostfall", c, descendant)]
+        )
+        self._assert_no_repository_writes(self, transport)
+
+    def test_commit_absent_from_current_lineage_fails_closed(self) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        repository = fixture[1]
+        c = fixture[-1]
+        descendant = "e" * 40
+        repository.current_revision = descendant
+        repository.current_tree = "f" * 40
+        repository.ancestry_relation = "NOT_ANCESTOR"
+        repository.revision_records[descendant] = repository.revision_records[c]
+        repository.exact_commit_evidence[descendant] = {
+            "revision": descendant,
+            "tree_sha": "f" * 40,
+            "parent_revision": "9" * 40,
+            "changed_paths": [],
+        }
+
+        self._assert_not_accepted(fixture)
+
+    def test_incomplete_or_ambiguous_repository_commit_proofs_fail_closed(self) -> None:
+        cases = (
+            "missing-predecessor",
+            "predecessor-tree",
+            "predecessor-identity",
+            "intended-parent",
+            "intended-tree",
+            "intended-change-set",
+            "intended-identity",
+            "current-tree",
+            "current-commit",
+            "ancestry",
+        )
+        for case in cases:
+            with self.subTest(case=case):
+                fixture = _postpublication_revalidation_fixture()
+                repository = fixture[1]
+                h, c = fixture[-2:]
+                if case == "missing-predecessor":
+                    repository.exact_commit_evidence.pop(h)
+                elif case == "predecessor-tree":
+                    repository.exact_commit_evidence[h].pop("tree_sha")
+                elif case == "predecessor-identity":
+                    repository.exact_commit_evidence[h]["revision"] = "e" * 40
+                elif case == "intended-parent":
+                    repository.exact_commit_evidence[c].pop("parent_revision")
+                elif case == "intended-tree":
+                    repository.exact_commit_evidence[c].pop("tree_sha")
+                elif case == "intended-change-set":
+                    repository.exact_commit_evidence[c].pop("changed_paths")
+                elif case == "intended-identity":
+                    repository.exact_commit_evidence[c]["revision"] = "e" * 40
+                elif case == "current-tree":
+                    repository.current_tree = "e" * 40
+                else:
+                    descendant = "e" * 40
+                    repository.current_revision = descendant
+                    repository.current_tree = "f" * 40
+                    repository.revision_records[descendant] = (
+                        repository.revision_records[c]
+                    )
+                    if case == "current-commit":
+                        repository.exact_commit_evidence.pop(descendant, None)
+                        repository.ancestry_relation = "ANCESTOR"
+                    else:
+                        repository.exact_commit_evidence[descendant] = {
+                            "revision": descendant,
+                            "tree_sha": "f" * 40,
+                            "parent_revision": c,
+                            "changed_paths": [],
+                        }
+                        repository.ancestry_relation = "UNKNOWN"
+                self._assert_not_accepted(fixture)
+
+    def test_wrong_campaign_reference_or_predecessor_fails_closed(self) -> None:
+        cases = ("campaign", "ref", "predecessor")
+        for case in cases:
+            with self.subTest(case=case):
+                fixture = _postpublication_revalidation_fixture()
+                repository = fixture[1]
+                if case == "campaign":
+                    repository.revision_records[fixture[-2]]["MANIFEST.yaml"] = {
+                        **repository.records["MANIFEST.yaml"],
+                        "campaign_id": "campaign-other",
+                    }
+                elif case == "ref":
+                    repository.revision_records[fixture[-1]]["MANIFEST.yaml"] = {
+                        **repository.records["MANIFEST.yaml"],
+                        "branch": "campaign/other",
+                    }
+                else:
+                    fixture = (*fixture[:-2], "e" * 40, fixture[-1])
+                self._assert_not_accepted(fixture)
+
+    def test_read_write_repository_identity_mismatch_fails_closed(self) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        repository, transport = fixture[1:3]
+        repository.repository_identity_value = "github.com/example/other-campaigns"
+
+        self._assert_not_accepted(fixture)
+        self.assertEqual(transport.principal_resolution_calls, 0)
+
+    def test_routed_operation_must_be_present_in_the_complete_joined_write_set(
+        self,
+    ) -> None:
+        fixture = _postpublication_revalidation_fixture()
+        host, _repository, transport, _route, path_operations, generations, h, c = (
+            fixture
+        )
+        mismatch = route_serialized_operation(
+            "world.player", "player-1", {"id": "player-1", "kind": "world.player"}
+        )
+        revalidate = getattr(host.publication, "revalidate_published_owner_delta", None)
+        self.assertTrue(callable(revalidate))
+        if not callable(revalidate):
+            return
+
+        with self.assertRaises(RuntimeHostError):
+            revalidate(
+                routed_operation=mismatch,
+                path_operations=path_operations,
+                owner_generations=generations,
+                publication_reason="collaboration-close",
+                expected_pinned_head_sha=h,
+                intended_commit_sha=c,
+            )
+        self._assert_no_repository_writes(self, transport)
 
 
 if __name__ == "__main__":

@@ -328,17 +328,17 @@ CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-c
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
-STATUS: SENIOR_REVIEW_REQUIRED — T04B post-publication recovery evidence boundary
-CURRENT_TASK: W04.T04B paused before publishing its candidate; T07D remains independent; T05C waits for T04B PASS.
+STATUS: EXECUTING — W04.T04B-P0R read-only acceptance revalidation
+CURRENT_TASK: P0R implementation/review complete locally; exact-clean full DEV verification and coherent publication/read-back remain. T04B stays paused until P0R PASS/read-back; T07D remains independent.
 LAST_COMPLETED_TASK: W04.T04B-P1 -> `a792d14894dcc3ba123191883e5647cc06808e85` (independent PASS/read-back); W04.T04B-P0 -> `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a` (independent PASS/read-back); T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `250120a7b7c886ffb7174990a77fa4cd02c149d` — P1 acceptance/status checkpoint freshly fetched before uncommitted T04B work
+LAST_SAFE_SHA: `cfa6c907189dd22741954303dae51d36f7bc4962` — fresh P0R ruling/status handoff
 
-CURRENT_VERIFICATION_STATE: P0/P1 outputs: independent PASS and exact remote read-backs. P1 clean exact full DEV suite: 1268 passed, 5 skipped, four S6D failures reproduced sequentially; P0 clean exact suite: 1245 passed, 5 skipped, the same four failures; P0/P1 maintenance audits PASS. T04B RD12 focused suite: 142 passed; worker combined relevant suites: 404 passed. T04B independent review: TARGETED_REPAIR_REQUIRED for loss of ephemeral composed evidence after process restart. Hosted CI unavailable.
-VERSION_IMPACT: P0 `publication.py 1.0.4 -> 1.0.5`, `runtime_host.py 1.0.8 -> 1.0.9`; P1 `live_state.py 1.0.20 -> 1.0.21`; no persisted schema/generation or migration changes. T04B candidate Collaboration module `1.0.18 -> 1.0.19` is provisional/unpublished. Impact-brief/cursor update: `VERSION_IMPACT: NONE`.
-SYSTEM_IMPACT: `SENIOR_REVIEW_REQUIRED` — T04B’s required after-process-loss recovery cannot obtain a fresh owner-issued W02/P1 acceptance proof from the current W02 interface without a reissuance path beyond the authorized Collaboration consumer scope. See `DEV/docs/superpowers/design/2026-09-25-w04-t04b-postpublication-recovery-evidence-impact-brief.md`.
-NEXT_EXACT_TASK: Senior disposition of the W02/W03 recovery-evidence boundary; do not publish the T04B candidate or proceed to T05C before the ruling and T04B acceptance. T07D remains independent.
-KNOWN_BLOCKERS: T04B not accepted; process-loss recovery proof availability unresolved. Four S6D failures remain outside P0/P1/T04B scope; Wave 05 unauthorized.
-UNPUBLISHED_WORK: `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py` T04B candidate remain uncommitted/unpublished. P0/P1 source checkpoints are published; local `stash@{0}` is a duplicate P1 backup.
+CURRENT_VERIFICATION_STATE: P0/P1 remain independently accepted/read back. P0R focused W02/RuntimeHost/W03-consumer/ref-fence suites: 112 passed; maintenance audit: PASS; reviewer: PASS after adding the repository-identity negative witness. Scoped Ruff format checks pass for all changed blocks; whole-file Ruff reports three findings confirmed unchanged at `BASE_SHA`; full-file formatting remains unclean in pre-existing sections of `publication.py` and RD06 tests. A normal-worktree full DEV run before the final test-only review repair reported 1277 passed, 5 skipped, 6 failed: four known S6D failures plus dirty-worktree/package-census contamination from `.entire/` and `DEV/.lavish/`. Clean exact P0R full DEV run remains pending. Hosted CI unavailable.
+VERSION_IMPACT: P0 `publication.py 1.0.4 -> 1.0.5`, `runtime_host.py 1.0.8 -> 1.0.9`; P1 `live_state.py 1.0.20 -> 1.0.21`; P0R `publication.py 1.0.5 -> 1.0.6`, `runtime_host.py 1.0.9 -> 1.0.10`. Persisted schema, campaign contract, storage/catalog/engine generations, migration and dual-read: NONE. T04B Collaboration `1.0.18 -> 1.0.19` remains provisional/unpublished.
+SYSTEM_IMPACT: NONE — P0R is within the accepted W02 read-only prerequisite ruling; no new RepositoryPort method/authority, persistence, principal reconstruction, or write path was introduced.
+NEXT_EXACT_TASK: Run the clean exact-tree full DEV suite on the P0R checkpoint, then publish/read back the coherent P0R checkpoint and record `W02_POSTPUBLICATION_REVALIDATION_READY`. Only then resume the preserved T04B candidate. T07D remains independent; T05C waits for T04B PASS.
+KNOWN_BLOCKERS: Clean exact P0R full DEV verification and publication/read-back pending. Four S6D failures remain outside P0R scope; Wave 05 unauthorized.
+UNPUBLISHED_WORK: P0R code/tests/control checkpoint is local-only pending clean exact-tree verification and remote publication. T04B candidate remains separately preserved in the local P0R-exclusion stash, not in the P0R diff. Unrelated `DEV/.lavish/` remains untouched.
 
 ## Historical Wave-04 progress retention
 

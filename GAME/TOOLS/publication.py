@@ -30,8 +30,8 @@ from .recovery_roots import (
     validate_operational_root_delta,
 )
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -367,6 +367,132 @@ class FrozenCampaignPublicationAttempt:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class FrozenCampaignPublicationRecoveryBasis:
+    """Ephemeral W02 basis for revalidating an already-published owner delta."""
+
+    repository_id: str
+    target_ref: str
+    campaign_id: str
+    pinned_head_sha: str
+    base_tree_sha: str
+    intended_commit_sha: str
+    campaign_identity: CampaignIdentity
+    path_operations: Mapping[str, object | None]
+    owner_generations: Mapping[str, int]
+    routed_operation: RoutedSerializedOperation
+    publication_reason: str
+
+    def __post_init__(self) -> None:
+        _nonempty(self.repository_id, "repository identity")
+        _nonempty(self.target_ref, "target campaign ref")
+        _machine_id(self.campaign_id, "campaign_id")
+        _revision(self.pinned_head_sha, "pinned_head_sha")
+        _revision(self.base_tree_sha, "base_tree_sha")
+        _revision(self.intended_commit_sha, "intended commit")
+        if self.pinned_head_sha == self.intended_commit_sha:
+            raise PublicationContractError(
+                "revalidated publication commit must differ from its predecessor"
+            )
+        if not isinstance(self.campaign_identity, CampaignIdentity):
+            raise PublicationContractError(
+                "recovery basis campaign identity is not typed"
+            )
+        if (
+            self.campaign_identity.campaign_id != self.campaign_id
+            or self.campaign_identity.branch != self.target_ref
+        ):
+            raise PublicationContractError(
+                "recovery basis campaign identity differs from its bound ref"
+            )
+        if not isinstance(self.routed_operation, RoutedSerializedOperation):
+            raise PublicationContractError(
+                "owner-routed serialized operation is required"
+            )
+        _require_execution_join_for_route(self.routed_operation, None)
+        if not isinstance(self.path_operations, Mapping) or not self.path_operations:
+            raise PublicationContractError(
+                "recovery basis requires a nonempty path delta"
+            )
+        operations: dict[str, object | None] = {}
+        for raw_path, value in self.path_operations.items():
+            path = _path(raw_path)
+            if path in _STORAGE_PATH_MARKERS or path.startswith("DND_STORAGE/"):
+                raise PublicationContractError(
+                    "storage metadata is a separate native transaction"
+                )
+            if path == "LIVE_STATE.yaml" or path.startswith("LIVE/"):
+                raise PublicationContractError(
+                    "live state is a separate native transaction"
+                )
+            operations[path] = _json_copy(value, f"path operation {path}")
+
+        manifest_operation = operations.get("MANIFEST.yaml")
+        card_operation = operations.get("CAMPAIGN_CARD.yaml")
+        identity = self.campaign_identity
+        if "MANIFEST.yaml" in operations:
+            if not isinstance(manifest_operation, Mapping):
+                raise PublicationContractError(
+                    "MANIFEST.yaml must retain canonical identity fields"
+                )
+            for field in ("campaign_id", "branch", "created_at"):
+                if manifest_operation.get(field) != getattr(identity, field):
+                    raise PublicationContractError(
+                        "canonical campaign identity is immutable"
+                    )
+        if "CAMPAIGN_CARD.yaml" in operations and (
+            not isinstance(card_operation, Mapping)
+            or card_operation.get("campaign_id") != self.campaign_id
+            or "campaign_name" not in card_operation
+        ):
+            raise PublicationContractError("campaign card identity is immutable")
+        resulting_manifest_name = (
+            manifest_operation.get("campaign_name", identity.campaign_name)
+            if isinstance(manifest_operation, Mapping)
+            else identity.campaign_name
+        )
+        resulting_card_name = (
+            card_operation.get("campaign_name", identity.campaign_name)
+            if isinstance(card_operation, Mapping)
+            else identity.campaign_name
+        )
+        if resulting_manifest_name != resulting_card_name:
+            raise PublicationContractError(
+                "campaign name projection differs in recovery operation set"
+            )
+        if operations.get(self.routed_operation.relative_path) != _thaw(
+            self.routed_operation.payload
+        ):
+            raise PublicationContractError(
+                "owner-routed serialized operation is missing or mismatched"
+            )
+        object.__setattr__(self, "path_operations", _freeze(operations))
+
+        if not isinstance(self.owner_generations, Mapping):
+            raise PublicationContractError("owner generations must be a mapping")
+        generations: dict[str, int] = {}
+        for owner, generation in self.owner_generations.items():
+            generations[_nonempty(owner, "owner generation key")] = generation
+            if (
+                isinstance(generation, bool)
+                or not isinstance(generation, int)
+                or generation < 0
+            ):
+                raise PublicationContractError(
+                    "owner generation must be a non-negative integer"
+                )
+        object.__setattr__(self, "owner_generations", MappingProxyType(generations))
+        _nonempty(self.publication_reason, "publication reason")
+
+    def publication_operation_digests(self) -> dict[str, str]:
+        """Return exact per-path after-image digests for this recovery basis."""
+
+        return {
+            path: _serialized_operation_digest(value)
+            for path, value in self.path_operations.items()
+        }
+
+
 def _campaign_identity(
     campaign_id: str,
     manifest: Mapping[str, object],
@@ -386,6 +512,47 @@ def _campaign_identity(
         campaign_name=campaign_name,
         branch=branch,
         created_at=created_at,
+    )
+
+
+def freeze_campaign_publication_recovery_basis(
+    *,
+    repository_id: str,
+    target_ref: str,
+    campaign_id: str,
+    pinned_head_sha: str,
+    base_tree_sha: str,
+    intended_commit_sha: str,
+    manifest: Mapping[str, object],
+    campaign_card: Mapping[str, object],
+    path_operations: Mapping[str, object | None],
+    owner_generations: Mapping[str, int],
+    routed_operation: RoutedSerializedOperation,
+    publication_reason: str,
+) -> FrozenCampaignPublicationRecoveryBasis:
+    """Freeze read-only recovery inputs against the exact H campaign basis."""
+
+    if not isinstance(manifest, Mapping) or not isinstance(campaign_card, Mapping):
+        raise PublicationContractError(
+            "recovery predecessor manifest and campaign card are required"
+        )
+    identity = _campaign_identity(campaign_id, manifest, campaign_card)
+    if identity.branch != target_ref:
+        raise PublicationContractError(
+            "target ref differs from canonical predecessor campaign branch"
+        )
+    return FrozenCampaignPublicationRecoveryBasis(
+        repository_id=repository_id,
+        target_ref=target_ref,
+        campaign_id=campaign_id,
+        pinned_head_sha=pinned_head_sha,
+        base_tree_sha=base_tree_sha,
+        intended_commit_sha=intended_commit_sha,
+        campaign_identity=identity,
+        path_operations=path_operations,
+        owner_generations=owner_generations,
+        routed_operation=routed_operation,
+        publication_reason=publication_reason,
     )
 
 
@@ -746,7 +913,7 @@ class PublicationAcceptanceEvidence:
     """Ephemeral W02 proof bound to one frozen attempt and exact outcome instance."""
 
     kind: PublicationAcceptanceKind
-    attempt: FrozenCampaignPublicationAttempt
+    attempt: FrozenCampaignPublicationAttempt | FrozenCampaignPublicationRecoveryBasis
     intended_commit_sha: str
     observed_head_sha: str
     current_closure: PublicationCurrentClosureEvidence | None
@@ -757,9 +924,12 @@ class PublicationAcceptanceEvidence:
             raise PublicationContractError(
                 "publication acceptance proof kind is invalid"
             )
-        if not isinstance(self.attempt, FrozenCampaignPublicationAttempt):
+        if not isinstance(
+            self.attempt,
+            (FrozenCampaignPublicationAttempt, FrozenCampaignPublicationRecoveryBasis),
+        ):
             raise PublicationContractError(
-                "publication acceptance attempt is not frozen"
+                "publication acceptance basis is not W02-typed"
             )
         _revision(self.intended_commit_sha, "acceptance intended commit")
         _revision(self.observed_head_sha, "acceptance observed head")
@@ -798,11 +968,19 @@ def _validate_acceptance_proof(
         raise PublicationContractError("publication outcome SHA differs from its proof")
 
     expected_digests = attempt.publication_operation_digests()
+    if (
+        isinstance(attempt, FrozenCampaignPublicationRecoveryBasis)
+        and attempt.intended_commit_sha != intended
+    ):
+        raise PublicationContractError(
+            "recovery outcome differs from its nominated intended commit"
+        )
     closure = evidence.current_closure
     ancestry = evidence.ancestry
     if evidence.kind is PublicationAcceptanceKind.CONFIRMED_REF:
         if (
-            outcome.cause != "CONFIRMED_ACCEPTED"
+            not isinstance(attempt, FrozenCampaignPublicationAttempt)
+            or outcome.cause != "CONFIRMED_ACCEPTED"
             or outcome.dispatched is not True
             or intended != observed
             or closure is not None
@@ -860,7 +1038,7 @@ def _validate_acceptance_proof(
 
 def _issue_owner_issued_accepted_publication(
     outcome: PublicationOutcome,
-    attempt: FrozenCampaignPublicationAttempt,
+    attempt: FrozenCampaignPublicationAttempt | FrozenCampaignPublicationRecoveryBasis,
     *,
     intended_commit_sha: str,
     current_closure: PublicationCurrentClosureEvidence | None = None,
@@ -870,11 +1048,21 @@ def _issue_owner_issued_accepted_publication(
 
     if not isinstance(outcome, PublicationOutcome):
         raise PublicationContractError("campaign publication result is not typed")
-    if not isinstance(attempt, FrozenCampaignPublicationAttempt):
-        raise PublicationContractError("campaign publication attempt is not frozen")
+    if not isinstance(
+        attempt,
+        (FrozenCampaignPublicationAttempt, FrozenCampaignPublicationRecoveryBasis),
+    ):
+        raise PublicationContractError("campaign publication basis is not W02-typed")
     intended = _revision(intended_commit_sha, "service intended commit")
     if outcome.intended_commit_sha != intended:
         raise PublicationContractError("service result differs from its created commit")
+    if (
+        isinstance(attempt, FrozenCampaignPublicationRecoveryBasis)
+        and attempt.intended_commit_sha != intended
+    ):
+        raise PublicationContractError(
+            "recovery basis differs from its intended commit"
+        )
     if outcome.cause == "CONFIRMED_ACCEPTED":
         kind = PublicationAcceptanceKind.CONFIRMED_REF
     elif outcome.cause == "RECONCILED_CURRENT_CLOSURE":

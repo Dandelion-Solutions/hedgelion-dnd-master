@@ -42,11 +42,12 @@ from .publication import (
     build_connector_git_plan,
     classify_ref_transition,
     freeze_campaign_publication_attempt,
+    freeze_campaign_publication_recovery_basis,
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -113,6 +114,21 @@ class RuntimeHostError(ValueError):
     """Raised when a campaign-bound runtime operation cannot be admitted."""
 
 
+class _PublicationRevalidationFailure(Exception):
+    """Internal fail-closed result for bounded W02 repository proof."""
+
+    def __init__(
+        self,
+        status: PublicationStatus,
+        cause: str,
+        observed_head_sha: str | None,
+    ) -> None:
+        super().__init__(cause)
+        self.status = status
+        self.cause = cause
+        self.observed_head_sha = observed_head_sha
+
+
 class NativeOrderingStatus(StrEnum):
     """Bounded result when no native ordered owner is currently admitted."""
 
@@ -175,6 +191,149 @@ def _operation_digest(value: object) -> str:
         copied, sort_keys=True, separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _read_revalidation_commit(
+    repository: RepositoryPort,
+    target_ref: str,
+    revision: str,
+    *,
+    observed_head_sha: str | None,
+) -> tuple[Mapping[str, object], str]:
+    try:
+        value = repository.read_exact_commit(target_ref, revision)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "EXACT_COMMIT_EVIDENCE_UNAVAILABLE",
+            observed_head_sha,
+        ) from exc
+    if not isinstance(value, Mapping) or value.get("revision") != revision:
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "EXACT_COMMIT_IDENTITY_UNAVAILABLE",
+            observed_head_sha,
+        )
+    for field in ("ref", "campaign_ref"):
+        if field in value and value[field] != target_ref:
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.INDETERMINATE,
+                "EXACT_COMMIT_REF_MISMATCH",
+                observed_head_sha,
+            )
+    tree_sha = value.get("tree_sha")
+    if not isinstance(tree_sha, str) or _REVISION.fullmatch(tree_sha) is None:
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "EXACT_COMMIT_TREE_UNAVAILABLE",
+            observed_head_sha,
+        )
+    return value, tree_sha
+
+
+def _require_direct_single_parent(
+    commit: Mapping[str, object],
+    predecessor_sha: str,
+    *,
+    observed_head_sha: str | None,
+) -> None:
+    parent_fields: list[tuple[str, str]] = []
+    for field in ("parents", "parent_revisions"):
+        if field not in commit:
+            continue
+        raw_parents = commit[field]
+        if not isinstance(raw_parents, Sequence) or isinstance(
+            raw_parents, (str, bytes, bytearray)
+        ):
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.INDETERMINATE,
+                "COMMIT_PARENT_EVIDENCE_AMBIGUOUS",
+                observed_head_sha,
+            )
+        if len(raw_parents) != 1:
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.CONFLICT,
+                "INTENDED_COMMIT_IS_NOT_SINGLE_PARENT",
+                observed_head_sha,
+            )
+        parent = raw_parents[0]
+        if not isinstance(parent, str) or _REVISION.fullmatch(parent) is None:
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.INDETERMINATE,
+                "COMMIT_PARENT_EVIDENCE_AMBIGUOUS",
+                observed_head_sha,
+            )
+        parent_fields.append((field, parent))
+    if "parent_revision" in commit:
+        parent = commit["parent_revision"]
+        if not isinstance(parent, str) or _REVISION.fullmatch(parent) is None:
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.INDETERMINATE,
+                "COMMIT_PARENT_EVIDENCE_AMBIGUOUS",
+                observed_head_sha,
+            )
+        parent_fields.append(("parent_revision", parent))
+    if not parent_fields:
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "COMMIT_PARENT_EVIDENCE_UNAVAILABLE",
+            observed_head_sha,
+        )
+    if any(parent != predecessor_sha for _field, parent in parent_fields):
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.CONFLICT,
+            "INTENDED_COMMIT_IS_NOT_DIRECT_CHILD",
+            observed_head_sha,
+        )
+
+
+def _exact_changed_paths(
+    commit: Mapping[str, object], *, observed_head_sha: str | None
+) -> frozenset[str]:
+    raw_paths = commit.get("changed_paths")
+    if not isinstance(raw_paths, Sequence) or isinstance(
+        raw_paths, (str, bytes, bytearray)
+    ):
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "COMMIT_CHANGED_PATH_EVIDENCE_UNAVAILABLE",
+            observed_head_sha,
+        )
+    paths: list[str] = []
+    for path in raw_paths:
+        if not isinstance(path, str) or not path:
+            raise _PublicationRevalidationFailure(
+                PublicationStatus.INDETERMINATE,
+                "COMMIT_CHANGED_PATH_EVIDENCE_AMBIGUOUS",
+                observed_head_sha,
+            )
+        paths.append(path)
+    if len(paths) != len(set(paths)):
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "COMMIT_CHANGED_PATH_EVIDENCE_AMBIGUOUS",
+            observed_head_sha,
+        )
+    return frozenset(paths)
+
+
+def _read_revalidation_path(
+    repository: RepositoryPort,
+    pinned: PinnedCampaign,
+    path: str,
+    *,
+    observed_head_sha: str | None,
+) -> object:
+    try:
+        return repository.read_exact_path(pinned, path)
+    except KeyError:
+        return None
+    except (AttributeError, OSError, TypeError, ValueError) as exc:
+        raise _PublicationRevalidationFailure(
+            PublicationStatus.INDETERMINATE,
+            "EXACT_PATH_EVIDENCE_UNAVAILABLE",
+            observed_head_sha,
+        ) from exc
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True)
@@ -471,6 +630,343 @@ class CampaignPublicationService(_BoundService):
                     "confirmed campaign publication lacks valid W02 acceptance evidence"
                 ) from exc
         return outcome
+
+    def revalidate_published_owner_delta(
+        self,
+        *,
+        routed_operation: RoutedSerializedOperation,
+        path_operations: Mapping[str, object | None],
+        owner_generations: Mapping[str, int],
+        publication_reason: str,
+        expected_pinned_head_sha: str,
+        intended_commit_sha: str,
+    ) -> PublicationOutcome:
+        """Re-prove an existing H -> C publication from current repository authority.
+
+        This recovery path performs exact read-side validation only. It does not
+        reconstruct the historical acting principal or issue a repository write.
+        """
+
+        transport = self._host._publication_transport
+        if transport is None:
+            raise RuntimeHostError("campaign publication capability is unavailable")
+        if not isinstance(routed_operation, RoutedSerializedOperation):
+            raise RuntimeHostError("owner-routed serialized operation is required")
+        if routed_operation.owner_kind == "runtime.command":
+            raise RuntimeHostError(
+                "runtime.command recovery requires an unavailable execution/durability join"
+            )
+        if not isinstance(path_operations, Mapping) or not path_operations:
+            raise RuntimeHostError("revalidation path operations must be nonempty")
+        try:
+            predecessor = _revision(expected_pinned_head_sha, "expected predecessor")
+            intended = _revision(intended_commit_sha, "intended commit")
+            reason = _nonempty_string(publication_reason, "publication reason")
+            routed_payload = _json_copy(
+                routed_operation.payload, "owner-routed publication operation"
+            )
+            supplied_route_payload = _json_copy(
+                path_operations.get(routed_operation.relative_path),
+                "owner-routed path operation",
+            )
+        except (RuntimeHostError, TypeError, ValueError) as exc:
+            raise RuntimeHostError(
+                "post-publication recovery inputs are invalid"
+            ) from exc
+        if predecessor == intended:
+            raise RuntimeHostError("intended commit must differ from its predecessor")
+        if supplied_route_payload != routed_payload:
+            raise RuntimeHostError(
+                "owner-routed operation is missing or mismatched in the complete write set"
+            )
+        if not isinstance(owner_generations, Mapping):
+            raise RuntimeHostError("owner generations must be a mapping")
+        for owner, generation in owner_generations.items():
+            if not isinstance(owner, str) or not owner:
+                raise RuntimeHostError("owner generation key must be nonempty")
+            if (
+                isinstance(generation, bool)
+                or not isinstance(generation, int)
+                or generation < 0
+            ):
+                raise RuntimeHostError(
+                    "owner generation must be a non-negative integer"
+                )
+
+        observed_head: str | None = None
+        try:
+            repository = self._host._repository
+            pinned_value = repository.pin_campaign(self._host._campaign_id)
+            pinned_current = _validate_pinned_campaign(
+                pinned_value, self._host._campaign_id
+            )
+            observed_head = pinned_current.revision
+            current_manifest = self._read_exact_path(pinned_current, "MANIFEST.yaml")
+            current_card = self._read_exact_path(pinned_current, "CAMPAIGN_CARD.yaml")
+            if (
+                current_manifest.get("campaign_id") != self._host._campaign_id
+                or current_card.get("campaign_id") != self._host._campaign_id
+                or current_card.get("campaign_name")
+                != current_manifest.get("campaign_name")
+            ):
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.CONFLICT,
+                    "CURRENT_CAMPAIGN_IDENTITY_MISMATCH",
+                    observed_head,
+                )
+            target_ref = current_manifest.get("branch")
+            if not isinstance(target_ref, str) or not target_ref:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.INDETERMINATE,
+                    "CURRENT_CAMPAIGN_REF_UNAVAILABLE",
+                    observed_head,
+                )
+            repository_id = _validate_transport_repository_identity(
+                repository, transport
+            )
+            if self._read_ref(transport, target_ref) != observed_head:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.INDETERMINATE,
+                    "CURRENT_REF_AND_REPOSITORY_PIN_DIVERGED",
+                    observed_head,
+                )
+
+            _predecessor_commit, predecessor_tree = _read_revalidation_commit(
+                repository,
+                target_ref,
+                predecessor,
+                observed_head_sha=observed_head,
+            )
+            predecessor_pin = PinnedCampaign(
+                self._host._campaign_id, predecessor, predecessor_tree
+            )
+            predecessor_manifest = self._read_exact_path(
+                predecessor_pin, "MANIFEST.yaml"
+            )
+            predecessor_card = self._read_exact_path(
+                predecessor_pin, "CAMPAIGN_CARD.yaml"
+            )
+            if current_manifest.get("created_at") != predecessor_manifest.get(
+                "created_at"
+            ):
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.CONFLICT,
+                    "CAMPAIGN_CREATION_IDENTITY_CHANGED",
+                    observed_head,
+                )
+            try:
+                recovery_basis = freeze_campaign_publication_recovery_basis(
+                    repository_id=repository_id,
+                    target_ref=target_ref,
+                    campaign_id=self._host._campaign_id,
+                    pinned_head_sha=predecessor,
+                    base_tree_sha=predecessor_tree,
+                    intended_commit_sha=intended,
+                    manifest=predecessor_manifest,
+                    campaign_card=predecessor_card,
+                    path_operations=path_operations,
+                    owner_generations=owner_generations,
+                    routed_operation=routed_operation,
+                    publication_reason=reason,
+                )
+            except (PublicationContractError, TypeError, ValueError) as exc:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.CONFLICT,
+                    "RECOVERY_OPERATION_SET_INVALID_AT_PREDECESSOR",
+                    observed_head,
+                ) from exc
+
+            intended_commit, intended_tree = _read_revalidation_commit(
+                repository,
+                target_ref,
+                intended,
+                observed_head_sha=observed_head,
+            )
+            if intended_tree == predecessor_tree:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.CONFLICT,
+                    "INTENDED_COMMIT_HAS_NO_TREE_DELTA",
+                    observed_head,
+                )
+            _require_direct_single_parent(
+                intended_commit,
+                predecessor,
+                observed_head_sha=observed_head,
+            )
+            changed_paths = _exact_changed_paths(
+                intended_commit, observed_head_sha=observed_head
+            )
+            expected_digests = recovery_basis.publication_operation_digests()
+            if changed_paths != frozenset(expected_digests):
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.CONFLICT,
+                    "INTENDED_COMMIT_CHANGED_PATH_SET_MISMATCH",
+                    observed_head,
+                )
+
+            for path, expected_digest in expected_digests.items():
+                base_value = _read_revalidation_path(
+                    repository,
+                    predecessor_pin,
+                    path,
+                    observed_head_sha=observed_head,
+                )
+                if _operation_digest(base_value) == expected_digest:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.CONFLICT,
+                        "RECOVERY_OPERATION_IS_NOOP_AT_PREDECESSOR",
+                        observed_head,
+                    )
+
+            intended_pin = PinnedCampaign(
+                self._host._campaign_id, intended, intended_tree
+            )
+            for path, expected_digest in expected_digests.items():
+                intended_value = _read_revalidation_path(
+                    repository,
+                    intended_pin,
+                    path,
+                    observed_head_sha=observed_head,
+                )
+                if _operation_digest(intended_value) != expected_digest:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.CONFLICT,
+                        "INTENDED_COMMIT_OPERATION_CLOSURE_MISMATCH",
+                        observed_head,
+                    )
+
+            if observed_head == intended:
+                if pinned_current.tree_sha != intended_tree:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.INDETERMINATE,
+                        "CURRENT_COMMIT_TREE_MISMATCH",
+                        observed_head,
+                    )
+                ancestry = None
+                cause = "RECONCILED_CURRENT_CLOSURE"
+                evidence_kind_head = intended
+            else:
+                current_commit, current_tree = _read_revalidation_commit(
+                    repository,
+                    target_ref,
+                    observed_head,
+                    observed_head_sha=observed_head,
+                )
+                del current_commit
+                if current_tree != pinned_current.tree_sha:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.INDETERMINATE,
+                        "CURRENT_COMMIT_TREE_MISMATCH",
+                        observed_head,
+                    )
+                try:
+                    ancestry_value = repository.compare_ancestry(
+                        target_ref, intended, observed_head
+                    )
+                except (
+                    AttributeError,
+                    KeyError,
+                    OSError,
+                    TypeError,
+                    ValueError,
+                ) as exc:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.INDETERMINATE,
+                        "CURRENT_LINEAGE_EVIDENCE_UNAVAILABLE",
+                        observed_head,
+                    ) from exc
+                if not isinstance(ancestry_value, Mapping):
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.INDETERMINATE,
+                        "CURRENT_LINEAGE_EVIDENCE_AMBIGUOUS",
+                        observed_head,
+                    )
+                relation = ancestry_value.get("relation")
+                if relation == "NOT_ANCESTOR" or relation == "EQUAL":
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.CONFLICT,
+                        "INTENDED_COMMIT_NOT_IN_CURRENT_LINEAGE",
+                        observed_head,
+                    )
+                if relation != "ANCESTOR":
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.INDETERMINATE,
+                        "CURRENT_LINEAGE_EVIDENCE_AMBIGUOUS",
+                        observed_head,
+                    )
+                ancestry = CommitAncestryEvidence(
+                    ancestor_sha=intended, descendant_sha=observed_head
+                )
+                cause = "RECONCILED_ANCESTOR_CURRENT_CLOSURE"
+                evidence_kind_head = observed_head
+
+            closure_digests: dict[str, str] = {}
+            for path, expected_digest in expected_digests.items():
+                current_value = _read_revalidation_path(
+                    repository,
+                    pinned_current,
+                    path,
+                    observed_head_sha=observed_head,
+                )
+                actual_digest = _operation_digest(current_value)
+                if actual_digest != expected_digest:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.CONFLICT,
+                        "CURRENT_OPERATION_CLOSURE_MISMATCH",
+                        observed_head,
+                    )
+                closure_digests[path] = actual_digest
+
+            if self._read_ref(transport, target_ref) != observed_head:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.INDETERMINATE,
+                    "CURRENT_REF_MOVED_DURING_REVALIDATION",
+                    observed_head,
+                )
+            closure = PublicationCurrentClosureEvidence(
+                base_revision=predecessor,
+                head_sha=evidence_kind_head,
+                tree_sha=pinned_current.tree_sha,
+                operation_digests=closure_digests,
+            )
+            outcome = PublicationOutcome(
+                PublicationStatus.ACCEPTED,
+                intended,
+                observed_head,
+                cause,
+                dispatched=False,
+            )
+            try:
+                _issue_owner_issued_accepted_publication(
+                    outcome,
+                    recovery_basis,
+                    intended_commit_sha=intended,
+                    current_closure=closure,
+                    ancestry=ancestry,
+                )
+            except PublicationContractError as exc:
+                raise _PublicationRevalidationFailure(
+                    PublicationStatus.INDETERMINATE,
+                    "W02_RECOVERY_EVIDENCE_ISSUANCE_FAILED",
+                    observed_head,
+                ) from exc
+            return outcome
+        except _PublicationRevalidationFailure as exc:
+            return PublicationOutcome(
+                exc.status,
+                intended,
+                exc.observed_head_sha,
+                exc.cause,
+                dispatched=False,
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            return PublicationOutcome(
+                PublicationStatus.INDETERMINATE,
+                intended,
+                observed_head,
+                "POSTPUBLICATION_REVALIDATION_INSUFFICIENT",
+                dispatched=False,
+            )
 
     def _read_exact_path(
         self, pinned: PinnedCampaign, path: str
