@@ -5,6 +5,12 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 
+from GAME.TOOLS.collaboration import (
+    CollaborationObligation,
+    ContributorRef,
+    DependencyClass,
+    NativeBasisRef,
+)
 from GAME.TOOLS.live_state import (
     LiveClaim,
     LiveEnvelope,
@@ -299,6 +305,93 @@ def owner_candidate(candidate_id, family="world.scene", identity=None, **values)
     return result
 
 
+def collaboration_obligation_mapping(
+    *, lifecycle="OPEN", purpose="joint-entry", dependency_scope=None
+):
+    obligation = CollaborationObligation(
+        obligation_id="obligation-1",
+        generation=1,
+        campaign_id="campaign-context",
+        interaction_id="interaction-own",
+        intent_plan_id="plan-1",
+        clause_id="clause-own",
+        semantic_class="ACTIONABLE_INTENT",
+        dependency_class=DependencyClass.JOINT_VOLUNTARY_ACTION,
+        purpose=purpose,
+        dependency_scope=(
+            {"scene_id": "scene-1"} if dependency_scope is None else dependency_scope
+        ),
+        native_basis_refs=(NativeBasisRef("world.scene", "scene-1", "a" * 40),),
+        required_contributors=(
+            ContributorRef("player-1", "pc-1"),
+            ContributorRef("player-2", "pc-2"),
+        ),
+        lifecycle=lifecycle,
+        accepted_input_uses=(
+            ("interaction-own", "clause-own"),
+            ("interaction-other", "clause-other"),
+        ),
+        accepted_input_contributors=(
+            (
+                ("interaction-own", "clause-own"),
+                ContributorRef("player-1", "pc-1"),
+            ),
+            (
+                ("interaction-other", "clause-other"),
+                ContributorRef("player-2", "pc-2"),
+            ),
+        ),
+        closed_input_set_fingerprint=("b" * 64 if lifecycle == "CLOSED" else None),
+    )
+    return obligation.to_mapping()
+
+
+def context_player_record(*, status="active", collaboration_route_refs=None):
+    return {
+        "kind": "world.player",
+        "id": "player-1",
+        "player_id": "player-1",
+        "campaign_id": "campaign-context",
+        "state": {},
+        "github_binding": {"user_id": "42", "login": "alice"},
+        "status": status,
+        "deactivated_by": None,
+        "controlled_pc_ids": ["pc-1"],
+        "collaboration_route_refs": list(collaboration_route_refs or ()),
+    }
+
+
+def collaboration_candidate(**values):
+    candidate_values = {
+        "generation": 1,
+        "source_frontier": "frontier-1",
+        "payload": {
+            "lifecycle": "OPEN",
+            "private_context": "stale-other-player-private-text",
+            "accepted_input_contributors": ["player-2"],
+        },
+    }
+    candidate_values.update(values)
+    return owner_candidate(
+        "obligation-1",
+        "runtime.collaboration_obligation",
+        ("obligation-1",),
+        channel="ACTIVE_DEPENDENCY",
+        **candidate_values,
+    )
+
+
+def collaboration_request(**values):
+    request_values = {
+        "allowed_channels": ["ACTIVE_DEPENDENCY"],
+        "required_ids": ["obligation-1"],
+        "allowed_relations": [],
+        "source_frontier": "frontier-1",
+    }
+    request_values.update(values)
+    return request(**request_values)
+
+
 class ContextRuntimeHostTests(unittest.TestCase):
     def _host(self):
         repository = RuntimeRepository()
@@ -520,7 +613,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.7")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.8")
 
 
 class ContextDiscoveryTests(unittest.TestCase):
@@ -888,6 +981,21 @@ class ScopedContextJoinTests(unittest.TestCase):
                 },
             )
 
+    def test_frontier_mismatch_is_rejected(self):
+        bundle = {
+            "profile_id": "profile.narration",
+            "role": "NARRATOR",
+            "purpose": "narrate",
+            "subject_id": "actor.context",
+            "source_frontier": "frontier-1",
+            "recipient_id": "player-1",
+        }
+
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime.scoped_context_join(
+                bundle, bundle | {"source_frontier": "frontier-stale"}
+            )
+
     def test_context_schemas_are_strict_and_examples_validate(self):
         for name in ("context-need-profile.schema.json", "context-trace.schema.json"):
             schema = json.loads((SCHEMAS / name).read_text(encoding="utf-8"))
@@ -918,6 +1026,195 @@ class ScopedContextJoinTests(unittest.TestCase):
                     "allowed_relations": [1],
                 }
             )
+
+
+class CollaborationContextJoinTests(unittest.TestCase):
+    def _host(
+        self,
+        *,
+        lifecycle="OPEN",
+        player_status="active",
+        route=True,
+        purpose="joint-entry",
+        dependency_scope=None,
+    ):
+        repository = RuntimeRepository()
+        route_refs = (
+            [{"obligation_id": "obligation-1", "generation": 1}] if route else []
+        )
+        repository.add_record(
+            "world.player",
+            ("player-1",),
+            context_player_record(
+                status=player_status,
+                collaboration_route_refs=route_refs,
+            ),
+        )
+        repository.add_record(
+            "runtime.collaboration_obligation",
+            ("obligation-1",),
+            collaboration_obligation_mapping(
+                lifecycle=lifecycle,
+                purpose=purpose,
+                dependency_scope=dependency_scope,
+            ),
+        )
+        return (
+            compose_runtime_host(
+                "campaign-context", repository, RuntimeLiveTransport()
+            ),
+            repository,
+        )
+
+    def test_current_obligation_join_projects_only_the_recipient_safe_summary(self):
+        host, repository = self._host(
+            purpose="joint-entry at cobalt-archive-17",
+            dependency_scope={
+                "scene_id": "scene-1",
+                "annotation": "cobalt-archive-17",
+            },
+        )
+        candidate_value = collaboration_candidate()
+
+        result = host.context.assemble(collaboration_request(), [candidate_value])
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        summary = result["bundle"]["required"][0]["payload"]
+        self.assertEqual(summary["obligation_id"], "obligation-1")
+        self.assertEqual(summary["generation"], 1)
+        self.assertEqual(summary["lifecycle"], "OPEN")
+        self.assertNotIn("purpose", summary)
+        self.assertNotIn("dependency_scope", summary)
+        self.assertEqual(
+            summary["recipient_requirement"],
+            {
+                "player_id": "player-1",
+                "required": True,
+                "input_status": "RECEIVED",
+            },
+        )
+        bundle_text = json.dumps(result["bundle"], sort_keys=True)
+        for private_value in (
+            "player-2",
+            "interaction-other",
+            "clause-other",
+            "stale-other-player-private-text",
+            "cobalt-archive-17",
+        ):
+            self.assertNotIn(private_value, bundle_text)
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", ("obligation-1",)
+            ).relative_path,
+            repository.read_paths,
+        )
+
+    def test_retrospective_context_revalidates_current_obsolete_obligation(self):
+        host, repository = self._host(lifecycle="OBSOLETE", route=True)
+        candidate_value = collaboration_candidate()
+
+        result = host.context.assemble(
+            collaboration_request(retrospective=True), [candidate_value]
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", ("obligation-1",)
+            ).relative_path,
+            repository.read_paths,
+        )
+        result_text = json.dumps(result, sort_keys=True)
+        self.assertNotIn("stale-other-player-private-text", result_text)
+
+    def test_unhashable_current_obligation_lifecycle_fails_closed(self):
+        host, repository = self._host()
+        obligation_path = route_native_record(
+            "runtime.collaboration_obligation", ("obligation-1",)
+        ).relative_path
+        repository.records[obligation_path] = {
+            **repository.records[obligation_path],
+            "lifecycle": [],
+        }
+
+        result = host.context.assemble(
+            collaboration_request(), [collaboration_candidate()]
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+
+    def test_access_change_removed_route_ref_rejects_open_obligation(self):
+        host, repository = self._host(lifecycle="OPEN", route=False)
+
+        result = host.context.assemble(
+            collaboration_request(), [collaboration_candidate()]
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", ("obligation-1",)
+            ).relative_path,
+            repository.read_paths,
+        )
+
+    def test_candidate_owner_generation_mismatch_is_rejected(self):
+        host, repository = self._host()
+
+        result = host.context.assemble(
+            collaboration_request(),
+            [collaboration_candidate(generation=2)],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "runtime.collaboration_obligation", ("obligation-1",)
+            ).relative_path,
+            repository.read_paths,
+        )
+
+    def test_scope_and_frontier_mismatch_cannot_admit_obligation(self):
+        mismatches = (
+            (
+                collaboration_candidate(recipient_id="player-2"),
+                collaboration_request(),
+            ),
+            (
+                collaboration_candidate(role="ACTOR", purpose="assess"),
+                collaboration_request(),
+            ),
+            (
+                collaboration_candidate(source_frontier="frontier-stale"),
+                collaboration_request(),
+            ),
+        )
+        for candidate_value, request_value in mismatches:
+            with self.subTest(candidate=candidate_value, request=request_value):
+                host, _repository = self._host()
+                result = host.context.assemble(request_value, [candidate_value])
+                self.assertEqual(result["outcome"], "UNSATISFIABLE")
+                self.assertIsNone(result["bundle"])
 
 
 if __name__ == "__main__":

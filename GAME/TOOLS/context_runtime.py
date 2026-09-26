@@ -61,8 +61,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 
 
 class ContextContractError(ValueError):
@@ -192,6 +192,9 @@ _KNOWLEDGE_FAMILIES: Final[frozenset[str]] = frozenset({"knowledge", "world.know
 _DISCLOSURE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"disclosure", "runtime.disclosure"}
 )
+_COLLABORATION_FAMILIES: Final[frozenset[str]] = frozenset(
+    {"runtime.collaboration_obligation"}
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -202,6 +205,7 @@ class _RequestScope:
     subject_id: str
     recipient_id: str
     campaign_id: str
+    source_frontier: str | None
 
 
 def _nonempty(value: object, label: str) -> str:
@@ -287,11 +291,22 @@ def _scope(request: Mapping[str, object]) -> _RequestScope:
         or not 0 <= budget <= profile.max_budget
     ):
         raise ContextContractError("request budget exceeds the registered profile")
-    if "source_frontier" in request:
-        _scope_id(request["source_frontier"], "source_frontier")
+    source_frontier = (
+        None
+        if "source_frontier" not in request
+        else _scope_id(request["source_frontier"], "source_frontier")
+    )
     if "retrospective" in request and type(request["retrospective"]) is not bool:
         raise ContextContractError("retrospective must be boolean")
-    return _RequestScope(profile, role, purpose, subject_id, recipient_id, campaign_id)
+    return _RequestScope(
+        profile,
+        role,
+        purpose,
+        subject_id,
+        recipient_id,
+        campaign_id,
+        source_frontier,
+    )
 
 
 def discover_candidates(
@@ -542,6 +557,317 @@ def _resolve_disclosure(
     return record
 
 
+def _resolve_collaboration_obligation(
+    repository: object,
+    pinned: _PinnedCampaign,
+    scope: _RequestScope,
+    candidate: Mapping[str, object],
+) -> tuple[list[str], dict[str, object]]:
+    """Project only the exact current obligation view for one recipient."""
+
+    from .collaboration import (
+        COLLABORATION_SCHEMA_VERSION,
+        CollaborationObligation,
+        ContributorRef,
+        CoordinationFamily,
+        DependencyClass,
+        NativeBasisRef,
+    )
+
+    _candidate_scope(candidate, scope)
+    if scope.source_frontier is None:
+        raise ContextContractError(
+            "collaboration Context join requires a scoped source frontier"
+        )
+    candidate_frontier = _scope_id(
+        candidate.get("source_frontier"), "collaboration source_frontier"
+    )
+    if candidate_frontier != scope.source_frontier:
+        raise ContextContractError(
+            "collaboration candidate belongs to another Context frontier"
+        )
+    identity = _identity(
+        candidate.get("owner_identity"),
+        "collaboration obligation owner_identity",
+        length=1,
+    )
+    obligation_id = identity[0]
+    requested_generation = candidate.get("generation")
+    if (
+        isinstance(requested_generation, bool)
+        or not isinstance(requested_generation, int)
+        or requested_generation < 1
+    ):
+        raise ContextContractError(
+            "collaboration candidate requires one exact positive generation"
+        )
+
+    player = _resolve_player(
+        repository,
+        pinned,
+        (scope.recipient_id,),
+        scope.recipient_id,
+    )
+    try:
+        route = route_native_record("runtime.collaboration_obligation", identity)
+        raw_obligation = repository.read_exact_path(pinned, route.relative_path)  # type: ignore[attr-defined]
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
+        raise ContextContractError(
+            "exact collaboration obligation owner is unavailable"
+        ) from error
+    if not isinstance(raw_obligation, Mapping):
+        raise ContextContractError(
+            "exact collaboration obligation owner is not an object"
+        )
+    obligation = dict(raw_obligation)
+    required_fields = {
+        "schema_version",
+        "kind",
+        "obligation_id",
+        "generation",
+        "predecessor_generation",
+        "lifecycle",
+        "coordination_family",
+        "campaign_id",
+        "interaction_id",
+        "intent_plan_id",
+        "clause_id",
+        "collaboration_semantic_class",
+        "dependency_class",
+        "purpose",
+        "dependency_scope",
+        "native_basis_refs",
+        "required_contributors",
+        "optional_contributors",
+        "accepted_input_uses",
+        "accepted_input_contributors",
+        "closed_input_set_fingerprint",
+    }
+    if set(obligation) != required_fields:
+        raise ContextContractError(
+            "collaboration obligation fields are not the registered owner shape"
+        )
+    generation = obligation.get("generation")
+    lifecycle = obligation.get("lifecycle")
+    if (
+        type(obligation.get("schema_version")) is not int
+        or obligation.get("schema_version") != COLLABORATION_SCHEMA_VERSION
+        or obligation.get("kind") != "runtime.collaboration_obligation"
+        or obligation.get("campaign_id") != pinned.campaign_id
+        or obligation.get("obligation_id") != obligation_id
+        or type(generation) is not int
+        or generation < 1
+        or generation != requested_generation
+        or type(lifecycle) is not str
+        or lifecycle not in {"OPEN", "CLOSED"}
+    ):
+        raise ContextContractError(
+            "collaboration obligation is stale, terminal or foreign"
+        )
+    dependency_scope = obligation.get("dependency_scope")
+    if not isinstance(dependency_scope, Mapping) or not dependency_scope:
+        raise ContextContractError(
+            "collaboration dependency scope is not a bounded owner mapping"
+        )
+
+    def parse_contributors(value: object, label: str) -> tuple[ContributorRef, ...]:
+        if not isinstance(value, list):
+            raise ContextContractError(f"{label} must be an array")
+        parsed: list[ContributorRef] = []
+        for raw in value:
+            if not isinstance(raw, Mapping) or set(raw) - {"player_id", "pc_id"}:
+                raise ContextContractError(f"{label} entry is malformed")
+            if "player_id" not in raw:
+                raise ContextContractError(f"{label} entry lacks player_id")
+            parsed.append(
+                ContributorRef(
+                    player_id=_scope_id(raw.get("player_id"), f"{label} player_id"),
+                    pc_id=None
+                    if raw.get("pc_id") is None
+                    else _scope_id(raw.get("pc_id"), f"{label} pc_id"),
+                )
+            )
+        return tuple(parsed)
+
+    def parse_native_basis_refs(value: object) -> tuple[NativeBasisRef, ...]:
+        if not isinstance(value, list):
+            raise ContextContractError(
+                "collaboration native_basis_refs must be an array"
+            )
+        parsed: list[NativeBasisRef] = []
+        for raw in value:
+            if (
+                not isinstance(raw, Mapping)
+                or set(raw) - {"family", "id", "revision"}
+                or not {"family", "id"}.issubset(raw)
+            ):
+                raise ContextContractError(
+                    "collaboration native basis reference is malformed"
+                )
+            parsed.append(
+                NativeBasisRef(
+                    family=_nonempty(raw.get("family"), "native basis family"),
+                    record_id=_scope_id(raw.get("id"), "native basis id"),
+                    revision=None
+                    if raw.get("revision") is None
+                    else _nonempty(raw.get("revision"), "native basis revision"),
+                )
+            )
+        return tuple(parsed)
+
+    def parse_input_uses(value: object) -> tuple[tuple[str, str], ...]:
+        if not isinstance(value, list):
+            raise ContextContractError(
+                "collaboration accepted_input_uses must be an array"
+            )
+        result: list[tuple[str, str]] = []
+        for raw in value:
+            if not isinstance(raw, Mapping) or set(raw) != {
+                "interaction_id",
+                "clause_id",
+            }:
+                raise ContextContractError(
+                    "collaboration accepted input use is malformed"
+                )
+            result.append(
+                (
+                    _scope_id(raw.get("interaction_id"), "input interaction_id"),
+                    _scope_id(raw.get("clause_id"), "input clause_id"),
+                )
+            )
+        return tuple(result)
+
+    def parse_input_contributors(
+        value: object,
+    ) -> tuple[tuple[tuple[str, str], ContributorRef], ...]:
+        if not isinstance(value, list):
+            raise ContextContractError(
+                "collaboration accepted_input_contributors must be an array"
+            )
+        result: list[tuple[tuple[str, str], ContributorRef]] = []
+        for raw in value:
+            if (
+                not isinstance(raw, Mapping)
+                or set(raw) - {"interaction_id", "clause_id", "player_id", "pc_id"}
+                or not {"interaction_id", "clause_id", "player_id"}.issubset(raw)
+            ):
+                raise ContextContractError(
+                    "collaboration accepted input contributor is malformed"
+                )
+            identity = (
+                _scope_id(raw.get("interaction_id"), "input interaction_id"),
+                _scope_id(raw.get("clause_id"), "input clause_id"),
+            )
+            contributor = ContributorRef(
+                player_id=_scope_id(raw.get("player_id"), "input player_id"),
+                pc_id=None
+                if raw.get("pc_id") is None
+                else _scope_id(raw.get("pc_id"), "input pc_id"),
+            )
+            result.append((identity, contributor))
+        return tuple(result)
+
+    try:
+        typed_obligation = CollaborationObligation(
+            obligation_id=obligation_id,
+            generation=generation,
+            campaign_id=pinned.campaign_id,
+            interaction_id=_scope_id(
+                obligation.get("interaction_id"), "obligation interaction_id"
+            ),
+            intent_plan_id=_scope_id(
+                obligation.get("intent_plan_id"), "obligation intent_plan_id"
+            ),
+            clause_id=_scope_id(obligation.get("clause_id"), "obligation clause_id"),
+            semantic_class=_nonempty(
+                obligation.get("collaboration_semantic_class"),
+                "collaboration semantic class",
+            ),
+            dependency_class=DependencyClass(obligation.get("dependency_class")),
+            purpose=_nonempty(obligation.get("purpose"), "collaboration purpose"),
+            dependency_scope=dependency_scope,
+            native_basis_refs=parse_native_basis_refs(
+                obligation.get("native_basis_refs")
+            ),
+            required_contributors=parse_contributors(
+                obligation.get("required_contributors"),
+                "collaboration required contributors",
+            ),
+            coordination_family=CoordinationFamily(
+                obligation.get("coordination_family")
+            ),
+            lifecycle=lifecycle,
+            optional_contributors=parse_contributors(
+                obligation.get("optional_contributors"),
+                "collaboration optional contributors",
+            ),
+            accepted_input_uses=parse_input_uses(obligation.get("accepted_input_uses")),
+            accepted_input_contributors=parse_input_contributors(
+                obligation.get("accepted_input_contributors")
+            ),
+            predecessor_generation=obligation.get("predecessor_generation"),
+            closed_input_set_fingerprint=obligation.get("closed_input_set_fingerprint"),
+        )
+    except (TypeError, ValueError) as error:
+        raise ContextContractError(
+            "current collaboration obligation owner is malformed"
+        ) from error
+
+    route_refs = player.get("collaboration_route_refs")
+    if not isinstance(route_refs, list):
+        raise ContextContractError("current PLAYER collaboration routing is incomplete")
+    exact_refs: set[tuple[str, int]] = set()
+    for raw_ref in route_refs:
+        if not isinstance(raw_ref, Mapping) or set(raw_ref) != {
+            "obligation_id",
+            "generation",
+        }:
+            raise ContextContractError(
+                "current PLAYER collaboration route ref is malformed"
+            )
+        ref_id = _scope_id(raw_ref.get("obligation_id"), "route obligation_id")
+        ref_generation = raw_ref.get("generation")
+        if (
+            isinstance(ref_generation, bool)
+            or not isinstance(ref_generation, int)
+            or ref_generation < 1
+        ):
+            raise ContextContractError(
+                "current PLAYER collaboration route generation is malformed"
+            )
+        ref = (ref_id, ref_generation)
+        if ref in exact_refs:
+            raise ContextContractError(
+                "current PLAYER collaboration routing contains duplicates"
+            )
+        exact_refs.add(ref)
+    if (obligation_id, generation) not in exact_refs:
+        raise ContextContractError(
+            "collaboration obligation is not routed to the current recipient"
+        )
+
+    recipient_required = any(
+        contributor.player_id == scope.recipient_id
+        for contributor in typed_obligation.required_contributors
+    )
+    recipient_input_received = any(
+        contributor.player_id == scope.recipient_id
+        for _identity, contributor in typed_obligation.accepted_input_contributors
+    )
+
+    return identity, {
+        "kind": "runtime.collaboration_obligation",
+        "obligation_id": obligation_id,
+        "generation": typed_obligation.generation,
+        "lifecycle": typed_obligation.lifecycle,
+        "recipient_requirement": {
+            "player_id": scope.recipient_id,
+            "required": recipient_required,
+            "input_status": "RECEIVED" if recipient_input_received else "PENDING",
+        },
+    }
+
+
 def _resolve_live(
     route: LiveRouting | None,
     reader: object | None,
@@ -639,6 +965,10 @@ def _resolve_candidate(
         )
         payload = _resolve_disclosure(
             repository, pinned, tuple(owner_identity), scope.recipient_id
+        )
+    elif family in _COLLABORATION_FAMILIES:
+        owner_identity, payload = _resolve_collaboration_obligation(
+            repository, pinned, scope, candidate
         )
     elif (resolver := _CAMPAIGN_RESOLVER_TABLE.get(family)) is not None:
         owner_identity, payload = resolver(repository, pinned, scope, candidate, family)
@@ -743,17 +1073,6 @@ def _assemble_bound_context(
     discovered = discover_candidates(request, candidates)
     discovered_by_id = {item["candidate_id"]: item for item in discovered}
     excluded: list[str] = []
-    if request.get("retrospective") is True:
-        return {
-            "outcome": "UNSATISFIABLE",
-            "bundle": None,
-            "trace": {
-                "profile_id": scope.profile.profile_id,
-                "discovered_ids": [item["candidate_id"] for item in discovered],
-                "included_ids": [],
-                "excluded_ids": sorted(set(excluded).union(request["required_ids"])),
-            },
-        }
 
     def resolve(item: Mapping[str, object]) -> dict[str, object]:
         return _resolve_candidate(
@@ -764,6 +1083,31 @@ def _assemble_bound_context(
             scope,
             item,
         )
+
+    if request.get("retrospective") is True:
+        # Historical/presentation bytes do not preserve current collaboration
+        # eligibility. Re-read only bounded collaboration candidates before the
+        # existing terminal outcome; no old projection is admitted as evidence.
+        for item in discovered:
+            if (
+                item.get("owner_family", item.get("family"))
+                not in _COLLABORATION_FAMILIES
+            ):
+                continue
+            try:
+                resolve(item)
+            except ContextContractError:
+                excluded.append(item["candidate_id"])
+        return {
+            "outcome": "UNSATISFIABLE",
+            "bundle": None,
+            "trace": {
+                "profile_id": scope.profile.profile_id,
+                "discovered_ids": [item["candidate_id"] for item in discovered],
+                "included_ids": [],
+                "excluded_ids": sorted(set(excluded).union(request["required_ids"])),
+            },
+        }
 
     required, available = _required_closure(
         request["required_ids"],
