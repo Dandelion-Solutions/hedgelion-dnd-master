@@ -331,11 +331,11 @@ T04B_MAINTENANCE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/T
 T04B_RUFF: `ruff check` and `ruff format --check` for `collaboration.py` and `test_rd12_collaboration.py` — PASS.
 T04B_VERSION_IMPACT: Collaboration `1.0.18 -> 1.0.19`; schema v3 unchanged; P0R `publication.py 1.0.6` and `runtime_host.py 1.0.10` unchanged; campaign, storage/catalog/engine generations, migration and dual-read: NONE.
 T04B_INDEPENDENT_REVIEW: **PASS** for spec compliance and code quality; no findings; reviewer verified no new System-Impact trigger.
-T04B_CLEAN_FULL_DEV: pending clean exact-tree run; main-worktree `.entire/` and `DEV/.lavish/` contamination will be excluded.
+T04B_CLEAN_FULL_DEV: 1297 passed, 5 skipped, 4 known S6D failures outside T04B scope; version census zero unclassified hits and clean package provenance PASS. Run from detached clean worktree at T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad`, excluding main-worktree `.entire/` and `DEV/.lavish/`.
 
-NEXT_EXACT_TASK: run clean exact-tree full DEV verification on the reviewed T04B checkpoint, then publish/read back `W04_AUTHORITY_COLLABORATION_RECONCILED`. T07D remains independent.
-KNOWN_BLOCKERS: T04B clean exact full DEV and publication/read-back pending; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: P0R code/test/control checkpoint is published/read back. T04B changes are local/uncommitted in `GAME/TOOLS/collaboration.py` and `DEV/TESTS/test_rd12_collaboration.py`; the original candidate remains preserved in its local stash backup and is excluded from P0R. `DEV/.lavish/` remains untouched.
+NEXT_EXACT_TASK: fresh-fetch the target branch, publish/read back T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad`, and record `W04_AUTHORITY_COLLABORATION_RECONCILED`. T07D remains independent.
+KNOWN_BLOCKERS: T04B publication/read-back pending; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` is local-only and not yet published. The original candidate remains preserved in its local stash backup and was excluded from P0R. `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
 
