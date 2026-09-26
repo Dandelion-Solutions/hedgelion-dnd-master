@@ -51,6 +51,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
 | `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | WP-27 final Senior PASS closed readiness classification for the deferred Story/snapshot/control realization boundary; physical realization remains behind active R2.7 final reconciliation and later approved implementation planning/execution | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; closed WP-26 reconciliation; closed WP-27 readiness classification; active R2.7 final reconciliation; future Commentator/Story realization | NONE |
 | `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | WP-27 final Senior PASS closed readiness classification for writer/rollover/schema/test realization without activating a universal partition topology; physical realization remains behind active R2.7 final reconciliation and later approved implementation planning/execution | sizing-bands owner decision; superseded former 10 KiB owner; WP-24; Story growth/sharding owner; closed WP-26 reconciliation; closed WP-27 readiness classification; active R2.7 final reconciliation; later runtime/Story writers/tests | NONE |
+| `PO-011` | PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT | ROUTED | current HDM has localized setup wording and recipient-scoped diagnostics, but no global Master-to-human language law; must be incorporated before W04.T06B protected emission and later shipped-runtime final writers | player-facing runtime/emission; Narration/Master channel; future diagnostics realization; Wave-05 shipped CORE/session/bootstrap integration | NONE |
 
 ---
 
@@ -658,6 +659,87 @@ Product Owner decision still required: `NONE`.
 
 ---
 
+---
+
+## PO-011 — Master-to-human language follows the current player language; internal/diagnostic language is separate
+
+Date: 2026-09-26  
+Kind: PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT  
+Status: ROUTED
+
+### Product Owner input — VERBATIM / IMMUTABLE
+
+```text
+> - отсутствие language policy не запрещает говорить на языке; policy — только улучшатель стиля/качества;
+> - внутрянка может оставаться английской;
+> - всё, что Master говорит человеку, должно быть на ResolvedResponseLanguage;
+> - никакого скрытого fallback «ну тогда скажем по-английски»;
+> - debug/D6 — отдельная техническая поверхность.
+
+то же самое должно работать и для HDM! nfv такое поведение прописано хоть где-нибудь?
+```
+
+### Agent interpretation / classification
+
+```text
+PRODUCT / PLAYER-FACING LANGUAGE SEMANTICS
+RELATIONSHIP TO CURRENT HDM: MATERIAL INSUFFICIENCY / PARTIALLY SATISFIED BY LOCAL RULES
+MASTER_TO_HUMAN_TEXT: MUST USE THE CURRENT RESOLVED PLAYER/CONVERSATION LANGUAGE
+INTERNAL SYSTEM IDENTIFIERS / ENUMS / MACHINE CONTRACTS: MAY REMAIN ENGLISH
+LANGUAGE-SPECIFIC QUALITY/PRESENTATION POLICY: OPTIONAL ENHANCEMENT, NOT A LANGUAGE-CAPABILITY GATE
+MISSING LANGUAGE-SPECIFIC POLICY/ASSET: MUST NOT FORCE ANOTHER VISIBLE LANGUAGE OR SILENCE THE MASTER
+VISIBLE FALLBACK TO ENGLISH/RUSSIAN/OTHER LANGUAGE: NOT AUTHORIZED SOLELY DUE TO MISSING LOCAL LANGUAGE ASSET
+DIAGNOSTIC/DEBUG OUTPUT: SEPARATE TECHNICAL SURFACE, NOT ORDINARY MASTER UTTERANCE
+CURRENT HDM LANGUAGE RESOLUTION/PERSISTENCE MECHANISM: NOT SELECTED BY THIS INPUT
+NEW PERSISTENT PLAYER LANGUAGE FIELD: NOT IMPLIED
+NEEDS_PO: NONE
+```
+
+### Current evidence / gap
+
+Current public HDM already contains partial compatible behavior:
+
+- `GAME/CORE/CAMPAIGN_SETUP.md` requires the initial Master-channel explanation to be localized to the player's language and established register;
+- `GAME/CORE/RUNTIME.md` separates the ordinary out-of-character Master channel from in-world speech;
+- `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` and WP-21 separate maintenance/diagnostic routing from ordinary gameplay and require recipient-safe human-visible diagnostics.
+
+However, there is currently no general owner law equivalent to:
+
+```text
+all ordinary Master -> human text
+  -> current resolved player/conversation language
+
+internal machine/system language
+  -> independent from player-visible language
+
+missing optional language-quality asset/policy
+  -> does not block ordinary response generation
+  -> does not authorize visible fallback to another language
+```
+
+The current PLAYER schema also has no language/locale field. This input does not require one; exact resolution and persistence remain implementation/architecture choices unless a later consumer proves persistence is needed.
+
+### Current routing
+
+| Route | State | Trigger / obligation | Current evidence / owner |
+|---|---|---|---|
+| Product semantics | ROUTED / OWNER GAP | establish one current HDM semantic owner for ordinary Master-to-human response language and internal-vs-visible separation | this PO-011 input + existing runtime/narration/setup owners |
+| W04.T06A phase rebind | NOT APPLICABLE TO CURRENT TASK | T06A may continue; it owns accepted Context basis/phase rebinding, not player-language realization | current Wave-04 execution plan |
+| W04.T06B protected Narrator emission | ACTIVE / MUST RECONCILE BEFORE RED | finite fallback/player-visible emission must not leak internal English or use a wrong-language fallback solely because a local language asset is absent | Wave-04 plan T06B + `GAME/TOOLS/emission.py` future owner |
+| Wave-05 shipped CORE/session/bootstrap final writers | DEFERRED / MANDATORY CONSUMER | final shipped instructions and shared surfaces must carry the accepted player-language law once the semantic owner is established | implementation Wave 05 + current CORE/runtime/session/setup surfaces |
+| Diagnostics / maintenance surface | DEFERRED UNTIL REALIZATION | technical diagnostics may remain a separate surface; ordinary Master speech must still follow player language; diagnostic visibility remains recipient-scoped | `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` + WP-21 |
+| PLAYER persistence/schema | DEFERRED / NO CURRENT REQUIREMENT | do not add a persistent language field unless later architecture proves a need; conversation-scoped resolution is allowed | `GAME/SCHEMA/player.schema.yaml` currently has no language field |
+
+### Current impact
+
+This requirement does not block the currently authorized W04.T06A work, because T06A owns role/context rebinding rather than player-visible language realization.
+
+It **does** become an applicable Product Owner input before W04.T06B protected Narrator emission begins. The existing T06B phrase `exactly one registered fallback` must be reconciled so that a fallback cannot become an unauthorized visible fallback language or internal-token leak.
+
+No Product Owner decision remains open: the product semantics are explicit. The technical owner/representation and any required plan amendment belong to HDM architecture under the normal Source Manifest -> design/reconciliation -> implementation path.
+
+Product Owner decision still required: `NONE`.
+
 ## 4. Current ledger terminal state
 
 This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
@@ -673,6 +755,7 @@ PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINA
 PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
 PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / WP-26 CLOSED / WP-27 READINESS CLOSED / REALIZATION DEFERRED
 PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS / WP-26 CLOSED / WP-27 READINESS CLOSED
+PO-011: ROUTED — MASTER-TO-HUMAN LANGUAGE LAW / T06B + SHIPPED-RUNTIME + DIAGNOSTIC CONSUMERS
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
