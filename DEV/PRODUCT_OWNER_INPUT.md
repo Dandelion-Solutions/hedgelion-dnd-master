@@ -286,7 +286,7 @@ CURRENT WP-20 CONSUMER: CLOSED / INCORPORATED
 
 PO-004 is fully incorporated at the architecture level. Final Senior review passed WP-20 with the compatibility horizon beginning at released v1.0+, with no v0.8/pre-release compatibility or migration obligation.
 
-The only remaining route is downstream realization under a future explicit implementation-planning/execution gate. That deferred route does not make WP-20 a current pending consumer and does not reopen the Product Owner decision.
+The architecture decision remains closed; downstream realization is now occurring under the already-authorized six-wave implementation package. Compatibility/migration behavior is consumed only where a current task owns a concrete schema/runtime/version transition, and that implementation work does not make WP-20 a pending architecture consumer.
 
 Product Owner decision still required: `NONE`.
 
@@ -589,7 +589,7 @@ NEEDS_PO: NONE
 | Step-4 knowledge/disclosure/access | INCORPORATED / OWNERS PRESERVED | future Commentator snapshot must export a derived sufficient control projection without creating a second owner | Step-4, R2.3, Access Control, PO-009 |
 | Commentator local read cache | DOWNSTREAM INTERNAL / OUTSIDE MASTER HOT | implementation may choose campaign-local SQL schema/indexes optimized for history/search/retelling; no compatibility with Master HOT required | PO-009 public boundary only; exact consumer implementation remains downstream |
 | Content/access currentness | INCORPORATED | content finality may freeze content but not access/knowledge/disclosure projection; refresh control basis when those owners change | PO-009 `SCC-9/SCC-10` |
-| Story/snapshot schema, sharding, validator and tests | DEFERRED / WP-27 READINESS CLASSIFICATION CLOSED | WP-27 final Senior PASS classified the exact HDM-side representation as implementation-selectable under native owners with no architecture blocker; physical realization remains behind R2.7 final reconciliation plus later implementation authorization | PO-009 + Story sharding/versioning/test owners + WP-27 final canonical spec/final Senior review |
+| Story/snapshot schema, sharding, validator and tests | ACTIVE / PARTIALLY REALIZED | implementation authorization is active: T07B/T07C have materialized Story/T0 contracts, T07D is eligible for Commentator control/snapshot realization, and later T07/W05 consumers retain the remaining owner-scoped work | PO-009 + accepted T07B/T07C checkpoints + T07D/T07E/T07-INTEGRATION + later Story/sharding/versioning owners |
 | R2.7 WP-26 routing/supersession | INCORPORATED / CLOSED / FINAL SENIOR PASS | current Story contracts and durable routers are reconciled; WP-26 closure is complete | WP-26 canonical spec + final independent Senior review |
 | R2.7 WP-27 readiness | INCORPORATED / CLOSED / FINAL SENIOR PASS | readiness classification complete: future Story/control workstreams, dependencies, Version Impact/proof routes and delegated representation boundary are classified without implementation | WP-27 final canonical spec + final independent Senior review |
 
@@ -599,7 +599,7 @@ The prior Story design was sufficient for a consumer allowed to escalate from St
 
 WP-26 final Senior PASS closed the routing/supersession reconciliation. Native SemanticEvent/history ownership remains unchanged, qualifying retained T0 factor meaning is Story-local for baseline Commentator use, and the Commentator-importable snapshot still requires enough derived knowledge/disclosure/access state to evaluate Story eligibility locally. Exact snapshot fields, validators, sharding and Commentator-cache topology remain deliberately deferred rather than being fabricated by documentation reconciliation.
 
-WP-27 final Senior PASS completed the implementation-planning-readiness classification with no representation architecture blocker. The exact physical Story/snapshot/cache realization remains deferred behind the active R2.7 final reconciliation and later approved implementation planning/execution.
+WP-27 final Senior PASS completed implementation readiness with no representation architecture blocker. Production implementation is now active: Story/T0 machine realization has progressed through accepted T07B/T07C, while Commentator control/snapshot and later integration consumers remain governed by T07D/T07E/T07-INTEGRATION and the existing Wave-05/06 gates. No new Product Owner decision is exposed.
 
 Product Owner decision still required: `NONE`.
 
@@ -647,13 +647,13 @@ NEEDS_PO: NONE
 | Story persistence/growth | INCORPORATED / NARROW SUPERSESSION | bounded partitionability remains; absolute 10 KiB Story cap is replaced by the same bands | Story growth/sharding owner + current sizing owner + WP-26 propagation |
 | WP-26 routing/supersession | INCORPORATED / CLOSED / FINAL SENIOR PASS | stale hard-cap wording, tests and durable routers are reconciled to the current sizing owner; WP-26 closure is complete | WP-26 canonical spec + final independent Senior review |
 | WP-27 implementation-planning readiness | INCORPORATED / CLOSED / FINAL SENIOR PASS | readiness classification complete: concrete writer/rollover/schema/test workstreams, activation state and delegated topology choices are classified without creating universal partition work | WP-27 final canonical spec + final independent Senior review |
-| Runtime/Story machine realization and tests | DEFERRED | after R2.7 final reconciliation plus future approved implementation planning/execution; run Version Impact Gate for material persisted/module changes | relevant writers/schemas/tests |
+| Runtime/Story machine realization and tests | ACTIVE / TRIGGER-BOUNDED | production implementation is active; current writers/tests consume the sizing bands only where their exact owner/material size makes the policy relevant, with Version Impact on material persisted/module changes and partitioning only when an owner-valid threshold/operability trigger is reached | current Wave-04/05 writers, Story/runtime schemas and tests |
 
 ### Current impact
 
 The Product Owner input is fully incorporated and does not remain as an unresolved requirement. The project may continue using “about 10 KiB” as shorthand, but implementation-facing logic now uses the target/review/review-and-partition model rather than rejecting every payload above 10,240 bytes.
 
-WP-26 final Senior PASS closed the stale hard-cap prose, verification and durable-routing reconciliation without selecting a concrete writer partition/rollover topology. WP-27 final Senior PASS completed readiness classification without activating universal partitioning and without selecting concrete writer topology. Runtime/Story realization remains deferred behind the active R2.7 final reconciliation and later approved implementation planning/execution.
+WP-26 final Senior PASS closed the stale hard-cap prose, verification and durable-routing reconciliation without selecting a universal writer partition/rollover topology. WP-27 final Senior PASS classified the implementation work, and production execution is now active. Concrete partition/rollover remains owner- and threshold-triggered rather than globally activated; current Story/runtime tasks apply the sizing law only when their exact writer/operability evidence requires it.
 
 Product Owner decision still required: `NONE`.
 
