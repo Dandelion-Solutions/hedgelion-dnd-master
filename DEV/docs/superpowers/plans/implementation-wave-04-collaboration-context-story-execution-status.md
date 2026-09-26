@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T05C AUTHORIZED
-CURRENT_TASK: collaboration-aware scoped Context join after accepted T04B, T05B and T02C inputs
-LAST_COMPLETED_TASK: W04.T04B output `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at d053dbbc01351c0ef5a356110542b0a86d3f923c; P1 PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; P0 PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `2027d89ea105ffff650c57e5b6a724c01c41fc1a` — fresh remote fetch confirmed current branch HEAD after the unrelated `.gitignore` TMP checkpoint; no T05C owner overlap
+STATUS: EXECUTING — W04.T06A AUTHORIZED
+CURRENT_TASK: phase rebinding and accepted Context basis with W04.T05C and W02.T07 hard inputs
+LAST_COMPLETED_TASK: W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status commit `95c898ce62fc947436cd386198c182ea98510925`, independently reviewed, clean exact DEV evidence and remote read-back; W04.T04B -> `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 PASS/read-back at `a792d14894dcc3ba123191883e5647cc06808e85`; P0 PASS/read-back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: `95c898ce62fc947436cd386198c182ea98510925` — fresh fetch/read-back confirmed T05C output on the active ref
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -62,6 +62,25 @@ VERSION IMPACT: fresh baseline `context_runtime.py 1.0.7 -> 1.0.8`; persisted sc
 SCHEMA / CATALOG / CHECKPOINT IMPACT: NONE expected; request schema retains its existing `source_frontier` field; no new persisted record.
 MIGRATION IMPACT: NONE expected.
 CURRENTNESS RE-READ SET BEFORE WRITE: fresh branch HEAD, CURRENT_PROGRESS and this cursor, T05C plan row, Context Runtime canonical spec, current Context Runtime/tests, accepted T04B/T05B/T02C outputs, Collaboration/PLAYER access owners and Versioning owner.
+
+## W04.T06A implementation impact envelope
+
+SPEC / APPROVED DESIGN: T06A row in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`; R2.4 single-context turn/rebind laws; WP-08 role/context realization; Step-4 role-containment amendment; accepted W02.T07 `W02_PROTECTED_EXECUTION_HANDOFF_READY`.
+IMPLEMENTATION START HEAD: `95c898ce62fc947436cd386198c182ea98510925`.
+PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/turn_runtime.py`; `DEV/SCHEMAS/turn-envelope.schema.json`, `interpreter-result.schema.json`, `preparation-draft.schema.json`, `actor-proposal.schema.json`, `story-projection-draft.schema.json`, `narration-result.schema.json`; `DEV/TESTS/test_rd10_role_emission.py`.
+
+EXPECTED OWNERS TO CHANGE: registered TurnRuntime phase-rebinding and accepted Context-basis controls only.
+EXPECTED CONSUMERS TO CHANGE: T06A role/result contract tests in `test_rd10_role_emission.py`; `emission.py` and existing W02 execution-handoff producer remain read-only consumers/producers unless an in-scope test proves an already-planned mechanical synchronization is required.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: bind logical role/subject/purpose/profile/Context basis and minimum typed prior results; reject untyped/raw bundles, traces and private diagnostics; no generic result bus or persistent state.
+
+PROTECTED ARCHITECTURE INVARIANTS: TurnEnvelope remains transient control, not semantic or persistence authority; matching `bundle_id`/recipient or caller-shaped bundle alone cannot widen eligibility; Actor remains subject-local; Narrator freshly rebinds after Chronicler; only minimum accepted typed results cross phases; W02 accepted deterministic execution evidence remains owner-issued and mechanics/RNG are not replayed.
+ARCHITECTURE-SENSITIVE SURFACES: ContextService/Context Runtime output as the accepted phase basis; TurnRuntime validation; protected emission consumer; all six registered turn/result schemas.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD10 role/emission suite; RD05 execution-handoff consumer tests; RD11 Context suite; relevant emission tests; maintenance audit and clean exact full DEV.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: `context_runtime.py`, `runtime_host.py`, `emission.py` implementation (T06B), `collaboration.py`, History/Story, GAME/CORE instruction files, persistent state, RepositoryPort, catalog, Wave-05. If T06A's required accepted-basis proof needs changing ContextService/Context Runtime ownership or another unplanned interface, stop at the System-Impact Gate before broadening the write set.
+VERSION IMPACT: pending exact namespace classification before production writes; current `turn_runtime.py` has no module version marker, and the six transient role/result schemas have no HDM `schema_version` field. Verify against current Versioning owner and machine census before checkpoint; persistent schema/campaign/storage/catalog/engine generations and migration are not expected to change.
+SCHEMA / CATALOG / CHECKPOINT IMPACT: transient TurnEnvelope/result schema changes only; no persistent record, catalog, campaign checkpoint, or migration expected.
+MIGRATION IMPACT: NONE expected.
+CURRENTNESS RE-READ SET BEFORE WRITE: fresh branch HEAD, `CURRENT_PROGRESS` and this cursor, T06A plan row, current R2.3/R2.4/WP-08 and Step-4 role-containment owners, accepted W02.T07 and T05C outputs, current TurnRuntime/six schemas/RD10 tests, RD05 handoff consumer and `emission.py`, and Versioning owner.
 
 
 ## T04B Senior System-Impact resolution
@@ -357,13 +376,14 @@ T05C_RUFF: `ruff check` and `ruff format --check` for `context_runtime.py` and `
 T05C_MAINTENANCE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS after clearing generated GAME bytecode cache.
 T05C_DIRTY_FULL_DEV_DIAGNOSTIC: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` in the active checkout — 1302 passed, 5 skipped, 6 failed. Four failures are the known out-of-scope S6D cases; `test_runtime_package_provenance::test_clean_checkout_metadata_records_exact_head` observes `dirty_worktree`; `test_versioning_namespace_policy::test_census_has_zero_unclassified_hits` observes 128858 hits from `.entire/` and `DEV/.lavish/`. This dirty-checkout diagnostic is not clean exact-tree evidence; both directories remain untouched.
 T05C_VERSION_IMPACT: Context Runtime `1.0.7 -> 1.0.8`; persistent schema, campaign-contract, storage/catalog/engine generations, migration and dual-read: NONE.
-T05C_CLEAN_FULL_DEV: full clean exact-tree suite at candidate `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a`: 1304 passed, 5 skipped, 4 known out-of-scope S6D failures; version census zero unclassified hits; runtime package provenance reports `clean_head`; maintenance audit PASS. The four known failures are `test_s6d_05_portable_value_contract::test_route_rows_ids_and_embedding_edges_are_machine_verified`, `test_s6d_05_portable_value_contract::test_real_activity_action_request_binding_matrix_and_freeze`, `test_s6d_04_mechanical_context_contract::test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`, and `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`. Run from a clean detached-HEAD repository under ignored `DEV/tmp/`; `.entire/`, `DEV/.lavish/`, and unrelated `.agents/` edits were excluded without modifying them.
+T05C_CLEAN_FULL_DEV: full clean exact-tree suite at candidate `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a`: 1304 passed, 5 skipped, 4 known out-of-scope S6D failures; version census zero unclassified hits; runtime package provenance reports `clean_head`; maintenance audit PASS. The four known failures are `test_s6d_05_portable_value_contract::test_route_rows_ids_and_embedding_edges_are_machine_verified`, `test_s6d_05_portable_value_contract::test_real_activity_action_request_binding_matrix_and_freeze`, `test_s6d_04_mechanical_context_contract::test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`, and `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and-offers-reject-stale-owner`. Run from a clean detached-HEAD repository under ignored `DEV/tmp/`; `.entire/`, `DEV/.lavish/`, and unrelated `.agents/` edits were excluded without modifying them. Fresh remote read-back confirmed the T05C code and status commits at `95c898ce62fc947436cd386198c182ea98510925`.
+T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`; the preceding summary's hyphenated spelling is a typographical error.
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: publish the reviewed T05C candidate and read back `W04_CONTEXT_INTEGRATION_READY`. T07D remains independent.
-KNOWN_BLOCKERS: T05C publication/read-back pending. Four named S6D failures remain outside accepted scopes. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: T05C candidate `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` and the current verification/status update remain local and unpublished. T05C paths are `GAME/TOOLS/context_runtime.py`, `DEV/TESTS/test_rd11_context_runtime.py`, `DEV/CURRENT_PROGRESS.md`, and this execution-status cursor. Accepted T04B/P0R remains published. `DEV/.lavish/` and unrelated `.agents/` edits remain untouched.
+NEXT_EXACT_TASK: begin W04.T06A REDs within the recorded impact envelope at the latest published/read-back ref. T07D remains independent.
+KNOWN_BLOCKERS: none on the T06A hard-input edge; stop/escalate if the required accepted Context-basis proof needs a Context/RuntimeHost owner or interface change outside the recorded envelope. Four named S6D failures remain outside accepted scopes. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for W04.T05C; its output and verification are published/read back. W04.T06A production work has not started. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
 
 ## Historical evidence retention
 
