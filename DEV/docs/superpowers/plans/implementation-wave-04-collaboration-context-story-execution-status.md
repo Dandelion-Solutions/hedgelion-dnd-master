@@ -63,6 +63,23 @@ SCHEMA / CATALOG / CHECKPOINT IMPACT: NONE expected; request schema retains its 
 MIGRATION IMPACT: NONE expected.
 CURRENTNESS RE-READ SET BEFORE WRITE: fresh branch HEAD, CURRENT_PROGRESS and this cursor, T05C plan row, Context Runtime canonical spec, current Context Runtime/tests, accepted T04B/T05B/T02C outputs, Collaboration/PLAYER access owners and Versioning owner.
 
+## PO-011 response-language owner reconciliation
+
+OWNER: `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`
+
+```text
+PO-011: INCORPORATED
+T06A: NOT AFFECTED / MAY CONTINUE
+T06B: MUST CONSUME OWNER BEFORE RED
+PERSISTENT PLAYER/SESSION LANGUAGE STATE: NOT AUTHORIZED / NOT REQUIRED
+VISIBLE FALLBACK LANGUAGE ON MISSING OPTIONAL POLICY/ASSET: FORBIDDEN
+INTERNAL/DIAGNOSTIC TECHNICAL LANGUAGE: SEPARATE SURFACE
+VERSION_IMPACT FOR THIS CONTROL RECONCILIATION: NONE
+SYSTEM_IMPACT: NONE — existing presentation/emission boundary only
+```
+
+T06B binds one transient current `ResolvedResponseLanguage` across accepted Narrator phase/result/protected emission, keeps fallback IDs internal until language realization, and rejects internal/diagnostic text as ordinary Master output. Exact/diegetic foreign-language content does not itself switch the Master carrier language.
+
 ## W04.T06A implementation impact envelope
 
 SPEC / APPROVED DESIGN: T06A row in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`; R2.4 single-context turn/rebind laws; WP-08 role/context realization; Step-4 role-containment amendment; accepted W02.T07 `W02_PROTECTED_EXECUTION_HANDOFF_READY`.
@@ -382,7 +399,7 @@ T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
 NEXT_EXACT_TASK: begin W04.T06A REDs within the recorded impact envelope at the latest published/read-back ref. T07D remains independent.
-KNOWN_BLOCKERS: none on the T06A hard-input edge; stop/escalate if the required accepted Context-basis proof needs a Context/RuntimeHost owner or interface change outside the recorded envelope. Four named S6D failures remain outside accepted scopes. Wave 04 is not complete; Wave 05 is not authorized.
+KNOWN_BLOCKERS: none on the T06A hard-input edge; T06B additionally requires the accepted PO-011 owner after T06A PASS. Four known pytest-only S6D failures remain outside hosted unittest collection and require repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
 UNPUBLISHED_WORK: NONE for W04.T05C; its output and verification are published/read back. W04.T06A production work has not started. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
 
 ## Historical evidence retention

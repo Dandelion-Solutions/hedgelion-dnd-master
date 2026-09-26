@@ -322,13 +322,13 @@ Mandatory REDs: a shaped arbitrary bundle with matching bundle_id cannot widen e
 
 **W04.T06B - protected Narrator emission and finite fallback**
 
-Input: T06A PASS.
+Inputs: T06A PASS plus accepted PO-011 owner `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`.
 
 Direct writes: turn_runtime.py, GAME/TOOLS/emission.py, narration/turn schemas and test_rd10.
 
 Output: original W04_PROTECTED_EMISSION_READY.
 
-Mandatory REDs: emission requires accepted Context basis plus owner-verified ExecutionHandoff where applicable; disclosure cannot exceed eligible bundle; side-channel/internal role emission rejected; over-capacity fails safely; exactly one registered fallback; no mechanics/RNG replay.
+Mandatory REDs: emission requires accepted Context basis plus owner-verified ExecutionHandoff where applicable; disclosure cannot exceed eligible bundle; side-channel/internal role emission rejected; over-capacity fails safely; exactly one registered fallback; Narrator/result/emission bind the exact current transient `ResolvedResponseLanguage`; raw/caller-shaped language claims are rejected; missing optional language policy/local message assets cannot switch player-visible output to English, Russian or another language; player-visible fallback text uses the same accepted response-language basis; internal role/status/diagnostic text cannot become ordinary Master prose; exact/diegetic foreign-language content may remain content without changing the Master carrier language; no mechanics/RNG replay and no extra model call solely for translation.
 
 ### Story / Commentator / Dramaturg lane - W04.T07
 
@@ -486,7 +486,7 @@ Perform the normal Version Impact Gate at every row. In addition, treat these as
 
 - T01A introduces a persistent collaboration family/schema; determine local schema and aggregate campaign-contract impact before its checkpoint.
 - Any material change to intent-clause.schema.json is classified with its owning persisted Interaction/IntentPlan contract.
-- T05/T06 ephemeral Context/Turn control must not become persistent for implementation convenience. If implementation pressure requires durable Context/trace/role-control state, stop at the System-Impact Gate.
+- T05/T06 ephemeral Context/Turn control must not become persistent for implementation convenience. PO-011 response-language binding is likewise transient; do not add a persistent PLAYER/session language field or global language registry merely to implement T06B. If implementation pressure requires durable language/profile state or another model call solely for translation, stop at the System-Impact Gate.
 - T07B-T07D concretely realize Story/PO-009 persisted machine contracts. Each changed Story/Commentator schema owns its local version impact; any breaking persistent-family change also evaluates campaign-contract generation and migration/adoption obligations immediately.
 - T07E evaluates Dramaturg schema/version separately from Story content/control.
 - T08 emits semantic deltas only; final shipped CORE/module version changes remain Wave-05-owned unless a current direct W04 owner is actually modified.

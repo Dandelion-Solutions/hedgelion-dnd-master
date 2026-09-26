@@ -29,7 +29,7 @@ Run every owner suite named by Waves 01–05 after all physical writers are comp
 - `test_rd07_recovery.py`;
 - `test_rd08_temporal.py`;
 - `test_rd09_access_live.py`;
-- `test_rd10_role_emission.py`;
+- `test_rd10_role_emission.py` — including PO-011 transient response-language binding, same-language finite fallback and internal/diagnostic separation;
 - `test_rd11_context_runtime.py`;
 - `test_rd12_collaboration.py`;
 - `test_rd13_story_t0_commentator.py`;
@@ -168,7 +168,9 @@ At the exact candidate HEAD, run static and behavioral checks for absence of:
 - old `MANIFEST.players.player_ids` consumers;
 - v0.8 migration/dual-read aliases created solely for superseded pre-release shapes;
 - stale references to retired implementation-plan files or a second current package router;
-- force update or branch/ref deletion behavior.
+- force update or branch/ref deletion behavior;
+- player-visible fallback to English, Russian or another language solely because optional language policy/local phrase realization is absent;
+- internal role/status/diagnostic tokens leaking into ordinary Master-visible prose; technical diagnostic artifacts remain separate and recipient-scoped.
 
 All positive current routes must resolve from the repository at the tested HEAD. Record exact search scopes and explain legitimate historical/provenance occurrences rather than using an unbounded string count as proof.
 

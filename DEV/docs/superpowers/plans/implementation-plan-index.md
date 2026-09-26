@@ -30,7 +30,7 @@ The plan derives from the accepted current architecture/specification owners, es
 - `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`;
 - the exact `R27-R###` item evidence in `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`;
 - current domain, access, LIVE, persistence, temporal, collaboration, Story, bootstrap, versioning and Product Owner owners routed by `DEV/PROJECT_MAP.md`;
-- `DEV/PRODUCT_OWNER_INPUT.md`, including PO-004 clean-slate v1, PO-005 fail-closed creator-login policy with login-facing invitation plus stable-account-ID PLAYER binding, and PO-006 absolute branch/ref deletion prohibition;
+- `DEV/PRODUCT_OWNER_INPUT.md`, including PO-004 clean-slate v1, PO-005 fail-closed creator-login policy with login-facing invitation plus stable-account-ID PLAYER binding, PO-006 absolute branch/ref deletion prohibition, and PO-011 Master-to-human response-language semantics;
 - `AGENTS.md`, `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` when applicable and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
 
 Consolidation source HEAD: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`.
@@ -126,6 +126,7 @@ Mandatory hard/join edges include:
 - LIVE currentness is exact-source CAS evidence. Prepared candidate existence is not authority.
 - Story, Commentator, Dramaturg and catch-up material are projections with their own privacy/currentness rules; none becomes history, knowledge, ACL or gameplay truth.
 - Private CLS implementation defects are not public-HDM blockers by default; only a fresh cross-project conflict that changes public semantic ownership, persisted/interface policy or the accepted Story/T0/control contract may stop the implicated HDM task through the System-Impact Gate.
+- PO-011: ordinary Master-to-human text uses the current transient `ResolvedResponseLanguage`; missing optional language policy/assets never authorize another visible fallback language; internal machine/diagnostic language remains separate; no persistent PLAYER language field is implied.
 - Every task runs the Version Impact Gate and every shared file has one final physical writer/checkpoint.
 - R018 runtime proof consumes the exact 17-row family/schema/root/realization matrix in Wave 05 and the negative witnesses in Wave 06. Count equality, catalog admission, a world-only proof or a catalog-gap-only proof cannot close the composite.
 - No future-task intentional RED tests are published. A task creates its RED witness with the mechanism it turns GREEN.

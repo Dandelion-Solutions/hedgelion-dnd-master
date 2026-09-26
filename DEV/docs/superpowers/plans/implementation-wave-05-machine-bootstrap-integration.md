@@ -245,7 +245,7 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 
 | Module | Target | Required semantic inputs |
 |---|---:|---|
-| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` + `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY` |
+| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` + `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY` + PO-011 player-visible bootstrap/technical-surface separation |
 | RANDOMNESS | 1.0.3 | fixed RNG acceptance/recovery |
 | EXPLORATION | 1.0.2 | current exploration/domain cutover |
 | STORAGE | 1.0.2 | routing/HOT + exact recovery/operational roots |
@@ -253,18 +253,18 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 | PERSISTENCE | 1.0.4 | publication/recovery/currentness + CampaignPublicationService/W02 plan execution wiring |
 | CHRONOLOGY | 1.0.2 | temporal/thread/current-state |
 | PROCESSES | 1.0.3 | procedure/continuation/operational roots + owner-native ordered-response evidence route |
-| AI_REASONING | 1.0.4 | typed role/context/protected result + campaign-bound RuntimeHost Context composition |
+| AI_REASONING | 1.0.4 | typed role/context/protected result + campaign-bound RuntimeHost Context composition + PO-011 `ResolvedResponseLanguage` / internal-vs-visible presentation law |
 | LIVE_SCENE | 1.0.4 | source-native LIVE/currentness/state + selected-LIVE evt source-domain reader wiring |
 | MULTIPLAYER | 1.0.8 | principal route + LIVE + collaboration/access reconciliation |
-| CAMPAIGN_SETUP | 1.0.4 | identity/scaffold/onboarding |
-| SESSION | 1.0.2 | exact session/campaign/LIVE/PLAYER handoff |
-| PLAY_POLICY | 1.0.5 | exact accepted adjudication/access policy |
+| CAMPAIGN_SETUP | 1.0.4 | identity/scaffold/onboarding + PO-011 current player-language Master/setup presentation |
+| SESSION | 1.0.2 | exact session/campaign/LIVE/PLAYER handoff + PO-011 human-visible session/status language projection |
+| PLAY_POLICY | 1.0.5 | exact accepted adjudication/access policy + PO-011 rule that optional language-policy absence never licenses another visible response language |
 | CORE_INDEX | 1.0.2 | current module routing/versions |
 | ADJUDICATION | 1.0.3 | bound catalog and accepted policy basis |
 
 Shared physical checkpoints:
 
-- integrate `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` and `GAME/INSTALL/00_DND_BOOTSTRAP.md` at `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION_READY`;
+- integrate `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` and `GAME/INSTALL/00_DND_BOOTSTRAP.md` at `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION_READY`, projecting PO-011 so player-visible bootstrap/setup/failure wording follows the current response language while technical internals remain separate;
 - integrate `GAME/CORE/BOOTSTRAP_RUNTIME.md` at `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY`, including the final deployment wiring law: authenticated Step-5.6 RepositoryPort + campaign publication transport + Step-5.8 LIVE/source-domain adapters compose the Wave-04 RuntimeHost after campaign selection, while no gameplay/model surface can inject those capabilities;
 - integrate `GAME/CORE/STORAGE.md` at `CORE_STORAGE_FINAL_INTEGRATION_READY`;
 - integrate `GAME/CORE/MULTIPLAYER.md` at `CORE_MULTIPLAYER_FINAL_INTEGRATION_READY`;
@@ -274,7 +274,7 @@ TDD and verification:
 
 - use `InstallBootstrapSharedWriterTests` (`STATIC_AUDIT`) and `BoundedCampaignDiscoveryTests` (`FOCUSED_BEHAVIOR`);
 - complete `CoreFrameworkModuleVersionCutoverTests` and the retained version suite;
-- prove final install bytes contain no exhaustive all-campaign card loop, login-only authorization, generic PLAYER_INDEX authorization or stale v0.8 compatibility path.
+- prove final install bytes contain no exhaustive all-campaign card loop, login-only authorization, generic PLAYER_INDEX authorization or stale v0.8 compatibility path; also prove no shipped ordinary Master path uses English, Russian or another fallback solely because an optional language policy/local phrase asset is absent, and technical diagnostics remain a separate recipient-safe surface.
 
 After all module/schema/test paths are final, integrate their routes into `DEV/PROJECT_MAP.md` and all current/stale/schema/catalog/version/package assertions into `DEV/TOOLS/audit_engine.py`. Run the actual maintenance entry point after these edits; do not leave per-task partial writers.
 
