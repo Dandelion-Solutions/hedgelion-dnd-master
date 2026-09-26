@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T04B AUTHORIZED BY P0R PASS / READ-BACK
-CURRENT_TASK: resume W04.T04B same-closure recovery using the accepted P0R W02 read-only revalidation route
-LAST_COMPLETED_TASK: W04.T04B-P0R independent PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 independent PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; P0 independent PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: 29289288798fb4ba71578610cd83676b878510b6 — P0R acceptance and T04B-resume cursor freshly read back
+STATUS: EXECUTING — W04.T05C AUTHORIZED
+CURRENT_TASK: collaboration-aware scoped Context join after accepted T04B, T05B and T02C inputs
+LAST_COMPLETED_TASK: W04.T04B output `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at d053dbbc01351c0ef5a356110542b0a86d3f923c; P1 PASS/read-back at a792d14894dcc3ba123191883e5647cc06808e85; P0 PASS/read-back at d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a; T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: 6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e — accepted T04B code/status checkpoint freshly read back
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -312,7 +312,8 @@ SYSTEM_IMPACT:
 - IRR-T04B-02 RESOLVED TO BOUNDED PREREQUISITES;
 - T04B-P0: PASS / independently reviewed / published / read back;
 - T04B-P1: PASS / independently reviewed / published / read back under existing W03 scope using the P0 validator.
-- T04B-P0R: ACCEPTED W02 read-only recovery prerequisite; independent PASS and exact remote read-back complete; T04B may resume under the ruling.
+- T04B-P0R: ACCEPTED W02 read-only recovery prerequisite; independent PASS and exact remote read-back complete.
+- T04B: `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS, clean exact full DEV evidence recorded, and remote read-back complete; no new System-Impact trigger.
 
 P0R_IMPLEMENTATION_STATE: PASS — implementation, focused and clean exact-tree verification, independent review, publication and remote read-back complete.
 P0R_OUTPUT: `W02_POSTPUBLICATION_REVALIDATION_READY` — ACCEPTED / independent PASS / remote read-back.
@@ -333,9 +334,9 @@ T04B_VERSION_IMPACT: Collaboration `1.0.18 -> 1.0.19`; schema v3 unchanged; P0R 
 T04B_INDEPENDENT_REVIEW: **PASS** for spec compliance and code quality; no findings; reviewer verified no new System-Impact trigger.
 T04B_CLEAN_FULL_DEV: 1297 passed, 5 skipped, 4 known S6D failures outside T04B scope; version census zero unclassified hits and clean package provenance PASS. Run from detached clean worktree at T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad`, excluding main-worktree `.entire/` and `DEV/.lavish/`.
 
-NEXT_EXACT_TASK: fresh-fetch the target branch, publish/read back T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad`, and record `W04_AUTHORITY_COLLABORATION_RECONCILED`. T07D remains independent.
-KNOWN_BLOCKERS: T04B publication/read-back pending; T05C remains blocked until T04B PASS. Four S6D tests remain outside P0R/T04B scope. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: T04B candidate commit `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` is local-only and not yet published. The original candidate remains preserved in its local stash backup and was excluded from P0R. `DEV/.lavish/` remains untouched.
+NEXT_EXACT_TASK: bootstrap W04.T05C from accepted `W04_CONTEXT_CORE_READY`, `W04_COLLABORATION_PUBLICATION_READY`, and W03 access inputs; record its impact envelope and begin owner-local RED/GREEN integration. T07D remains independent.
+KNOWN_BLOCKERS: none on the T04B -> T05C dependency edge. Four S6D tests remain outside accepted scopes. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for accepted T04B; its original local stash backup remains preserved. `DEV/.lavish/` remains untouched.
 
 ## Historical evidence retention
 
