@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T06A AUTHORIZED
+STATUS: SENIOR_REVIEW_REQUIRED — W04.T06A accepted Context-basis authenticity
 CURRENT_TASK: phase rebinding and accepted Context basis with W04.T05C and W02.T07 hard inputs
 LAST_COMPLETED_TASK: W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status commit `95c898ce62fc947436cd386198c182ea98510925`, independently reviewed, clean exact DEV evidence and remote read-back; W04.T04B -> `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 PASS/read-back at `a792d14894dcc3ba123191883e5647cc06808e85`; P0 PASS/read-back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `95c898ce62fc947436cd386198c182ea98510925` — fresh fetch/read-back confirmed T05C output on the active ref
+LAST_SAFE_SHA: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` — latest fresh-fetched and fast-forwarded remote HEAD with PO-011 integrated; the T06A code baseline `3113b43c345b10efacebcacb003eba98aa025b05` is unchanged by those documentation/owner commits
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -83,21 +83,29 @@ T06B binds one transient current `ResolvedResponseLanguage` across accepted Narr
 ## W04.T06A implementation impact envelope
 
 SPEC / APPROVED DESIGN: T06A row in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`; R2.4 single-context turn/rebind laws; WP-08 role/context realization; Step-4 role-containment amendment; accepted W02.T07 `W02_PROTECTED_EXECUTION_HANDOFF_READY`.
-IMPLEMENTATION START HEAD: `95c898ce62fc947436cd386198c182ea98510925`.
+IMPLEMENTATION START HEAD: `3113b43c345b10efacebcacb003eba98aa025b05`.
 PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/turn_runtime.py`; `DEV/SCHEMAS/turn-envelope.schema.json`, `interpreter-result.schema.json`, `preparation-draft.schema.json`, `actor-proposal.schema.json`, `story-projection-draft.schema.json`, `narration-result.schema.json`; `DEV/TESTS/test_rd10_role_emission.py`.
 
 EXPECTED OWNERS TO CHANGE: registered TurnRuntime phase-rebinding and accepted Context-basis controls only.
-EXPECTED CONSUMERS TO CHANGE: T06A role/result contract tests in `test_rd10_role_emission.py`; `emission.py` and existing W02 execution-handoff producer remain read-only consumers/producers unless an in-scope test proves an already-planned mechanical synchronization is required.
+EXPECTED CONSUMERS TO CHANGE: T06A role/result contract tests in `test_rd10_role_emission.py` plus the mechanically synchronized W02 handoff consumer fixture in `test_rd05_runtime_execution.py`; `emission.py` and the W02 execution-handoff producer remain read-only.
 ALLOWED INTERFACES / CONTRACTS TO CHANGE: bind logical role/subject/purpose/profile/Context basis and minimum typed prior results; reject untyped/raw bundles, traces and private diagnostics; no generic result bus or persistent state.
 
 PROTECTED ARCHITECTURE INVARIANTS: TurnEnvelope remains transient control, not semantic or persistence authority; matching `bundle_id`/recipient or caller-shaped bundle alone cannot widen eligibility; Actor remains subject-local; Narrator freshly rebinds after Chronicler; only minimum accepted typed results cross phases; W02 accepted deterministic execution evidence remains owner-issued and mechanics/RNG are not replayed.
 ARCHITECTURE-SENSITIVE SURFACES: ContextService/Context Runtime output as the accepted phase basis; TurnRuntime validation; protected emission consumer; all six registered turn/result schemas.
 EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD10 role/emission suite; RD05 execution-handoff consumer tests; RD11 Context suite; relevant emission tests; maintenance audit and clean exact full DEV.
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES: `context_runtime.py`, `runtime_host.py`, `emission.py` implementation (T06B), `collaboration.py`, History/Story, GAME/CORE instruction files, persistent state, RepositoryPort, catalog, Wave-05. If T06A's required accepted-basis proof needs changing ContextService/Context Runtime ownership or another unplanned interface, stop at the System-Impact Gate before broadening the write set.
-VERSION IMPACT: pending exact namespace classification before production writes; current `turn_runtime.py` has no module version marker, and the six transient role/result schemas have no HDM `schema_version` field. Verify against current Versioning owner and machine census before checkpoint; persistent schema/campaign/storage/catalog/engine generations and migration are not expected to change.
+VERSION IMPACT: NONE — `turn_runtime.py` is unversioned GAME/TOOLS implementation support, not a versioned CORE instruction module; the six transient role/result schemas carry no HDM `schema_version` field and are not persistent record families. Campaign/storage/catalog/engine generations, migration and dual-read remain unchanged. Verify zero unclassified census hits at checkpoint.
 SCHEMA / CATALOG / CHECKPOINT IMPACT: transient TurnEnvelope/result schema changes only; no persistent record, catalog, campaign checkpoint, or migration expected.
 MIGRATION IMPACT: NONE expected.
 CURRENTNESS RE-READ SET BEFORE WRITE: fresh branch HEAD, `CURRENT_PROGRESS` and this cursor, T06A plan row, current R2.3/R2.4/WP-08 and Step-4 role-containment owners, accepted W02.T07 and T05C outputs, current TurnRuntime/six schemas/RD10 tests, RD05 handoff consumer and `emission.py`, and Versioning owner.
+
+## W04.T06A mechanical fixture synchronization — RD05 handoff consumer
+
+IMPACT ENVELOPE CORRECTION: include the single W02 handoff consumer test fixture `DEV/TESTS/test_rd05_runtime_execution.py::DeterministicExecutionTests.test_committed_execution_crosses_only_a_registered_narrator_handoff` alongside RD10 as a mechanical consumer synchronization. The test now obtains its Narrator binding through `turn_runtime.bind_phase_from_context` with a test ContextService capability and verifies one assembly call. Its accepted-execution/W02 handoff assertions remain unchanged.
+
+CLASSIFICATION: test-fixture synchronization only. No new product owner, owner/interface, runtime producer, or persistence boundary; `runtime_execution.py`, `mechanics.py`, and W02 producer behavior are unchanged.
+
+SYSTEM_IMPACT: NONE. The one-file consumer fixture now uses the T06A accepted-basis contract already in the Impact Envelope; no implementation owner or interface changed.
 
 
 ## T04B Senior System-Impact resolution
@@ -398,9 +406,45 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: begin W04.T06A REDs within the recorded impact envelope at the latest published/read-back ref. T07D remains independent.
-KNOWN_BLOCKERS: none on the T06A hard-input edge; T06B additionally requires the accepted PO-011 owner after T06A PASS. Four known pytest-only S6D failures remain outside hosted unittest collection and require repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for W04.T05C; its output and verification are published/read back. W04.T06A production work has not started. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
+NEXT_EXACT_TASK: obtain Senior/controller ruling on authenticating the exact RuntimeHost ContextService capability and any authorized producer/interface scope. Do not publish T06A or start T06B until this gate is resolved and T06A independently passes. T07D remains independently authorized.
+KNOWN_BLOCKERS: HIGH finding — the structural ContextAssembler accepts any caller-supplied callable `assemble`, so TurnRuntime cannot prove the assembly came from the exact RuntimeHost-owned ContextService. A Senior/controller ruling is required. PO-011 is a mandatory T06B input. Four known pytest-only S6D failures remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: W04.T06A TurnRuntime/schema/test candidate, one mechanical RD05 consumer-fixture synchronization, status updates, and the Impact Brief remain local/uncommitted. No Context Runtime/RuntimeHost producer, emission implementation, `runtime_execution.py`, `mechanics.py`, W02 producer, or other out-of-envelope owner was changed. T05C output and verification remain published/read back. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
+
+## W04.T06A accepted Context-basis gate adjudication
+
+IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-26-w04-t06a-accepted-context-basis-system-impact-brief.md`
+
+LAST_SAFE_SHA: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` (fresh-fetched/fast-forwarded active ref with PO-011 incorporated; T06A source baseline remains `3113b43c345b10efacebcacb003eba98aa025b05` and is unchanged by PO-011)
+FRESH_REMOTE_HEAD: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` — all seven current remote documentation/owner commits are integrated locally; PO-011 explicitly marks T06A unaffected and gates T06B before RED.
+INITIAL_STOP_VERIFICATION_STATE: the supplied RD10 baseline observed the expected forged-basis RED: 1 failed, 24 passed. This was the pre-ruling diagnostic; the current post-sync verification is recorded below.
+
+INITIAL_VERSION_IMPACT_AT_STOP: NONE for the partial T06A code/test delta at the time of the initial gate; TurnRuntime is unversioned implementation support and no version-bearing or persistent schema was changed.
+
+RULING: The T06A scope may consume Context through the already-accepted injected RuntimeHost `ContextService.assemble(request, candidates)` capability. TurnRuntime must invoke it exactly once per phase and mint a sealed transient basis only from that invocation's result; binding rejects raw mappings even when `bundle_id` and scope fields match. This adds no ContextService/RuntimeHost producer/interface change and no new authority. Full rationale and cost if wrong are recorded in the Impact Brief above.
+T06A_RULING_ENFORCEMENT_STATUS: REOPENED — independent task review found the current structural Protocol accepts any callable assembler, so the code does not yet enforce the ruling's exact RuntimeHost ContextService capability requirement.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — independent review found the structural ContextAssembler Protocol accepts any caller-supplied callable `assemble`; the current TurnRuntime seal does not authenticate the exact RuntimeHost-owned ContextService producer.
+
+## W04.T06A implementation candidate and verification
+
+IMPLEMENTATION_STATE: NOT_ACCEPTED — candidate `bind_phase_from_context` invokes the structural `ContextAssembler` Protocol once, validates scope and seals the result, but the HIGH review finding shows this does not prove the object was the exact RuntimeHost-owned ContextService capability. Other T06A controls have focused passing witnesses, but the accepted-basis authenticity boundary is unresolved.
+
+CURRENT_TDD_EVIDENCE: the original forged-basis RED was 1 failed/24 passed. Additional REDs were observed for missing basis-assembly operation (missing operation), Actor prior-result subject crossing, unselected typed prior-result transport, stale Narrator binding after Chronicler, same-envelope Story-result transfer, trace/private diagnostic result transport, token serialization, and reusing a prior Narrator execution handoff after fresh rebind. Those cases are now GREEN in RD10.
+
+PRE_FIXTURE_SYNC_VERIFICATION_STATE: before the RD05 fixture sync, RD10 had 38 passed and RD05 had 39 passed/1 failed because `test_committed_execution_crosses_only_a_registered_narrator_handoff` supplied only a raw bundle ID. The fixture synchronization below resolves that failure without relaxing basis enforcement.
+
+VERSION_IMPACT: NONE — `turn_runtime.py` is unversioned implementation support; changed TurnEnvelope and NarrationResult JSON schemas are transient, carry no HDM `schema_version`, and are not persistent record families. Campaign/storage/catalog/engine generations, migration, and dual-read remain unchanged.
+
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED IN CURRENT CANDIDATE — the accepted-basis trust boundary is not yet authenticated by the structural ContextAssembler Protocol. The prior controller ruling is not sufficient to grant T06A PASS; no out-of-envelope producer/interface change has been made.
+
+INDEPENDENT_REVIEW: **NOT PASS / HIGH** — spec compliance failed because any duck-typed assembler can mint `AcceptedContextBasis`; no commit or publication.
+T06A_LATEST_VERIFICATION: RD10 39 passed; RD11 42 passed; RD05 40 passed after the one-file fixture synchronization. Full DEV, maintenance audit, and hosted CI were not run.
+T06A_REVIEW_FINDING: `GAME/TOOLS/turn_runtime.py` ContextAssembler Protocol and `bind_phase_from_context` accept any callable `assemble` producer. The caller-shaped result can match scope fields and receive a sealed basis; matching fields/ID plus a TurnRuntime-local seal do not prove RuntimeHost ContextService provenance. Senior/controller ruling is required before further implementation.
+T06A_RUFF_BASELINE_NOTE: scoped Ruff check passes on TurnRuntime and RD10. Full-file RD05 Ruff reports eight existing I001/F841/SIM117 findings outside the changed fixture hunk; the explicit scoped check ignoring only those baseline codes passes across the three changed Python files. `git diff --check` passes.
+T06A_ADDITIONAL_RED_GREEN: basis reuse after its phase binding was replaced failed the new negative witness before the per-turn bound-basis-ID guard; the final RD10 suite passes it.
+T06A_RD05_FIXTURE_RED_GREEN: baseline exact RD05 node failed because it passed raw `bundle_id` to `bind_phase`; after changing only the fixture to inject one test ContextService capability through `bind_phase_from_context`, that node passed and the full RD05 module passed 40/40.
+
+UNPUBLISHED_WORK: current T06A changes remain local and uncommitted for controller review. T06B remains blocked until independent T06A PASS.
 
 ## Historical evidence retention
 
