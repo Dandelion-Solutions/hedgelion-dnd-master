@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — T04B-P0/P1/P0R ACCEPTED/READ BACK — T04B `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` ACCEPTED/READ BACK; T05C AUTHORIZED; T07D AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C ACCEPTED/READ BACK; T06A CURRENT; T07D AUTHORIZED; PO-011 INCORPORATED FOR T06B + SHIPPED PRESENTATION
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
-LAST_CLOSED_UNIT: W04.T04B output `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` implemented at `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad`, independently reviewed PASS, clean exact DEV verification completed, and remote read-back confirmed at `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; W04.T04B-P0R output `W02_POSTPUBLICATION_REVALIDATION_READY` implemented at `d053dbbc01351c0ef5a356110542b0a86d3f923c`, independently reviewed PASS, clean exact DEV verification completed, and remote read-back confirmed at `94bfddf475cd5ffa21049e6333188aa32126635b`; W04.T04B-P1 independently accepted/read back at `a792d14894dcc3ba123191883e5647cc06808e85`; W04.T04B-P0 output `W02_VERIFIED_CAMPAIGN_PUBLICATION_EVIDENCE_READY` independently accepted/read back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS remain accepted; Wave 03 remains the last fully closed wave
-NEXT_AUTHORIZED_UNIT: W04.T05C — collaboration-aware scoped Context join, consuming accepted T05B, T02C, and W04.T04B. W04.T07D remains independently authorized.
-REQUIRED_GATE: T05C -> T06A -> T06B -> Wave-04 context/emission integration; T07D -> T07E -> T07-INTEGRATION; then remaining Wave-04 joins and mandatory Senior integration audit.
+LAST_CLOSED_UNIT: W04.T05C output `W04_CONTEXT_INTEGRATION_READY` implemented at `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a`, independently reviewed PASS, clean exact DEV verification completed and remote read-back confirmed at `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS remain accepted
+NEXT_AUTHORIZED_UNIT: execute W04.T06A from accepted T05C + W02.T07 inputs; W04.T07D remains independently authorized. After T06A PASS, W04.T06B must consume the accepted PO-011 response-language owner before RED.
+REQUIRED_GATE: T06A -> T06B (PO-011 transient response-language binding + protected emission) -> context/emission integration; T07D -> T07E -> T07-INTEGRATION; then T08 joins, exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: four S6D tests remain outside accepted P0/P1/P0R/T04B scopes. T07D remains independently eligible. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: none on the current T06A or T07D hard-input edges. Four known pytest-only S6D tests remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -22,6 +22,24 @@ WAVE_01_SENIOR_AUDIT_HEAD: `02651e13f9d6890364d14960f40c94175766c60e`
 WAVE_01_HOSTED_CI_RUN: `35159778200`
 WAVE_01_HOSTED_CI_JOB: `105007610526`
 WAVE_02_T03_T04_RULING_SHA: `acc40855850f4d07b63bad4792917f97764038a3`
+
+## PO-011 player-facing language incorporation
+
+Accepted owner:
+`DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`
+
+```text
+ResolvedResponseLanguage: transient human-visible response basis
+persistent PLAYER language field: NOT REQUIRED
+missing optional language policy/asset: NOT a visible fallback-language license
+internal identifiers/diagnostics: may remain technical on their separate surface
+ordinary Master -> human text: current ResolvedResponseLanguage
+T06A: unaffected/current
+T06B: mandatory consumer
+W05: shipped projection consumer
+W06: proof/currentness consumer
+VERSION_IMPACT for owner/control publication: NONE
+```
 
 ## Current planning package
 

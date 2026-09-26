@@ -63,6 +63,25 @@ Therefore:
 - maintenance output is a diagnostic projection only. It never becomes gameplay truth, canonical history, recovery authority, disclosure authority, migration authority or a substitute for the underlying record;
 - file creation for an authorized export is a host-side export effect, not game-state mutation.
 
+### 1.3.1 Diagnostic language is a separate technical surface
+
+PO-011's player-facing response-language owner composes with this maintenance boundary.
+
+```text
+ordinary Master -> human explanation / acknowledgement
+    -> current ResolvedResponseLanguage
+
+raw maintenance/debug record or diagnostic attachment
+    -> technical language and exact machine identifiers are permitted
+    -> recipient/disclosure filtering still applies
+```
+
+A maintenance/debug surface does not become ordinary Narrator/Master prose merely because the same human can see it. Exact enum/status/error names may remain technical inside the diagnostic artifact.
+
+If the Master summarizes, explains or acknowledges the diagnostic result through the ordinary Master channel, that surrounding human communication must use the current `ResolvedResponseLanguage`.
+
+Missing localized diagnostic prose does not authorize ordinary Master fallback to English, Russian or another language. Debug enablement also does not change gameplay truth, information eligibility, response-language basis or campaign state.
+
 ### 1.4 Denial/degradation semantics
 
 A future realization may choose exact machine enum names, but it must preserve these semantic outcomes:

@@ -51,7 +51,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-008` | FAILURE / DEGRADATION / DURABILITY-RISK PRODUCT DIRECTION | INCORPORATED | WP-25 final Senior re-review PASS accepted the severity/gameplay-impact/risk model and proactive durability-risk direction; downstream generic realization and production-like host calibration remain safely deferred behind explicit future gates | accepted WP-25 owner-direction; final WP-25 canonical spec; Step 5.5/WP-13 native durability owners; later runtime/tests/empirical host acceptance | NONE |
 | `PO-009` | COMMENTATOR / STORY CORPUS SUFFICIENCY | INCORPORATED | WP-27 final Senior PASS closed readiness classification for the deferred Story/snapshot/control realization boundary; physical realization remains behind active R2.7 final reconciliation and later approved implementation planning/execution | Story producer/source contracts; historical Actor basis; Step-4 knowledge/disclosure/access; closed WP-26 reconciliation; closed WP-27 readiness classification; active R2.7 final reconciliation; future Commentator/Story realization | NONE |
 | `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | WP-27 final Senior PASS closed readiness classification for writer/rollover/schema/test realization without activating a universal partition topology; physical realization remains behind active R2.7 final reconciliation and later approved implementation planning/execution | sizing-bands owner decision; superseded former 10 KiB owner; WP-24; Story growth/sharding owner; closed WP-26 reconciliation; closed WP-27 readiness classification; active R2.7 final reconciliation; later runtime/Story writers/tests | NONE |
-| `PO-011` | PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT | ROUTED | current HDM has localized setup wording and recipient-scoped diagnostics, but no global Master-to-human language law; must be incorporated before W04.T06B protected emission and later shipped-runtime final writers | player-facing runtime/emission; Narration/Master channel; future diagnostics realization; Wave-05 shipped CORE/session/bootstrap integration | NONE |
+| `PO-011` | PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT | INCORPORATED | accepted owner now defines transient `ResolvedResponseLanguage`, forbids visible fallback-language substitution caused only by missing optional policy/assets, separates internal/diagnostic language and requires no persistent PLAYER-language field | `2026-09-26-player-facing-response-language-owner-decision.md`; W04.T06B; maintenance diagnostics; Wave-05 shipped projections; Wave-06 proof | NONE |
 
 ---
 
@@ -665,7 +665,7 @@ Product Owner decision still required: `NONE`.
 
 Date: 2026-09-26  
 Kind: PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT  
-Status: ROUTED
+Status: INCORPORATED
 
 ### Product Owner input — VERBATIM / IMMUTABLE
 
@@ -723,12 +723,12 @@ The current PLAYER schema also has no language/locale field. This input does not
 
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
-| Product semantics | ROUTED / OWNER GAP | establish one current HDM semantic owner for ordinary Master-to-human response language and internal-vs-visible separation | this PO-011 input + existing runtime/narration/setup owners |
-| W04.T06A phase rebind | NOT APPLICABLE TO CURRENT TASK | T06A may continue; it owns accepted Context basis/phase rebinding, not player-language realization | current Wave-04 execution plan |
-| W04.T06B protected Narrator emission | ACTIVE / MUST RECONCILE BEFORE RED | finite fallback/player-visible emission must not leak internal English or use a wrong-language fallback solely because a local language asset is absent | Wave-04 plan T06B + `GAME/TOOLS/emission.py` future owner |
-| Wave-05 shipped CORE/session/bootstrap final writers | DEFERRED / MANDATORY CONSUMER | final shipped instructions and shared surfaces must carry the accepted player-language law once the semantic owner is established | implementation Wave 05 + current CORE/runtime/session/setup surfaces |
-| Diagnostics / maintenance surface | DEFERRED UNTIL REALIZATION | technical diagnostics may remain a separate surface; ordinary Master speech must still follow player language; diagnostic visibility remains recipient-scoped | `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` + WP-21 |
-| PLAYER persistence/schema | DEFERRED / NO CURRENT REQUIREMENT | do not add a persistent language field unless later architecture proves a need; conversation-scoped resolution is allowed | `GAME/SCHEMA/player.schema.yaml` currently has no language field |
+| Product semantics | INCORPORATED | one current HDM semantic owner defines ordinary Master-to-human response language and internal-vs-visible separation | `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md` |
+| W04.T06A phase rebind | NOT APPLICABLE / CURRENT MAY CONTINUE | T06A owns accepted Context basis/phase rebinding, not player-language realization | current Wave-04 execution plan |
+| W04.T06B protected Narrator emission | ACTIVE / OWNER INCORPORATED | consume the transient response-language basis; finite fallback/player-visible emission cannot leak internal English or change visible language because an optional language asset is absent | PO-011 owner + Wave-04 T06B + `GAME/TOOLS/emission.py` |
+| Wave-05 shipped CORE/session/bootstrap final writers | DEFERRED / MANDATORY CONSUMER | final shipped instructions/shared surfaces project the accepted player-language law after Wave-04 closure | implementation Wave 05 + owner decision |
+| Diagnostics / maintenance surface | INCORPORATED SEMANTICS / REALIZATION DEFERRED | technical diagnostic artifacts may remain technical; ordinary Master explanation follows response language; recipient filtering remains mandatory | PO-011 owner + `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` + WP-21 |
+| PLAYER persistence/schema | NOT REQUIRED BY PO-011 | no persistent language field is introduced; a later durable preference need would require its own owner/lifecycle decision | PO-011 owner + current PLAYER owner |
 
 ### Current impact
 
@@ -736,7 +736,7 @@ This requirement does not block the currently authorized W04.T06A work, because 
 
 It **does** become an applicable Product Owner input before W04.T06B protected Narrator emission begins. The existing T06B phrase `exactly one registered fallback` must be reconciled so that a fallback cannot become an unauthorized visible fallback language or internal-token leak.
 
-No Product Owner decision remains open: the product semantics are explicit. The technical owner/representation and any required plan amendment belong to HDM architecture under the normal Source Manifest -> design/reconciliation -> implementation path.
+No Product Owner decision remains open. The accepted owner is `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`; current implementation/proof consumers are routed through the stable Wave-04/05/06 package.
 
 Product Owner decision still required: `NONE`.
 
@@ -755,7 +755,7 @@ PO-007: INCORPORATED — PUBLIC DEV/GAME RESEARCH-PROVENANCE POLICY / WP-23 FINA
 PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZATION AND EMPIRICAL ACCEPTANCE DEFERRED
 PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / WP-26 CLOSED / WP-27 READINESS CLOSED / REALIZATION DEFERRED
 PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS / WP-26 CLOSED / WP-27 READINESS CLOSED
-PO-011: ROUTED — MASTER-TO-HUMAN LANGUAGE LAW / T06B + SHIPPED-RUNTIME + DIAGNOSTIC CONSUMERS
+PO-011: INCORPORATED — MASTER-TO-HUMAN LANGUAGE LAW / T06B + SHIPPED-RUNTIME + DIAGNOSTIC CONSUMERS ROUTED
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -781,10 +781,13 @@ NEEDS_PO: NONE
 UPSTREAM_REOPEN_REQUIRED: NO
 TARGETED_STORY_CONSUMER_SUPERSESSION: YES / PO-009 OWNER DECISION PUBLISHED / WP-26 CLOSED / WP-27 READINESS CLASSIFICATION CLOSED
 TARGETED_SIZE_POLICY_SUPERSESSION: YES / PO-010 OWNER DECISION PUBLISHED / WP-26 CLOSED / WP-27 READINESS CLASSIFICATION CLOSED
-R2_7_FINAL_RECONCILIATION: ACTIVE
+R2_7_FINAL_RECONCILIATION: CLOSED / FINAL SENIOR PASS
 
-IMPLEMENTATION_PLANNING_STARTED: NO
-SUBSTANTIVE_IMPLEMENTATION_STARTED: NO
+IMPLEMENTATION_PLANNING_STARTED: YES / CLOSED WITH INDEPENDENT SENIOR PASS
+PRODUCTION_IMPLEMENTATION_AUTHORIZED: YES
+SUBSTANTIVE_IMPLEMENTATION_STARTED: YES / WAVE 04 EXECUTING
+CURRENT_IMPLEMENTATION_SLICE: W04.T06A CURRENT; W04.T07D PARALLEL ELIGIBLE
+WAVE_05_AUTHORIZED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
 
