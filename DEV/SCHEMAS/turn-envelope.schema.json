@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/turn-envelope.schema.json",
   "title": "HDM transient TurnEnvelope",
+  "$comment": "This JSON schema covers the serializable envelope header only. Phase bindings and sealed AcceptedContextBasis/typed-result objects are runtime-only and are never serialized as caller-shaped mappings.",
   "type": "object",
   "additionalProperties": false,
   "required": ["turn_id", "accepted_frontier", "protected_narrator_capacity"],

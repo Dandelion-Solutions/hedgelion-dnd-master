@@ -479,16 +479,62 @@ class DeterministicExecutionTests(unittest.TestCase):
             store=ExecutionStore(),
         )
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
-        turn_runtime.bind_phase(
+        class TestContextService:
+            def __init__(self) -> None:
+                self.assemble_calls = 0
+
+            def assemble(
+                self,
+                request: dict[str, object],
+                candidates: list[dict[str, object]],
+            ) -> dict[str, object]:
+                self.assemble_calls += 1
+                return {
+                    "outcome": "ASSEMBLED",
+                    "bundle": {
+                        "profile_id": request["profile_id"],
+                        "role": request["role"],
+                        "purpose": request["purpose"],
+                        "subject_id": request["subject_id"],
+                        "recipient_id": request["recipient_id"],
+                        "source_frontier": request["source_frontier"],
+                        "required": [],
+                        "optional": [],
+                        "retrospective_projection": False,
+                    },
+                    "trace": {"profile_id": request["profile_id"]},
+                }
+
+        context_service = TestContextService()
+        context_request: dict[str, object] = {
+            "profile_id": "profile.narration",
+            "role": "NARRATOR",
+            "purpose": "narrate",
+            "subject_id": "player-1",
+            "recipient_id": "player-1",
+            "campaign_id": "campaign-1",
+            "allowed_channels": ["CURRENT_SCOPE"],
+            "max_candidates": 10,
+            "required_ids": [],
+            "allowed_relations": ["requires"],
+            "budget": 1000,
+            "source_frontier": "frontier-7",
+            "retrospective": False,
+        }
+        turn_runtime.bind_phase_from_context(
             envelope,
             "NARRATOR",
             "narrate",
             "profile.narration",
-            "bundle-1",
+            context_service,
+            context_request,
+            [],
             ("narration_result",),
+            subject_id="player-1",
             recipient_id="player-1",
             allowed_handoffs=("execution_result",),
         )
+        self.assertEqual(context_service.assemble_calls, 1)
 
         handoff = turn_runtime.accept_execution_handoff(envelope, "NARRATOR", execution)
         retry = turn_runtime.accept_execution_handoff(envelope, "NARRATOR", execution)

@@ -166,32 +166,30 @@ TDD RED evidence observed during this continuation:
   phase binding was replaced; a turn-local generated-bundle-ID consumption
   guard now rejects that replay.
 
-Current verification:
-
-- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_rd10_role_emission.py -q` — 38 passed.
-- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_rd11_context_runtime.py -q` — 42 passed.
-- RD05 `DeterministicExecutionTests.test_committed_execution_crosses_only_a_registered_narrator_handoff` remains an out-of-scope legacy caller: it calls `bind_phase` with raw `bundle_id` and fails because accepted Context basis is now mandatory. The RD10 integrated handoff/emission and fresh-rebind cases pass using the existing injected ContextService and the same accepted execution value. Do not weaken the new basis contract; controller review should decide any separately authorized RD05 fixture migration.
-- Scoped Ruff check passed for `turn_runtime.py` and `test_rd10_role_emission.py`. Whole-file format check remains non-clean because of existing formatting in those files; broad formatting was not applied.
-- Full DEV, maintenance audit and hosted CI were not run. Hosted CI is unavailable in this runtime.
+The initial pre-fixture verification snapshot is superseded; current verification
+and review state is recorded after the final Senior ruling and RD05 fixture
+synchronization below. The initial forged-basis RED evidence remains above.
 
 VERSION_IMPACT: NONE — `turn_runtime.py` is unversioned support; the edited
 TurnEnvelope and NarrationResult JSON schemas are transient, carry no HDM
 `schema_version`, and are not persistent record families. Campaign/storage/catalog/
 engine generations, migration and dual-read remain unchanged.
 
-SYSTEM_IMPACT: REOPENED AFTER INDEPENDENT REVIEW. The current candidate passes
+HISTORICAL_SYSTEM_IMPACT_AT_REVIEW: REOPENED AFTER INDEPENDENT REVIEW; superseded
+by the Senior T00H ruling below. The candidate then passed
 an arbitrary duck-typed `assemble` object through TurnRuntime; it does not prove
 that the object is the existing RuntimeHost-owned ContextService capability.
-No ContextService/RuntimeHost owner was changed to close this gap.
+No ContextService/RuntimeHost owner was changed to close that historical finding.
 
-INDEPENDENT_REVIEW: **NOT PASS / HIGH FINDING** — TurnRuntime accepts any
+INITIAL_INDEPENDENT_REVIEW: **NOT PASS / HIGH FINDING** — TurnRuntime accepts any
 caller-supplied object with a callable `assemble` attribute, so a lookalike
 service can return a matching shaped mapping and obtain `AcceptedContextBasis`.
 T06A changes remain uncommitted/unpublished; T06B remains blocked.
 
-T06A_LATEST_VERIFICATION: RD10 39 passed; RD11 42 passed; RD05 40 passed after
-the one-file fixture synchronization. Full DEV, maintenance audit, and hosted
-CI were not run.
+T06A_LATEST_VERIFICATION: RD10 + RuntimeHost composition + RD05 + RD11 focused
+modules: 156 passed; `DEV/TESTS/test_current_progress_authority.py`: 2 passed.
+Full DEV and maintenance audit remain required later in a clean exact tree;
+hosted CI is unavailable.
 
 ## RD05 mechanical fixture synchronization
 
@@ -207,9 +205,9 @@ W02 producer behavior changed.
 TDD evidence: the exact node was first reproduced RED at the accepted-basis
 guard; it is now GREEN. Final commands/results:
 
-- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_rd05_runtime_execution.py -q` — 40 passed.
-- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_rd10_role_emission.py -q` — 39 passed.
-- `.hdm-devtools/venv/bin/ruff check GAME/TOOLS/turn_runtime.py DEV/TESTS/test_rd10_role_emission.py` — PASS. Whole-file RD05 Ruff reports eight pre-existing I001/F841/SIM117 findings outside the fixture hunk; `ruff check --ignore I001,F841,SIM117` across the three changed Python files — PASS. `git diff --check` — PASS.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_rd10_role_emission.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd05_runtime_execution.py DEV/TESTS/test_rd11_context_runtime.py -q` — 156 passed.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS/test_current_progress_authority.py -q` — 2 passed.
+- Ruff passes for `turn_runtime.py` and RD10. Full-file RD05 Ruff reports eight pre-existing I001/F841/SIM117 findings outside the fixture hunk; `ruff check --ignore I001,F841,SIM117` across the three changed Python paths — PASS. `git diff --check` — PASS.
 
 The mechanical test-only synchronization is a bounded Impact Envelope
 correction: no new product owner, interface, runtime producer, persistence, or
