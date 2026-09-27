@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: FINAL_REVIEW — W04.T06A candidate verified/reviewed; publication/read-back pending
-CURRENT_TASK: T06A phase rebinding and accepted Context basis under the 2026-09-27 Senior T00H trust model. Code candidate `5550d30cb2e53f4e309725cf4a69f510c57f7af6` has focused tests 156 passed, clean exact DEV 1320 passed/5 skipped/4 known S6D failures, maintenance PASS and independent review PASS; candidate remains NOT_ACCEPTED until publication/read-back. W04.T05C and W02.T07 inputs remain accepted/read back. PO-011 is T06B-only.
+STATUS: EXECUTING — W04.T06A `W04_ROLE_CONTEXT_HANDOFF_READY` accepted/read back
+CURRENT_TASK: T06A phase rebinding and accepted Context basis is independently reviewed, clean-exact verified, published and read back at `513c4f75f1db13c52b2656225367c16b4118b91a`. W04.T05C and W02.T07 inputs remain accepted/read back. PO-011 is T06B-only.
 LAST_COMPLETED_TASK: W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status commit `95c898ce62fc947436cd386198c182ea98510925`, independently reviewed, clean exact DEV evidence and remote read-back; W04.T04B -> `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 PASS/read-back at `a792d14894dcc3ba123191883e5647cc06808e85`; P0 PASS/read-back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `0d39b0122d71948a6940076b306eb881f447f8cb` — current published public base with the T00H ruling; reviewed T06A code candidate is `5550d30cb2e53f4e309725cf4a69f510c57f7af6`
+LAST_SAFE_SHA: `513c4f75f1db13c52b2656225367c16b4118b91a` — fresh fetch/read-back confirmed the T06A output on the active ref
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -406,9 +406,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: publish/read back the reviewed and clean-exact-verified T06A code candidate `5550d30cb2e53f4e309725cf4a69f510c57f7af6` as `W04_ROLE_CONTEXT_HANDOFF_READY`. Keep T06B blocked until that acceptance and PO-011 consumption. T07D remains independently authorized.
-KNOWN_BLOCKERS: T06A focused review and clean exact verification PASS; non-force publication/read-back remain. PO-011 is T06B-only. Four known pytest-only S6D failures remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: W04.T06A code candidate `5550d30cb2e53f4e309725cf4a69f510c57f7af6`, clean-verification/status synchronization and publication remain local. Clean exact full DEV, maintenance and independent review PASS. No Context Runtime, RuntimeHost, emission, `runtime_execution.py`, `mechanics.py`, W02 producer, or other out-of-envelope owner was changed. T05C output and verification remain published/read back. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
+NEXT_EXACT_TASK: reconcile the accepted T06A output into the T06B pre-RED inputs with the accepted PO-011 owner, then begin W04.T06B. T07D remains independently authorized.
+KNOWN_BLOCKERS: none on the T06A -> T06B edge after T06A read-back; PO-011 must be consumed before T06B RED. Four known pytest-only S6D failures remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for W04.T06A; code, tests, schemas, verification, independent review and remote read-back are complete at `513c4f75f1db13c52b2656225367c16b4118b91a`. T05C output and verification remain published/read back. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
