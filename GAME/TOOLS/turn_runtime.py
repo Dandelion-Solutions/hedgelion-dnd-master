@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterator, Mapping
 from copy import deepcopy
 from dataclasses import dataclass
@@ -34,6 +35,7 @@ RESULT_REQUIRED_FIELDS = {
             "kind",
             "purpose",
             "source_generation",
+            "response_language",
             "bundle_id",
             "recipient_id",
             "prose",
@@ -88,10 +90,32 @@ EXECUTION_STATES = frozenset(
         "FAILED",
     }
 )
+INTERNAL_NARRATION_TOKENS = frozenset(
+    FALLBACKS
+    | EXECUTION_STATES
+    | frozenset(PHASE_RESULT_KINDS)
+    | frozenset(
+        result_kind
+        for result_kinds in PHASE_RESULT_KINDS.values()
+        for result_kind in result_kinds
+    )
+    | frozenset({EXECUTION_HANDOFF_KIND})
+)
+_INTERNAL_NARRATION_TOKEN_PATTERN = re.compile(
+    r"(?<!\w)(?:"
+    + "|".join(
+        re.escape(token)
+        for token in sorted(
+            INTERNAL_NARRATION_TOKENS, key=lambda token: (-len(token), token)
+        )
+    )
+    + r")(?!\w)"
+)
 SHA256_HEX = frozenset("0123456789abcdef")
 _HANDOFF_SEAL = object()
 _CONTEXT_BASIS_SEAL = object()
 _PHASE_RESULT_SEAL = object()
+_RESPONSE_LANGUAGE_SEAL = object()
 _CONTEXT_DIAGNOSTIC_KEYS = frozenset(
     {
         "trace",
@@ -189,6 +213,45 @@ class AcceptedContextBasis:
 
     def __reduce_ex__(self, protocol: int) -> NoReturn:
         raise TypeError("accepted Context basis is transient and cannot be serialized")
+
+
+@dataclass(frozen=True, slots=True, init=False)
+class ResolvedResponseLanguage:
+    """TurnRuntime-issued opaque language basis for one human-visible response."""
+
+    language: str
+    turn_id: str
+    _turn_seal: object = dataclass_field(repr=False, compare=False)
+    _seal: object = dataclass_field(repr=False, compare=False)
+
+    def __init__(
+        self,
+        *,
+        _seal: object,
+        _turn_seal: object,
+        turn_id: str,
+        language: str,
+    ) -> None:
+        if _seal is not _RESPONSE_LANGUAGE_SEAL:
+            raise TypeError("ResolvedResponseLanguage is TurnRuntime-issued")
+        if not isinstance(language, str) or not language or not language.strip():
+            raise TypeError("ResolvedResponseLanguage must be nonempty opaque text")
+        if not isinstance(turn_id, str) or not turn_id:
+            raise TypeError("ResolvedResponseLanguage turn_id must be nonempty")
+        object.__setattr__(self, "language", language)
+        object.__setattr__(self, "turn_id", turn_id)
+        object.__setattr__(self, "_turn_seal", _turn_seal)
+        object.__setattr__(self, "_seal", _seal)
+
+    def __reduce__(self) -> NoReturn:
+        raise TypeError(
+            "ResolvedResponseLanguage is transient and cannot be serialized"
+        )
+
+    def __reduce_ex__(self, protocol: int) -> NoReturn:
+        raise TypeError(
+            "ResolvedResponseLanguage is transient and cannot be serialized"
+        )
 
 
 @dataclass(frozen=True, slots=True, init=False)
@@ -347,6 +410,79 @@ def _nonempty_string(value: Any, label: str) -> str:
     return value
 
 
+def bind_resolved_response_language(
+    envelope: dict[str, Any], language: object
+) -> ResolvedResponseLanguage:
+    """Bind the already-resolved opaque language value to one current turn."""
+    if not isinstance(envelope, dict):
+        raise TurnContractError("turn envelope must be an object")
+    turn_id = _nonempty_string(envelope.get("turn_id"), "turn_id")
+    turn_seal = envelope.get("_turn_seal")
+    if turn_seal is None:
+        raise TurnContractError("turn envelope is not a current TurnRuntime envelope")
+    if not isinstance(language, str) or not language or not language.strip():
+        raise TurnContractError("ResolvedResponseLanguage must be nonempty opaque text")
+
+    existing = envelope.get("_resolved_response_language_basis")
+    if existing is not None:
+        current = current_resolved_response_language(envelope)
+        if current != language:
+            raise TurnContractError(
+                "ResolvedResponseLanguage is already bound for this turn"
+            )
+        return existing
+    if "response_language" in envelope:
+        raise TurnContractError(
+            "caller-shaped response language cannot establish ResolvedResponseLanguage"
+        )
+
+    basis = ResolvedResponseLanguage(
+        _seal=_RESPONSE_LANGUAGE_SEAL,
+        _turn_seal=turn_seal,
+        turn_id=turn_id,
+        language=language,
+    )
+    envelope["response_language"] = language
+    envelope["_resolved_response_language_basis"] = basis
+    return basis
+
+
+def current_resolved_response_language(
+    envelope: dict[str, Any], binding: dict[str, Any] | None = None
+) -> str:
+    """Return the language only when its sealed basis remains current for this turn."""
+    if not isinstance(envelope, dict):
+        raise TurnContractError("turn envelope must be an object")
+    basis = envelope.get("_resolved_response_language_basis")
+    if (
+        type(basis) is not ResolvedResponseLanguage
+        or basis._seal is not _RESPONSE_LANGUAGE_SEAL
+    ):
+        raise TurnContractError("current ResolvedResponseLanguage basis is required")
+    if basis._turn_seal is not envelope.get(
+        "_turn_seal"
+    ) or basis.turn_id != envelope.get("turn_id"):
+        raise TurnContractError("ResolvedResponseLanguage is not current for this turn")
+    if envelope.get("response_language") != basis.language:
+        raise TurnContractError(
+            "current response language differs from its accepted basis"
+        )
+    if binding is not None and (
+        not isinstance(binding, dict)
+        or binding.get("response_language_basis") is not basis
+        or binding.get("response_language") != basis.language
+    ):
+        raise TurnContractError(
+            "Narrator response language differs from its accepted basis"
+        )
+    return basis.language
+
+
+def is_internal_narration_text(value: str) -> bool:
+    """Identify registered machine tokens embedded in ordinary prose."""
+    return _INTERNAL_NARRATION_TOKEN_PATTERN.search(value) is not None
+
+
 def start_turn(turn_id: str, accepted_frontier: str, protected_narrator_capacity: int) -> dict[str, Any]:
     """Start a control-only envelope; it deliberately carries no gameplay state."""
     _nonempty_string(turn_id, "turn_id")
@@ -365,6 +501,7 @@ def start_turn(turn_id: str, accepted_frontier: str, protected_narrator_capacity
         "phase_bindings": {},
         "accepted_results": {},
         "accepted_handoffs": {},
+        "_resolved_response_language_basis": None,
         "remaining_narrator_capacity": protected_narrator_capacity,
         "emitted_payload": None,
         "_turn_seal": object(),
@@ -452,6 +589,8 @@ def bind_phase_from_context(
     )
     if not isinstance(envelope, dict):
         raise TurnContractError("turn envelope must be an object")
+    if role == "NARRATOR":
+        current_resolved_response_language(envelope)
     turn_id = _nonempty_string(envelope.get("turn_id"), "turn_id")
     frontier = _nonempty_string(envelope.get("accepted_frontier"), "accepted_frontier")
     turn_seal = envelope.get("_turn_seal")
@@ -582,6 +721,8 @@ def bind_phase(
         context_basis, AcceptedContextBasis
     ):
         raise TurnContractError("accepted Context basis is required")
+    if role == "NARRATOR":
+        current_resolved_response_language(envelope)
     basis = context_basis
     if basis._seal is not _CONTEXT_BASIS_SEAL:
         raise TurnContractError("accepted Context basis is not TurnRuntime-issued")
@@ -660,6 +801,12 @@ def bind_phase(
         "allowed_prior_results": list(allowed_prior_results),
         "prior_results": prior_results,
     }
+    if role == "NARRATOR":
+        response_language = current_resolved_response_language(envelope)
+        binding["response_language"] = response_language
+        binding["response_language_basis"] = envelope[
+            "_resolved_response_language_basis"
+        ]
     phase_bindings[role] = binding
     bound_basis_ids.add(basis.bundle_id)
     return binding
@@ -772,7 +919,23 @@ def _validate_bound_context_basis(
     }
     if any(binding.get(name) != value for name, value in expected.items()):
         raise TurnContractError("phase binding differs from its accepted Context basis")
+    if role == "NARRATOR":
+        current_resolved_response_language(envelope, binding)
     return basis
+
+
+def current_phase_context_basis(
+    envelope: dict[str, Any], role: str
+) -> AcceptedContextBasis:
+    """Return the exact current accepted Context basis for one bound phase."""
+    if not isinstance(envelope, dict):
+        raise TurnContractError("turn envelope must be an object")
+    if role not in PHASE_RESULT_KINDS:
+        raise TurnContractError("unregistered role")
+    phase_bindings = envelope.get("phase_bindings")
+    if not isinstance(phase_bindings, dict):
+        raise TurnContractError("turn envelope phase bindings are invalid")
+    return _validate_bound_context_basis(envelope, role, phase_bindings.get(role))
 
 
 def accept_phase_result(
@@ -820,6 +983,17 @@ def accept_phase_result(
                 )
     if "purpose" in required_fields and result.get("purpose") != binding["purpose"]:
         raise TurnContractError("result purpose does not match phase binding")
+    if role == "NARRATOR":
+        response_language = current_resolved_response_language(envelope, binding)
+        if result.get("response_language") != response_language:
+            raise TurnContractError(
+                "narration response language does not match current response language"
+            )
+        prose = result.get("prose")
+        if isinstance(prose, str) and is_internal_narration_text(prose):
+            raise TurnContractError(
+                "internal role, status, or fallback token is not narration"
+            )
     if result.get("bundle_id") != binding["bundle_id"]:
         raise TurnContractError("result bundle_id does not match phase binding")
     for field in ("subject_id", "recipient_id"):

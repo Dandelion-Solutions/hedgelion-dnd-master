@@ -92,6 +92,34 @@ class _StructuralTestContextAssembler:
         }
 
 
+class _DisclosureContextAssembler:
+    """Trusted fixture with one recipient-eligible native fact packet."""
+
+    def assemble(self, request, candidates):
+        return {
+            "outcome": "ASSEMBLED",
+            "bundle": {
+                "profile_id": request["profile_id"],
+                "role": request["role"],
+                "purpose": request["purpose"],
+                "subject_id": request["subject_id"],
+                "recipient_id": request["recipient_id"],
+                "source_frontier": request["source_frontier"],
+                "required": [
+                    {
+                        "candidate_id": "candidate.bell",
+                        "owner_family": "world.lore_fact",
+                        "owner_identity": ["fact.bell"],
+                        "payload": {"fact_id": "fact.bell"},
+                    }
+                ],
+                "optional": [],
+                "retrospective_projection": False,
+            },
+            "trace": {},
+        }
+
+
 def _context_service():
     repository = _ContextRepository()
     live_transport = _ContextLiveTransport()
@@ -169,6 +197,8 @@ def _bind_narrator(
     allowed_prior_results: tuple[str, ...] = (),
     context_service: _CountingContextService | None = None,
 ) -> dict[str, object]:
+    if "response_language" not in envelope:
+        turn_runtime.bind_resolved_response_language(envelope, "test:en")
     return _bind_phase(
         envelope,
         "NARRATOR",
@@ -190,7 +220,7 @@ def _narration_result(
         if envelope is not None
         else {"bundle_id": "unbound-bundle", "recipient_id": "player-1"}
     )
-    return {
+    result = {
         "kind": "narration_result",
         "purpose": "narrate",
         "source_generation": "frontier-7",
@@ -199,6 +229,9 @@ def _narration_result(
         "prose": prose,
         "disclosure_refs": [],
     }
+    if envelope is not None:
+        result["response_language"] = binding["response_language"]
+    return result
 
 
 def _emission_bundle(
@@ -226,6 +259,168 @@ class TurnEnvelopeContainmentTests(unittest.TestCase):
 
 
 class TypedHandoffTests(unittest.TestCase):
+    def test_resolved_response_language_is_bound_through_narration_and_emission(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(envelope, "locale:fr-CA")
+        binding = _bind_narrator(envelope)
+
+        self.assertEqual(binding["response_language"], "locale:fr-CA")
+        result = _narration_result(envelope, "La cloche sonne.")
+        result["response_language"] = binding["response_language"]
+        turn_runtime.accept_phase_result(envelope, result)
+        turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
+
+        payload = emission.commit_visible_payload(
+            result,
+            _emission_bundle(envelope),
+            "AI_REASONING",
+            envelope=envelope,
+        )
+
+        self.assertEqual(payload["response_language"], "locale:fr-CA")
+        self.assertEqual(payload["prose"], "La cloche sonne.")
+
+    def test_narration_cannot_claim_a_different_response_language(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(envelope, "locale:fr-CA")
+        binding = _bind_narrator(envelope)
+        result = {
+            "kind": "narration_result",
+            "purpose": "narrate",
+            "source_generation": "frontier-7",
+            "response_language": "locale:en-US",
+            "recipient_id": "player-1",
+            "bundle_id": binding["bundle_id"],
+            "prose": "The bell rings.",
+            "disclosure_refs": [],
+        }
+
+        with self.assertRaisesRegex(
+            turn_runtime.TurnContractError, "response language"
+        ):
+            turn_runtime.accept_phase_result(envelope, result)
+
+    def test_caller_shaped_response_language_does_not_bind_narrator(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        envelope["response_language"] = "locale:fr-CA"
+
+        with self.assertRaisesRegex(
+            turn_runtime.TurnContractError, "ResolvedResponseLanguage"
+        ):
+            _bind_narrator(envelope)
+
+    def test_caller_shaped_language_value_cannot_be_sealed_by_matching_claim(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        envelope["response_language"] = "locale:fr-CA"
+
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "caller-shaped"):
+            turn_runtime.bind_resolved_response_language(envelope, "locale:fr-CA")
+
+    def test_resolved_response_language_must_be_nonempty_opaque_text(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+
+        for invalid in ("", "   ", None, 7):
+            with (
+                self.subTest(invalid=invalid),
+                self.assertRaisesRegex(
+                    turn_runtime.TurnContractError, "ResolvedResponseLanguage"
+                ),
+            ):
+                turn_runtime.bind_resolved_response_language(envelope, invalid)
+
+    def test_narrator_emission_rechecks_current_response_language_basis(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(envelope, "locale:fr-CA")
+        binding = _bind_narrator(envelope)
+        result = _narration_result(envelope, "La cloche sonne.")
+        turn_runtime.accept_phase_result(envelope, result)
+        turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
+
+        binding["response_language"] = "locale:en-US"
+
+        with self.assertRaisesRegex(
+            emission.EmissionContractError, "response language"
+        ):
+            emission.commit_visible_payload(
+                result,
+                _emission_bundle(envelope),
+                "AI_REASONING",
+                envelope=envelope,
+            )
+
+    def test_narrator_language_basis_cannot_be_reused_across_turns(self):
+        first_envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(first_envelope, "locale:fr-CA")
+        _bind_narrator(first_envelope)
+        result = _narration_result(first_envelope, "La cloche sonne.")
+        turn_runtime.accept_phase_result(first_envelope, result)
+        turn_runtime.accept_execution_handoff(
+            first_envelope, "NARRATOR", _execution_result()
+        )
+
+        next_envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(next_envelope, "locale:fr-CA")
+        next_envelope["phase_bindings"] = first_envelope["phase_bindings"]
+        next_envelope["accepted_results"] = first_envelope["accepted_results"]
+        next_envelope["accepted_handoffs"] = first_envelope["accepted_handoffs"]
+
+        with self.assertRaisesRegex(
+            emission.EmissionContractError, "response language"
+        ):
+            emission.commit_visible_payload(
+                result,
+                _emission_bundle(first_envelope),
+                "AI_REASONING",
+                envelope=next_envelope,
+            )
+
+    def test_internal_role_or_status_token_cannot_be_visible_narration(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        binding = _bind_narrator(envelope)
+
+        for token in ("NARRATOR", "COMPLETED", "narration_result"):
+            result = _narration_result(envelope, token)
+            with (
+                self.subTest(token=token),
+                self.assertRaisesRegex(turn_runtime.TurnContractError, "internal"),
+            ):
+                turn_runtime.accept_phase_result(envelope, result)
+
+        self.assertEqual(binding["role"], "NARRATOR")
+
+    def test_internal_status_token_inside_prose_is_rejected(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope)
+        result = _narration_result(envelope, "Response status: DEGRADED: retrying.")
+
+        with self.assertRaisesRegex(turn_runtime.TurnContractError, "internal"):
+            turn_runtime.accept_phase_result(envelope, result)
+
+    def test_narrator_binding_requires_current_resolved_response_language(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        context_service, _, _ = _context_service()
+
+        with self.assertRaisesRegex(
+            turn_runtime.TurnContractError, "ResolvedResponseLanguage"
+        ):
+            turn_runtime.bind_phase_from_context(
+                envelope,
+                "NARRATOR",
+                "narrate",
+                "profile.narration",
+                context_service,
+                _context_request(
+                    "NARRATOR", "narrate", "profile.narration", "player-1"
+                ),
+                [],
+                ("narration_result",),
+                subject_id="player-1",
+                recipient_id="player-1",
+                allowed_handoffs=("execution_result",),
+            )
+
+        self.assertEqual(context_service.calls, [])
+
     def test_context_binding_mints_basis_from_one_injected_host_assembly(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
         context_service, repository, live_transport = _context_service()
@@ -570,6 +765,7 @@ class TypedHandoffTests(unittest.TestCase):
         narrator_request = _context_request(
             "NARRATOR", "narrate", "profile.narration", "player-1"
         )
+        turn_runtime.bind_resolved_response_language(bound_envelope, "test:en")
         with self.assertRaisesRegex(
             turn_runtime.TurnContractError, "prior result is absent or ambiguous"
         ):
@@ -1031,6 +1227,7 @@ class ProtectedEmissionTests(unittest.TestCase):
             "kind": "narration_result",
             "purpose": "narrate",
             "source_generation": "frontier-7",
+            "response_language": "locale:en-US",
             "recipient_id": "player-1",
             "bundle_id": "unbound-bundle",
             "prose": "safe",
@@ -1042,6 +1239,7 @@ class ProtectedEmissionTests(unittest.TestCase):
                 result,
                 {"bundle_id": "unbound-bundle", "recipient_id": "player-1", "disclosure_refs": []},
                 "AI_REASONING",
+                envelope=None,
             )
 
     def test_untyped_narration_fields_are_rejected_before_emission(self):
@@ -1055,6 +1253,56 @@ class ProtectedEmissionTests(unittest.TestCase):
                 "AI_REASONING",
                 envelope=turn_runtime.start_turn("turn-1", "frontier-7", 120),
             )
+
+    def test_finite_fallback_identifier_is_not_visible_prose(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
+        fallback_id = turn_runtime.select_fallback("UNSATISFIABLE", ("BLOCKED",))
+        result = _narration_result(envelope, fallback_id)
+
+        with self.assertRaisesRegex(
+            turn_runtime.TurnContractError, "internal"
+        ):
+            turn_runtime.accept_phase_result(envelope, result)
+
+        self.assertIsNone(envelope["emitted_payload"])
+
+    def test_visible_fallback_uses_bound_language_without_optional_assets(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(envelope, "opaque:tr-TR")
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
+        result = _narration_result(envelope, "Yol şu anda kapalı.")
+        turn_runtime.accept_phase_result(envelope, result)
+
+        payload = emission.commit_visible_payload(
+            result,
+            _emission_bundle(envelope),
+            "AI_REASONING",
+            envelope=envelope,
+        )
+
+        self.assertEqual(payload["response_language"], "opaque:tr-TR")
+        self.assertEqual(payload["prose"], "Yol şu anda kapalı.")
+
+    def test_internal_status_and_diagnostic_fields_cannot_enter_narration(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        binding = _bind_narrator(envelope)
+
+        for internal_field, internal_value in (
+            ("status", "COMPLETED"),
+            ("private_diagnostics", "raw diagnostic"),
+        ):
+            result = _narration_result(envelope)
+            result[internal_field] = internal_value
+            with (
+                self.subTest(internal_field=internal_field),
+                self.assertRaises(turn_runtime.TurnContractError),
+            ):
+                turn_runtime.accept_phase_result(envelope, result)
+
+        self.assertEqual(binding["role"], "NARRATOR")
 
     def test_over_capacity_narration_is_rejected_without_emission(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 4)
@@ -1101,18 +1349,49 @@ class ProtectedEmissionTests(unittest.TestCase):
 
     def test_only_validated_recipient_scoped_narration_can_be_visible(self):
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
-        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        context_service = _CountingContextService(_DisclosureContextAssembler())
+        _bind_narrator(
+            envelope,
+            allowed_handoffs=("execution_result",),
+            context_service=context_service,
+        )
         result = _narration_result(envelope, "You hear a bell.")
         result["disclosure_refs"] = ["fact.bell"]
         turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
         turn_runtime.accept_phase_result(envelope, result)
         payload = emission.commit_visible_payload(
             result,
-            _emission_bundle(envelope, ["fact.bell"]),
+            _emission_bundle(envelope),
             "AI_REASONING",
             envelope=envelope,
         )
-        self.assertEqual(payload, {"recipient_id": "player-1", "prose": "You hear a bell.", "disclosure_refs": ["fact.bell"]})
+        self.assertEqual(
+            payload,
+            {
+                "recipient_id": "player-1",
+                "response_language": "test:en",
+                "prose": "You hear a bell.",
+                "disclosure_refs": ["fact.bell"],
+            },
+        )
+
+    def test_caller_shaped_bundle_cannot_widen_eligible_disclosure_refs(self):
+        envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        _bind_narrator(envelope, allowed_handoffs=("execution_result",))
+        result = _narration_result(envelope, "You hear a bell.")
+        result["disclosure_refs"] = ["fact.bell"]
+        turn_runtime.accept_execution_handoff(envelope, "NARRATOR", _execution_result())
+        turn_runtime.accept_phase_result(envelope, result)
+
+        with self.assertRaisesRegex(
+            emission.EmissionContractError, "recipient-eligible"
+        ):
+            emission.commit_visible_payload(
+                result,
+                _emission_bundle(envelope, ["fact.bell"]),
+                "AI_REASONING",
+                envelope=envelope,
+            )
 
     def test_trace_tool_and_unowned_emission_are_rejected(self):
         result = {

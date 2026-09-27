@@ -479,6 +479,8 @@ class DeterministicExecutionTests(unittest.TestCase):
             store=ExecutionStore(),
         )
         envelope = turn_runtime.start_turn("turn-1", "frontier-7", 120)
+        turn_runtime.bind_resolved_response_language(envelope, "test:en")
+
         class TestContextService:
             def __init__(self) -> None:
                 self.assemble_calls = 0

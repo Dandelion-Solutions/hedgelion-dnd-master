@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C AND T06A ACCEPTED/READ BACK; T07D AUTHORIZED; PO-011 INCORPORATED FOR T06B + SHIPPED PRESENTATION
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C/T06A ACCEPTED/READ BACK; T06B CURRENT; T07D AUTHORIZED; PO-011 INCORPORATED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T06A output `W04_ROLE_CONTEXT_HANDOFF_READY` code `5550d30cb2e53f4e309725cf4a69f510c57f7af6`, status `513c4f75f1db13c52b2656225367c16b4118b91a`, independent PASS, clean exact DEV/maintenance verification and remote read-back; W04.T05C `W04_CONTEXT_INTEGRATION_READY` code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` and status `95c898ce62fc947436cd386198c182ea98510925` remain accepted; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS remain accepted
-NEXT_AUTHORIZED_UNIT: W04.T06A output `W04_ROLE_CONTEXT_HANDOFF_READY` is independently reviewed, clean-exact verified, published and read back at `513c4f75f1db13c52b2656225367c16b4118b91a`; W04.T07D remains independently authorized. Before T06B RED, consume the accepted PO-011 response-language owner.
-REQUIRED_GATE: T06A accepted/read back -> T06B (PO-011 transient response-language binding + protected emission) -> context/emission integration; T07D -> T07E -> T07-INTEGRATION; then T08 joins, exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit.
+NEXT_AUTHORIZED_UNIT: W04.T06B is authorized from accepted T06A plus incorporated PO-011. Its local candidate binds current Narrator response language, validates disclosure refs against the accepted Context basis, and rejects registered internal status tokens embedded in prose; focused tests (170) and scoped independent review pass. Clean committed-source verification and publication remain pending. W04.T07D remains independently authorized.
+REQUIRED_GATE: T06A accepted/read back -> T06B implementation/clean verification/independent review/publication -> context/emission integration; T07D -> T07E -> T07-INTEGRATION; then T08 joins, exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: none on the T06A -> T06B dependency edge except consuming PO-011 before T06B RED. W04.T07D remains independently eligible. Four known pytest-only S6D tests remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: none on the T06A -> T06B dependency edge; PO-011 is consumed. Clean committed-source verification and publication remain pending for the local T06B candidate. W04.T07D remains independently eligible. Four known pytest-only S6D tests remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
@@ -348,7 +348,7 @@ BASE_SHA: `3319314e5d4a140a9de01cd52bafc6c25a33b975`
 
 STATUS: EXECUTING — W04.T06A `W04_ROLE_CONTEXT_HANDOFF_READY` accepted/read back
 T06A_STATUS_OVERRIDE: the 2026-09-27 Senior T00H ruling supersedes the prior exact-object-authentication stop; the fresh independent task review, clean exact verification, publication and read-back pass under that ruling.
-CURRENT_TASK: W04.T06A output `W04_ROLE_CONTEXT_HANDOFF_READY` code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` with verification/status `513c4f75f1db13c52b2656225367c16b4118b91a` is independently reviewed, clean exact verified, published and read back. T05C and W02.T07 inputs remain accepted. PO-011 is a T06B-only gate; T07D remains independent.
+CURRENT_TASK: W04.T06A output `W04_ROLE_CONTEXT_HANDOFF_READY` code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` with verification/status `513c4f75f1db13c52b2656225367c16b4118b91a` is independently reviewed, clean exact verified, published and read back. W04.T06B is now authorized from those inputs plus PO-011 `ResolvedResponseLanguage`; T07D remains independently authorized.
 LAST_COMPLETED_TASK: W04.T05C -> code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a`, verification/status `95c898ce62fc947436cd386198c182ea98510925`, output `W04_CONTEXT_INTEGRATION_READY` (independent PASS, clean exact DEV evidence, remote read-back); W04.T04B -> `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` (independent PASS, clean exact DEV evidence, remote read-back); P0R `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 `a792d14894dcc3ba123191883e5647cc06808e85`; P0 `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
 LAST_SAFE_SHA: `513c4f75f1db13c52b2656225367c16b4118b91a` — fresh fetch/read-back confirms the T06A output on the active ref.
 

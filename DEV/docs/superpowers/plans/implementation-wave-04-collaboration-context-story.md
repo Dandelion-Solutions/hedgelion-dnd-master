@@ -326,7 +326,7 @@ Senior authenticity ruling: `DEV/docs/superpowers/design/2026-09-27-w04-t06a-con
 
 Inputs: T06A PASS plus accepted PO-011 owner `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`.
 
-Direct writes: turn_runtime.py, GAME/TOOLS/emission.py, narration/turn schemas and test_rd10.
+Direct writes: `GAME/TOOLS/turn_runtime.py`, `GAME/TOOLS/emission.py`, Narration/turn schemas and `DEV/TESTS/test_rd10_role_emission.py`. If making Narrator language mandatory mechanically invalidates the existing RD05 handoff-only fixture, allow a one-test `test_rd05_runtime_execution.py` synchronization to supply the same transient language basis; do not change RD05 production owners or W02 handoff semantics.
 
 Output: original W04_PROTECTED_EMISSION_READY.
 
