@@ -108,7 +108,7 @@ Master при этом использует всю имеющуюся истор
 Нужно проверить, где эта capability должна быть закреплена канонически: runtime instructions / gameplay interaction contract / Story access consumer requirements / другой owning artifact.
 ```
 
-### Agent interpretation / classification
+### Initial agent interpretation / classification at capture
 
 ```text
 NEW EXPLICIT PRODUCT / CONSUMER REQUIREMENT
@@ -695,7 +695,7 @@ NEW PERSISTENT PLAYER LANGUAGE FIELD: NOT IMPLIED
 NEEDS_PO: NONE
 ```
 
-### Current evidence / gap
+### Evidence / gap at capture and current closure
 
 Current public HDM already contains partial compatible behavior:
 
@@ -703,7 +703,7 @@ Current public HDM already contains partial compatible behavior:
 - `GAME/CORE/RUNTIME.md` separates the ordinary out-of-character Master channel from in-world speech;
 - `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` and WP-21 separate maintenance/diagnostic routing from ordinary gameplay and require recipient-safe human-visible diagnostics.
 
-However, there is currently no general owner law equivalent to:
+At capture, there was no general owner law equivalent to:
 
 ```text
 all ordinary Master -> human text
@@ -717,7 +717,9 @@ missing optional language-quality asset/policy
   -> does not authorize visible fallback to another language
 ```
 
-The current PLAYER schema also has no language/locale field. This input does not require one; exact resolution and persistence remain implementation/architecture choices unless a later consumer proves persistence is needed.
+That owner gap is now CLOSED by `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`, which establishes the transient `ResolvedResponseLanguage` law, forbids visible fallback-language substitution solely because optional language policy/assets are absent, and separates ordinary Master speech from technical diagnostics.
+
+The current PLAYER schema still has no language/locale field, intentionally: PO-011 does not require one. Exact resolution is transient at the active response boundary; durable preference/persistence would require a separate future owner decision if a concrete consumer proves that need.
 
 ### Current routing
 
