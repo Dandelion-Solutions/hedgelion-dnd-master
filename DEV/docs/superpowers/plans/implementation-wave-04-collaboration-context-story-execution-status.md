@@ -414,8 +414,8 @@ UNPUBLISHED_WORK: W04.T06A TurnRuntime/schema/test candidate plus the mechanical
 
 IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-26-w04-t06a-accepted-context-basis-system-impact-brief.md`
 
-LAST_SAFE_SHA: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` (fresh-fetched/fast-forwarded active ref with PO-011 incorporated; T06A source baseline remains `3113b43c345b10efacebcacb003eba98aa025b05` and is unchanged by PO-011)
-FRESH_REMOTE_HEAD: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` — all seven current remote documentation/owner commits are integrated locally; PO-011 explicitly marks T06A unaffected and gates T06B before RED.
+HISTORICAL_LAST_SAFE_SHA_AT_FIRST_RULING: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` (the then-current PO-011-integrated basis; retained only as historical gate evidence)
+HISTORICAL_REMOTE_HEAD_AT_FIRST_RULING: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` — retained as the first-ruling evidence basis; current public routing is owned by the top cursor and the 2026-09-27 Senior ruling.
 INITIAL_STOP_VERIFICATION_STATE: the supplied RD10 baseline observed the expected forged-basis RED: 1 failed, 24 passed. This was the pre-ruling diagnostic; the current post-sync verification is recorded below.
 
 INITIAL_VERSION_IMPACT_AT_STOP: NONE for the partial T06A code/test delta at the time of the initial gate; TurnRuntime is unversioned implementation support and no version-bearing or persistent schema was changed.
@@ -427,7 +427,7 @@ SYSTEM_IMPACT: RESOLVED / NO ARCHITECTURE DELTA — resume inside the original T
 
 ## W04.T06A implementation candidate and verification
 
-IMPLEMENTATION_STATE: NOT_ACCEPTED — candidate `bind_phase_from_context` invokes the structural `ContextAssembler` Protocol once, validates scope and seals the result, but the HIGH review finding shows this does not prove the object was the exact RuntimeHost-owned ContextService capability. Other T06A controls have focused passing witnesses, but the accepted-basis authenticity boundary is unresolved.
+IMPLEMENTATION_STATE: NOT_ACCEPTED — candidate `bind_phase_from_context` invokes the structural `ContextAssembler` Protocol once, validates scope and seals the result. The independent HIGH review triggered the Senior gate; its exact-object-authentication premise is now superseded by the accepted T00H TCB/composition ruling. The candidate still requires reconciliation to that ruling and independent re-review before acceptance.
 
 CURRENT_TDD_EVIDENCE: the original forged-basis RED was 1 failed/24 passed. Additional REDs were observed for missing basis-assembly operation (missing operation), Actor prior-result subject crossing, unselected typed prior-result transport, stale Narrator binding after Chronicler, same-envelope Story-result transfer, trace/private diagnostic result transport, token serialization, and reusing a prior Narrator execution handoff after fresh rebind. Those cases are now GREEN in RD10.
 
@@ -437,14 +437,14 @@ VERSION_IMPACT: NONE — `turn_runtime.py` is unversioned implementation support
 
 SYSTEM_IMPACT: RESOLVED BY SENIOR TCB/COMPOSITION RULING — the structural port is not itself authority; authority comes from the accepted T00H trusted composition path plus T06A rejection of raw/data-plane basis substitution. No out-of-envelope producer/interface change is authorized. This ruling does not grant T06A PASS; the unpublished candidate still requires reconciliation and independent re-review.
 
-INDEPENDENT_REVIEW: **NOT PASS / HIGH** — spec compliance failed because any duck-typed assembler can mint `AcceptedContextBasis`; no commit or publication.
+INDEPENDENT_REVIEW_AT_GATE: **NOT PASS / HIGH** — historical review disposition that triggered the Senior stop; its structural-port observation is retained, while the exact-object-authentication conclusion is superseded by the 2026-09-27 TCB/composition ruling. No T06A code commit/publication has occurred.
 T06A_LATEST_VERIFICATION: RD10 39 passed; RD11 42 passed; RD05 40 passed after the one-file fixture synchronization. Full DEV, maintenance audit, and hosted CI were not run.
-T06A_REVIEW_FINDING: `GAME/TOOLS/turn_runtime.py` ContextAssembler Protocol and `bind_phase_from_context` accept any callable `assemble` producer. The caller-shaped result can match scope fields and receive a sealed basis; matching fields/ID plus a TurnRuntime-local seal do not prove RuntimeHost ContextService provenance. Senior/controller ruling is required before further implementation.
+T06A_REVIEW_FINDING: `GAME/TOOLS/turn_runtime.py` ContextAssembler Protocol and `bind_phase_from_context` accept any callable `assemble` producer. That observation prompted the Senior ruling now published at `2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`: direct trusted Python test-double injection is not an admitted gameplay bypass; data-plane selection/replacement remains forbidden and must be re-reviewed.
 T06A_RUFF_BASELINE_NOTE: scoped Ruff check passes on TurnRuntime and RD10. Full-file RD05 Ruff reports eight existing I001/F841/SIM117 findings outside the changed fixture hunk; the explicit scoped check ignoring only those baseline codes passes across the three changed Python files. `git diff --check` passes.
 T06A_ADDITIONAL_RED_GREEN: basis reuse after its phase binding was replaced failed the new negative witness before the per-turn bound-basis-ID guard; the final RD10 suite passes it.
 T06A_RD05_FIXTURE_RED_GREEN: baseline exact RD05 node failed because it passed raw `bundle_id` to `bind_phase`; after changing only the fixture to inject one test ContextService capability through `bind_phase_from_context`, that node passed and the full RD05 module passed 40/40.
 
-UNPUBLISHED_WORK: current T06A changes remain local and uncommitted for controller review. T06B remains blocked until independent T06A PASS.
+UNPUBLISHED_WORK: current T06A changes remain local and uncommitted for reconciliation to the Senior ruling and independent re-review. T06B remains blocked until independent T06A PASS.
 
 ## W04.T06A capability-authenticity Senior resolution — 2026-09-27
 
