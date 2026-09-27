@@ -165,12 +165,14 @@ PRODUCT_OWNER_DECISION_REQUIRED: NONE
 
 T06B still runs the normal Version Impact Gate against its actual transient code/schema changes.
 
-## 11. Current gate
+## 11. Gate routing
 
 ```text
 PO-011: INCORPORATED
-W04.T06A: MAY CONTINUE
-W04.T06B: MUST CONSUME THIS OWNER BEFORE RED
-W04.T07D: UNAFFECTED / MAY CONTINUE
+W04.T06A: PO-011 ADDS NO LANGUAGE GATE; actual eligibility/status comes only from CURRENT_PROGRESS + task-local cursor
+W04.T06B: MUST CONSUME THIS OWNER BEFORE RED once T06A independently passes
+W04.T07D: UNAFFECTED BY PO-011; actual eligibility/status comes only from CURRENT_PROGRESS + task-local cursor
 WAVE_05: still unauthorized until the existing Wave-04 gate
 ```
+
+This section is dependency routing, not a duplicate live status cursor. Later unrelated implementation gates must not make this owner decision a stale competing progress authority.

@@ -724,7 +724,7 @@ The current PLAYER schema also has no language/locale field. This input does not
 | Route | State | Trigger / obligation | Current evidence / owner |
 |---|---|---|---|
 | Product semantics | INCORPORATED | one current HDM semantic owner defines ordinary Master-to-human response language and internal-vs-visible separation | `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md` |
-| W04.T06A phase rebind | NOT APPLICABLE / CURRENT MAY CONTINUE | T06A owns accepted Context basis/phase rebinding, not player-language realization | current Wave-04 execution plan |
+| W04.T06A phase rebind | PO-011 NOT APPLICABLE / CURRENT TASK SEPARATELY SENIOR-STOPPED | PO-011 does not add a language blocker to T06A; current T06A is independently stopped on exact RuntimeHost ContextService provenance/authenticity | current `DEV/CURRENT_PROGRESS.md` + Wave-04 execution-status |
 | W04.T06B protected Narrator emission | ACTIVE / OWNER INCORPORATED | consume the transient response-language basis; finite fallback/player-visible emission cannot leak internal English or change visible language because an optional language asset is absent | PO-011 owner + Wave-04 T06B + `GAME/TOOLS/emission.py` |
 | Wave-05 shipped CORE/session/bootstrap final writers | DEFERRED / MANDATORY CONSUMER | final shipped instructions/shared surfaces project the accepted player-language law after Wave-04 closure | implementation Wave 05 + owner decision |
 | Diagnostics / maintenance surface | INCORPORATED SEMANTICS / REALIZATION DEFERRED | technical diagnostic artifacts may remain technical; ordinary Master explanation follows response language; recipient filtering remains mandatory | PO-011 owner + `DEV/ARCHITECTURE/MAINTENANCE_COMMANDS.md` + WP-21 |
@@ -732,9 +732,9 @@ The current PLAYER schema also has no language/locale field. This input does not
 
 ### Current impact
 
-This requirement does not block the currently authorized W04.T06A work, because T06A owns role/context rebinding rather than player-visible language realization.
+PO-011 itself does not add a language-related blocker to W04.T06A, because T06A owns role/context rebinding rather than player-visible language realization. The current global/task-local status independently stops T06A at a Senior/controller ContextService-authenticity gate; that stop is unrelated to PO-011.
 
-It **does** become an applicable Product Owner input before W04.T06B protected Narrator emission begins. The existing T06B phrase `exactly one registered fallback` must be reconciled so that a fallback cannot become an unauthorized visible fallback language or internal-token leak.
+PO-011 **does** become an applicable Product Owner input before W04.T06B protected Narrator emission begins. The existing T06B phrase `exactly one registered fallback` must be reconciled so that a fallback cannot become an unauthorized visible fallback language or internal-token leak.
 
 No Product Owner decision remains open. The accepted owner is `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`; current implementation/proof consumers are routed through the stable Wave-04/05/06 package.
 
@@ -786,7 +786,7 @@ R2_7_FINAL_RECONCILIATION: CLOSED / FINAL SENIOR PASS
 IMPLEMENTATION_PLANNING_STARTED: YES / CLOSED WITH INDEPENDENT SENIOR PASS
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: YES
 SUBSTANTIVE_IMPLEMENTATION_STARTED: YES / WAVE 04 EXECUTING
-CURRENT_IMPLEMENTATION_SLICE: W04.T06A CURRENT; W04.T07D PARALLEL ELIGIBLE
+CURRENT_IMPLEMENTATION_SLICE: W04.T06A SENIOR_REVIEW_REQUIRED; W04.T07D PARALLEL ELIGIBLE
 WAVE_05_AUTHORIZED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```
