@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: SENIOR_REVIEW_REQUIRED — W04.T06A accepted Context-basis authenticity
+STATUS: EXECUTING — W04.T06A Senior authenticity gate resolved; unpublished candidate reconciliation + independent re-review current
 CURRENT_TASK: phase rebinding and accepted Context basis with W04.T05C and W02.T07 hard inputs
 LAST_COMPLETED_TASK: W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status commit `95c898ce62fc947436cd386198c182ea98510925`, independently reviewed, clean exact DEV evidence and remote read-back; W04.T04B -> `W04_AUTHORITY_COLLAB_RECONCILIATION_READY` independently PASS/read-back at code `a04cc825bb8cfdfb965d9ffec9fdb0cae1ea37ad` / status HEAD `6ea1ea5464bdffb6f676e49ce0b74eeda2601b0e`; P0R PASS/read-back at `d053dbbc01351c0ef5a356110542b0a86d3f923c`; P1 PASS/read-back at `a792d14894dcc3ba123191883e5647cc06808e85`; P0 PASS/read-back at `d1a10f8bf6ec16d34ecb3ffa58b0a48c6527a31a`; T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `e428084382a84ce87ef1e8123a1c9b2d97e7cb2d` — latest fresh-fetched and fast-forwarded remote HEAD with PO-011 integrated; the T06A code baseline `3113b43c345b10efacebcacb003eba98aa025b05` is unchanged by those documentation/owner commits
+LAST_SAFE_SHA: `5136fdae83663dad43a45c8c58c8b38f989b1a90` — current published control/status basis before this Senior ruling; the unpublished T06A code candidate remains outside public authority until implementation reconciliation, verification, independent PASS and publication
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -406,9 +406,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: obtain Senior/controller ruling on authenticating the exact RuntimeHost ContextService capability and any authorized producer/interface scope. Do not publish T06A or start T06B until this gate is resolved and T06A independently passes. T07D remains independently authorized.
-KNOWN_BLOCKERS: HIGH finding — the structural ContextAssembler accepts any caller-supplied callable `assemble`, so TurnRuntime cannot prove the assembly came from the exact RuntimeHost-owned ContextService. A Senior/controller ruling is required. PO-011 is a mandatory T06B input. Four known pytest-only S6D failures remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: W04.T06A TurnRuntime/schema/test candidate, one mechanical RD05 consumer-fixture synchronization, status updates, and the Impact Brief remain local/uncommitted. No Context Runtime/RuntimeHost producer, emission implementation, `runtime_execution.py`, `mechanics.py`, W02 producer, or other out-of-envelope owner was changed. T05C output and verification remain published/read back. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
+NEXT_EXACT_TASK: reconcile the unpublished W04.T06A TurnRuntime/schema/test candidate to the 2026-09-27 Senior TCB/composition ruling; prove the assembler capability is never selected/serialized from gameplay or model data, retain the existing forged raw-basis negatives, run the task-required focused/full DEV + maintenance + Version Impact evidence, obtain independent task PASS, then publish/read back. T06B remains blocked until that PASS. T07D remains independently authorized.
+KNOWN_BLOCKERS: T06A has no remaining Senior architecture stop but is still NOT_ACCEPTED pending candidate reconciliation/verification/re-review. PO-011 is a mandatory T06B input. Four known pytest-only S6D failures remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: W04.T06A TurnRuntime/schema/test candidate plus the mechanical RD05 consumer-fixture synchronization remain local/uncommitted and must be reconciled to the current ruling before any code publication. No Context Runtime/RuntimeHost producer/interface change is authorized. T05C output and verification remain published/read back. Unrelated `DEV/.lavish/` and `.agents/` edits remain untouched.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
@@ -421,9 +421,9 @@ INITIAL_STOP_VERIFICATION_STATE: the supplied RD10 baseline observed the expecte
 INITIAL_VERSION_IMPACT_AT_STOP: NONE for the partial T06A code/test delta at the time of the initial gate; TurnRuntime is unversioned implementation support and no version-bearing or persistent schema was changed.
 
 RULING: The T06A scope may consume Context through the already-accepted injected RuntimeHost `ContextService.assemble(request, candidates)` capability. TurnRuntime must invoke it exactly once per phase and mint a sealed transient basis only from that invocation's result; binding rejects raw mappings even when `bundle_id` and scope fields match. This adds no ContextService/RuntimeHost producer/interface change and no new authority. Full rationale and cost if wrong are recorded in the Impact Brief above.
-T06A_RULING_ENFORCEMENT_STATUS: REOPENED — independent task review found the current structural Protocol accepts any callable assembler, so the code does not yet enforce the ruling's exact RuntimeHost ContextService capability requirement.
+T06A_RULING_ENFORCEMENT_STATUS: SUPERSEDED BY 2026-09-27 SENIOR RULING — the independent review correctly identified that the candidate accepts a structural assembler port, but T00H explicitly places tracked deterministic Python/test-fixture injection inside the trusted computing base and forbids inventing an in-process token/registry/marker merely to authenticate arbitrary Python objects. The relevant enforcement boundary is that gameplay/model/request/envelope/candidate data cannot choose or replace the assembler capability.
 
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — independent review found the structural ContextAssembler Protocol accepts any caller-supplied callable `assemble`; the current TurnRuntime seal does not authenticate the exact RuntimeHost-owned ContextService producer.
+SYSTEM_IMPACT: RESOLVED / NO ARCHITECTURE DELTA — resume inside the original T06A owner envelope under `2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`; no ContextService/RuntimeHost producer or interface change is authorized by this resolution.
 
 ## W04.T06A implementation candidate and verification
 
@@ -435,7 +435,7 @@ PRE_FIXTURE_SYNC_VERIFICATION_STATE: before the RD05 fixture sync, RD10 had 38 p
 
 VERSION_IMPACT: NONE — `turn_runtime.py` is unversioned implementation support; changed TurnEnvelope and NarrationResult JSON schemas are transient, carry no HDM `schema_version`, and are not persistent record families. Campaign/storage/catalog/engine generations, migration, and dual-read remain unchanged.
 
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED IN CURRENT CANDIDATE — the accepted-basis trust boundary is not yet authenticated by the structural ContextAssembler Protocol. The prior controller ruling is not sufficient to grant T06A PASS; no out-of-envelope producer/interface change has been made.
+SYSTEM_IMPACT: RESOLVED BY SENIOR TCB/COMPOSITION RULING — the structural port is not itself authority; authority comes from the accepted T00H trusted composition path plus T06A rejection of raw/data-plane basis substitution. No out-of-envelope producer/interface change is authorized. This ruling does not grant T06A PASS; the unpublished candidate still requires reconciliation and independent re-review.
 
 INDEPENDENT_REVIEW: **NOT PASS / HIGH** — spec compliance failed because any duck-typed assembler can mint `AcceptedContextBasis`; no commit or publication.
 T06A_LATEST_VERIFICATION: RD10 39 passed; RD11 42 passed; RD05 40 passed after the one-file fixture synchronization. Full DEV, maintenance audit, and hosted CI were not run.
@@ -445,6 +445,21 @@ T06A_ADDITIONAL_RED_GREEN: basis reuse after its phase binding was replaced fail
 T06A_RD05_FIXTURE_RED_GREEN: baseline exact RD05 node failed because it passed raw `bundle_id` to `bind_phase`; after changing only the fixture to inject one test ContextService capability through `bind_phase_from_context`, that node passed and the full RD05 module passed 40/40.
 
 UNPUBLISHED_WORK: current T06A changes remain local and uncommitted for controller review. T06B remains blocked until independent T06A PASS.
+
+## W04.T06A capability-authenticity Senior resolution — 2026-09-27
+
+RULING: `DEV/docs/superpowers/design/2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`
+
+DISPOSITION: **NO ARCHITECTURE DELTA / TARGETED IMPLEMENTATION RULING**.
+
+The independent HIGH observation is retained as useful evidence about the structural port, but its requested exact-object authentication is outside the accepted T00H threat model. Tracked deterministic HDM Python, runtime-host/bootstrap composition and test-harness fixture injection are inside the trusted computing base. A fake Python assembler passed directly by test code is therefore not by itself an admitted gameplay authority bypass.
+
+T06A may retain a narrow structural Context assembler port only as a trusted composition dependency. It must never be selected, reconstructed, serialized or replaced through TurnEnvelope, request/candidate/model data, prior results or another gameplay/data-plane carrier. The operation invokes that injected port exactly once and validates role/purpose/profile/subject/recipient/current frontier before minting the phase-local transient basis. Raw mappings and caller-shaped bundle fields remain non-provenance and fail closed.
+
+Do **not** add a local token/registry/marker, nominal RuntimeHost identity test, reverse dependency or new producer evidence solely to authenticate arbitrary in-process Python objects. The accepted T00H owner already assigns exact product composition to the fixed `RuntimeHost.context` service and Wave-05 bootstrap wiring. If implementation discovers an admitted data-plane service override or truly needs to change ContextService/RuntimeHost contracts, the System-Impact Gate reopens.
+
+This resolution authorizes implementation/re-review only; it does not accept the unpublished T06A candidate and does not authorize T06B.
+
 
 ## Historical evidence retention
 

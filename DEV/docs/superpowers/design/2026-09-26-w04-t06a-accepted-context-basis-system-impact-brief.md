@@ -255,3 +255,48 @@ RED.
 UNPUBLISHED_WORK: T06A code/schema/test candidate and this gate record are
 local/uncommitted for Senior/controller ruling. The code/test candidate has
 not been published or accepted.
+
+
+## Final Senior ruling — 2026-09-27
+
+RULING_OWNER:
+`DEV/docs/superpowers/design/2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`
+
+DISPOSITION: **NO ARCHITECTURE DELTA / TARGETED IMPLEMENTATION RULING**.
+
+The independent review correctly observed that a structural Python port can be
+implemented by a test double. It overreached when it treated that fact, by
+itself, as proof of a gameplay authority bypass. The accepted T00H owner
+decision explicitly defines tracked deterministic HDM Python, runtime
+host/bootstrap composition and test-harness fixture injection as the trusted
+computing base, and explicitly rejects local token/registry/marker schemes whose
+only purpose is to authenticate arbitrary in-process Python objects.
+
+Therefore the T06A contract is composition-bound:
+
+- the Context assembler dependency is supplied only by tracked deterministic
+  composition code;
+- gameplay/model/request/envelope/candidate/prior-result data cannot select,
+  replace, serialize or reconstruct that capability;
+- the T06A operation calls the injected assembler exactly once for the phase,
+  validates the returned assembled scope/current frontier, and only then mints
+  its transient phase basis;
+- raw/caller-shaped bundle mappings remain non-provenance and are rejected;
+- direct Python test doubles are permitted because the test harness is acting
+  inside the TCB, exactly as T00H permits fixture deployment adapters.
+
+No new ContextService/RuntimeHost producer proof, local authenticity token,
+registry, nominal exact-object check or reverse dependency is authorized solely
+to reject an arbitrary trusted Python test double. Final product wiring to the
+fixed `RuntimeHost.context` service remains owned by the accepted host/bootstrap
+composition path and is not claimed by T06A.
+
+REOPEN TRIGGER: an admitted gameplay/data-plane surface can choose or replace
+the assembler capability, or implementation genuinely requires a
+ContextService/RuntimeHost producer/interface change.
+
+SYSTEM_IMPACT: **RESOLVED / NO ARCHITECTURE DELTA**.
+
+T06A may resume inside its original owner envelope. The unpublished candidate
+still requires reconciliation to this ruling, fresh verification and independent
+task PASS before publication/acceptance. T06B remains blocked until that PASS.

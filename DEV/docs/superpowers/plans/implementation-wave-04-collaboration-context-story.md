@@ -320,6 +320,8 @@ Output: W04_ROLE_CONTEXT_HANDOFF_READY.
 
 Mandatory REDs: a shaped arbitrary bundle with matching bundle_id cannot widen eligibility; raw bundle/trace/private diagnostics rejected; Actor subject/purpose isolated; Narrator freshly rebinds after Chronicler; only minimum typed prior results cross phases.
 
+Senior authenticity ruling: `DEV/docs/superpowers/design/2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`. Under the accepted T00H trust model, the Context assembler dependency is supplied by tracked deterministic composition code and is not selected from request/envelope/candidate/model data. T06A does not authenticate arbitrary in-process Python objects with a local token/registry/marker and does not add a reverse dependency on RuntimeHost merely to reject a trusted test double. The phase-binding operation must invoke the injected Context assembler exactly once, validate the assembled scope/current frontier before minting its transient basis, reject raw/caller-shaped bundle data as provenance, and never serialize or accept the assembler capability through a gameplay/data-plane carrier. Test-harness assemblers are permitted as TCB fixtures. Any actual gameplay/data-plane path that can choose/replace the service, or any need to change ContextService/RuntimeHost producer contracts, reopens the System-Impact Gate. Final product wiring to the fixed `RuntimeHost.context` service remains owned by the accepted host/bootstrap composition path; T06A alone does not claim REAL deployment wiring.
+
 **W04.T06B - protected Narrator emission and finite fallback**
 
 Inputs: T06A PASS plus accepted PO-011 owner `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`.

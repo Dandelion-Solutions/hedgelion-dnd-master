@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C ACCEPTED/READ BACK; T06A SENIOR_REVIEW_REQUIRED; T07D AUTHORIZED; PO-011 INCORPORATED FOR T06B + SHIPPED PRESENTATION
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C ACCEPTED/READ BACK; T06A AUTHORIZED TO RESUME UNDER SENIOR TCB/COMPOSITION RULING; T07D AUTHORIZED; PO-011 INCORPORATED FOR T06B + SHIPPED PRESENTATION
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T05C output `W04_CONTEXT_INTEGRATION_READY` implemented at `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a`, independently reviewed PASS, clean exact DEV verification completed and remote read-back confirmed at `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS remain accepted
-NEXT_AUTHORIZED_UNIT: W04.T06A is stopped for Senior/controller ruling on accepted Context-basis authenticity; W04.T07D remains independently authorized. After T06A PASS, T06B must consume the accepted PO-011 response-language owner before RED.
+NEXT_AUTHORIZED_UNIT: W04.T06A may resume under `DEV/docs/superpowers/design/2026-09-27-w04-t06a-contextservice-authenticity-senior-ruling.md`; the unpublished candidate still requires implementation reconciliation, full task verification and independent PASS before publication/acceptance. W04.T07D remains independently authorized. After T06A PASS, T06B must consume the accepted PO-011 response-language owner before RED.
 REQUIRED_GATE: T06A independent task review/PASS -> T06B (PO-011 transient response-language binding + protected emission) -> context/emission integration; T07D -> T07E -> T07-INTEGRATION; then T08 joins, exact-head Wave-04 verification and mandatory Senior Wave-04 integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T06A is currently stopped at a HIGH Senior/controller gate: the structural ContextAssembler path does not authenticate the exact RuntimeHost-owned ContextService capability. W04.T07D remains independently eligible. Four known pytest-only S6D tests remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: W04.T06A is not yet accepted, but its Senior System-Impact stop is RESOLVED: T00H makes ContextService provenance a trusted composition invariant, not an in-process object-authentication problem. The worker must reconcile the unpublished candidate to that ruling and obtain independent PASS. W04.T07D remains independently eligible. Four known pytest-only S6D tests remain outside hosted unittest collection and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
