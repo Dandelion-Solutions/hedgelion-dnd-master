@@ -4,39 +4,36 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08B accepted; W04.T07D Senior System-Impact resolved to Product Owner semantic gate
-CURRENT_TASK: T07D remains stopped before RED at `PRODUCT_OWNER_DECISION_REQUIRED` under `DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`. Senior confirmed that source-bound owner evidence is necessary but insufficient until the baseline Commentator perspective/spoiler rule says which current player/PC disclosure/knowledge facts satisfy protected Story/T0 availability. T08B is accepted/read back. Preserve accepted T07A/B/C and the recorded CLS↔HDM preflight; do not invent a W03 access rule or caller-owned map. A26-02 remains separate before Wave-04 FINAL_REVIEW.
+STATUS: EXECUTING — W04.T08B accepted; PO-012 incorporated; W04.T07D-P0 authorized
+CURRENT_TASK: W04.T07D-P0 is authorized from PO-012 + accepted T07C/Context/W03 inputs. It adds only `profile.commentator_control` to Context Runtime so T07D can consume exact-current PLAYER/knowledge/disclosure/lore evidence without trusting caller maps. T07D remains stopped before RED until P0 independent PASS/read-back. T08B is accepted/read back. Preserve T07A/B/C and the recorded CLS↔HDM preflight. A26-02 remains separate before Wave-04 FINAL_REVIEW.
 LAST_COMPLETED_TASK: W04.T08B -> `W04_SESSION_CONSUMER_DELTA_READY`, code `356357a5c05e16d704bebfe11e8a3df542321694`; verification/status `d9e647a98478c4b6867ad38aac5cbfe7ccfe855a`; final cursor/read-back `468bd3400183ada85b76cd93737005aa1e1e64a7`, independent PASS, clean exact committed-source full DEV/version/maintenance verification. W04.T06B -> `W04_PROTECTED_EMISSION_READY`, code `9bf679fa6b6b5ac560198448d50f932f08b808eb`; status `8d646ff3d246cf2ee414dc5e8c1b57a5310c6d1f`; remote read-back confirmed at `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`. W04.T06A -> `W04_ROLE_CONTEXT_HANDOFF_READY`, code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` / status `513c4f75f1db13c52b2656225367c16b4118b91a`; W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS retained
 LAST_SAFE_SHA: `468bd3400183ada85b76cd93737005aa1e1e64a7` — fresh fetch confirmed `origin/v1/engine-rearchitecture` at the final T08B checkpoint; the malformed 42-character handoff SHA was corrected from fetched remote state
 
-## W04.T07D Commentator control Senior disposition — 2026-09-28
+## W04.T07D / PO-012 / P0 current disposition — 2026-09-28
 
-RULING: `DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`
+OWNER: `DEV/docs/superpowers/specs/2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md`
+
+SENIOR RULING: `DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`
 
 ```text
-SENIOR_SYSTEM_IMPACT: RESOLVED
-CLASSIFICATION: PRODUCT-SEMANTIC OWNER GAP + BOUNDED IMPLEMENTATION PREREQUISITE
-PRODUCT_OWNER_DECISION_REQUIRED: YES
-T07D_RED: NOT AUTHORIZED
-T07A/T07B/T07C: RETAIN ACCEPTANCE
-CLS_HDM_PREFLIGHT: RETAIN PASS; no private-CLS public-write request
+PO-012: INCORPORATED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+T07D-P0: AUTHORIZED
+OUTPUT: W04_COMMENTATOR_CONTROL_CONTEXT_READY
+T07D: WAITS FOR P0 INDEPENDENT PASS/READ-BACK
+T07A/B/C: ACCEPTED / NOT REOPENED
 ```
 
-The current caller-supplied `player_id -> story_ids` map and legacy
-`Story.availability.visible_to` are not authority. PO-009 requires a derived,
-source-bound, self-contained control projection and forbids a second
-ACL/knowledge/disclosure owner. Step-4 simultaneously leaves the exact default
-Commentator spoiler/perspective policy to the mode owner. Current W03 exposes
-current PLAYER/control and validates knowledge/disclosure evidence but does not
-define which of those facts grant protected Commentator visibility.
+P0 is the smallest sufficient prerequisite: existing ContextService already
+exact-reloads current PLAYER, world.knowledge, runtime.disclosure and
+world.lore_fact. P0 registers the missing COMMENTATOR control profile and binds
+an optional selected-PC subject to exact current PLAYER.controlled_pc_ids. It
+does not issue Story permissions or change W03 owners.
 
-Therefore T07D may not choose that semantic rule locally. After Product Owner
-semantics are accepted, instantiate the smallest bounded prerequisite needed to
-issue current owner evidence to the Commentator projection; Story requirements
-remain nominations and Commentator may only narrow the owner-authorized basis.
-No W03 interface/code change is authorized before that decision.
+Expected P0 Version Impact: Context Runtime 1.0.8 -> 1.0.9; ephemeral
+ContextNeedProfile enum expansion only; no persistent schema/generation,
+migration or dual-read impact.
 
-T08B remains accepted. T07E/T07-INTEGRATION/T08A/T08C remain dependency-blocked.
 
 ## W04.T04B-P0R implementation impact envelope
 

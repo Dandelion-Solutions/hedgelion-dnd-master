@@ -142,6 +142,7 @@ These are locator summaries; open the owning source for exact law text.
 | GI-29 | Mutable GitHub-backed runtime text uses owner-approved sizing bands (about 10–12 KiB preferred, 13–16 KiB review, above about 16 KiB review/partition expectation); the former universal 10,240-byte publication hard stop is superseded. Semantic integrity, atomicity, identity and no-truncation law remain controlling, and concrete partition/rollover topology is not selected by the sizing decision. | `2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` + WP-24/native storage owners |
 | GI-30 | Current routing and machine guards follow current semantic owners/amendments; supersession is local, historical provenance remains historical, and accepted architecture must not be reported as machine-complete when representation is still deferred. | WP-26 + applicable native owners/amendments |
 | GI-31 | Ordinary Master-to-human communication targets the current transient `ResolvedResponseLanguage`; optional language-policy/asset absence never licenses another visible fallback language; internal machine and separate recipient-safe diagnostic surfaces may remain technical. | `2026-09-26-player-facing-response-language-owner-decision.md` + Step 4/5.12 + maintenance owners |
+| GI-32 | Baseline Commentator protected eligibility is PUBLIC plus exact current human PLAYER disclosure plus exact current `epistemic.known` knowledge of at most one selected currently controlled PC. Multiple controlled PCs are never unioned, no separate chat per PC is implied, and protected material without an exact typed control anchor/evidence fails closed. | `2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md` + PO-009 + Step-4 knowledge/disclosure + Context Runtime |
 
 ---
 
@@ -530,6 +531,7 @@ Open the listed primary source after locating a concern here.
 | Does PC knowledge imply player disclosure? | 4 | knowledge vs disclosure |
 | Can Story be current world truth? | 4 + 5.10 | noncanonical Story |
 | What must baseline Commentator Story contain for historical T0 explanation? | PO-009 + Story producer/source contracts + WP-19 | self-contained Commentator / Story-local T0 basis |
+| What protected Story may baseline Commentator expose to one user? | PO-012 + PO-009 + Step 4 | PUBLIC + current PLAYER disclosure + at most one selected controlled PC's `epistemic.known`; no multi-PC union |
 | May baseline Commentator depend on native-only T0 fallback? | PO-009 + Story producer/source contracts | no; native capability remains for other admitted consumers |
 | What current sources may Context Assembler use? | 4 + 5.7 + 5.8 + 5.14 | domain-composed role-context basis |
 | Can campaign HEAD alone stand for all current truth? | 5.1 + 5.7 + 5.8 + 5.14 | no; live/native sources may own scopes |
@@ -785,6 +787,7 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 - `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md` — current PO-009 owner for baseline Commentator corpus sufficiency. Read with `2026-09-07-story-producer-persistence-retrospective-consumer-contract.md`, `2026-09-08-story-baseline-projection-source-contracts.md`, WP-19 historical Actor basis and Step-4/R2.3 knowledge/disclosure/access owners. It requires Story-local recoverability of qualifying retained T0 meaning and a derived sufficient Commentator control projection, but does not choose persisted Story snapshot fields or Commentator cache topology.
 - `DEV/docs/superpowers/specs/2026-09-09-runtime-mutable-github-artifact-sizing-bands-owner-decision.md` — current PO-010 mutable-text sizing owner. It narrowly supersedes the threshold semantics of `2026-09-04-runtime-mutable-github-artifact-size-owner-decision.md` and corresponding WP-24/Story hard-cap prose. Concrete writer partition/rollover topology remains downstream realization work.
 - `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md` — current PO-011 owner for Master-to-human response language, optional language-policy independence and separation of ordinary Master output from technical diagnostics. No persistent PLAYER-language state is selected.
+- `DEV/docs/superpowers/specs/2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md` — current PO-012 owner for baseline Commentator perspective/spoiler eligibility. It composes PUBLIC Story with current PLAYER disclosure and at most one selected controlled PC's exact `epistemic.known` knowledge; no multiple-PC union, separate chat-per-PC or baseline full-history mode.
 
 ## 15.8 R2.7 WP-26
 
@@ -816,6 +819,7 @@ Per-slice canon + Step-5.14 integration clarifications supersede older agenda wo
 | MUST_MATERIALIZE | Story candidate cannot be covered without required durable layer output | 5.10 |
 | MAY_OMIT | candidate may be terminally considered without Story output | 5.10 |
 | self-contained Commentator Story corpus | baseline Commentator can satisfy supported factual retrospective use from imported Story-local evidence/control projection without native-only T0 fallback | PO-009 + Story producer/source contracts |
+| Commentator selected-PC perspective | protected baseline eligibility = PUBLIC + exact PLAYER disclosure + at most one selected controlled PC's exact known facts; no multi-PC union | PO-012 + PO-009 + Step 4/Context Runtime |
 | sizing bands | mutable GitHub-backed text uses approximate target/review/review-and-partition ranges, not a universal exact byte hard stop | PO-010 + WP-24 |
 | owner-first supersession reconciliation | current semantic owners/amendments outrank derivative routers/history/recency; uniquely determined stale current guards are repaired without rewriting provenance | WP-26 |
 | ResolvedResponseLanguage | transient language basis for one ordinary human-visible Master response; not a durable preference/policy/ACL owner | PO-011 owner decision |

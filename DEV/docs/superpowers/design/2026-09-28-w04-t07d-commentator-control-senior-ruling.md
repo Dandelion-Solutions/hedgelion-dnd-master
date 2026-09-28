@@ -1,6 +1,6 @@
 # W04.T07D Commentator Control Evidence — Senior System-Impact Ruling
 
-Status: **ACCEPTED SENIOR / PRODUCT-SEMANTIC GATE OPEN**
+Status: **ACCEPTED SENIOR / PO-012 INCORPORATED / T07D-P0 AUTHORIZED**
 
 Date: **2026-09-28**
 
@@ -18,8 +18,9 @@ Impact brief:
 ```text
 SENIOR_SYSTEM_IMPACT: RESOLVED
 CLASSIFICATION: PRODUCT-SEMANTIC OWNER GAP + BOUNDED IMPLEMENTATION PREREQUISITE
-PRODUCT_OWNER_DECISION_REQUIRED: YES
-T07D: HELD BEFORE RED
+PRODUCT_OWNER_DECISION_REQUIRED: NO — CLOSED BY PO-012
+T07D-P0: AUTHORIZED
+T07D: HELD BEFORE RED UNTIL P0 PASS/READ-BACK
 T07A/T07B/T07C: RETAIN ACCEPTANCE
 T08B: ACCEPTED / UNAFFECTED
 CLS_HDM_PREFLIGHT: RETAIN PASS
@@ -148,34 +149,29 @@ That concrete implementation prerequisite is intentionally not started before
 the Product Owner rule exists; otherwise its shape would encode an unowned
 access policy.
 
-## 7. Product Owner decision required
+## 7. Product Owner decision — CLOSED BY PO-012
 
-The Product Owner must define the baseline Commentator perspective/spoiler
-semantics for protected Story/T0 material.
+PO-012 is now the accepted semantic owner:
+`DEV/docs/superpowers/specs/2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md`.
 
-The decision must at minimum state:
-
-1. the baseline served-human perspective;
-2. whether human PLAYER disclosure and controlled-PC knowledge contribute to
-   eligibility, and how;
-3. behavior for multiple controlled PCs;
-4. whether any wider/full-history profile exists and how it is explicitly
-   selected/authorized;
-5. fail-closed behavior when required perspective/control evidence is absent.
-
-After that decision, Senior may classify the resulting implementation as either
-an in-envelope read-only composition or a bounded W03-owned prerequisite. A new
-architecture round is not required unless the Product Owner rule introduces a
-new durable owner, authority domain or persistence lifecycle.
+It selects PUBLIC plus current exact PLAYER disclosure plus current
+`epistemic.known` knowledge of at most one selected currently controlled PC.
+There is no automatic multi-PC union, no separate chat per PC, no PLAYER means
+public-only, and no baseline full-history/spoiler mode. Protected material with
+no exact typed control anchor/evidence fails closed.
 
 ## 8. Downstream routing
 
 ```text
 T08B: ACCEPTED / W04_SESSION_CONSUMER_DELTA_READY
 
+T07D-P0:
+  AUTHORIZED
+  -> independent PASS/read-back
+
 T07D:
-  PRODUCT_OWNER_DECISION_REQUIRED
-  RED NOT AUTHORIZED
+  BLOCKED ONLY BY T07D-P0
+  RED authorized after P0 PASS/read-back
 
 T07E:
   BLOCKED by T07D
@@ -207,10 +203,32 @@ SYSTEM_IMPACT:
   SENIOR REVIEW COMPLETE
 
 PRODUCT_OWNER_DECISION_REQUIRED:
-  YES
+  NO — PO-012 INCORPORATED
 
 PUBLIC_CLS_REOPEN:
   NO at this ruling
   fresh reconcile remains required if the eventual owner/interface changes the
   public Story/T0/control contract consumed by CLS
 ```
+
+
+## 10. Minimal implementation prerequisite after PO-012
+
+Fresh inspection shows ContextService already exact-reloads and scope-checks
+`world.player`, `world.knowledge`, `runtime.disclosure` and
+`world.lore_fact`. No new W03 access service is required.
+
+```text
+W04.T07D-P0
+  owner: Context Runtime
+  profile.commentator_control / COMMENTATOR / control
+  exact current PLAYER validation for protected player/PC perspective
+  selected PC must be in exact current controlled_pc_ids
+  nominated knowledge/disclosure/lore remain exact owner reads
+  no Story permission list emitted
+  output W04_COMMENTATOR_CONTROL_CONTEXT_READY
+```
+
+Allowed production writes: context_runtime.py, ContextNeedProfile schema, RD11
+Context tests and version bookkeeping. Expected Version Impact: Context Runtime
+1.0.8 -> 1.0.9; no persistent schema/generation/migration impact.

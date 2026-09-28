@@ -599,7 +599,7 @@ The prior Story design was sufficient for a consumer allowed to escalate from St
 
 WP-26 final Senior PASS closed the routing/supersession reconciliation. Native SemanticEvent/history ownership remains unchanged, qualifying retained T0 factor meaning is Story-local for baseline Commentator use, and the Commentator-importable snapshot still requires enough derived knowledge/disclosure/access state to evaluate Story eligibility locally. Exact snapshot fields, validators, sharding and Commentator-cache topology remain deliberately deferred rather than being fabricated by documentation reconciliation.
 
-WP-27 final Senior PASS completed implementation readiness with no representation architecture blocker. Production implementation is now active: Story/T0 machine realization has progressed through accepted T07B/T07C, while Commentator control/snapshot and later integration consumers remain governed by T07D/T07E/T07-INTEGRATION and the existing Wave-05/06 gates. No new Product Owner decision is exposed.
+WP-27 final Senior PASS completed implementation readiness with no representation architecture blocker. Production implementation later exposed one deferred Commentator perspective/spoiler semantic gap at T07D; that gap is now closed by PO-012. Story/T0 remains accepted through T07B/T07C, and Commentator control/snapshot proceeds through T07D-P0 -> T07D -> T07E/T07-INTEGRATION under PO-009 + PO-012.
 
 Product Owner decision still required: `NONE`.
 
@@ -742,6 +742,46 @@ No Product Owner decision remains open. The accepted owner is `DEV/docs/superpow
 
 Product Owner decision still required: `NONE`.
 
+## PO-012 — Commentator baseline uses PLAYER exposure plus at most one selected controlled-PC knowledge perspective
+
+Date: 2026-09-28  
+Kind: COMMENTATOR PERSPECTIVE / SPOILER ELIGIBILITY  
+Status: INCORPORATED
+
+Accepted owner decision:
+- `DEV/docs/superpowers/specs/2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md`.
+
+### Product Owner input — VERBATIM / IMMUTABLE
+
+```text
+окей, пусть B
+хотя я пока не понимаю зачем бы это было нужно в одной текстовой игре иметь несколько героев которыми нельзя управлять одновременно... А из разных чатов - читать/писать 2 раза про одно и то же - такое себе удовольствие
+```
+
+### Agent interpretation / classification
+
+```text
+BASELINE COMMENTATOR PERSPECTIVE: PLAYER + AT MOST ONE SELECTED CONTROLLED PC
+SEPARATE CHAT PER PC: NO
+AUTO UNION MULTIPLE CONTROLLED PCS: NO
+ONE CONTROLLED PC: MAY BE AUTO-SELECTED BY UX, ENGINE REVALIDATES
+MULTIPLE CONTROLLED PCS: EXPLICIT ONE-PC SELECTION OR PLAYER-ONLY
+NO PLAYER BINDING: PUBLIC-ONLY COMMENTATOR BASELINE
+PLAYER CONTRIBUTION: EXACT CURRENT runtime.disclosure
+PC CONTRIBUTION: EXACT CURRENT world.knowledge WITH epistemic.known
+PROTECTED MATERIAL WITHOUT EXACT CONTROL ANCHOR: FAIL CLOSED
+FULL-HISTORY/SPOILER MODE: NOT BASELINE-AUTHORIZED
+PERSISTENT PLAYER/PC PERSPECTIVE FIELD: NOT REQUIRED
+NEEDS_PO: NONE
+```
+
+The Product Owner gate raised by the T07D Senior ruling is closed. Remaining
+work is technical realization: T07D-P0 Context evidence, then T07D filtering.
+
+Product Owner decision still required: `NONE`.
+
+---
+
 ## 4. Current ledger terminal state
 
 This is a routing-ledger projection only; `DEV/CURRENT_PROGRESS.md` remains the sole global cursor authority.
@@ -758,6 +798,7 @@ PO-008: INCORPORATED — WP-25 FINAL SENIOR RE-REVIEW PASS / DOWNSTREAM REALIZAT
 PO-009: INCORPORATED — STORY-LOCAL T0 + SELF-CONTAINED COMMENTATOR ELIGIBILITY PROJECTION / WP-26 CLOSED / WP-27 READINESS CLOSED / REALIZATION DEFERRED
 PO-010: INCORPORATED — 10 KIB HARD CAP SUPERSEDED BY TARGET / REVIEW / REVIEW-AND-PARTITION SIZING BANDS / WP-26 CLOSED / WP-27 READINESS CLOSED
 PO-011: INCORPORATED — MASTER-TO-HUMAN LANGUAGE LAW / T06B + SHIPPED-RUNTIME + DIAGNOSTIC CONSUMERS ROUTED
+PO-012: INCORPORATED — COMMENTATOR PLAYER + SELECTED-PC PERSPECTIVE / T07D-P0 + T07D ROUTED
 
 WP19_FINAL_SENIOR_REVIEW: PASS
 WP20_FINAL_SENIOR_REVIEW: PASS
@@ -788,7 +829,7 @@ R2_7_FINAL_RECONCILIATION: CLOSED / FINAL SENIOR PASS
 IMPLEMENTATION_PLANNING_STARTED: YES / CLOSED WITH INDEPENDENT SENIOR PASS
 PRODUCTION_IMPLEMENTATION_AUTHORIZED: YES
 SUBSTANTIVE_IMPLEMENTATION_STARTED: YES / WAVE 04 EXECUTING
-CURRENT_IMPLEMENTATION_SLICE: W04.T06A SENIOR_REVIEW_REQUIRED; W04.T07D PARALLEL ELIGIBLE
+CURRENT_IMPLEMENTATION_SLICE: W04.T07D-P0 AUTHORIZED; W04.T07D WAITS FOR P0 PASS
 WAVE_05_AUTHORIZED: NO
 REAL_GAMEPLAY_BOOTSTRAP_STARTED: NO
 ```

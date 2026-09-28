@@ -368,9 +368,33 @@ Output: original W04_T0_STORY_READY.
 
 Mandatory REDs: current T1 cannot substitute historical T0; every required retained WP-19 material T0 factor is Story-local recoverable; private/off-screen material stays retained but availability-filtered; stale native/Story basis rejected; Story cannot block or roll back canon.
 
+**W04.T07D-P0 - registered Commentator-control Context evidence prerequisite**
+
+Inputs: T07C, PO-012, accepted Context Runtime/RuntimeHost composition and current W03 PLAYER/information owners. This is a bounded Wave-04 prerequisite with Context Runtime semantic ownership; it does not reopen Wave-03.
+
+Direct writes: `GAME/TOOLS/context_runtime.py`, `DEV/SCHEMAS/context-need-profile.schema.json`, `DEV/TESTS/test_rd11_context_runtime.py`, and mechanically required version/control bookkeeping only. RuntimeHost, access_control.py, information.py, Story/T0, Commentator and persistent schemas are read-only.
+
+Output: `W04_COMMENTATOR_CONTROL_CONTEXT_READY`.
+
+Add one registered ephemeral profile:
+
+```text
+profile_id: profile.commentator_control
+role: COMMENTATOR
+purpose: control
+```
+
+It reuses the existing bound ContextService exact-current owner reloads. Candidate Story/fact IDs are untrusted nominations only. A required current PLAYER candidate validates the recipient when protected PLAYER/PC eligibility is requested. The request's optional PC perspective is an untrusted subject nomination and is admitted only when exact current PLAYER data proves that PC is currently controlled by that PLAYER. PLAYER-only perspective is allowed; Commentator-only public access does not require a synthetic PLAYER.
+
+For nominated exact fact/control anchors, current `runtime.disclosure` is recipient-scoped and current `world.knowledge` is subject-scoped. P0 issues no Story IDs, permission list or new semantic verdict; it only returns source-bound native evidence for PO-012/T07D evaluation.
+
+Mandatory REDs: unknown Commentator profile rejected before registration; arbitrary PLAYER/PC identity cannot bypass exact current PLAYER reload; foreign/uncontrolled selected PC rejected; multiple controlled PCs are never unioned; knowledge for another subject rejected; disclosure for another PLAYER rejected; caller `current/eligible` flags remain forbidden; missing/stale exact nominated owner evidence is UNSATISFIABLE; no scan/index fallback; no persistent capability/control state.
+
+Expected Version Impact: Context Runtime `1.0.8 -> 1.0.9`; the ephemeral ContextNeedProfile schema enum is extended but has no persisted schema generation. Campaign/storage/catalog/engine generations, migration and dual-read: NONE. Fresh Version Impact Gate is mandatory.
+
 **W04.T07D - Commentator self-contained control/snapshot and anti-oracle filtering**
 
-Inputs: T07C plus current W03 information/access owners.
+Inputs: T07C plus `W04_COMMENTATOR_CONTROL_CONTEXT_READY` and PO-012.
 
 Direct writes: GAME/TOOLS/commentator.py, Commentator schemas and rd13.
 
@@ -378,17 +402,13 @@ Output: W04_COMMENTATOR_CONTROL_READY.
 
 Mandatory REDs: arbitrary player-to-story-id mapping cannot mint eligibility; CONTENT_FINAL is not ACCESS_FINAL; changed permission/control basis refreshes even with unchanged content; IDs/counts/metadata of ineligible material do not reach model materialization; no native-only fallback for qualifying retained T0 factors.
 
-**Active Senior gate — 2026-09-28:** T07D is held before RED under
-`DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`.
-The implementation may not derive new access semantics from caller maps, legacy
-`visible_to`, or an ad-hoc union of PLAYER disclosure and controlled-PC
-knowledge. Step-4 leaves the baseline Commentator perspective/spoiler policy to
-the mode owner, while PO-009 requires the resulting control projection to be
-derived from native owners and locally sufficient. Product Owner semantics must
-therefore be accepted first. Only then may the plan instantiate the smallest
-source-bound W03-backed evidence prerequisite needed by T07D; no second
-ACL/knowledge/disclosure authority and no native-only Commentator fallback are
-authorized.
+**Senior/PO resolution — 2026-09-28:** PO-012 closes the product-semantic gate.
+T07D remains held only until T07D-P0 independently passes/read-backs. Caller
+maps and legacy `visible_to` remain non-authoritative. Baseline control is
+PUBLIC plus exact current PLAYER disclosure plus, when selected, exact current
+`epistemic.known` knowledge of one currently controlled PC. Multiple PCs are
+never unioned; no PLAYER means public-only. P0 supplies owner evidence only;
+T07D applies PO-012 and anti-oracle filtering.
 
 **W04.T07E - Dramaturg source/generation admission, publication and rebase**
 
@@ -471,7 +491,7 @@ Recommended scheduler:
     as lanes advance
       C serially T01A -> T01B -> T01C
       X serially T05A -> T05B
-      S serially T07A -> T07B -> T07C -> T07D -> T07E
+      S serially T07A -> T07B -> T07C -> T07D-P0 -> T07D -> T07E
 
     after T01C PASS
       worker P: T03A in parallel

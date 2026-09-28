@@ -1,6 +1,6 @@
 # W04.T07D Commentator control evidence — Implementation Impact Brief
 
-Status: **SENIOR REVIEW COMPLETE — PRODUCT OWNER DECISION REQUIRED / T07D HELD BEFORE RED**
+Status: **SENIOR REVIEW COMPLETE — PO-012 INCORPORATED / T07D-P0 AUTHORIZED**
 
 Date: 2026-09-28
 
@@ -138,5 +138,26 @@ before RED pending Senior resolution of this brief.
 
 ```text
 VERSION_IMPACT: NONE for this brief; no production or version-bearing owner changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_RESOLVED / PRODUCT_OWNER_DECISION_REQUIRED for W04.T07D only.
+SYSTEM_IMPACT: SENIOR_REVIEW_RESOLVED / PO-012 INCORPORATED / T07D-P0 AUTHORIZED; T07D waits for P0 PASS/read-back.
 ```
+
+
+## PO-012 incorporation / exact continuation
+
+PO-012:
+`DEV/docs/superpowers/specs/2026-09-28-commentator-player-selected-pc-perspective-owner-decision.md`.
+
+The product-semantic question is closed. Fresh machine inspection narrows the
+implementation prerequisite: Context Runtime already owns exact current
+PLAYER/knowledge/disclosure/lore reloads through RuntimeHost. Therefore use
+T07D-P0 to register a COMMENTATOR control profile rather than adding a new W03
+permission service.
+
+```text
+T07D-P0 -> W04_COMMENTATOR_CONTROL_CONTEXT_READY
+  -> independent PASS/read-back
+  -> T07D RED / implementation
+```
+
+No T07A/B/C reopen. No caller map, visible_to, provenance-string heuristic,
+multiple-PC union or native-only Commentator fallback is authorized.
