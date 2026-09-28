@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — remaining Wave-04 lanes; W04.T06B `W04_PROTECTED_EMISSION_READY` accepted/read back
-CURRENT_TASK: W04.T06B is accepted at code commit `9bf679fa6b6b5ac560198448d50f932f08b808eb` and verification/status commit `8d646ff3d246cf2ee414dc5e8c1b57a5310c6d1f`. After pushing the implementation/verification/routing commit chain, a fresh fetch confirmed `origin/v1/engine-rearchitecture` at `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`, which contains the T06B code and verification/status. PO-011 language binding, accepted Context disclosure fence and embedded internal-token guard passed focused and independent review. T07D remains independently authorized; T08B remains gated on its named W03 currentness inputs.
-LAST_COMPLETED_TASK: W04.T06B -> `W04_PROTECTED_EMISSION_READY`, code `9bf679fa6b6b5ac560198448d50f932f08b808eb`; verification/status `8d646ff3d246cf2ee414dc5e8c1b57a5310c6d1f`; publication read-back confirmed at remote HEAD `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`, independent PASS, clean exact committed-source verification and fresh remote read-back. W04.T06A -> `W04_ROLE_CONTEXT_HANDOFF_READY`, code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` / status `513c4f75f1db13c52b2656225367c16b4118b91a`; W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS retained
-LAST_SAFE_SHA: `9b7ac9825f90b1994fc33bf209834d1b0f2934ad` — fresh fetch confirmed `origin/v1/engine-rearchitecture` at this commit
+STATUS: EXECUTING — W04.T08B consumer delta; W04.T07D held for System-Impact review
+CURRENT_TASK: T06B is accepted/read back at `W04_PROTECTED_EMISSION_READY`. T07D stopped before RED after fresh inspection found no source-bound Commentator control basis or existing W03 interface mapping current access/knowledge/disclosure evidence to Story/T0 eligibility within its current write envelope; see `DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-system-impact-brief.md`. T08B is independently eligible from accepted T06B plus the accepted Wave-03 principal/PLAYER, LIVE-currentness and access-policy closure; no new W03 task is required. Preserve accepted T07A/B/C semantics and the recorded CLS↔HDM preflight re-open triggers. A26-02 remains a separate proof/collection repair before Wave-04 FINAL_REVIEW.
+LAST_COMPLETED_TASK: W04.T06B -> `W04_PROTECTED_EMISSION_READY`, code `9bf679fa6b6b5ac560198448d50f932f08b808eb`; verification/status `8d646ff3d246cf2ee414dc5e8c1b57a5310c6d1f`; remote read-back confirmed at `b6b7e8925727394482a62ace335beb0a05ed733d`, independent PASS, clean exact committed-source verification. W04.T06A -> `W04_ROLE_CONTEXT_HANDOFF_READY`, code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` / status `513c4f75f1db13c52b2656225367c16b4118b91a`; W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS retained
+LAST_SAFE_SHA: `b6b7e8925727394482a62ace335beb0a05ed733d` — fresh fetch confirmed `origin/v1/engine-rearchitecture` at this commit; the malformed 42-character handoff SHA was rejected by Git and corrected from fetched remote state
 
 ## W04.T04B-P0R implementation impact envelope
 
@@ -129,6 +129,57 @@ T06B_VERSION_AND_MAINTENANCE: version namespace policy suite 12 passed; combined
 T06B_FORMAT_NOTE: scoped Ruff lint passes. Whole-file `ruff format --check` still reports existing formatting drift in RD05, RD10, TurnRuntime and emission; no broad reformat was applied. The new/changed hunks have no remaining Ruff formatting suggestions.
 T06B_INDEPENDENT_REVIEW: **PASS** — final scoped hdm-reviewer reviewed the nine T06B files against base `8174b41fcf8f6684d5c06acf2b0338fa894d6968`, reran RD10 + RD05 + RD11 + RuntimeHost (170 passed), probed registered-token boundary behavior, and found no remaining findings or System-Impact concern. The reviewer confirmed the exact Context packet identity mapping and transient VERSION_IMPACT: NONE classification. The six pre-existing `.agents/skills/` edits and untracked `DEV/.lavish/` were excluded and left untouched.
 T06B_PUBLICATION_READBACK: non-force push of the T06B implementation, verification and routing commits succeeded. Subsequent `git fetch --prune origin` confirmed local HEAD and `origin/v1/engine-rearchitecture` equal `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`.
+
+## W04.T07D implementation impact envelope
+
+SPEC / APPROVED DESIGN: T07D row in the stable Wave-04 plan; PO-009 owner decision `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md`; WP-18 Story/Commentator spec; Story producer/persistence/retrospective contract; baseline Story projection source contracts; current W03 information/access owners; accepted T07A/T07B/T07C.
+IMPLEMENTATION START CODE BASE: `b6b7e8925727394482a62ace335beb0a05ed733d` (freshly fetched published tree; subsequent cursor update is documentation-only).
+PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/commentator.py`, Commentator-owned schemas, `DEV/TESTS/test_rd13_story_t0_commentator.py`.
+
+EXPECTED OWNERS TO CHANGE: Commentator's self-contained control/snapshot and deterministic pre-materialization filter only; Story/history and W03 information/access owners are read-only producers.
+EXPECTED CONSUMERS TO CHANGE: T07D Commentator cases in RD13, with relevant T07C/Story and W03 access-information tests as regression consumers.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: the already admitted Commentator control/snapshot representation and its deterministic filter. No new ACL, knowledge, disclosure, Story, history, or currentness authority; no native-only fallback for qualifying retained T0 factors.
+
+PROTECTED ARCHITECTURE INVARIANTS: arbitrary player-to-story-ID mappings cannot mint eligibility; `CONTENT_FINAL` is not `ACCESS_FINAL`; content and eligibility/control bases remain distinct; changed control refreshes filtering even with unchanged content; IDs/counts/titles/relations/pagination/navigation for ineligible material are removed before model materialization; required private/off-screen T0 basis is retained in the comprehensive corpus and availability-filtered, not omitted.
+ARCHITECTURE-SENSITIVE SURFACES: snapshot/control basis identity and versioning, content/control currentness, recipient-safe pre-materialization filtering, retained T0 local recoverability.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD13 T07D witnesses, accepted T07C/Story consumer regressions, current W03 information/access consumers, full DEV, maintenance, schema/version/provenance checks.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: T07A/T07B/T07C producers/semantics, W03 information/access producers, Context Runtime, History/Story producer, T07E/Dramaturg, GAME/CORE and shared final-writer schemas (Wave 05), native Master fallback, unrestricted retrieval. Preserve the recorded CLS↔HDM preflight result and triggers; no rerun/reopen absent a concrete new public semantic trigger.
+VERSION IMPACT: classify every actually changed Commentator schema against its persistence/local-version owner and aggregate campaign-generation rule. Do not infer NONE solely from filename; no bump is presumed before that assessment.
+SYSTEM IMPACT: NONE expected inside the admitted Commentator consumer boundary; stop before any need to change T07A-C or W03 owner interfaces/semantics.
+
+## W04.T07D System-Impact stop
+
+T07D_STATUS: `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED` — stopped before RED; no T07D code/schema/test changes.
+IMPACT_BRIEF: `DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-system-impact-brief.md`.
+TRIGGER: current Commentator `player_id -> story_ids` control is caller-shaped and only intersects Story-carried `visible_to`; neither is bound to an independently current W03 information/access basis. The accepted PO-009/T07D contract requires a comprehensive, source-bound Commentator eligibility/control projection and distinct content/control bases. The existing W03 read surfaces validate principal/PLAYER and individual knowledge/disclosure records but do not issue the required Story/T0-to-recipient control basis. A safe implementation may therefore require a newly chosen mapping contract or a broader producer/interface boundary, neither admitted by the current task envelope.
+LAST_SAFE_SHA: `b6b7e8925727394482a62ace335beb0a05ed733d`.
+DISPOSITION: preserve T07A/T07B/T07C and the recorded CLS↔HDM preflight result/trigger conditions. Do not implement guessed access semantics or modify W03 owners. W04.T08B is independent and continues under its own envelope.
+INDEPENDENT_REVIEW: hdm-reviewer confirmed no complete T07D-only path was established by current owners and validated this as a genuine System-Impact trigger. Product/Senior resolution is required before T07D resumes.
+
+## W04.T08B implementation impact envelope
+
+SPEC / APPROVED DESIGN: T08B row in the stable Wave-04 plan; accepted T06B `W04_PROTECTED_EMISSION_READY`; current W03 principal-to-PLAYER, LIVE-currentness and access-policy transition owners. W03 execution status is `COMPLETE` / Senior PASS; the Product Owner confirms its T08B currentness input is satisfied, with no new W03 task.
+IMPLEMENTATION START CODE BASE: `b6b7e8925727394482a62ace335beb0a05ed733d` (freshly fetched published tree; subsequent cursor update is documentation-only).
+PRIMARY OWNER ARTIFACTS: session-focused DEV test `DEV/TESTS/test_w04_t08_session_consumer_delta.py` and bounded Wave-05 SESSION delta fixture `DEV/TESTS/fixtures/w04_session_consumer_delta.json`, following the accepted T03A owner-local delta pattern.
+
+EXPECTED OWNERS TO CHANGE: test/evidence-only consumer delta for the future Wave-05 SESSION final writer; no GAME runtime producer, schema, or CORE writer changes.
+EXPECTED CONSUMERS TO CHANGE: the new T08B session-handoff contract tests and Wave-05 SESSION delta consumer.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: only the bounded SESSION consumer delta and focused tests. No physical `GAME/CORE/SESSION.md`, `GAME/SCHEMA/session.schema.yaml`, runtime/session producer or shared schema change.
+
+PROTECTED ARCHITECTURE INVARIANTS: session metadata never becomes campaign/LIVE/PLAYER authority; stale/relinquished host revalidates native sources; controlled handoff names the exact durable/current source basis; no heartbeat/lease/no-op publication.
+ARCHITECTURE-SENSITIVE SURFACES: exact campaign/LIVE/PLAYER identity and currentness stated in the downstream SESSION consumer delta.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: focused T08B session tests, delta-fixture contract, T06B and accepted W03 currentness-consumer regressions, full DEV, maintenance and version/provenance checks.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: `GAME/CORE/SESSION.md`, `GAME/SCHEMA/session.schema.yaml`, session runtime production code, shared PLAYER/LIVE schemas, W03 producers, GAME/CORE final-writer bytes, heartbeat/lease infrastructure and publication behavior.
+VERSION IMPACT: NONE expected for test/delta-only changes; perform the normal owner/consumer classification before checkpoint.
+SYSTEM IMPACT: NONE expected; if a correct handoff delta appears to require a session authority/schema/runtime producer change, stop before expanding the write set.
+
+## W04.T08B implementation verification state
+
+T08B_TDD_RED_GREEN: five new focused contract tests failed before the bounded SESSION delta fixture existed; after adding the fixture and correcting the task-local assertion to the exact no-op-only publication vocabulary, the focused suite is green.
+T08B_FOCUSED_VERIFICATION: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_w04_t08_session_consumer_delta.py DEV/TESTS/test_house_rules_policy_authority_contract.py DEV/TESTS/test_maintenance_continuation_contract.py` — 14 passed. Scoped Ruff check and format pass for the new session test; `json.tool` parses the delta fixture.
+T08B_REVIEW: initial independent review finding that the delta test omitted the `universal_cross_domain_currentness_scalar: false` guard was repaired test-first; the RED was observed with the fixture temporarily set true, then restored false. Scoped re-review marked the finding ADDRESSED with no new concerns.
+T08B_VERSION_IMPACT: NONE — only DEV tests and an owner-local bounded Wave-05 SESSION delta fixture changed; `GAME/CORE/SESSION.md`, the persistent SESSION schema and runtime producers remain unchanged.
+T08B_SYSTEM_IMPACT: NONE — no new authority, session lease/heartbeat or no-op publication behavior.
 
 ## W04.T06A mechanical fixture synchronization — RD05 handoff consumer
 
@@ -437,9 +488,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: continue the remaining Wave-04 lanes from the stable plan and their current dependency gates; T07D remains independently authorized, and T08B may proceed once its named W03 currentness inputs are accepted. T06B is closed at `W04_PROTECTED_EMISSION_READY`.
-KNOWN_BLOCKERS: none for T06B; implementation, verification, independent review, non-force publication and fresh remote read-back are complete. Four known pytest-only S6D failures remain outside T06B scope and require bounded repair/retirement plus canonical collection before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for W04.T06B. Code, tests, schemas, verification and independent review are published; fresh read-back confirmed the T06B output at `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`. This acceptance-routing update is a subsequent status-only amendment and is not contained in that read-back-confirmed SHA. Preserve unrelated `.agents/skills/` edits and untracked `DEV/.lavish/` without staging or modifying them.
+NEXT_EXACT_TASK: complete T08B independent review/checkpoint commit, run the combined clean committed-source verification, publish/read back `W04_SESSION_CONSUMER_DELTA_READY`, and continue the remaining dependency graph. T07D remains held for Senior resolution of the Impact Brief before RED; A26-02 remains mandatory before Wave-04 FINAL_REVIEW.
+KNOWN_BLOCKERS: W04.T07D has `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED`; no T07D RED/code change is authorized until its source-bound Commentator control-evidence boundary is resolved. W04.T08B's W03 prerequisite is satisfied and its scoped review is PASS; publication/read-back is pending. Four known pytest-only S6D failures remain outside T08B scope and must not be weakened; A26-02 remains a separate required repair before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: W04.T08B test/fixture delta and T07D System-Impact status/brief are local and uncommitted. T07D has no production-code work. Preserve unrelated `.agents/skills/` edits and untracked `DEV/.lavish/` without staging or modifying them.
 
 ## W04.T06A accepted Context-basis gate adjudication
 

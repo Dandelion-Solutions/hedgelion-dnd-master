@@ -1,0 +1,85 @@
+{
+  "kind": "w04.session_consumer_delta",
+  "output": "W04_SESSION_CONSUMER_DELTA_READY",
+  "physical_session_schema_change": "none",
+  "session_metadata_role": "coordination_recovery_navigation_audit_observability_known_frontier_hints_only",
+  "non_authoritative_session_fields": [
+    "session.schema_version",
+    "session.session_id",
+    "session.status",
+    "session.player_id",
+    "session.pc_id",
+    "session.scene_id",
+    "session.base_head_sha",
+    "session.last_published_head_sha",
+    "session.started_at",
+    "session.ended_at",
+    "session.notes"
+  ],
+  "session_metadata_cannot": [
+    "campaign_truth",
+    "live_truth",
+    "player_membership_or_control",
+    "gameplay_write_authority",
+    "definitive_recovery_frontier",
+    "host_liveness",
+    "recovery_safe_handoff_success"
+  ],
+  "pre_mutation_revalidation": {
+    "campaign": [
+      "pin_current_selected_campaign_ref_and_exact_revision",
+      "load_current_campaign_route_and_policy_from_native_owner"
+    ],
+    "player": [
+      "use_verified_stable_principal_id",
+      "resolve_candidate_PLAYER_ids_from_principal_route",
+      "reload_exact_current_PLAYER",
+      "revalidate_binding_status_control_and_operation_policy"
+    ],
+    "live": [
+      "resolve_current_campaign_LIVE_route",
+      "select_exact_LIVE_epoch_and_source_ref",
+      "validate_exact_current_LIVE_source_revision"
+    ]
+  },
+  "stale_or_relinquished_host": {
+    "discard_pre_handoff_hot_assumptions": true,
+    "before_dependent_action": "revalidate_applicable_native_sources_and_authority"
+  },
+  "controlled_handoff": {
+    "acknowledgement_requires": "complete_compatible_actually_durable_native_source_closure",
+    "exact_source_basis": {
+      "scope": "each_participating_native_dependency_in_the_promised_resume_closure",
+      "campaign": [
+        "selected_campaign_ref",
+        "exact_current_campaign_revision"
+      ],
+      "player": [
+        "verified_stable_principal_id",
+        "routed_candidate_PLAYER_id",
+        "exact_current_PLAYER_record",
+        "exact_current_campaign_revision"
+      ],
+      "live": [
+        "current_campaign_LIVE_route",
+        "selected_LIVE_epoch",
+        "selected_LIVE_source_ref",
+        "exact_current_LIVE_source_revision"
+      ]
+    },
+    "external_source_movement": "invalidate_revalidate_reselect_or_fail",
+    "session_metadata_proves_success": false,
+    "universal_cross_domain_currentness_scalar": false,
+    "already_durable_closure_requires_publication": false
+  },
+  "handoff_publication": {
+    "forbidden_paths": [
+      "heartbeat_write",
+      "campaign_global_host_lease",
+      "no_op_write_solely_to_record_handoff"
+    ],
+    "heartbeat_required": false,
+    "lease_introduced": false,
+    "no_op_publication_introduced": false
+  }
+}
