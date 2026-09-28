@@ -9,6 +9,7 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
+from GAME.TOOLS import commentator as commentator_module
 from GAME.TOOLS import history as history_module
 from GAME.TOOLS import story as story_module
 from GAME.TOOLS.commentator import (
@@ -444,6 +445,154 @@ def _story_projection() -> dict[str, object]:
         "t0_basis": _t0_basis(),
         "availability": {"visible_to": ["player.aria"]},
     }
+
+
+def _commentator_context_evidence(
+    *,
+    player_id: str | None = "player.aria",
+    controlled_pc_ids: tuple[str, ...] = ("pc.aria",),
+    knowledge: tuple[dict[str, object], ...] = (),
+    disclosures: tuple[dict[str, object], ...] = (),
+    lore_facts: tuple[dict[str, object], ...] = (),
+    recipient_id: str | None = None,
+    profile_id: str = "profile.commentator_control",
+) -> dict[str, object]:
+    """Construct the public mapping returned by the accepted Context profile."""
+
+    recipient = recipient_id or player_id or "commentator.reader"
+    evidence: list[dict[str, object]] = []
+    if player_id is not None:
+        evidence.append(
+            {
+                "candidate_id": "player-current",
+                "owner_family": "world.player",
+                "owner_identity": [player_id],
+                "payload": {
+                    "kind": "world.player",
+                    "id": player_id,
+                    "player_id": player_id,
+                    "status": "active",
+                    "controlled_pc_ids": list(controlled_pc_ids),
+                },
+            }
+        )
+    for index, record in enumerate(lore_facts):
+        fact_id = record["fact_id"]
+        evidence.append(
+            {
+                "candidate_id": f"lore-{index}",
+                "owner_family": "world.lore_fact",
+                "owner_identity": [fact_id],
+                "payload": {
+                    "kind": "world.lore_fact",
+                    "id": fact_id,
+                    "campaign_id": "campaign.main",
+                    "state": {
+                        "fact_id": fact_id,
+                        "statement": "A source-bound current fact.",
+                        "truth_status": "truth.established",
+                        "record_status": "lore_record.active",
+                        **(
+                            {
+                                "last_truth_transition_ref": record[
+                                    "last_truth_transition_ref"
+                                ]
+                            }
+                            if "last_truth_transition_ref" in record
+                            else {}
+                        ),
+                    },
+                },
+            }
+        )
+    for index, record in enumerate(knowledge):
+        knower_id = record["knower_id"]
+        fact_id = record["fact_id"]
+        evidence.append(
+            {
+                "candidate_id": f"knowledge-{index}",
+                "owner_family": "world.knowledge",
+                "owner_identity": [knower_id, fact_id],
+                "payload": {
+                    "kind": "world.knowledge",
+                    "knower_id": knower_id,
+                    "fact_id": fact_id,
+                    "stance": record["stance"],
+                    "supporting_source_refs": ["source.native"],
+                },
+            }
+        )
+    for index, record in enumerate(disclosures):
+        disclosed_player_id = record["player_id"]
+        fact_id = record["fact_id"]
+        disclosure_payload = {
+            "kind": "runtime.disclosure",
+            "player_id": disclosed_player_id,
+            "fact_id": fact_id,
+            "statement_exposed": record["statement_exposed"],
+            "source_refs": ["source.native"],
+        }
+        if "latest_exposed_truth_transition_ref" in record:
+            disclosure_payload["latest_exposed_truth_transition_ref"] = record[
+                "latest_exposed_truth_transition_ref"
+            ]
+        evidence.append(
+            {
+                "candidate_id": f"disclosure-{index}",
+                "owner_family": "runtime.disclosure",
+                "owner_identity": [disclosed_player_id, fact_id],
+                "payload": disclosure_payload,
+            }
+        )
+    bundle = {
+        "profile_id": profile_id,
+        "role": "COMMENTATOR",
+        "purpose": "control",
+        "subject_id": "commentator.reader",
+        "source_frontier": "",
+        "recipient_id": recipient,
+        "required": evidence,
+        "optional": [],
+        "retrospective_projection": False,
+    }
+    return {
+        "outcome": "ASSEMBLED",
+        "bundle": bundle,
+        "trace": {
+            "profile_id": profile_id,
+            "included_ids": [item["candidate_id"] for item in evidence],
+        },
+    }
+
+
+def _protected_story_projection(
+    *,
+    story_id: str = "E000008",
+    owner_family: str = "world.knowledge",
+    factor_id: str = "fact.secret",
+    visible_to: tuple[str, ...] = ("player.aria",),
+    t0_value: object = "epistemic.known",
+) -> dict[str, object]:
+    projection = _story_projection() | {
+        "story_id": story_id,
+        "content": {"body": "Secret material that must stay filtered."},
+        "sources": ["event.secret"],
+        "t0_basis": _t0_basis()
+        | {
+            "event_id": "event.secret",
+            "factors": [
+                {
+                    "owner_family": owner_family,
+                    "factor_id": factor_id,
+                    "t0_value": t0_value,
+                    "provenance_refs": ["event.secret"],
+                    "availability_classification": "PROTECTED",
+                }
+            ],
+        },
+        "availability": {"visible_to": list(visible_to)},
+    }
+    return projection
 
 
 class NativeHistoryAuthorityTests(unittest.TestCase):
@@ -2431,15 +2580,28 @@ class CommentatorSelfContainedTests(unittest.TestCase):
     def test_commentator_filters_hidden_story_material_before_request_materialization(
         self,
     ) -> None:
+        protected = _protected_story_projection()
         control = build_commentator_control_projection(
-            {"player.aria": {"story_ids": ["E000007"]}}
+            _commentator_context_evidence(
+                disclosures=(
+                    {
+                        "player_id": "player.aria",
+                        "fact_id": "fact.secret",
+                        "statement_exposed": True,
+                    },
+                ),
+                lore_facts=({"fact_id": "fact.secret"},),
+            )
         )
-        snapshot = build_commentator_snapshot([_story_projection()], control)
+        snapshot = build_commentator_snapshot([_story_projection(), protected], control)
 
         self.assertEqual(
-            filter_commentator_request(snapshot, "player.aria"), [_story_projection()]
+            filter_commentator_request(snapshot, "player.aria"),
+            [_story_projection(), protected],
         )
-        self.assertEqual(filter_commentator_request(snapshot, "player.borin"), [])
+        self.assertEqual(
+            filter_commentator_request(snapshot, "player.borin"), [_story_projection()]
+        )
 
     def test_commentator_rejects_an_invalid_control_projection(self) -> None:
         with self.assertRaises(CommentatorContractError):
@@ -2447,7 +2609,9 @@ class CommentatorSelfContainedTests(unittest.TestCase):
                 [_story_projection()],
                 {
                     "schema_version": 0,
-                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                    "reader_id": "player.aria",
+                    "player_id": "player.aria",
+                    "evidence": [],
                 },
             )
 
@@ -2456,9 +2620,20 @@ class CommentatorSelfContainedTests(unittest.TestCase):
     ) -> None:
         private_projection = _story_projection()
         private_projection["story_id"] = "E000008"
+        private_projection["t0_basis"] = _protected_story_projection()["t0_basis"]
+        private_projection["sources"] = ["event.secret"]
         private_projection["availability"] = {"visible_to": ["player.borin"]}
         control = build_commentator_control_projection(
-            {"player.aria": {"story_ids": ["E000007", "E000008"]}}
+            _commentator_context_evidence(
+                disclosures=(
+                    {
+                        "player_id": "player.aria",
+                        "fact_id": "fact.unrelated",
+                        "statement_exposed": True,
+                    },
+                ),
+                lore_facts=({"fact_id": "fact.unrelated"},),
+            )
         )
         snapshot = build_commentator_snapshot(
             [_story_projection(), private_projection], control
@@ -2467,6 +2642,568 @@ class CommentatorSelfContainedTests(unittest.TestCase):
         self.assertEqual(
             filter_commentator_request(snapshot, "player.aria"), [_story_projection()]
         )
+
+
+class CommentatorControlEvidenceTests(unittest.TestCase):
+    def test_arbitrary_player_to_story_ids_cannot_mint_eligibility(self) -> None:
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(
+                {"player.aria": {"story_ids": ["E000008"]}}
+            )
+
+    def test_only_assembled_registered_profile_evidence_is_accepted(self) -> None:
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(
+                _commentator_context_evidence(profile_id="profile.story")
+            )
+        unsatisfied = _commentator_context_evidence()
+        unsatisfied["outcome"] = "UNSATISFIABLE"
+        unsatisfied["bundle"] = None
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(unsatisfied)
+
+    def test_actual_public_only_context_profile_result_builds_control_projection(
+        self,
+    ) -> None:
+        host = compose_runtime_host(
+            "campaign.main", _HistoryRepository(), _HistoryLiveTransport()
+        )
+        request = {
+            "profile_id": "profile.commentator_control",
+            "role": "COMMENTATOR",
+            "purpose": "control",
+            "subject_id": "commentator.reader",
+            "recipient_id": "reader.public",
+            "campaign_id": "campaign.main",
+            "allowed_channels": ["EXPLICIT_REF"],
+            "max_candidates": 8,
+            "required_ids": [],
+            "allowed_relations": [],
+            "budget": 1000,
+        }
+
+        context_result = host.context.assemble(request, [])
+        control = build_commentator_control_projection(context_result)
+
+        self.assertEqual(context_result["outcome"], "ASSEMBLED")
+        self.assertNotIn("player_id", control)
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot([_story_projection()], control), None
+            ),
+            [_story_projection()],
+        )
+
+    def test_actual_context_player_disclosure_evidence_filters_a_matching_anchor(
+        self,
+    ) -> None:
+        repository = _StoryPublicationRepository([_semantic_event()])
+        repository.records[
+            route_native_record("world.player", ("player.aria",)).relative_path
+        ] = {
+            "kind": "world.player",
+            "id": "player.aria",
+            "player_id": "player.aria",
+            "campaign_id": "campaign.main",
+            "state": {},
+            "github_binding": {"user_id": "42", "login": "aria"},
+            "status": "active",
+            "deactivated_by": None,
+            "controlled_pc_ids": ["pc.aria"],
+            "collaboration_route_refs": [],
+        }
+        repository.records[
+            route_native_record(
+                "runtime.disclosure", ("player.aria", "fact.secret")
+            ).relative_path
+        ] = {
+            "kind": "runtime.disclosure",
+            "player_id": "player.aria",
+            "fact_id": "fact.secret",
+            "statement_exposed": True,
+            "source_refs": ["message.secret"],
+        }
+        repository.records[
+            route_native_record("world.lore_fact", ("fact.secret",)).relative_path
+        ] = {
+            "kind": "world.lore_fact",
+            "id": "fact.secret",
+            "campaign_id": "campaign.main",
+            "state": {
+                "fact_id": "fact.secret",
+                "statement": "A protected fact.",
+                "truth_status": "truth.established",
+                "record_status": "lore_record.active",
+            },
+        }
+        host = compose_runtime_host(
+            "campaign.main", repository, _HistoryLiveTransport()
+        )
+        request = {
+            "profile_id": "profile.commentator_control",
+            "role": "COMMENTATOR",
+            "purpose": "control",
+            "subject_id": "commentator.reader",
+            "recipient_id": "player.aria",
+            "campaign_id": "campaign.main",
+            "allowed_channels": ["EXPLICIT_REF"],
+            "max_candidates": 8,
+            "required_ids": ["player-current", "player-disclosure", "lore-fact"],
+            "allowed_relations": [],
+            "budget": 1000,
+        }
+        candidates = [
+            {
+                "candidate_id": candidate_id,
+                "channel": "EXPLICIT_REF",
+                "role": "COMMENTATOR",
+                "purpose": "control",
+                "subject_id": "commentator.reader",
+                "recipient_id": "player.aria",
+                "owner_family": owner_family,
+                "owner_identity": list(owner_identity),
+                "dependencies": [],
+                "rank": 0,
+            }
+            for candidate_id, owner_family, owner_identity in (
+                ("player-current", "world.player", ("player.aria",)),
+                (
+                    "player-disclosure",
+                    "runtime.disclosure",
+                    ("player.aria", "fact.secret"),
+                ),
+                ("lore-fact", "world.lore_fact", ("fact.secret",)),
+            )
+        ]
+
+        context_result = host.context.assemble(request, candidates)
+        control = build_commentator_control_projection(context_result)
+        protected = _protected_story_projection(
+            owner_family="world.lore_fact",
+            factor_id="fact.secret",
+            t0_value="A protected fact.",
+        )
+
+        self.assertEqual(context_result["outcome"], "ASSEMBLED")
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot([protected], control), "player.aria"
+            ),
+            [protected],
+        )
+
+    def test_public_material_is_available_without_a_player_and_ignores_visible_to(
+        self,
+    ) -> None:
+        public_only = _story_projection()
+        public_only["availability"] = {"visible_to": ["some.other.reader"]}
+        control = build_commentator_control_projection(
+            _commentator_context_evidence(player_id=None)
+        )
+
+        visible = filter_commentator_request(
+            build_commentator_snapshot([public_only], control), None
+        )
+
+        self.assertEqual(visible, [public_only])
+
+    def test_exact_player_disclosure_admits_only_its_matching_protected_anchor(
+        self,
+    ) -> None:
+        protected = _protected_story_projection()
+        disclosure = {
+            "player_id": "player.aria",
+            "fact_id": "fact.secret",
+            "statement_exposed": True,
+        }
+        evidence = _commentator_context_evidence(
+            disclosures=(disclosure,), lore_facts=({"fact_id": "fact.secret"},)
+        )
+        snapshot = build_commentator_snapshot(
+            [_story_projection(), protected],
+            build_commentator_control_projection(evidence),
+        )
+
+        visible = filter_commentator_request(snapshot, "player.aria")
+
+        self.assertEqual(
+            [record["story_id"] for record in visible], ["E000007", "E000008"]
+        )
+        self.assertEqual(visible[1]["t0_basis"], protected["t0_basis"])
+
+    def test_disclosure_or_selected_pc_known_evidence_is_exact_and_not_unioned(
+        self,
+    ) -> None:
+        protected = _protected_story_projection()
+        evidence = _commentator_context_evidence(
+            controlled_pc_ids=("pc.aria", "pc.other"),
+            knowledge=(
+                {
+                    "knower_id": "pc.aria",
+                    "fact_id": "fact.secret",
+                    "stance": "epistemic.known",
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+        control = build_commentator_control_projection(
+            evidence, selected_pc_id="pc.aria"
+        )
+        snapshot = build_commentator_snapshot([protected], control)
+
+        self.assertEqual(
+            filter_commentator_request(snapshot, "player.aria"), [protected]
+        )
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [protected],
+                    build_commentator_control_projection(
+                        _commentator_context_evidence(
+                            controlled_pc_ids=("pc.aria", "pc.other"),
+                            lore_facts=({"fact_id": "fact.secret"},),
+                        )
+                    ),
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_unmatched_or_insufficient_native_anchor_evidence_fails_closed(
+        self,
+    ) -> None:
+        protected = _protected_story_projection(factor_id="fact.missing")
+        evidence = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": True,
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+        snapshot = build_commentator_snapshot(
+            [protected], build_commentator_control_projection(evidence)
+        )
+
+        self.assertEqual(filter_commentator_request(snapshot, "player.aria"), [])
+        unsupported = _protected_story_projection(owner_family="world.relationship")
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [unsupported], build_commentator_control_projection(evidence)
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_uncontrolled_pc_and_foreign_disclosure_cannot_create_a_control_basis(
+        self,
+    ) -> None:
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(
+                _commentator_context_evidence(
+                    controlled_pc_ids=("pc.aria",),
+                    knowledge=(
+                        {
+                            "knower_id": "pc.foreign",
+                            "fact_id": "fact.secret",
+                            "stance": "epistemic.known",
+                        },
+                    ),
+                    lore_facts=({"fact_id": "fact.secret"},),
+                ),
+                selected_pc_id="pc.foreign",
+            )
+
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(
+                _commentator_context_evidence(
+                    disclosures=(
+                        {
+                            "player_id": "player.borin",
+                            "fact_id": "fact.secret",
+                            "statement_exposed": True,
+                        },
+                    ),
+                    lore_facts=({"fact_id": "fact.secret"},),
+                )
+            )
+
+    def test_non_known_pc_stance_and_no_player_disclosure_fail_closed(self) -> None:
+        protected = _protected_story_projection()
+        believed = _commentator_context_evidence(
+            knowledge=(
+                {
+                    "knower_id": "pc.aria",
+                    "fact_id": "fact.secret",
+                    "stance": "epistemic.believed",
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [protected],
+                    build_commentator_control_projection(
+                        believed, selected_pc_id="pc.aria"
+                    ),
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_control_projection(
+                _commentator_context_evidence(
+                    player_id=None,
+                    disclosures=(
+                        {
+                            "player_id": "player.aria",
+                            "fact_id": "fact.secret",
+                            "statement_exposed": True,
+                        },
+                    ),
+                    lore_facts=({"fact_id": "fact.secret"},),
+                    recipient_id="commentator.reader",
+                )
+            )
+
+    def test_statement_exposure_does_not_authorize_objective_status(self) -> None:
+        objective_status = _protected_story_projection(owner_family="world.lore_fact")
+        objective_status["t0_basis"]["factors"][0]["t0_value"] = {
+            "truth_status": "truth.established"
+        }
+        statement_only = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": True,
+                },
+            ),
+            lore_facts=(
+                {
+                    "fact_id": "fact.secret",
+                    "last_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+        )
+
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [objective_status],
+                    build_commentator_control_projection(statement_only),
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+        exact_status_disclosure = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": False,
+                    "latest_exposed_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+            lore_facts=(
+                {
+                    "fact_id": "fact.secret",
+                    "last_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+        )
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [objective_status],
+                    build_commentator_control_projection(exact_status_disclosure),
+                ),
+                "player.aria",
+            ),
+            [objective_status],
+        )
+        stale_status_disclosure = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": False,
+                    "latest_exposed_truth_transition_ref": "truth.transition.old",
+                },
+            ),
+            lore_facts=(
+                {
+                    "fact_id": "fact.secret",
+                    "last_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+        )
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [objective_status],
+                    build_commentator_control_projection(stale_status_disclosure),
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_current_lore_evidence_must_match_the_story_local_t0_anchor_value(
+        self,
+    ) -> None:
+        mismatched_story = _protected_story_projection(
+            owner_family="world.lore_fact", t0_value="Different proposition."
+        )
+        evidence = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": True,
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [mismatched_story],
+                    build_commentator_control_projection(evidence),
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_unsupported_t0_anchor_value_fails_closed(self) -> None:
+        unsupported = _protected_story_projection(t0_value={"unregistered": "value"})
+        evidence = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": True,
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [unsupported], build_commentator_control_projection(evidence)
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_combined_statement_and_status_anchor_requires_both_disclosure_aspects(
+        self,
+    ) -> None:
+        combined = _protected_story_projection(
+            owner_family="world.lore_fact",
+            t0_value={
+                "statement": "A source-bound current fact.",
+                "truth_status": "truth.established",
+            },
+        )
+        status_only = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": False,
+                    "latest_exposed_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+            lore_facts=(
+                {
+                    "fact_id": "fact.secret",
+                    "last_truth_transition_ref": "truth.transition.current",
+                },
+            ),
+        )
+
+        self.assertEqual(
+            filter_commentator_request(
+                build_commentator_snapshot(
+                    [combined], build_commentator_control_projection(status_only)
+                ),
+                "player.aria",
+            ),
+            [],
+        )
+
+    def test_content_unchanged_control_refresh_replaces_the_filter_basis(self) -> None:
+        protected = _protected_story_projection()
+        old_evidence = _commentator_context_evidence(
+            disclosures=(
+                {
+                    "player_id": "player.aria",
+                    "fact_id": "fact.secret",
+                    "statement_exposed": True,
+                },
+            ),
+            lore_facts=({"fact_id": "fact.secret"},),
+        )
+        snapshot = build_commentator_snapshot(
+            [protected], build_commentator_control_projection(old_evidence)
+        )
+        self.assertEqual(
+            filter_commentator_request(snapshot, "player.aria"), [protected]
+        )
+
+        refreshed = commentator_module.refresh_commentator_control(
+            snapshot,
+            _commentator_context_evidence(
+                disclosures=(
+                    {
+                        "player_id": "player.aria",
+                        "fact_id": "fact.secret",
+                        "statement_exposed": False,
+                    },
+                ),
+                lore_facts=({"fact_id": "fact.secret"},),
+            ),
+        )
+
+        self.assertEqual(refreshed["records"], snapshot["records"])
+        self.assertNotEqual(refreshed["control"], snapshot["control"])
+        self.assertEqual(filter_commentator_request(refreshed, "player.aria"), [])
+
+    def test_ineligible_story_ids_and_content_do_not_enter_the_filtered_bundle(
+        self,
+    ) -> None:
+        private = _protected_story_projection()
+        private["content"] = {"body": "UNIQUE_SECRET_BODY"}
+        private["sources"] = ["event.secret", "UNIQUE_SECRET_SOURCE"]
+        snapshot = build_commentator_snapshot(
+            [_story_projection(), private],
+            build_commentator_control_projection(
+                _commentator_context_evidence(player_id=None)
+            ),
+        )
+
+        materialized = filter_commentator_request(snapshot, None)
+        serialized = json.dumps(materialized, sort_keys=True)
+
+        self.assertEqual([record["story_id"] for record in materialized], ["E000007"])
+        self.assertNotIn("E000008", serialized)
+        self.assertNotIn("UNIQUE_SECRET_BODY", serialized)
+        self.assertNotIn("UNIQUE_SECRET_SOURCE", serialized)
 
 
 class DramaturgHorizonTests(unittest.TestCase):
@@ -2507,9 +3244,7 @@ class CompositeIntegrationTests(unittest.TestCase):
         history = [_semantic_event()]
         bundle = build_story_source_bundle(history, layer="EVENTS")
         projection = project_story_window(bundle, [_story_projection()])
-        control = build_commentator_control_projection(
-            {"player.aria": {"story_ids": ["E000007"]}}
-        )
+        control = build_commentator_control_projection(_commentator_context_evidence())
 
         self.assertEqual(
             filter_commentator_request(
@@ -2674,8 +3409,8 @@ class StorySchemaTests(unittest.TestCase):
             "story-narrative-unit.schema.json": 3,
             "story-mechanics-unit.schema.json": 4,
             "semantic-event-t0-basis.schema.json": 2,
-            "commentator-snapshot.schema.json": 1,
-            "commentator-control-projection.schema.json": 1,
+            "commentator-snapshot.schema.json": 2,
+            "commentator-control-projection.schema.json": 2,
             "commentator-view.schema.json": 1,
             "dramaturg-horizon.schema.json": 1,
         }
@@ -2686,6 +3421,55 @@ class StorySchemaTests(unittest.TestCase):
             },
             expected_versions,
         )
+
+    def test_commentator_schemas_match_the_p0_evidence_and_snapshot_carriers(
+        self,
+    ) -> None:
+        resources = Registry()
+        schemas: dict[str, dict[str, object]] = {}
+        for schema_name in (
+            "story-unit-common.schema.json",
+            "semantic-event-t0-basis.schema.json",
+            "commentator-control-projection.schema.json",
+            "commentator-snapshot.schema.json",
+        ):
+            schema = json.loads((SCHEMAS / schema_name).read_text(encoding="utf-8"))
+            schemas[schema_name] = schema
+            resources = resources.with_resource(
+                schema["$id"], Resource.from_contents(schema)
+            )
+
+        control = build_commentator_control_projection(
+            _commentator_context_evidence(
+                disclosures=(
+                    {
+                        "player_id": "player.aria",
+                        "fact_id": "fact.secret",
+                        "statement_exposed": True,
+                    },
+                ),
+                lore_facts=({"fact_id": "fact.secret"},),
+            )
+        )
+        snapshot = build_commentator_snapshot([_story_projection()], control)
+        control_validator = Draft202012Validator(
+            schemas["commentator-control-projection.schema.json"]
+        )
+        snapshot_validator = Draft202012Validator(
+            schemas["commentator-snapshot.schema.json"], registry=resources
+        )
+
+        self.assertTrue(control_validator.is_valid(control))
+        self.assertTrue(snapshot_validator.is_valid(snapshot))
+        invalid_control = deepcopy(control)
+        invalid_control["story_ids"] = ["E000007"]
+        self.assertFalse(control_validator.is_valid(invalid_control))
+        invalid_snapshot = deepcopy(snapshot)
+        invalid_snapshot["control"] = {
+            "schema_version": 2,
+            "controls": {"player.aria": {"story_ids": ["E000007"]}},
+        }
+        self.assertFalse(snapshot_validator.is_valid(invalid_snapshot))
 
     def test_all_four_story_unit_schemas_accept_registered_envelopes(self) -> None:
         resources = Registry()
@@ -2848,7 +3632,7 @@ class SchemaVersionTests(unittest.TestCase):
             "entries": [],
         }
         valid_control = build_commentator_control_projection(
-            {"player.aria": {"story_ids": ["E000007"]}}
+            _commentator_context_evidence()
         )
         valid_snapshot = build_commentator_snapshot(
             [_story_projection()], valid_control
@@ -2868,7 +3652,7 @@ class SchemaVersionTests(unittest.TestCase):
             build_commentator_snapshot([_story_projection()], valid_control)[
                 "schema_version"
             ],
-            1,
+            2,
         )
         self.assertEqual(
             filter_commentator_request(valid_snapshot, "player.aria"),
@@ -2900,7 +3684,7 @@ class SchemaVersionTests(unittest.TestCase):
             ):
                 validate_t0_basis({**_t0_basis(), "schema_version": version})
 
-        for version in invalid_versions:
+        for version in (1.0, True, "2", None, 1, 3):
             with (
                 self.subTest(version=version, ingress="Commentator control"),
                 self.assertRaises(CommentatorContractError),
@@ -2909,7 +3693,9 @@ class SchemaVersionTests(unittest.TestCase):
                     [_story_projection()],
                     {
                         "schema_version": version,
-                        "controls": {"player.aria": {"story_ids": []}},
+                        "reader_id": "player.aria",
+                        "player_id": "player.aria",
+                        "evidence": [],
                     },
                 )
             with (
@@ -2919,6 +3705,7 @@ class SchemaVersionTests(unittest.TestCase):
                 filter_commentator_request(
                     {**valid_snapshot, "schema_version": version}, "player.aria"
                 )
+        for version in invalid_versions:
             with (
                 self.subTest(version=version, ingress="Dramaturg horizon"),
                 self.assertRaises(DramaturgContractError),
@@ -2995,14 +3782,14 @@ class SchemaVersionTests(unittest.TestCase):
                 [_story_projection()],
                 {
                     "schema_version": 1.0,
-                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                    "reader_id": "player.aria",
+                    "player_id": "player.aria",
+                    "evidence": [],
                 },
             )
         snapshot = build_commentator_snapshot(
             [_story_projection()],
-            build_commentator_control_projection(
-                {"player.aria": {"story_ids": ["E000007"]}}
-            ),
+            build_commentator_control_projection(_commentator_context_evidence()),
         )
         with self.assertRaises(CommentatorContractError):
             filter_commentator_request(
@@ -3034,18 +3821,18 @@ class SchemaVersionTests(unittest.TestCase):
             build_commentator_snapshot(
                 [_story_projection()],
                 {
-                    "schema_version": 2,
-                    "controls": {"player.aria": {"story_ids": ["E000007"]}},
+                    "schema_version": 3,
+                    "reader_id": "player.aria",
+                    "player_id": "player.aria",
+                    "evidence": [],
                 },
             )
         snapshot = build_commentator_snapshot(
             [_story_projection()],
-            build_commentator_control_projection(
-                {"player.aria": {"story_ids": ["E000007"]}}
-            ),
+            build_commentator_control_projection(_commentator_context_evidence()),
         )
         with self.assertRaises(CommentatorContractError):
-            filter_commentator_request({**snapshot, "schema_version": 2}, "player.aria")
+            filter_commentator_request({**snapshot, "schema_version": 3}, "player.aria")
         with self.assertRaises(DramaturgContractError):
             validate_dramaturg_horizon(
                 {

@@ -1,12 +1,39 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/commentator-control-projection.schema.json",
-  "title": "HDM Commentator derived eligibility control projection",
+  "title": "HDM Commentator source-bound derived control evidence",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "controls"],
+  "required": ["schema_version", "reader_id", "evidence"],
   "properties": {
-    "schema_version": {"type": "integer", "const": 1},
-    "controls": {"type": "object", "additionalProperties": {"type": "object", "additionalProperties": false, "required": ["story_ids"], "properties": {"story_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}}}
-  }
+    "schema_version": {"type": "integer", "const": 2},
+    "reader_id": {"type": "string", "minLength": 1},
+    "player_id": {"type": "string", "minLength": 1},
+    "selected_pc_id": {"type": "string", "minLength": 1},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["owner_family", "owner_identity", "payload"],
+        "properties": {
+          "owner_family": {
+            "enum": [
+              "world.player",
+              "world.knowledge",
+              "runtime.disclosure",
+              "world.lore_fact"
+            ]
+          },
+          "owner_identity": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "payload": {"type": "object"}
+        }
+      }
+    }
+  },
+  "dependentRequired": {"selected_pc_id": ["player_id"]}
 }
