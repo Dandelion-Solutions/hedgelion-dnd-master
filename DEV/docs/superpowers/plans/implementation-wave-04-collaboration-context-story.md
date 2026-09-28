@@ -378,6 +378,18 @@ Output: W04_COMMENTATOR_CONTROL_READY.
 
 Mandatory REDs: arbitrary player-to-story-id mapping cannot mint eligibility; CONTENT_FINAL is not ACCESS_FINAL; changed permission/control basis refreshes even with unchanged content; IDs/counts/metadata of ineligible material do not reach model materialization; no native-only fallback for qualifying retained T0 factors.
 
+**Active Senior gate — 2026-09-28:** T07D is held before RED under
+`DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`.
+The implementation may not derive new access semantics from caller maps, legacy
+`visible_to`, or an ad-hoc union of PLAYER disclosure and controlled-PC
+knowledge. Step-4 leaves the baseline Commentator perspective/spoiler policy to
+the mode owner, while PO-009 requires the resulting control projection to be
+derived from native owners and locally sufficient. Product Owner semantics must
+therefore be accepted first. Only then may the plan instantiate the smallest
+source-bound W03-backed evidence prerequisite needed by T07D; no second
+ACL/knowledge/disclosure authority and no native-only Commentator fallback are
+authorized.
+
 **W04.T07E - Dramaturg source/generation admission, publication and rebase**
 
 Input: T07C; execute after T07D in this shared test-file lane.

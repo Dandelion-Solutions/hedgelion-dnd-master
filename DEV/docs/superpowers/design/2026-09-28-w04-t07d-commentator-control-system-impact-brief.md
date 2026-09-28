@@ -1,6 +1,6 @@
 # W04.T07D Commentator control evidence — Implementation Impact Brief
 
-Status: **SENIOR REVIEW REQUIRED — T07D HELD BEFORE RED**
+Status: **SENIOR REVIEW COMPLETE — PRODUCT OWNER DECISION REQUIRED / T07D HELD BEFORE RED**
 
 Date: 2026-09-28
 
@@ -92,20 +92,39 @@ closed Wave-03 principal/PLAYER, LIVE-currentness and access-policy chain, as
 confirmed by the Product Owner. It remains within its test-and-bounded-SESSION-
 delta write envelope and can be completed while T07D is held.
 
-## Safe options for Senior resolution
+## Senior resolution
 
-1. Confirm that T07D may derive its Commentator-local source-bound control basis
-   directly from existing read-only W03 owner values, and identify the exact
-   already-authorized evidence/currentness composition that prevents caller
-   mappings from becoming authority; or
-2. expand the T07D Implementation Impact Envelope to admit the smallest needed
-   W03 source-evidence interface/producer and its tests/version impact, without
-   reopening T07A/B/C semantics or changing their accepted outputs.
+The two implementation options above are not semantically equivalent and cannot
+be selected safely before one upstream product question is closed.
 
-RECOMMENDATION: keep T07D stopped before RED until the control-evidence boundary
-and exact access semantics are resolved. Continue T08B independently. Keep
-A26-02 as a separate mandatory proof/collection repair before
-Wave-04 FINAL_REVIEW; do not weaken the accepted semantics to satisfy stale tests.
+Accepted Step-4 architecture says that Story availability is evaluated by the
+active Commentator mode/session and explicitly leaves the exact default
+spectator perspective/spoiler policy to the mode owner. PO-009 requires the
+control projection to be derived from current native owners but does not choose
+whether protected eligibility is based on human PLAYER disclosure, one
+controlled PC's `world.knowledge`, several controlled PCs, a full-history
+spectator profile, or another explicitly admitted mode.
+
+Accordingly:
+
+1. **Reject T07D-local semantic derivation.** Commentator may not invent the
+   join rule or turn caller values into access authority.
+2. **Require Product Owner semantics first.** The baseline Commentator
+   perspective/spoiler rule must define what protected material a served human
+   may receive and how PLAYER exposure differs from PC knowledge.
+3. **Then use a bounded native-owner evidence prerequisite.** The implementation
+   should issue source-bound current PLAYER/control and information/disclosure
+   evidence sufficient to build the PO-009 control projection, without creating
+   a second ACL/knowledge/disclosure owner. Story/T0 availability requirements
+   are nominations to be checked against that evidence, not authority.
+4. No T07A/B/C reopen, no native-only fallback and no T07D RED until the owner
+   decision is incorporated.
+
+Full disposition:
+`DEV/docs/superpowers/design/2026-09-28-w04-t07d-commentator-control-senior-ruling.md`.
+
+A26-02 remains a separate mandatory proof/collection repair before Wave-04
+FINAL_REVIEW; do not weaken accepted semantics to satisfy stale tests.
 
 COST / RISK IF WRONG: trusting a caller map can leak protected Story/T0
 existence or content; an invented restrictive rule can incorrectly withhold
@@ -119,5 +138,5 @@ before RED pending Senior resolution of this brief.
 
 ```text
 VERSION_IMPACT: NONE for this brief; no production or version-bearing owner changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED for W04.T07D only.
+SYSTEM_IMPACT: SENIOR_REVIEW_RESOLVED / PRODUCT_OWNER_DECISION_REQUIRED for W04.T07D only.
 ```
