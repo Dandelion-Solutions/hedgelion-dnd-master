@@ -1,6 +1,6 @@
 # W04.T07D Commentator control evidence — Implementation Impact Brief
 
-Status: **SENIOR REVIEW COMPLETE — PO-012 INCORPORATED / T07D-P0 AUTHORIZED**
+Status: **SENIOR REVIEW COMPLETE — PO-012 INCORPORATED / T07D-P0 ACCEPTED / T07D RESUMED**
 
 Date: 2026-09-28
 
@@ -130,16 +130,31 @@ COST / RISK IF WRONG: trusting a caller map can leak protected Story/T0
 existence or content; an invented restrictive rule can incorrectly withhold
 eligible material or silently alter product access semantics.
 
-UNPUBLISHED_WORK: NONE for T07D code/schema/tests. W04.T08B completed and was
+UNPUBLISHED_WORK: NONE for T07D-P0 code/schema/tests. W04.T08B completed and was
 published/read back at `W04_SESSION_CONSUMER_DELTA_READY`; its code commit is
 `356357a5c05e16d704bebfe11e8a3df542321694`, with the final status/read-back
-checkpoint at `468bd3400183ada85b76cd93737005aa1e1e64a7`. T07D remains held
-before RED pending Senior resolution of this brief.
+checkpoint at `468bd3400183ada85b76cd93737005aa1e1e64a7`. T07D-P0 is published
+at `d37ed9c1994e78feb51fc147cd3e2e5225b5a548`; independent PASS and fresh
+remote read-back are complete, so T07D may resume within its existing
+Commentator consumer envelope.
 
 ```text
 VERSION_IMPACT: NONE for this brief; no production or version-bearing owner changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_RESOLVED / PO-012 INCORPORATED / T07D-P0 AUTHORIZED; T07D waits for P0 PASS/read-back.
+SYSTEM_IMPACT: SENIOR_REVIEW_RESOLVED / PO-012 INCORPORATED / T07D-P0 ACCEPTED; T07D is cleared to resume within its existing consumer envelope.
 ```
+
+## T07D-P0 verification and acceptance
+
+P0 code commit: `d37ed9c1994e78feb51fc147cd3e2e5225b5a548`.
+
+- RD11 Context + RuntimeHost focused tests: 96 passed.
+- Clean committed-source full DEV: 1358 passed, 5 skipped, 4 known out-of-scope S6D failures; package provenance reports `clean_head`.
+- Version/provenance/current-progress suite: 18 passed; maintenance audit: PASS.
+- Scoped Ruff check/format and `git diff --check`: PASS.
+- Independent task review: PASS; no findings/System-Impact concern.
+- A fresh fetch confirmed `origin/v1/engine-rearchitecture` at `d37ed9c1994e78feb51fc147cd3e2e5225b5a548` after review.
+
+`VERSION_IMPACT: GAME/TOOLS/context_runtime.py 1.0.8 -> 1.0.9`; no persistent schema/generation, campaign/storage/catalog/engine generation, migration, or dual-read change.
 
 
 ## PO-012 incorporation / exact continuation
