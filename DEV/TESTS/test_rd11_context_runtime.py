@@ -287,6 +287,43 @@ def bound_request(**values):
     return result
 
 
+def commentator_request(**values):
+    result = request(
+        profile_id="profile.commentator_control",
+        role="COMMENTATOR",
+        purpose="control",
+        subject_id="commentator.reader",
+        recipient_id="reader-1",
+        allowed_channels=["EXPLICIT_REF"],
+        max_candidates=8,
+        required_ids=[],
+        allowed_relations=[],
+    )
+    result.update(values)
+    return result
+
+
+def commentator_candidate(
+    candidate_id,
+    family,
+    identity,
+    *,
+    recipient_id="player-1",
+    subject_id="commentator.reader",
+    **values,
+):
+    return owner_candidate(
+        candidate_id,
+        family,
+        identity,
+        role="COMMENTATOR",
+        purpose="control",
+        subject_id=subject_id,
+        recipient_id=recipient_id,
+        **values,
+    )
+
+
 def owner_candidate(candidate_id, family="world.scene", identity=None, **values):
     result = {
         "candidate_id": candidate_id,
@@ -346,7 +383,9 @@ def collaboration_obligation_mapping(
     return obligation.to_mapping()
 
 
-def context_player_record(*, status="active", collaboration_route_refs=None):
+def context_player_record(
+    *, status="active", collaboration_route_refs=None, controlled_pc_ids=("pc-1",)
+):
     return {
         "kind": "world.player",
         "id": "player-1",
@@ -356,7 +395,7 @@ def context_player_record(*, status="active", collaboration_route_refs=None):
         "github_binding": {"user_id": "42", "login": "alice"},
         "status": status,
         "deactivated_by": None,
-        "controlled_pc_ids": ["pc-1"],
+        "controlled_pc_ids": list(controlled_pc_ids),
         "collaboration_route_refs": list(collaboration_route_refs or ()),
     }
 
@@ -613,7 +652,700 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.8")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.9")
+
+
+class CommentatorControlProfileTests(unittest.TestCase):
+    def test_profile_registration_and_role_purpose_binding_are_exact(self):
+        self.assertIn(
+            "profile.commentator_control", context_runtime.REGISTERED_PROFILE_IDS
+        )
+        schema = json.loads(
+            (SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        valid_request = commentator_request()
+        validator.validate(valid_request)
+
+        host = host_for([])
+        result = host.context.assemble(valid_request, [])
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+
+        for field, value in (("role", "NARRATOR"), ("purpose", "narrate")):
+            with self.subTest(field=field):
+                with self.assertRaises(context_runtime.ContextContractError):
+                    host.context.assemble(valid_request | {field: value}, [])
+                with self.assertRaises(ValidationError):
+                    validator.validate(valid_request | {field: value})
+
+        with self.assertRaises(ValidationError):
+            validator.validate(valid_request | {"allowed_channels": ["INDEX_LOOKUP"]})
+        with self.assertRaises(ValidationError):
+            validator.validate(valid_request | {"allowed_relations": ["requires"]})
+
+        with self.assertRaises(context_runtime.ContextContractError):
+            host.context.assemble(
+                valid_request | {"profile_id": "profile.commentator_draft"}, []
+            )
+
+    def test_optional_selected_pc_is_a_single_commentator_only_nomination(self):
+        schema = json.loads(
+            (SCHEMAS / "context-need-profile.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        selected = commentator_request(selected_pc_id="pc-1")
+        validator.validate(selected)
+        self.assertEqual(context_runtime._scope(selected).selected_pc_id, "pc-1")
+
+        multiple = commentator_request(selected_pc_id=["pc-1", "pc-2"])
+        with self.assertRaises(ValidationError):
+            validator.validate(multiple)
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime._scope(multiple)
+
+        other_profile = request(selected_pc_id="pc-1")
+        with self.assertRaises(ValidationError):
+            validator.validate(other_profile)
+        with self.assertRaises(context_runtime.ContextContractError):
+            context_runtime._scope(other_profile)
+
+    def test_public_only_reader_uses_exact_lore_without_player_record(self):
+        repository = RuntimeRepository()
+        lore = {
+            "kind": "world.lore_fact",
+            "id": "fact-public",
+            "campaign_id": "campaign-context",
+            "state": {"text": "The old bridge is public knowledge."},
+        }
+        repository.add_record("world.lore_fact", ("fact-public",), lore)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        nominated = commentator_candidate(
+            "story-fact-public",
+            "world.lore_fact",
+            ("fact-public",),
+            recipient_id="reader-1",
+        )
+
+        result = host.context.assemble(
+            commentator_request(required_ids=["story-fact-public"]), [nominated]
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        evidence = result["bundle"]["required"][0]
+        self.assertEqual(evidence["owner_family"], "world.lore_fact")
+        self.assertEqual(evidence["owner_identity"], ["fact-public"])
+        self.assertEqual(evidence["payload"], lore)
+        self.assertNotIn("current", evidence)
+        self.assertNotIn("eligible", evidence)
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.lore_fact", ("fact-public",)).relative_path],
+        )
+
+    def test_player_only_perspective_needs_no_selected_pc_or_information_read(self):
+        repository = RuntimeRepository()
+        player = context_player_record()
+        repository.add_record("world.player", ("player-1",), player)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        nominated = commentator_candidate(
+            "player-current", "world.player", ("player-1",)
+        )
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1", required_ids=["player-current"]
+            ),
+            [nominated],
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        self.assertEqual(result["bundle"]["required"][0]["payload"], player)
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.player", ("player-1",)).relative_path],
+        )
+
+    def test_player_disclosure_and_lore_are_exact_native_evidence(self):
+        repository = RuntimeRepository()
+        player = context_player_record()
+        disclosure = {
+            "kind": "runtime.disclosure",
+            "player_id": "player-1",
+            "fact_id": "fact-1",
+            "statement_exposed": True,
+            "source_refs": ["message-1"],
+        }
+        lore = {
+            "kind": "world.lore_fact",
+            "id": "fact-1",
+            "campaign_id": "campaign-context",
+            "state": {"proposition": "The western arch collapsed."},
+        }
+        repository.add_record("world.player", ("player-1",), player)
+        repository.add_record("runtime.disclosure", ("player-1", "fact-1"), disclosure)
+        repository.add_record("world.lore_fact", ("fact-1",), lore)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "player-disclosure",
+                "runtime.disclosure",
+                ("player-1", "fact-1"),
+            ),
+            commentator_candidate("lore-fact", "world.lore_fact", ("fact-1",)),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                required_ids=["player-current", "player-disclosure", "lore-fact"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        evidence_by_id = {
+            item["candidate_id"]: item for item in result["bundle"]["required"]
+        }
+        self.assertEqual(evidence_by_id["player-current"]["payload"], player)
+        self.assertEqual(evidence_by_id["player-disclosure"]["payload"], disclosure)
+        self.assertEqual(evidence_by_id["lore-fact"]["payload"], lore)
+        for evidence in evidence_by_id.values():
+            self.assertNotIn("current", evidence)
+            self.assertNotIn("eligible", evidence)
+        self.assertNotIn("eligible_story_ids", result["bundle"])
+        self.assertEqual(
+            set(repository.read_paths),
+            {
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record(
+                    "runtime.disclosure", ("player-1", "fact-1")
+                ).relative_path,
+                route_native_record("world.lore_fact", ("fact-1",)).relative_path,
+            },
+        )
+
+    def test_disclosure_requires_a_required_current_player_candidate(self):
+        repository = RuntimeRepository()
+        disclosure = {
+            "kind": "runtime.disclosure",
+            "player_id": "player-1",
+            "fact_id": "fact-1",
+            "statement_exposed": True,
+        }
+        repository.add_record("runtime.disclosure", ("player-1", "fact-1"), disclosure)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        nominated = commentator_candidate(
+            "player-disclosure",
+            "runtime.disclosure",
+            ("player-1", "fact-1"),
+            recipient_id="player-1",
+        )
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1", required_ids=["player-disclosure"]
+            ),
+            [nominated],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(repository.read_paths, [])
+
+    def test_selected_pc_knowledge_is_bound_to_exact_current_player_control(self):
+        repository = RuntimeRepository()
+        player = context_player_record(controlled_pc_ids=("pc-1", "pc-2"))
+        knowledge = {
+            "kind": "world.knowledge",
+            "knower_id": "pc-1",
+            "fact_id": "fact-1",
+            "stance": "epistemic.known",
+            "supporting_source_refs": ["source-1"],
+            "state": {},
+        }
+        repository.add_record("world.player", ("player-1",), player)
+        repository.add_record("world.knowledge", ("pc-1", "fact-1"), knowledge)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        player_candidate = commentator_candidate(
+            "player-current", "world.player", ("player-1",)
+        )
+        knowledge_candidate = commentator_candidate(
+            "pc-knowledge", "world.knowledge", ("pc-1", "fact-1")
+        )
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "pc-knowledge"],
+            ),
+            [player_candidate, knowledge_candidate],
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED")
+        evidence_by_id = {
+            item["candidate_id"]: item for item in result["bundle"]["required"]
+        }
+        self.assertEqual(evidence_by_id["player-current"]["payload"], player)
+        self.assertEqual(evidence_by_id["pc-knowledge"]["payload"], knowledge)
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record("world.knowledge", ("pc-1", "fact-1")).relative_path,
+            repository.read_paths,
+        )
+
+    def test_uncontrolled_selected_pc_fails_before_knowledge_read(self):
+        repository = RuntimeRepository()
+        repository.add_record(
+            "world.player",
+            ("player-1",),
+            context_player_record(controlled_pc_ids=("pc-1",)),
+        )
+        repository.add_record(
+            "world.knowledge",
+            ("pc-foreign", "fact-1"),
+            {
+                "kind": "world.knowledge",
+                "knower_id": "pc-foreign",
+                "fact_id": "fact-1",
+                "stance": "epistemic.known",
+                "state": {},
+            },
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "pc-knowledge", "world.knowledge", ("pc-foreign", "fact-1")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-foreign",
+                required_ids=["player-current", "pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.player", ("player-1",)).relative_path],
+        )
+
+    def test_multiple_controlled_pcs_never_union_knowledge(self):
+        repository = RuntimeRepository()
+        player = context_player_record(controlled_pc_ids=("pc-1", "pc-2"))
+        knowledge = {
+            "kind": "world.knowledge",
+            "knower_id": "pc-1",
+            "fact_id": "fact-1",
+            "stance": "epistemic.known",
+            "state": {},
+        }
+        repository.add_record("world.player", ("player-1",), player)
+        repository.add_record("world.knowledge", ("pc-1", "fact-1"), knowledge)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "selected-pc-knowledge", "world.knowledge", ("pc-1", "fact-1")
+            ),
+            commentator_candidate(
+                "other-pc-knowledge", "world.knowledge", ("pc-2", "fact-2")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "selected-pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "ASSEMBLED_DEGRADED")
+        included_ids = {
+            item["candidate_id"]
+            for item in result["bundle"]["required"] + result["bundle"]["optional"]
+        }
+        self.assertEqual(included_ids, {"player-current", "selected-pc-knowledge"})
+        self.assertIn("other-pc-knowledge", result["trace"]["excluded_ids"])
+        self.assertNotIn(
+            route_native_record("world.knowledge", ("pc-2", "fact-2")).relative_path,
+            repository.read_paths,
+        )
+
+    def test_knowledge_owner_identity_mismatch_fails_closed(self):
+        repository = RuntimeRepository()
+        repository.add_record("world.player", ("player-1",), context_player_record())
+        repository.add_record(
+            "world.knowledge",
+            ("pc-1", "fact-1"),
+            {
+                "kind": "world.knowledge",
+                "knower_id": "pc-foreign",
+                "fact_id": "fact-1",
+                "stance": "epistemic.known",
+                "state": {},
+            },
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "pc-knowledge", "world.knowledge", ("pc-1", "fact-1")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertIn(
+            route_native_record("world.knowledge", ("pc-1", "fact-1")).relative_path,
+            repository.read_paths,
+        )
+
+    def test_required_knowledge_for_another_subject_is_not_loaded(self):
+        repository = RuntimeRepository()
+        repository.add_record("world.player", ("player-1",), context_player_record())
+        repository.add_record(
+            "world.knowledge",
+            ("pc-2", "fact-1"),
+            {
+                "kind": "world.knowledge",
+                "knower_id": "pc-2",
+                "fact_id": "fact-1",
+                "stance": "epistemic.known",
+                "state": {},
+            },
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "foreign-pc-knowledge", "world.knowledge", ("pc-2", "fact-1")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "foreign-pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.player", ("player-1",)).relative_path],
+        )
+
+    def test_disclosure_for_another_player_is_not_loaded_or_admitted(self):
+        repository = RuntimeRepository()
+        repository.add_record("world.player", ("player-1",), context_player_record())
+        foreign_disclosure = {
+            "kind": "runtime.disclosure",
+            "player_id": "player-2",
+            "fact_id": "fact-1",
+            "statement_exposed": True,
+        }
+        repository.add_record(
+            "runtime.disclosure", ("player-2", "fact-1"), foreign_disclosure
+        )
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "foreign-disclosure",
+                "runtime.disclosure",
+                ("player-2", "fact-1"),
+                recipient_id="player-1",
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                required_ids=["player-current", "foreign-disclosure"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertNotIn(
+            route_native_record(
+                "runtime.disclosure", ("player-2", "fact-1")
+            ).relative_path,
+            repository.read_paths,
+        )
+
+    def test_mismatched_player_record_is_not_current_player_evidence(self):
+        repository = RuntimeRepository()
+        mismatched_player = context_player_record()
+        mismatched_player["player_id"] = "player-2"
+        repository.add_record("world.player", ("player-1",), mismatched_player)
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        nominated = commentator_candidate(
+            "player-current", "world.player", ("player-1",)
+        )
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1", required_ids=["player-current"]
+            ),
+            [nominated],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.player", ("player-1",)).relative_path],
+        )
+
+    def test_player_candidate_identity_cannot_substitute_another_recipient(self):
+        repository = RuntimeRepository()
+        repository.add_record("world.player", ("player-2",), context_player_record())
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        nominated = commentator_candidate(
+            "player-current",
+            "world.player",
+            ("player-2",),
+            recipient_id="player-1",
+        )
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1", required_ids=["player-current"]
+            ),
+            [nominated],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(repository.read_paths, [])
+
+    def test_missing_exact_knowledge_owner_record_is_unsatisfiable(self):
+        repository = RuntimeRepository()
+        repository.add_record("world.player", ("player-1",), context_player_record())
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "pc-knowledge", "world.knowledge", ("pc-1", "fact-missing")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertIn(
+            route_native_record("world.player", ("player-1",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record(
+                "world.knowledge", ("pc-1", "fact-missing")
+            ).relative_path,
+            repository.read_paths,
+        )
+
+    def test_missing_exact_player_record_stops_before_selected_pc_knowledge(self):
+        repository = RuntimeRepository()
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+        candidates = [
+            commentator_candidate("player-current", "world.player", ("player-1",)),
+            commentator_candidate(
+                "pc-knowledge", "world.knowledge", ("pc-1", "fact-1")
+            ),
+        ]
+
+        result = host.context.assemble(
+            commentator_request(
+                recipient_id="player-1",
+                selected_pc_id="pc-1",
+                required_ids=["player-current", "pc-knowledge"],
+            ),
+            candidates,
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(
+            repository.read_paths,
+            [route_native_record("world.player", ("player-1",)).relative_path],
+        )
+
+    def test_selected_pc_without_required_player_evidence_is_unsatisfiable(self):
+        repository = RuntimeRepository()
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+
+        result = host.context.assemble(
+            commentator_request(recipient_id="player-1", selected_pc_id="pc-1"),
+            [],
+        )
+
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(repository.read_paths, [])
+
+    def test_missing_or_mismatched_exact_disclosure_owner_fails_closed(self):
+        for state in ("missing", "mismatched"):
+            with self.subTest(state=state):
+                repository = RuntimeRepository()
+                repository.add_record(
+                    "world.player", ("player-1",), context_player_record()
+                )
+                disclosure = None
+                if state == "mismatched":
+                    disclosure = {
+                        "kind": "runtime.disclosure",
+                        "player_id": "player-2",
+                        "fact_id": "fact-1",
+                        "statement_exposed": True,
+                    }
+                    repository.add_record(
+                        "runtime.disclosure",
+                        ("player-1", "fact-1"),
+                        disclosure,
+                    )
+                host = compose_runtime_host(
+                    "campaign-context", repository, RuntimeLiveTransport()
+                )
+                candidates = [
+                    commentator_candidate(
+                        "player-current", "world.player", ("player-1",)
+                    ),
+                    commentator_candidate(
+                        "player-disclosure",
+                        "runtime.disclosure",
+                        ("player-1", "fact-1"),
+                    ),
+                ]
+
+                result = host.context.assemble(
+                    commentator_request(
+                        recipient_id="player-1",
+                        required_ids=["player-current", "player-disclosure"],
+                    ),
+                    candidates,
+                )
+
+                self.assertEqual(result["outcome"], "UNSATISFIABLE")
+                self.assertIsNone(result["bundle"])
+                self.assertIn(
+                    route_native_record("world.player", ("player-1",)).relative_path,
+                    repository.read_paths,
+                )
+                self.assertIn(
+                    route_native_record(
+                        "runtime.disclosure", ("player-1", "fact-1")
+                    ).relative_path,
+                    repository.read_paths,
+                )
+
+    def test_commentator_profile_rejects_index_and_forbidden_authority_fallbacks(self):
+        repository = RuntimeRepository()
+        host = compose_runtime_host(
+            "campaign-context", repository, RuntimeLiveTransport()
+        )
+
+        for channel in (
+            "CURRENT_SCOPE",
+            "SCENE_MANIFEST",
+            "ACTIVE_DEPENDENCY",
+            "LIVE_CURRENT",
+            "INDEX_LOOKUP",
+            "HISTORY_HINT",
+        ):
+            with (
+                self.subTest(channel=channel),
+                self.assertRaises(context_runtime.ContextContractError),
+            ):
+                host.context.assemble(
+                    commentator_request(allowed_channels=[channel]), []
+                )
+        with self.assertRaises(context_runtime.ContextContractError):
+            host.context.assemble(commentator_request(current=True), [])
+
+        unregistered_source = commentator_candidate(
+            "scene-1", "world.scene", ("scene-1",), recipient_id="reader-1"
+        )
+        rejected = host.context.assemble(
+            commentator_request(required_ids=["scene-1"]), [unregistered_source]
+        )
+        self.assertEqual(rejected["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(rejected["bundle"])
+
+        forged = commentator_candidate(
+            "story-fact", "world.lore_fact", ("fact-1",), recipient_id="reader-1"
+        )
+        forged.update(current=True, eligible=True)
+        result = host.context.assemble(
+            commentator_request(required_ids=["story-fact"]), [forged]
+        )
+        self.assertEqual(result["outcome"], "UNSATISFIABLE")
+        self.assertIsNone(result["bundle"])
+        self.assertEqual(repository.read_paths, [])
 
 
 class ContextDiscoveryTests(unittest.TestCase):

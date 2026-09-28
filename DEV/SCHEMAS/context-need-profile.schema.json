@@ -24,14 +24,15 @@
         "profile.dramaturgy",
         "profile.actor",
         "profile.story",
-        "profile.narration"
+        "profile.narration",
+        "profile.commentator_control"
       ]
     },
     "role": {
-      "enum": ["INTERPRETER", "DRAMATURG", "ACTOR", "CHRONICLER", "NARRATOR"]
+      "enum": ["INTERPRETER", "DRAMATURG", "ACTOR", "CHRONICLER", "NARRATOR", "COMMENTATOR"]
     },
     "purpose": {
-      "enum": ["interpret", "prepare", "assess", "chronicle", "narrate"]
+      "enum": ["interpret", "prepare", "assess", "chronicle", "narrate", "control"]
     },
     "subject_id": {"$ref": "#/$defs/id"},
     "recipient_id": {"$ref": "#/$defs/id"},
@@ -65,7 +66,8 @@
     },
     "budget": {"type": "integer", "minimum": 0, "maximum": 1000000},
     "source_frontier": {"type": "string", "minLength": 1},
-    "retrospective": {"type": "boolean"}
+    "retrospective": {"type": "boolean"},
+    "selected_pc_id": {"$ref": "#/$defs/id"}
   },
   "allOf": [
     {
@@ -87,6 +89,25 @@
     {
       "if": {"properties": {"profile_id": {"const": "profile.narration"}}},
       "then": {"properties": {"role": {"const": "NARRATOR"}, "purpose": {"const": "narrate"}}}
+    },
+    {
+      "if": {"properties": {"profile_id": {"const": "profile.commentator_control"}}},
+      "then": {
+        "properties": {
+          "role": {"const": "COMMENTATOR"},
+          "purpose": {"const": "control"},
+          "allowed_channels": {"items": {"const": "EXPLICIT_REF"}},
+          "allowed_relations": {"maxItems": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "not": {
+          "properties": {"profile_id": {"const": "profile.commentator_control"}}
+        }
+      },
+      "then": {"not": {"required": ["selected_pc_id"]}}
     }
   ],
   "$defs": {

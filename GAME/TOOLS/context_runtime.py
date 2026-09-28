@@ -61,8 +61,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 
 
 class ContextContractError(ValueError):
@@ -123,6 +123,13 @@ _PROFILE_TABLE: Final[Mapping[str, _RegisteredProfile]] = MappingProxyType(
             _DISCOVERY_CHANNELS,
             ("requires",),
         ),
+        "profile.commentator_control": _RegisteredProfile(
+            "profile.commentator_control",
+            "COMMENTATOR",
+            "control",
+            ("EXPLICIT_REF",),
+            (),
+        ),
     }
 )
 
@@ -144,6 +151,7 @@ _REQUEST_FIELDS: Final[frozenset[str]] = frozenset(
         "budget",
         "source_frontier",
         "retrospective",
+        "selected_pc_id",
     }
 )
 _PROTECTED_ROLE_MATERIAL_KEYS: Final[frozenset[str]] = frozenset(
@@ -192,6 +200,14 @@ _KNOWLEDGE_FAMILIES: Final[frozenset[str]] = frozenset({"knowledge", "world.know
 _DISCLOSURE_FAMILIES: Final[frozenset[str]] = frozenset(
     {"disclosure", "runtime.disclosure"}
 )
+_COMMENTATOR_CONTROL_FAMILIES: Final[frozenset[str]] = frozenset(
+    {
+        "world.player",
+        "world.knowledge",
+        "runtime.disclosure",
+        "world.lore_fact",
+    }
+)
 _COLLABORATION_FAMILIES: Final[frozenset[str]] = frozenset(
     {"runtime.collaboration_obligation"}
 )
@@ -206,6 +222,7 @@ class _RequestScope:
     recipient_id: str
     campaign_id: str
     source_frontier: str | None
+    selected_pc_id: str | None
 
 
 def _nonempty(value: object, label: str) -> str:
@@ -296,6 +313,18 @@ def _scope(request: Mapping[str, object]) -> _RequestScope:
         if "source_frontier" not in request
         else _scope_id(request["source_frontier"], "source_frontier")
     )
+    if (
+        "selected_pc_id" in request
+        and profile.profile_id != "profile.commentator_control"
+    ):
+        raise ContextContractError(
+            "selected_pc_id is only admitted by the Commentator control profile"
+        )
+    selected_pc_id = (
+        None
+        if "selected_pc_id" not in request
+        else _scope_id(request["selected_pc_id"], "selected_pc_id")
+    )
     if "retrospective" in request and type(request["retrospective"]) is not bool:
         raise ContextContractError("retrospective must be boolean")
     return _RequestScope(
@@ -306,6 +335,7 @@ def _scope(request: Mapping[str, object]) -> _RequestScope:
         recipient_id,
         campaign_id,
         source_frontier,
+        selected_pc_id,
     )
 
 
@@ -483,6 +513,7 @@ def _resolve_player(
     pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
+    selected_pc_id: str | None = None,
 ) -> dict[str, object]:
     record = _read_campaign_record(repository, pinned, "world.player", identity)
     try:
@@ -493,6 +524,8 @@ def _resolve_player(
         raise ContextContractError(
             "native PLAYER is not the current eligible recipient"
         )
+    if selected_pc_id is not None and selected_pc_id not in player.controlled_pc_ids:
+        raise ContextContractError("native PLAYER does not control selected PC")
     return record
 
 
@@ -934,6 +967,13 @@ def _resolve_candidate(
     candidate_id = _scope_id(candidate.get("candidate_id"), "candidate identity")
     _candidate_scope(candidate, scope)
     family = _candidate_family(candidate)
+    if (
+        scope.profile.profile_id == "profile.commentator_control"
+        and family not in _COMMENTATOR_CONTROL_FAMILIES
+    ):
+        raise ContextContractError(
+            "Commentator control evidence must name a registered native source"
+        )
     raw_identity = candidate.get("owner_identity")
     if family in _LIVE_FAMILIES:
         payload = _resolve_live(selected_live, selected_live_reader, pinned, candidate)
@@ -942,8 +982,19 @@ def _resolve_candidate(
         owner_identity = list(
             _identity(raw_identity, "PLAYER owner_identity", length=1)
         )
+        selected_pc_id = None
+        if scope.profile.profile_id == "profile.commentator_control":
+            if tuple(owner_identity) != (scope.recipient_id,):
+                raise ContextContractError(
+                    "Commentator PLAYER nomination does not match the recipient"
+                )
+            selected_pc_id = scope.selected_pc_id
         payload = _resolve_player(
-            repository, pinned, tuple(owner_identity), scope.recipient_id
+            repository,
+            pinned,
+            tuple(owner_identity),
+            scope.recipient_id,
+            selected_pc_id,
         )
     elif family in _INFORMATION_FAMILIES:
         owner_identity = list(
@@ -956,13 +1007,30 @@ def _resolve_candidate(
         owner_identity = list(
             _identity(raw_identity, "knowledge owner_identity", length=2)
         )
+        knowledge_subject_id = scope.subject_id
+        if scope.profile.profile_id == "profile.commentator_control":
+            if (
+                scope.selected_pc_id is None
+                or owner_identity[0] != scope.selected_pc_id
+            ):
+                raise ContextContractError(
+                    "Commentator knowledge must match its selected PC"
+                )
+            knowledge_subject_id = scope.selected_pc_id
         payload = _resolve_knowledge(
-            repository, pinned, tuple(owner_identity), scope.subject_id
+            repository, pinned, tuple(owner_identity), knowledge_subject_id
         )
     elif family in _DISCLOSURE_FAMILIES:
         owner_identity = list(
             _identity(raw_identity, "disclosure owner_identity", length=2)
         )
+        if (
+            scope.profile.profile_id == "profile.commentator_control"
+            and owner_identity[0] != scope.recipient_id
+        ):
+            raise ContextContractError(
+                "Commentator disclosure nomination does not match the recipient"
+            )
         payload = _resolve_disclosure(
             repository, pinned, tuple(owner_identity), scope.recipient_id
         )
@@ -1074,6 +1142,45 @@ def _assemble_bound_context(
     discovered_by_id = {item["candidate_id"]: item for item in discovered}
     excluded: list[str] = []
 
+    required_ids = list(request["required_ids"])
+    commentator_protected_families = _KNOWLEDGE_FAMILIES | _DISCLOSURE_FAMILIES
+    needs_current_player = (
+        scope.profile.profile_id == "profile.commentator_control"
+        and (
+            scope.selected_pc_id is not None
+            or any(
+                item.get("owner_family", item.get("family"))
+                in commentator_protected_families
+                for item in discovered
+            )
+        )
+    )
+    if needs_current_player:
+        required_id_set = set(required_ids)
+        required_player_ids = [
+            item["candidate_id"]
+            for item in discovered
+            if item.get("owner_family", item.get("family")) == "world.player"
+            and item["candidate_id"] in required_id_set
+        ]
+        if len(required_player_ids) != 1:
+            return {
+                "outcome": "UNSATISFIABLE",
+                "bundle": None,
+                "trace": {
+                    "profile_id": scope.profile.profile_id,
+                    "discovered_ids": [item["candidate_id"] for item in discovered],
+                    "included_ids": [],
+                    "excluded_ids": sorted(required_id_set),
+                },
+            }
+        player_candidate_id = required_player_ids[0]
+        required_ids = [
+            candidate_id
+            for candidate_id in required_ids
+            if candidate_id != player_candidate_id
+        ] + [player_candidate_id]
+
     def resolve(item: Mapping[str, object]) -> dict[str, object]:
         return _resolve_candidate(
             repository,
@@ -1110,7 +1217,7 @@ def _assemble_bound_context(
         }
 
     required, available = _required_closure(
-        request["required_ids"],
+        required_ids,
         discovered_by_id,
         set(request["allowed_relations"]),
         resolve,
