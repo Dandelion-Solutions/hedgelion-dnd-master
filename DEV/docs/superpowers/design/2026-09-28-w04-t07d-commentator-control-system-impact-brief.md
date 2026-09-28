@@ -111,8 +111,11 @@ COST / RISK IF WRONG: trusting a caller map can leak protected Story/T0
 existence or content; an invented restrictive rule can incorrectly withhold
 eligible material or silently alter product access semantics.
 
-UNPUBLISHED_WORK: NONE for T07D code/schema/tests. W04.T08B candidate remains
-local and awaits its independent review/checkpoint.
+UNPUBLISHED_WORK: NONE for T07D code/schema/tests. W04.T08B completed and was
+published/read back at `W04_SESSION_CONSUMER_DELTA_READY`; its code commit is
+`356357a5c05e16d704bebfe11e8a3df542321694`, with the final status/read-back
+checkpoint at `468bd3400183ada85b76cd93737005aa1e1e64a7`. T07D remains held
+before RED pending Senior resolution of this brief.
 
 ```text
 VERSION_IMPACT: NONE for this brief; no production or version-bearing owner changed.
