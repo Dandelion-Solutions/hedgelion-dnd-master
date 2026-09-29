@@ -1,6 +1,6 @@
 # W04.T07E Dramaturg publication sizing — Implementation Impact Brief
 
-Status: **SYSTEM-IMPACT REVIEW REQUIRED — T07E PAUSED BEFORE ACCEPTANCE**
+Status: **SENIOR IMPACT RESOLUTION ACCEPTED — BOUNDED W02 SIZE MEASUREMENT AUTHORIZED; T07E RESUMED**
 
 Date: **2026-09-29**
 
@@ -51,9 +51,11 @@ The current sizing owner is
 - growth-bearing artifacts need an owner-valid bounded representation before
   becoming an operational dead end.
 
-WP-18 requires the two fixed retained horizon families; the accepted T07E task
-does not authorize a new partition route, root selector, W02 serializer API or
-other cross-owner interface. WP-24 rejects inventing universal numeric quotas.
+WP-18 requires the two fixed retained horizon families; the original accepted
+T07E task did not authorize a new partition route, root selector, W02 serializer
+API or other cross-owner interface. The 2026-09-29 Senior resolution below
+amends only the narrow W02 exact-measurement capability and its tests. WP-24
+rejects inventing universal numeric quotas.
 
 ## Discovered implementation pressure
 
@@ -97,40 +99,49 @@ BOUNDARY THAT MAY REQUIRE AN AUTHORIZED CHANGE:
 - planning remains noncanonical and never mutates native history or overrides
   current owners.
 
-## What can proceed without changing the boundary
+## Pre-resolution disposition (historical)
 
 The implementation and its local corrupt-horizon error-path repair are committed
-locally and were reviewed. The reviewer confirmed the corrupt-horizon finding
-was addressed and withdrew the mistaken SemanticEvent-source finding. The
-candidate schema impact is `dramaturg-horizon.schema.json` 1 -> 2; under the
-current pre-release clean-slate owner there is no migration or
+locally and were reviewed. At this brief's initial disposition, the reviewer
+confirmed the corrupt-horizon finding was addressed and withdrew the mistaken
+SemanticEvent-source finding, but T07E remained stopped pending measurement
+authorization. That stop was later resolved by the Senior authorization below.
+The candidate schema impact is `dramaturg-horizon.schema.json` 1 -> 2; under
+the current pre-release clean-slate owner there is no migration or
 `campaign_contract_generation` bump solely for replacing the unreleased
-scaffold shape. The local candidate has focused/cross-owner test evidence, but
-T07E cannot be accepted while the writer-size obligation lacks an authorized
-measurement route.
+scaffold shape.
 
-## Safe options for Senior resolution
+## Senior resolution — 2026-09-29
 
-1. Authorize a narrow existing-W02/RuntimeHost capability that measures the
-   exact final serialized bytes for the Dramaturg path operations and returns
-   the owner-defined sizing classification before publication. This requires
-   updating the T07E impact envelope and testing the W02 serialization boundary
-   and Dramaturg behavior together.
-2. Identify an already-approved exact serializer/measurement capability that
-   the T07E writer can consume without changing W02/RuntimeHost contracts, with
-   evidence that its measured bytes equal the actual emitted artifact.
-3. Keep T07E stopped and the local candidate unpublished until a compliant
-   bounded publication route is authorized.
+Senior / Product Owner disposition: **AUTHORIZE NARROW W02 MEASUREMENT FOR ALL SIMILAR CASES**.
 
-No option is selected by this brief. Do not invent a serializer, numeric cap,
-partition path, or compatibility/migration policy to continue implementation.
+The T07E impact envelope is amended to allow one generic, side-effect-free
+RuntimeHost/W02 capability that reports the exact serialized UTF-8 byte size
+for supplied campaign path operations using the same serializer as
+`CampaignPublicationTransport.create_tree`, plus its RuntimeHost/W02 tests.
+T07E is the current adopter; the measurement capability is reusable by
+similar W02 writers without automatically changing unrelated owners' direct
+write scopes.
+
+For review/partition-band Dramaturg candidates, publication remains withheld
+until an **ephemeral trusted owner review outcome** is present and bound to the
+exact candidate, fixed route, and measured byte count. No review outcome or
+review artifact is persisted. It cannot be supplied by model, request or
+campaign data. The accepted sizing bands remain decision guidance, not a hard
+validity cutoff; no hard byte cap or new partition route is authorized.
+
+The resolution authorizes measurement and review-defer behavior only. It does
+not change W02 publication acceptance/transaction semantics, add a general
+registry or alter campaign/storage version policy. The RuntimeHost module
+version must be reconciled under its current version owner if the implementation
+materially changes that module.
 
 ## Recommendation
 
-Resolve the exact-byte measurement owner/interface before accepting or
-publishing the T07E code candidate. Preserve the current stable two-route
-Dramaturg semantics and keep T07D, T07A/B/C, the CLS↔HDM preflight and A26-02
-unchanged.
+Implement the authorized exact-byte measurement capability and T07E integration
+inside the amended impact envelope, then re-review and verify before accepting
+or publishing the T07E candidate. Preserve the stable two-route Dramaturg
+semantics and keep T07D, T07A/B/C, the CLS↔HDM preflight and A26-02 unchanged.
 
 ## Cost / risk if this gate is wrong
 
@@ -143,7 +154,86 @@ partition/migration policy.
 ```text
 VERSION_IMPACT: NONE for this brief; it changes only development status/evidence.
 T07E CANDIDATE VERSION IMPACT: dramaturg-horizon.schema.json 1 -> 2;
-  campaign_contract_generation, storage/catalog/engine, migration and dual-read NONE.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
+  RuntimeHost module 1.0.10 -> 1.0.11; campaign_contract_generation,
+  storage/catalog/engine, migration and dual-read NONE.
+SYSTEM_IMPACT: RESOLVED TO BOUNDED W02 MEASUREMENT / T07E IMPLEMENTATION RESUMED
 UNPUBLISHED_WORK: T07E commits `cd5c8a2ba78584ab0e1527d20b43db6ca443b417` and `20dd239d109cb2221b85ebd62f217fac509c7a1e` remain local and unpushed.
 ```
+
+```text
+SYSTEM_IMPACT_RESOLUTION: RESOLVED TO BOUNDED W02 MEASUREMENT PREREQUISITE
+AUTHORIZED_EXTENDED_SCOPE: one exact serialized-byte measurement capability in RuntimeHost/W02 plus its tests; T07E consumes it before publication
+REVIEW_BAND_DISPOSITION: withhold until ephemeral trusted owner outcome tied to candidate/route/byte count
+HARD_CAP_OR_NEW_PARTITION: NOT AUTHORIZED
+T07E_ACCEPTANCE: PENDING IMPLEMENTATION, VERIFICATION, REVIEW AND REMOTE READ-BACK
+```
+
+## T07E measurement implementation and task-review evidence
+
+Local code checkpoints:
+
+```text
+T07E horizon implementation: `cd5c8a2ba78584ab0e1527d20b43db6ca443b417`
+corrupt-horizon repair: `20dd239d109cb2221b85ebd62f217fac509c7a1e`
+W02 measurement + T07E size review: `421516689e6ed766eadf1045571eff3078971328`
+T07E review-outcome TCB fix: `c34c5b20f0657052e4a152bd21abe5fe11202f2d`
+```
+
+The W02 measurement addition is one generic side-effect-free
+`CampaignPublicationTransport.measure_path_operations` capability, surfaced
+through bound `RuntimeHost.publication`. It returns per-path exact UTF-8 byte
+lengths using the same adapter serializer contract as `create_tree`; missing,
+incomplete or invalid measurement fails closed. RuntimeHost/W02 publication
+transaction, accepted-outcome and create_tree signatures remain unchanged.
+T07E measures the exact operation before W02 publication; review/partition-band
+candidate writes remain unpublished until a nonpersistent typed trusted-owner
+outcome is bound by value to that candidate, route, base and measured size. No
+hard cap or new route was added.
+
+The independent reviewer initially found the review-outcome issuer marker
+could be used as pseudo-authentication. The fix removes issuer markers and
+object-identity proof; the outcome is a plain ephemeral value and tracked
+deterministic composition is its trusted source under T00H. The same reviewer
+scoped re-review marked that finding ADDRESSED and found no new breakage.
+Review verdicts: spec compliance PASS for the implementation range and
+task/code quality PASS, with local broad-verification concerns below.
+
+Verification evidence:
+
+- controller combined RuntimeHost composition + RD13 + RD11 + RD09: **418
+  passed**, with two pre-existing `jsonschema.RefResolver` warnings;
+- scoped Ruff checks and format checks: **PASS**;
+- full local DEV diagnostic: **1404 passed, 5 skipped, 11 failed**; the four
+  known A26-02/S6D REDs were separately reproduced, and the remaining seven
+  failures are preserved workspace-artifact contamination (`.entire/`,
+  `DEV/tmp`, `DEV/.lavish/`/generated GAME cache);
+- maintenance audit: existing duplicate `ENGINE_VERSION.yaml` under
+  `DEV/tmp` plus `.entire/tmp` identity artifact; no workspace material was
+  cleaned;
+- hosted CI unavailable in the local-machine runtime; no hosted result is
+  claimed for this T07E candidate.
+
+`VERSION_IMPACT`: Dramaturg horizon schema `1 -> 2`; RuntimeHost `1.0.10 ->
+1.0.11`; campaign/storage/catalog/engine generations, migration, dual-read
+and DEV bookkeeping revisions: NONE. The pre-release clean-slate owner remains
+the basis for no campaign migration/aggregate-generation bump.
+
+The candidate commits and this updated status/brief are local and unpushed.
+T07E is implementation/review PASS but not yet accepted/read back. After
+publication and remote read-back, proceed to the independent T07-INTEGRATION
+review as directed; A26-02 remains separate.
+
+## Clean exact-candidate verification — 2026-09-30
+
+The clean detached source at `c34c5b20f0657052e4a152bd21abe5fe11202f2d`
+passed the canonical full DEV diagnostic with **1411 passed, 5 skipped, 4
+failed**. All four failures are the exact known S6D/A26-02 nodes listed in the
+execution cursor; a sequential rerun reproduced each failure. No T07E/RD13,
+RuntimeHost, or related regression test failed. The package-provenance tests
+reported a clean HEAD. The combined version-namespace, package-provenance, and
+current-progress suite passed **18 tests**; the canonical maintenance audit
+passed (`OK: engine consistency audit passed`).
+
+This is local verification only. Hosted CI is unavailable in the current
+runtime. T07E code and synchronized status remain pending non-force publication
+and fresh remote read-back; T07-INTEGRATION is not started until that gate.
