@@ -221,6 +221,23 @@ CURRENT_DISPOSITION: **ACCEPTED / W04_COMMENTATOR_CONTROL_READY** — implementa
 
 T07D_PUBLICATION_READBACK: `git fetch --prune origin` confirmed local HEAD and `origin/v1/engine-rearchitecture` at `591791ef9242e2b4d5dc1d840e5b268dd78c0165`, containing candidate code `3e80ecb187bd6474471ed53bc08424b5270f4dbb`.
 
+## W04.T07E implementation impact envelope
+
+SPEC / APPROVED DESIGN: W04.T07E row in the stable Wave-04 plan; R2.5 two-level multiplayer Dramaturg coordination; WP-18 Story/Dramaturg canonical specification, especially §§5–10 and §§13–15; accepted Story/T0 source contracts; existing R2.3 `profile.dramaturgy` and RuntimeHost/W02 publication owners.
+IMPLEMENTATION START HEAD: `b97610d00b41c274742cc5ec57c94463e34b1811` (freshly fetched accepted T07D status/read-back head).
+PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/dramaturg.py`, `DEV/SCHEMAS/dramaturg-horizon.schema.json`, `DEV/TESTS/test_rd13_story_t0_commentator.py`.
+
+EXPECTED OWNERS TO CHANGE: Dramaturg retained-horizon value validation, current admission, bounded publication, owner-local generation and safe rebase only.
+EXPECTED CONSUMERS TO CHANGE: T07E Dramaturg horizon/publication/admission/rebase tests in RD13; accepted Context `profile.dramaturgy`, exact MANIFEST/PLAYER native owners, and existing RuntimeHost/W02 publication remain consumed read-only.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: the admitted Dramaturg horizon schema/value and owner-local functions in `dramaturg.py`; use existing fixed campaign routes, bound ContextService, pinned repository operation and RuntimeHost CampaignPublicationService. No RuntimeHost/W02/Context/W03/Story/Commentator/TurnRuntime interface change, no catalog vocabulary addition and no root selector.
+
+PROTECTED ARCHITECTURE INVARIANTS: exactly shared + stable-PLAYER-local retained families are active only in multiplayer; single-player preparation is ephemeral; route identity is stable `player_id`; player-local shared basis is exactly ABSENT or BOUND and BOUND retains the exact generation/bounded identity; entries use only accepted planning classes; native owners outrank planning; source basis stays owner-typed with no universal revision scalar; generation is monotonic owner-local metadata and only a successfully published generation is retainable; candidates cannot self-authorize; incompatible/stale state is discarded/reprepared, never text-merged/LWW; no planning-as-canon, chronology, PC agency, knowledge/disclosure, Actor, gameplay, native-history, catch-up or raw-Narrator authority; no global planning scans.
+ARCHITECTURE-SENSITIVE SURFACES: current mode/PLAYER/role admission, owner-typed source basis, horizon scope/shared-generation identity, exact pinned base and successful non-force publication outcome, rebase conflict handling, retention/privacy containment.
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD13 T07E cases plus relevant existing RuntimeHost/W02 publication, Context `profile.dramaturgy`, PLAYER/mode and T07C/T07D regressions; schema validation, Version Impact/provenance, full DEV, maintenance and scoped Ruff/format.
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: T07A/B/C/D implementations and semantics, W02 publication/RuntimeHost, W03/PLAYER/access/Context producers, Story/T0/history writers, T06 Narrator, Commentator, catch-up/session, Actor/mechanics/RNG, catalogs, `GAME/CORE`, campaign templates/scaffolds, Wave-05 final writers, A26-02 and T07-INTEGRATION. No persisted single-player planning owner, global plan registry/index/scheduler, root selector, universal freshness vector or extra migration policy.
+VERSION IMPACT: classify the actual Dramaturg horizon schema and any persistent generation contract independently; do not infer NONE from scope/file location. `dramaturg.py` has no current module-version field. Determine whether local schema and campaign-contract/storage/catalog/engine/migration/dual-read changes are required under the current versioning owners.
+SYSTEM IMPACT: NONE expected within this owner-local Dramaturg/WP-18 consumer boundary. Stop before any need to add a RuntimeHost/W02/W03/Context API, alter native owner semantics or authorization, add catalog/protocol capability, introduce a general registry/index, or permit stale/caller-carried generation/source authority.
+
 ## W04.T07D System-Impact stop and accepted resolution
 
 T07D_STATUS: `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED` — stopped before RED; no T07D code/schema/test changes.
