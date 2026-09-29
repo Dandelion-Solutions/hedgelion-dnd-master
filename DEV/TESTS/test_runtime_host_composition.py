@@ -7,6 +7,8 @@ import pickle
 import unittest
 from collections.abc import Mapping, Sequence
 
+import yaml
+
 import GAME.TOOLS.publication as publication_module
 from GAME.TOOLS.durability import route_serialized_operation
 from GAME.TOOLS.live_state import (
@@ -32,6 +34,20 @@ from GAME.TOOLS.runtime_host import (
 )
 
 CAMPAIGN_ID = "campaign-frostfall"
+
+
+def _plain_yaml_value(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _plain_yaml_value(item) for key, item in value.items()}
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes, bytearray)):
+        return [_plain_yaml_value(item) for item in value]
+    return value
+
+
+def _test_campaign_yaml_bytes(value: object) -> bytes:
+    return yaml.safe_dump(
+        _plain_yaml_value(value), sort_keys=True, allow_unicode=True
+    ).encode("utf-8")
 
 
 def _validate_owner_publication(
@@ -201,6 +217,8 @@ class PublicationTransport:
     def __init__(self, repository: PublicationRepository) -> None:
         self.repository = repository
         self.calls: list[tuple[str, object]] = []
+        self.measurement_calls = 0
+        self.serialized_path_bytes: dict[str, bytes | None] = {}
         self.response_status = "accepted"
         self.next_head = "c" * 40
         self.reconciliation_head: str | None = None
@@ -222,8 +240,32 @@ class PublicationTransport:
         self.calls.append(("read_ref", target_ref))
         return {"head_sha": self.repository.current_revision}
 
+    def serialize_path_operation(self, value: object | None) -> bytes | None:
+        if value is None:
+            return None
+        return _test_campaign_yaml_bytes(value)
+
+    def measure_path_operations(
+        self, path_operations: Mapping[str, object | None]
+    ) -> Mapping[str, int]:
+        self.measurement_calls += 1
+        serialized = {
+            path: self.serialize_path_operation(value)
+            for path, value in path_operations.items()
+        }
+        return {
+            path: 0 if payload is None else len(payload)
+            for path, payload in serialized.items()
+        }
+
     def create_tree(self, base_tree_sha: str, path_operations: object) -> object:
         self.calls.append(("create_tree", path_operations))
+        if not isinstance(path_operations, Mapping):
+            raise TypeError("test create_tree path operations must be a mapping")
+        self.serialized_path_bytes = {
+            path: self.serialize_path_operation(value)
+            for path, value in path_operations.items()
+        }
         return "d" * 40
 
     def create_commit(self, parent_sha: str, tree_sha: str, target_ref: str) -> object:
@@ -475,7 +517,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.10")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.11")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -485,6 +527,71 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         self.assertIsNot(host.context, host.native_ordering)
         self.assertIsNot(host.history, host.native_ordering)
         self.assertNotIn("_context", dir(host.history))
+
+    def test_measure_path_operations_uses_create_tree_utf8_serializer_without_writes(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        host, _repository, _live = _compose(repository, publication=transport)
+        operations: dict[str, object | None] = {
+            "DRAMATURG/SHARED.yaml": {"text": "café 🦊", "generation": 1},
+            "DRAMATURG/PLAYERS/player.aria.yaml": None,
+        }
+        measure = getattr(host.publication, "measure_path_operations", None)
+        self.assertTrue(
+            callable(measure), "bound W02 exact-size capability is required"
+        )
+
+        sizes = measure(operations)
+
+        self.assertEqual(
+            sizes,
+            {
+                path: 0
+                if transport.serialize_path_operation(value) is None
+                else len(transport.serialize_path_operation(value))
+                for path, value in operations.items()
+            },
+        )
+        self.assertGreater(
+            sizes["DRAMATURG/SHARED.yaml"],
+            len(
+                transport.serialize_path_operation(
+                    operations["DRAMATURG/SHARED.yaml"]
+                ).decode("utf-8")
+            ),
+        )
+        self.assertEqual(transport.calls, [])
+        self.assertEqual(transport.measurement_calls, 1)
+        self.assertEqual(transport.serialized_path_bytes, {})
+        self.assertEqual(repository.pin_calls, [])
+
+        transport.create_tree(repository.current_tree, operations)
+
+        self.assertEqual(
+            sizes["DRAMATURG/SHARED.yaml"],
+            len(transport.serialized_path_bytes["DRAMATURG/SHARED.yaml"]),
+        )
+        self.assertEqual([name for name, _value in transport.calls], ["create_tree"])
+
+    def test_measurement_fails_closed_if_transport_lacks_exact_serializer_capability(
+        self,
+    ) -> None:
+        repository = PublicationRepository()
+        transport = PublicationTransport(repository)
+        transport.measure_path_operations = None  # type: ignore[method-assign]
+        host, _repository, _live = _compose(repository, publication=transport)
+        measure = getattr(host.publication, "measure_path_operations", None)
+        self.assertTrue(
+            callable(measure), "bound W02 exact-size capability is required"
+        )
+
+        with self.assertRaises(RuntimeHostError):
+            measure({"DRAMATURG/SHARED.yaml": {"text": "bounded"}})
+
+        self.assertEqual(transport.calls, [])
+        self.assertEqual(repository.pin_calls, [])
 
     def test_each_operation_repins_campaign_and_rereads_selected_live(self) -> None:
         host, repository, live = _compose()

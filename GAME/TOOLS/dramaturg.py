@@ -6,8 +6,9 @@ import json
 import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass
-from typing import Final
+from dataclasses import dataclass, field
+from types import MappingProxyType
+from typing import Final, NoReturn
 
 
 class DramaturgContractError(ValueError):
@@ -50,6 +51,22 @@ class _PreparedDramaturgPublication:
 
 
 @dataclass(frozen=True, slots=True)
+class _DramaturgSizeReviewOutcome:
+    _issuer: object = field(repr=False, compare=False)
+    plan: _PreparedDramaturgPublication = field(repr=False, compare=False)
+    candidate_json: str = field(repr=False)
+    fixed_path: str
+    measured_size_bytes: int
+    decision: str
+
+    def __reduce__(self) -> NoReturn:
+        raise TypeError("Dramaturg size review outcomes are ephemeral")
+
+    def __reduce_ex__(self, protocol: int) -> NoReturn:
+        raise TypeError("Dramaturg size review outcomes are ephemeral")
+
+
+@dataclass(frozen=True, slots=True)
 class DramaturgPublicationResult:
     """Publication result; generation is present only after current proof."""
 
@@ -57,12 +74,19 @@ class DramaturgPublicationResult:
     generation: int | None
     outcome: object | None
     preparation: DramaturgPreparation
+    measured_sizes: Mapping[str, int] | None = None
+    size_band: str | None = None
+    _measurement_issuer: object | None = field(default=None, repr=False, compare=False)
 
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ENTRY_KINDS: Final[frozenset[str]] = frozenset(
     {"SOURCE_ANCHORED_CONSTRAINT", "PROVISIONAL_DRAMATURGIC_DIRECTION"}
 )
+_DRAMATURG_SIZE_REVIEW_ISSUER: Final[object] = object()
+# Approximate owner-guidance transitions only; these values never reject a write.
+_SIZE_TARGET_MAX_BYTES: Final[int] = 12 * 1024
+_SIZE_REVIEW_MAX_BYTES: Final[int] = 16 * 1024
 
 
 def _nonempty_string(value: object, label: str) -> str:
@@ -363,6 +387,76 @@ def build_dramaturg_candidate(
     elif shared_basis is not None:
         raise DramaturgContractError("shared horizon cannot carry a shared_basis")
     return _candidate(value)
+
+
+def _dramaturg_size_band(size_bytes: int) -> str:
+    """Classify owner review bands; the result is guidance, never a hard cap."""
+
+    if size_bytes <= _SIZE_TARGET_MAX_BYTES:
+        return "PREFERRED_TARGET"
+    if size_bytes <= _SIZE_REVIEW_MAX_BYTES:
+        return "REVIEW"
+    return "REVIEW_PARTITION"
+
+
+def _issue_dramaturg_owner_size_review_outcome(
+    result: DramaturgPublicationResult, *, decision: str
+) -> _DramaturgSizeReviewOutcome:
+    """Issue one ephemeral trusted owner outcome for an exact measured candidate."""
+
+    if (
+        not isinstance(result, DramaturgPublicationResult)
+        or result.status != "SIZE_REVIEW_REQUIRED"
+        or result._measurement_issuer is not _DRAMATURG_SIZE_REVIEW_ISSUER
+    ):
+        raise DramaturgContractError(
+            "owner size review requires a measured review-band result"
+        )
+    if decision not in {"APPROVE_EXISTING_ROUTE", "REPREPARE"}:
+        raise DramaturgContractError("Dramaturg size review decision is not admitted")
+    plan = result.preparation._plan
+    sizes = result.measured_sizes
+    if not isinstance(plan, _PreparedDramaturgPublication) or not isinstance(
+        sizes, Mapping
+    ):
+        raise DramaturgContractError("owner size review result is incomplete")
+    measured_size = sizes.get(plan.path)
+    if (
+        type(measured_size) is not int
+        or measured_size < 0
+        or _dramaturg_size_band(measured_size) == "PREFERRED_TARGET"
+        or result.size_band != _dramaturg_size_band(measured_size)
+    ):
+        raise DramaturgContractError("owner size review measurement is inconsistent")
+    return _DramaturgSizeReviewOutcome(
+        _issuer=_DRAMATURG_SIZE_REVIEW_ISSUER,
+        plan=plan,
+        candidate_json=plan.record_json,
+        fixed_path=plan.path,
+        measured_size_bytes=measured_size,
+        decision=decision,
+    )
+
+
+def _validate_dramaturg_size_review_outcome(
+    value: object,
+    *,
+    plan: _PreparedDramaturgPublication,
+    size_bytes: int,
+) -> _DramaturgSizeReviewOutcome:
+    if (
+        not isinstance(value, _DramaturgSizeReviewOutcome)
+        or value._issuer is not _DRAMATURG_SIZE_REVIEW_ISSUER
+        or value.plan is not plan
+        or value.candidate_json != plan.record_json
+        or value.fixed_path != plan.path
+        or value.measured_size_bytes != size_bytes
+        or value.decision not in {"APPROVE_EXISTING_ROUTE", "REPREPARE"}
+    ):
+        raise DramaturgContractError(
+            "Dramaturg size review outcome is not bound to this exact candidate/path/size"
+        )
+    return value
 
 
 def _runtime_host_basis(host: object) -> tuple[object, object]:
@@ -1178,7 +1272,10 @@ def promote_accepted_dramaturg_generation(
 
 
 def publish_dramaturg_horizon(
-    host: object, preparation: DramaturgPreparation
+    host: object,
+    preparation: DramaturgPreparation,
+    *,
+    size_review_outcome: object | None = None,
 ) -> DramaturgPublicationResult:
     """Publish one fixed-route delta through the existing RuntimeHost/W02 service."""
 
@@ -1215,6 +1312,69 @@ def publish_dramaturg_horizon(
         plan.path: record,
     }
     publication_service = getattr(host, "publication", None)
+    measure_path_operations = getattr(
+        publication_service, "measure_path_operations", None
+    )
+    if not callable(measure_path_operations):
+        raise DramaturgContractError(
+            "exact W02 path-size measurement capability is unavailable"
+        )
+    try:
+        raw_sizes = measure_path_operations(path_operations)
+    except (AttributeError, OSError, TypeError, ValueError) as exc:
+        raise DramaturgContractError(
+            "exact W02 path-size measurement failed closed"
+        ) from exc
+    if not isinstance(raw_sizes, Mapping) or set(raw_sizes) != set(path_operations):
+        raise DramaturgContractError(
+            "W02 path-size result does not bind the complete operation set"
+        )
+    measured_sizes: dict[str, int] = {}
+    for path, measured_size in raw_sizes.items():
+        if (
+            not isinstance(path, str)
+            or type(measured_size) is not int
+            or measured_size < 0
+        ):
+            raise DramaturgContractError(
+                "W02 path sizes are not exact non-negative bytes"
+            )
+        measured_sizes[path] = measured_size
+    horizon_size = measured_sizes.get(plan.path)
+    if type(horizon_size) is not int:
+        raise DramaturgContractError("W02 did not measure the fixed Dramaturg path")
+    size_band = _dramaturg_size_band(horizon_size)
+    immutable_sizes = MappingProxyType(dict(measured_sizes))
+    if size_band != "PREFERRED_TARGET":
+        if size_review_outcome is None:
+            return DramaturgPublicationResult(
+                "SIZE_REVIEW_REQUIRED",
+                None,
+                None,
+                preparation,
+                immutable_sizes,
+                size_band,
+                _DRAMATURG_SIZE_REVIEW_ISSUER,
+            )
+        review = _validate_dramaturg_size_review_outcome(
+            size_review_outcome,
+            plan=plan,
+            size_bytes=horizon_size,
+        )
+        if review.decision == "REPREPARE":
+            return DramaturgPublicationResult(
+                "REPREPARE_REQUIRED",
+                None,
+                None,
+                preparation,
+                immutable_sizes,
+                size_band,
+            )
+    elif size_review_outcome is not None:
+        raise DramaturgContractError(
+            "size-review outcome is not applicable to a preferred-target candidate"
+        )
+
     publish_owner_delta = getattr(publication_service, "publish_owner_delta", None)
     if not callable(publish_owner_delta):
         raise DramaturgContractError("RuntimeHost campaign publication is unavailable")
@@ -1231,15 +1391,32 @@ def publish_dramaturg_horizon(
     if not isinstance(outcome, PublicationOutcome):
         raise DramaturgContractError("RuntimeHost returned an untyped W02 outcome")
     if outcome.status is not PublicationStatus.ACCEPTED:
-        return DramaturgPublicationResult("NOT_PUBLISHED", None, outcome, preparation)
+        return DramaturgPublicationResult(
+            "NOT_PUBLISHED",
+            None,
+            outcome,
+            preparation,
+            immutable_sizes,
+            size_band,
+        )
     try:
         promoted = promote_accepted_dramaturg_generation(host, preparation, outcome)
     except DramaturgContractError:
         return DramaturgPublicationResult(
-            "PUBLISHED_NOT_RETAINABLE", None, outcome, preparation
+            "PUBLISHED_NOT_RETAINABLE",
+            None,
+            outcome,
+            preparation,
+            immutable_sizes,
+            size_band,
         )
     return DramaturgPublicationResult(
-        "PUBLISHED", int(promoted["generation"]), outcome, preparation
+        "PUBLISHED",
+        int(promoted["generation"]),
+        outcome,
+        preparation,
+        immutable_sizes,
+        size_band,
     )
 
 

@@ -46,8 +46,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -100,6 +100,17 @@ class CampaignPublicationTransport(Protocol):
         self, base_tree_sha: str, path_operations: Mapping[str, object | None]
     ) -> object:
         """Create one base-tree-derived tree and return its exact identity."""
+
+    def measure_path_operations(
+        self, path_operations: Mapping[str, object | None]
+    ) -> Mapping[str, int]:
+        """Measure exact UTF-8 file bytes with the same serializer as create_tree.
+
+        This method must be deterministic and side-effect-free. Its result names
+        every supplied path; a deletion (None) has size zero. The adapter must use
+        the exact serializer that its create_tree implementation uses, not an
+        estimate or a second representation.
+        """
 
     def create_commit(self, parent_sha: str, tree_sha: str, target_ref: str) -> object:
         """Create one single-parent commit and return its exact identity."""
@@ -630,6 +641,51 @@ class CampaignPublicationService(_BoundService):
                     "confirmed campaign publication lacks valid W02 acceptance evidence"
                 ) from exc
         return outcome
+
+    def measure_path_operations(
+        self, path_operations: Mapping[str, object | None]
+    ) -> Mapping[str, int]:
+        """Return exact adapter-serialized UTF-8 byte lengths without publication."""
+
+        transport = self._host._publication_transport
+        if transport is None:
+            raise RuntimeHostError("campaign publication capability is unavailable")
+        if not isinstance(path_operations, Mapping):
+            raise RuntimeHostError("measurement path operations must be an object")
+        try:
+            copied = _json_copy(path_operations, "measurement path operations")
+        except (TypeError, ValueError) as exc:
+            raise RuntimeHostError("measurement path operations are invalid") from exc
+        if not isinstance(copied, dict):
+            raise RuntimeHostError("measurement path operations must be an object")
+        if any(not isinstance(path, str) or not path for path in copied):
+            raise RuntimeHostError("measurement path operation paths must be nonempty")
+        measurement = getattr(transport, "measure_path_operations", None)
+        if not callable(measurement):
+            raise RuntimeHostError(
+                "exact campaign path measurement capability is unavailable"
+            )
+        frozen_operations = MappingProxyType(
+            {path: _freeze_json(value) for path, value in copied.items()}
+        )
+        try:
+            measured = measurement(frozen_operations)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise RuntimeHostError("exact campaign path measurement failed") from exc
+        if not isinstance(measured, Mapping) or set(measured) != set(copied):
+            raise RuntimeHostError(
+                "path measurement must return every exact operation path"
+            )
+        sizes: dict[str, int] = {}
+        for path, size in measured.items():
+            if not isinstance(path, str) or type(size) is not int or size < 0:
+                raise RuntimeHostError(
+                    "path measurements must be non-negative integer byte counts"
+                )
+            if copied[path] is None and size != 0:
+                raise RuntimeHostError("deleted path measurements must be zero")
+            sizes[path] = size
+        return MappingProxyType(sizes)
 
     def revalidate_published_owner_delta(
         self,
