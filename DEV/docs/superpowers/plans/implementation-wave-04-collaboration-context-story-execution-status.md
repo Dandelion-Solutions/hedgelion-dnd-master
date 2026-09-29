@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08B/T07D-P0/T07D/T07E accepted/read back; T07-INTEGRATION PASS; T08A authorized
-CURRENT_TASK: W04.T08A multiplayer join/rejoin/catch-up delta under the accepted Wave-04 plan. T04B, T02C and T07-INTEGRATION inputs are satisfied. Before RED, confirm the exact DEV test/delta paths and task-local impact envelope; do not edit `GAME/CORE/MULTIPLAYER.md` or runtime owners. Preserve T07A/B/C/D/E semantics, PO-012 and CLS↔HDM preflight. A26-02 remains separate before Wave-04 FINAL_REVIEW.
+STATUS: EXECUTING — W04.T08B/T07D-P0/T07D/T07E accepted/read back; T07-INTEGRATION PASS; T08A test/delta candidate and independent review PASS, clean exact verification pending
+CURRENT_TASK: W04.T08A multiplayer join/rejoin/catch-up delta under the accepted Wave-04 plan. T04B, T02C and T07-INTEGRATION inputs are satisfied. Exact direct paths are `DEV/TESTS/test_w04_t08_multiplayer_consumer_delta.py` and `DEV/TESTS/fixtures/w04_multiplayer_consumer_delta.json`; preserve tests/fixture-only scope, `GAME/CORE/MULTIPLAYER.md`, PO-005 deferred runtime realization, T07A/B/C/D/E semantics and CLS↔HDM preflight. A26-02 remains separate before Wave-04 FINAL_REVIEW.
 LAST_COMPLETED_TASK: W04.T07-INTEGRATION -> **PASS** at reviewed HEAD `3c61f636257f5febbfd47339e25a6be420852be9`; item-level review evidence `DEV/docs/superpowers/design/2026-09-30-w04-t07-integration-independent-review.md`; focused RD13 + RD11 + RuntimeHost unittest run 224 passed; no T07 integration findings; version impacts coherent. W04.T07E -> `W04_COMMENTATOR_DRAMATURG_READY`, code `c34c5b20f0657052e4a152bd21abe5fe11202f2d`, independent PASS; focused RuntimeHost + RD13 + RD11 + RD09 418 passed; clean exact full DEV 1411 passed, 5 skipped, four separately tracked A26-02 failures reproduced sequentially; version/provenance/current-progress 18 passed; maintenance PASS; Dramaturg horizon schema 1 -> 2 and RuntimeHost 1.0.10 -> 1.0.11. Non-force publication/read-back at `1e3ddfa71e285513ce0d86e6a16096fcf527eeaf`. W04.T07D -> `W04_COMMENTATOR_CONTROL_READY`, code `3e80ecb187bd6474471ed53bc08424b5270f4dbb`, independent PASS, focused RD13+P0 111 passed, Commentator schemas 1 -> 2, hosted validation run `36558943551`, acceptance/status run `36560867434`. W04.T07D-P0 -> `W04_COMMENTATOR_CONTROL_CONTEXT_READY`, code `d37ed9c1994e78feb51fc147cd3e2e5225b5a548`, independent PASS and fresh remote read-back. W04.T08B -> `W04_SESSION_CONSUMER_DELTA_READY`, code `356357a5c05e16d704bebfe11e8a3df542321694`; final cursor/read-back `468bd3400183ada85b76cd93737005aa1e1e64a7`, independent PASS. W04.T06B -> `W04_PROTECTED_EMISSION_READY`, code `9bf679fa6b6b5ac560198448d50f932f08b808eb`; remote read-back `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`. W04.T06A/T05C and earlier W04 checkpoints remain accepted.
 LAST_SAFE_SHA: `3c61f636257f5febbfd47339e25a6be420852be9` — published T07E source/status and exact source reviewed by T07-INTEGRATION.
 
@@ -303,13 +303,19 @@ CLS↔HDM: recorded preflight preserved; not rerun and not reopened because no t
 
 SPEC / APPROVED DESIGN: W04.T08A row in `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md:444–452`; accepted T04B and T02C inputs; T07-INTEGRATION PASS report above.
 BASE_SHA: `3c61f636257f5febbfd47339e25a6be420852be9` (published T07-INTEGRATION-reviewed source).
-EXPECTED OWNERS TO CHANGE: DEV multiplayer integration tests and one bounded Wave-05 MULTIPLAYER consumer-delta record only.
-EXPECTED CONSUMERS TO CHANGE: the T08A consumer contract tests and bounded MULTIPLAYER delta; no runtime producer or shared final-writer bytes.
-ALLOWED INTERFACES / CONTRACTS TO CHANGE: describe/verify the admitted consumer delta only. Do not edit `GAME/CORE/MULTIPLAYER.md`, PLAYER/LIVE shared schemas, runtime authority owners or catalogs.
+EXPECTED OWNERS TO CHANGE: `DEV/TESTS/test_w04_t08_multiplayer_consumer_delta.py` and `DEV/TESTS/fixtures/w04_multiplayer_consumer_delta.json` only.
+EXPECTED CONSUMERS TO CHANGE: the new T08A consumer-contract tests and bounded MULTIPLAYER delta; no runtime producer or shared final-writer bytes.
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: describe/verify the admitted consumer delta only. Do not edit `GAME/CORE/MULTIPLAYER.md`, PLAYER/LIVE shared schemas, runtime authority owners or catalogs. Do not implement invitation, account-resolution, or login UI behavior; PO-005 runtime realization is deferred outside this T08A consumer-delta scope.
 PROTECTED INVARIANTS: principal route -> candidate PLAYER IDs -> exact current PLAYER reload; no PLAYER_INDEX/scan authorization; catch-up reads current collaboration/history/access only; planning/private input excluded; login remains human selection/display while stable account ID is the binding.
 EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: T08A mandatory REDs, exact delta fixture contract, T02C/T04B/T07 integration consumers, current-progress/version/provenance checks and maintenance as required by the approved plan.
 VERSION IMPACT: NONE expected for DEV tests and the bounded DEV consumer-delta record; classify the actual changed set under the version owner before checkpoint.
 SYSTEM IMPACT: NONE expected. If correct evidence requires a runtime/shared-schema/final-writer change, stop before broadening scope.
+
+T08A_TDD: six consumer-delta assertions first failed because the bounded fixture was absent; after fixture creation all six pass. A reviewer finding that had scoped the scan prohibition to unbounded scans was repaired by changing the contract/test to forbid repository/directory scans as authorization; the targeted failure was observed before the fixture update.
+T08A_FOCUSED_VERIFICATION: canonical RD12 + RD16 + T08A + T08B unittest set — 170 passed, 5 skipped. Focused T08A + T08B + T03A + T02C join/catch-up + RD09 principal authorization pytest selection — 38 passed, 2 existing `jsonschema.RefResolver` deprecation warnings. Scoped Ruff check/format and JSON parse: PASS.
+T08A_INDEPENDENT_REVIEW: PASS after scan-scope repair. All five plan REDs represented; no runtime/shared-schema change; PO-005 runtime realization remains deferred.
+T08A_VERSION_IMPACT: NONE — only DEV tests and a bounded DEV consumer-delta fixture changed; no HDM-owned runtime/module/schema/generation namespace changed.
+T08A_SYSTEM_IMPACT: NONE — task remains inside the approved consumer-delta boundary.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -660,9 +666,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: execute W04.T08A under the impact envelope above. Before RED, identify the exact T08A test/delta paths by following the accepted T03A consumer-delta pattern and relevant current owners; keep direct changes to tests plus the bounded Wave-05 MULTIPLAYER delta. Do not edit `GAME/CORE/MULTIPLAYER.md`. After T08A PASS, join with accepted T08B and T03A at T08C. A26-02 remains required before Wave-04 FINAL_REVIEW.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A–T07E. T07-INTEGRATION PASS satisfies its gate; T08A is authorized under the accepted plan. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for T07-INTEGRATION. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: run full DEV and canonical maintenance audit from a clean exact-source worktree after committing the T08A test/fixture and synchronized execution cursor. Reproduce/classify the four known A26-02 failures only; do not weaken them. After clean verification and final status synchronization, publish/read back the T08A checkpoint; then proceed to T08C with accepted T08B and T03A.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A–T07E or T08A. T08A focused tests and independent review PASS; clean exact full DEV/maintenance and publication/read-back remain pending. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: T08A test/fixture and current execution-status/global-progress edits are local pending clean exact verification and coherent publication. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 

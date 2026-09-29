@@ -1,0 +1,41 @@
+{
+  "kind": "w04.multiplayer_consumer_delta",
+  "output": "W04_MULTIPLAYER_CONSUMER_DELTA_READY",
+  "direct_change_paths": [
+    "DEV/TESTS/test_w04_t08_multiplayer_consumer_delta.py",
+    "DEV/TESTS/fixtures/w04_multiplayer_consumer_delta.json"
+  ],
+  "physical_multiplayer_core_change": "none",
+  "principal_player_binding": {
+    "principal_identity": "verified_stable_account_id",
+    "candidate_player_ids": "current_principal_player_route",
+    "player_revalidation": "exact_current_PLAYER_reload",
+    "mutable_input": "only_after_current_binding_and_routing"
+  },
+  "forbidden_authorization_fallbacks": [
+    "MANIFEST.players.player_ids",
+    "GAME/CAMPAIGN/INDEX/PLAYER_INDEX.yaml",
+    "repository_or_directory_scan"
+  ],
+  "authorization_fallbacks": [],
+  "catch_up": {
+    "required_current_sources": [
+      "collaboration",
+      "native_history",
+      "access"
+    ],
+    "projection_scope": "current_recipient_eligible_material",
+    "assembled_before_mutable_input": true,
+    "cursor_hint_proves_human_consumption": false,
+    "excluded_material": [
+      "dramaturg_planning_only",
+      "other_participant_private_input",
+      "full_chat_transcript"
+    ]
+  },
+  "github_identity": {
+    "login_role": "human_selection_and_display_only",
+    "PLAYER_binding": "verified_stable_account_id",
+    "login_or_chat_claim_grants_authority": false
+  }
+}
