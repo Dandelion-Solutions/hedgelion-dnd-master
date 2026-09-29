@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08B and W04.T07D-P0 accepted; PO-012 incorporated; W04.T07D resumed
-CURRENT_TASK: W04.T07D RED/implementation is authorized from accepted T07D-P0, PO-012 and T07C/Context/W03 inputs. Consume exact-current PLAYER disclosure and at most one selected currently controlled PC's exact `epistemic.known` evidence. Preserve public-only behavior without a PLAYER, do not union multiple PCs, and do not trust caller maps or legacy `visible_to`. Keep T07A/B/C and the recorded CLS↔HDM preflight closed. A26-02 remains separate before Wave-04 FINAL_REVIEW.
+STATUS: EXECUTING — W04.T08B and W04.T07D-P0 accepted; PO-012 incorporated; T07D implementation/review PASS, clean exact verification pending
+CURRENT_TASK: W04.T07D verification/acceptance closure. Implementation and independent task review passed. The current worktree's exact-source full DEV and maintenance checks are contaminated by preserved `.entire`/`.lavish` artifacts and nested `DEV/tmp` worktrees; execution of the exact candidate checks in the already-existing detached clean verification worktree was denied by the shell runtime, even after Product Owner approval. Do not advance to T07E until clean exact full DEV/maintenance evidence and the code checkpoint's fresh remote read-back are recorded. Preserve PO-012 semantics, T07A/B/C and CLS↔HDM preflight. A26-02 remains separate before Wave-04 FINAL_REVIEW.
 LAST_COMPLETED_TASK: W04.T07D-P0 -> `W04_COMMENTATOR_CONTROL_CONTEXT_READY`, code `d37ed9c1994e78feb51fc147cd3e2e5225b5a548`, independent PASS, clean exact committed-source DEV/version/maintenance verification, and fresh remote read-back. W04.T08B -> `W04_SESSION_CONSUMER_DELTA_READY`, code `356357a5c05e16d704bebfe11e8a3df542321694`; verification/status `d9e647a98478c4b6867ad38aac5cbfe7ccfe855a`; final cursor/read-back `468bd3400183ada85b76cd93737005aa1e1e64a7`, independent PASS, clean exact committed-source verification. W04.T06B -> `W04_PROTECTED_EMISSION_READY`, code `9bf679fa6b6b5ac560198448d50f932f08b808eb`; status `8d646ff3d246cf2ee414dc5e8c1b57a5310c6d1f`; remote read-back `9b7ac9825f90b1994fc33bf209834d1b0f2934ad`. W04.T06A -> `W04_ROLE_CONTEXT_HANDOFF_READY`, code `5550d30cb2e53f4e309725cf4a69f510c57f7af6` / status `513c4f75f1db13c52b2656225367c16b4118b91a`; W04.T05C -> `W04_CONTEXT_INTEGRATION_READY`, code `c373d1cd7d71455a62cbfa2e7d993e0b1a97c34a` / status `95c898ce62fc947436cd386198c182ea98510925`; W04.T04B/P0/P1/P0R and T04A/T07B/T07C prior PASS retained
 LAST_SAFE_SHA: `d37ed9c1994e78feb51fc147cd3e2e5225b5a548` — published and fresh remote read-back confirmed for the accepted T07D-P0 code checkpoint
 
@@ -163,6 +163,7 @@ T06B_PUBLICATION_READBACK: non-force push of the T06B implementation, verificati
 
 SPEC / APPROVED DESIGN: T07D row in the stable Wave-04 plan; PO-009 owner decision `DEV/docs/superpowers/specs/2026-09-09-story-commentator-self-contained-corpus-owner-decision.md`; WP-18 Story/Commentator spec; Story producer/persistence/retrospective contract; baseline Story projection source contracts; current W03 information/access owners; accepted T07A/T07B/T07C.
 IMPLEMENTATION START CODE BASE: `b6b7e8925727394482a62ace335beb0a05ed733d` (freshly fetched published tree; subsequent cursor update is documentation-only).
+CURRENT_RESUMPTION_BASE: `464a86ef687f5005274b9be8b6c00247ac07529a` — published P0 acceptance/cursor checkpoint before T07D RED.
 PRIMARY OWNER ARTIFACTS: `GAME/TOOLS/commentator.py`, Commentator-owned schemas, `DEV/TESTS/test_rd13_story_t0_commentator.py`.
 
 EXPECTED OWNERS TO CHANGE: Commentator's self-contained control/snapshot and deterministic pre-materialization filter only; Story/history and W03 information/access owners are read-only producers.
@@ -175,6 +176,39 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD13 T07D witnesses, accepted 
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES: T07A/T07B/T07C producers/semantics, W03 information/access producers, Context Runtime, History/Story producer, T07E/Dramaturg, GAME/CORE and shared final-writer schemas (Wave 05), native Master fallback, unrestricted retrieval. Preserve the recorded CLS↔HDM preflight result and triggers; no rerun/reopen absent a concrete new public semantic trigger.
 VERSION IMPACT: classify every actually changed Commentator schema against its persistence/local-version owner and aggregate campaign-generation rule. Do not infer NONE solely from filename; no bump is presumed before that assessment.
 SYSTEM IMPACT: NONE expected inside the admitted Commentator consumer boundary; stop before any need to change T07A-C or W03 owner interfaces/semantics.
+
+## W04.T07D implementation candidate, review and verification
+
+```text
+CANDIDATE_CODE_SHA: 3e80ecb187bd6474471ed53bc08424b5270f4dbb (local commit; publication/read-back pending)
+OUTPUT: W04_COMMENTATOR_CONTROL_READY
+TDD: RED/GREEN reported and recorded by implementer
+INDEPENDENT_REVIEW: PASS — spec compliance and task/code quality
+```
+
+Focused exact-candidate verification in the active checkout:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd13_story_t0_commentator.py DEV/TESTS/test_rd11_context_runtime.py::CommentatorControlProfileTests
+111 passed
+```
+
+Full DEV diagnostic in the current main worktree:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto
+1368 passed, 5 skipped, 11 failed
+```
+
+Four are the known out-of-scope S6D cases; all four were reproduced sequentially on this candidate with the same contract mismatches. Seven are workspace-contamination failures: `test_runtime_package_provenance::{test_built_zip_contains_one_generated_root_provenance_member,test_clean_checkout_metadata_records_exact_head}`, `test_game_dev_layout::test_runtime_marker_is_unique`, `test_release_game_passthrough::test_new_game_root_file_and_directory_are_automatically_archived`, `test_release_integration::test_canonical_entry_point_builds_reproducible_flat_runtime_and_generator_smoke`, `test_s6d_11_ruleset_package_closure::test_transitional_identity_keys_are_absent_from_current_carriers`, and `test_versioning_namespace_policy::test_census_has_zero_unclassified_hits`. The release/package census reads preserved `.entire/tmp` session artifacts; root-marker census includes two pre-existing detached trees under `DEV/tmp`; the version scan also reads `.entire/` and `DEV/.lavish/`. No T07D/RD13/P0 test failed.
+
+Main-worktree maintenance command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py` returned FAIL with two workspace findings: duplicate `ENGINE_VERSION.yaml` under the two existing `DEV/tmp` checkouts and a `.entire/tmp` transitional-identity artifact. It did not report a T07D contract/owner defect.
+
+CLEAN_EXACT_SOURCE_FULL_DEV_AND_MAINTENANCE: UNAVAILABLE. The controller advanced the existing detached verification worktree `/tmp/opencode/hdm-w04-t07d-p0-clean-d37ed9c` to this exact candidate, but the shell runtime denied the test command with that external worktree as working directory, including after Product Owner authorization. No alternate execution route was used.
+
+VERSION_IMPACT: `commentator-control-projection.schema.json` 1 -> 2; `commentator-snapshot.schema.json` 1 -> 2. `campaign_contract_generation`, `storage_format_generation`, `catalog_generation`, engine release, any existing Commentator module-version namespace, migration and dual-read: NONE. The changed schemas define local Commentator consumer-cache contracts; no campaign-persistent family or storage writer changed.
+
+CURRENT_DISPOSITION: implementation and independent review PASS; exact clean full DEV/maintenance evidence and code publication/read-back remain pending. T07E is not yet the current task.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -525,9 +559,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: W04.T07D RED/implementation in `GAME/TOOLS/commentator.py`, Commentator-owned schema(s), and RD13; apply PO-012 through the accepted `profile.commentator_control` evidence route. Verify focused T07D/T07C/W03 consumer regressions, perform the task-local Version Impact Gate, independent review and publish a coherent checkpoint. Then proceed to T07E only after T07D independent PASS/read-back. A26-02 remains required before Wave-04 FINAL_REVIEW.
-KNOWN_BLOCKERS: no Product Owner or Senior System-Impact blocker remains on T07D. Preserve caller-map/legacy `visible_to` non-authority, fail-closed exact-anchor behavior and no native-only T0 fallback. Four known pytest-only S6D failures remain outside task scope and must not be weakened; A26-02 is a separate required repair before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for T07D-P0; code, schema, tests, independent PASS and fresh remote read-back are published at `d37ed9c1994e78feb51fc147cd3e2e5225b5a548`. T07D RED/implementation has not started. Preserve unrelated `.agents/skills/` edits and untracked `DEV/.lavish/` without staging or modifying them.
+NEXT_EXACT_TASK: publish/read-back the reviewed W04.T07D code checkpoint with this cursor state and preserve the verification limitation. Then obtain clean exact-source full DEV/maintenance evidence on a runtime-approved execution surface; only after those gates pass, accept T07D and proceed to T07E. A26-02 remains required before Wave-04 FINAL_REVIEW.
+KNOWN_BLOCKERS: no Product Owner or Senior System-Impact blocker remains on T07D. Clean exact-source full DEV/maintenance verification is pending because current checkout artifacts contaminate the required scans and the runtime denied the approved external-worktree working directory. Preserve caller-map/legacy `visible_to` non-authority, fail-closed exact-anchor behavior and no native-only T0 fallback. Four known pytest-only S6D failures remain outside task scope and must not be weakened; A26-02 is a separate required repair before Wave-04 FINAL_REVIEW. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: W04.T07D code candidate `3e80ecb187bd6474471ed53bc08424b5270f4dbb` is committed locally with four task-owned paths only; publication/read-back and this task-verification cursor checkpoint are pending. Preserve unrelated `.agents/skills/` edits and untracked `DEV/.lavish/` without staging or modifying them.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
