@@ -4,12 +4,123 @@
   "title": "HDM retained multiplayer Dramaturg horizon",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "scope_id", "generation", "source_basis", "entries"],
+  "required": ["schema_version", "scope_id", "scope", "generation", "source_basis", "entries"],
   "properties": {
-    "schema_version": {"type": "integer", "const": 1},
-    "scope_id": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "integer", "const": 2},
+    "scope_id": {"$ref": "#/$defs/id"},
+    "scope": {"oneOf": [{"$ref": "#/$defs/sharedScope"}, {"$ref": "#/$defs/playerScope"}]},
     "generation": {"type": "integer", "minimum": 1},
-    "source_basis": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "entries": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["kind", "text"], "properties": {"kind": {"enum": ["SOURCE_ANCHORED_CONSTRAINT", "PROVISIONAL_DRAMATURGIC_DIRECTION"]}, "text": {"type": "string", "minLength": 1}}}}
+    "source_basis": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sourceBasis"}},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "shared_basis": {"oneOf": [{"$ref": "#/$defs/sharedBasisAbsent"}, {"$ref": "#/$defs/sharedBasisBound"}]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"scope": {"properties": {"kind": {"const": "PLAYER_LOCAL"}}, "required": ["kind"]}}, "required": ["scope"]},
+      "then": {"required": ["shared_basis"]},
+      "else": {"not": {"required": ["shared_basis"]}}
+    }
+  ],
+  "$defs": {
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "sharedScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {"kind": {"const": "SHARED"}}
+    },
+    "playerScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "player_id"],
+      "properties": {"kind": {"const": "PLAYER_LOCAL"}, "player_id": {"$ref": "#/$defs/id"}}
+    },
+    "sourceBasis": {
+      "oneOf": [
+        {"$ref": "#/$defs/campaignActorBasis"},
+        {"$ref": "#/$defs/campaignEventBasis"},
+        {"$ref": "#/$defs/liveSourceBasis"}
+      ]
+    },
+    "campaignActorBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_domain", "owner_type", "identity", "currentness"],
+      "properties": {
+        "owner_domain": {"const": "CAMPAIGN"},
+        "owner_type": {"const": "world.actor"},
+        "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}},
+        "currentness": {"$ref": "#/$defs/actorCurrentness"}
+      }
+    },
+    "campaignEventBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_domain", "owner_type", "identity", "currentness"],
+      "properties": {
+        "owner_domain": {"const": "CAMPAIGN"},
+        "owner_type": {"const": "runtime.semantic_event"},
+        "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}},
+        "currentness": {"$ref": "#/$defs/eventCurrentness"}
+      }
+    },
+    "liveSourceBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_domain", "owner_type", "identity", "currentness"],
+      "properties": {
+        "owner_domain": {"const": "LIVE"},
+        "owner_type": {"const": "LIVE"},
+        "identity": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/id"}},
+        "currentness": {"$ref": "#/$defs/liveCurrentness"}
+      }
+    },
+    "actorCurrentness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {"kind": {"const": "STATE_REVISION"}, "value": {"type": "integer", "minimum": 0}}
+    },
+    "eventCurrentness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {"kind": {"const": "SEMANTIC_ORDER"}, "value": {"type": "integer", "minimum": 1}}
+    },
+    "liveCurrentness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "value"],
+      "properties": {"kind": {"const": "SOURCE_REVISION"}, "value": {"$ref": "#/$defs/id"}}
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "text", "source_basis", "assumptions"],
+      "properties": {
+        "kind": {"enum": ["SOURCE_ANCHORED_CONSTRAINT", "PROVISIONAL_DRAMATURGIC_DIRECTION"]},
+        "text": {"type": "string", "minLength": 1},
+        "source_basis": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sourceBasis"}},
+        "assumptions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "SOURCE_ANCHORED_CONSTRAINT"}}, "required": ["kind"]},
+          "then": {"properties": {"source_basis": {"minItems": 1}}}
+        }
+      ]
+    },
+    "sharedBasisAbsent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {"kind": {"const": "ABSENT"}}
+    },
+    "sharedBasisBound": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "scope_id", "generation"],
+      "properties": {"kind": {"const": "BOUND"}, "scope_id": {"$ref": "#/$defs/id"}, "generation": {"type": "integer", "minimum": 1}}
+    }
   }
 }

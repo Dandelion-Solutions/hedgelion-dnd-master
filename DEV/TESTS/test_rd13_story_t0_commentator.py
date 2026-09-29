@@ -10,6 +10,7 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 from GAME.TOOLS import commentator as commentator_module
+from GAME.TOOLS import dramaturg as dramaturg_module
 from GAME.TOOLS import history as history_module
 from GAME.TOOLS import story as story_module
 from GAME.TOOLS.commentator import (
@@ -377,6 +378,119 @@ class _StoryPublicationTransport:
         return {"status": "accepted", "head_sha": new_commit_sha, "dispatched": True}
 
 
+class _DramaturgRepository(_StoryPublicationRepository):
+    def __init__(
+        self,
+        *,
+        mode: str = "multiplayer",
+        player_ids: tuple[str, ...] = ("player.aria",),
+        player_status: str = "active",
+        actor_revision: int = 4,
+    ) -> None:
+        super().__init__(events=[])
+        self.records["MANIFEST.yaml"].update(
+            {"mode": mode, "players": {"player_ids": list(player_ids)}}
+        )
+        for index, player_id in enumerate(player_ids, start=1):
+            account_id = f"account.{player_id.split('.', 1)[-1]}"
+            status = player_status if player_id == "player.aria" else "active"
+            self.records[
+                route_native_record("world.player", (player_id,)).relative_path
+            ] = {
+                "kind": "world.player",
+                "id": player_id,
+                "player_id": player_id,
+                "campaign_id": self.campaign_id,
+                "state": {},
+                "github_binding": {"user_id": account_id, "login": f"user{index}"},
+                "status": status,
+                "deactivated_by": "creator" if status == "inactive" else None,
+                "controlled_pc_ids": [f"pc.{player_id.split('.', 1)[-1]}"],
+                "collaboration_route_refs": [],
+            }
+        self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"] = {
+            "schema_version": 1,
+            "kind": "runtime.principal_player_routing",
+            "campaign_id": self.campaign_id,
+            "complete": True,
+            "entries": [
+                {
+                    "stable_account_id": f"account.{player_id.split('.', 1)[-1]}",
+                    "candidate_player_ids": [player_id],
+                }
+                for player_id in player_ids
+            ],
+        }
+        self.actor = {
+            "kind": "world.actor",
+            "id": "actor.guard",
+            "campaign_id": self.campaign_id,
+            "state_revision": actor_revision,
+            "state": {"name": {"en": "Guard"}, "roles": ["actor.nonplayer_character"]},
+        }
+        self.records[
+            route_native_record("world.actor", ("actor.guard",)).relative_path
+        ] = deepcopy(self.actor)
+
+
+def _dramaturg_candidate(
+    *,
+    scope: dict[str, str] | None = None,
+    actor_revision: int = 4,
+    kind: str = "SOURCE_ANCHORED_CONSTRAINT",
+    planning_base: dict[str, object] | None = None,
+) -> dict[str, object]:
+    owner_basis = {
+        "owner_domain": "CAMPAIGN",
+        "owner_type": "world.actor",
+        "identity": ["actor.guard"],
+        "currentness": {"kind": "STATE_REVISION", "value": actor_revision},
+    }
+    entry_basis = [owner_basis] if kind == "SOURCE_ANCHORED_CONSTRAINT" else []
+    entry = {
+        "kind": kind,
+        "text": "The guard's current goal constrains this possibility."
+        if kind == "SOURCE_ANCHORED_CONSTRAINT"
+        else "Prepare a possible guarded route.",
+        "source_basis": entry_basis,
+        "assumptions": []
+        if kind == "SOURCE_ANCHORED_CONSTRAINT"
+        else ["The gate may remain closed."],
+    }
+    return dramaturg_module.build_dramaturg_candidate(
+        "campaign.main",
+        scope or {"kind": "SHARED"},
+        [entry],
+        planning_base=planning_base,
+    )
+
+
+def _retained_dramaturg_horizon(
+    candidate: dict[str, object], generation: int
+) -> dict[str, object]:
+    return dramaturg_module.validate_dramaturg_horizon(
+        {
+            **{
+                key: value for key, value in candidate.items() if key != "planning_base"
+            },
+            "schema_version": 2,
+            "generation": generation,
+        }
+    )
+
+
+def _dramaturg_runtime(
+    repository: _DramaturgRepository,
+    *,
+    principal_id: str = "account.aria",
+) -> tuple[object, _DramaturgPublicationTransport]:
+    transport = _DramaturgPublicationTransport(repository, principal_id=principal_id)
+    host = compose_runtime_host(
+        "campaign.main", repository, _DramaturgLiveTransport(), transport
+    )
+    return host, transport
+
+
 class _HistoryLiveTransport:
     def __init__(self) -> None:
         opening_revision = "e" * 40
@@ -434,6 +548,25 @@ class _HistoryLiveTransport:
         if source.source_key != self.source.source_key:
             raise KeyError(source.source_key)
         return self.pack
+
+
+class _DramaturgLiveTransport(_HistoryLiveTransport):
+    def read_selected_live_source(self, route, source):
+        del route
+        return source.as_mapping()
+
+
+class _DramaturgPublicationTransport(_StoryPublicationTransport):
+    def __init__(self, repository: _DramaturgRepository, *, principal_id: str) -> None:
+        super().__init__(repository)
+        self.principal_id = principal_id
+
+    def resolve_authenticated_acting_principal(
+        self, campaign_id: str, pinned_campaign: PinnedCampaign
+    ) -> AuthenticatedPrincipalEvidence:
+        if campaign_id != pinned_campaign.campaign_id:
+            raise KeyError(campaign_id)
+        return AuthenticatedPrincipalEvidence(self.principal_id)
 
 
 def _story_projection() -> dict[str, object]:
@@ -3207,19 +3340,131 @@ class CommentatorControlEvidenceTests(unittest.TestCase):
 
 
 class DramaturgHorizonTests(unittest.TestCase):
+    def test_generated_dramaturg_candidate_has_no_self_authorizing_generation(
+        self,
+    ) -> None:
+        builder = getattr(dramaturg_module, "build_dramaturg_candidate", None)
+        self.assertTrue(callable(builder), "candidate builder must be owner-local")
+
+        candidate = builder(
+            "campaign.main",
+            {"kind": "SHARED"},
+            [
+                {
+                    "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                    "text": "Prepare a possible guarded route.",
+                    "source_basis": [],
+                    "assumptions": ["The gate may remain closed."],
+                }
+            ],
+        )
+
+        self.assertNotIn("generation", candidate)
+        self.assertNotIn("schema_version", candidate)
+        self.assertEqual(candidate["scope_id"], "campaign.main")
+        self.assertEqual(candidate["planning_base"], {"kind": "ABSENT"})
+
+    def test_retained_families_have_only_the_fixed_shared_and_stable_player_routes(
+        self,
+    ) -> None:
+        route = getattr(dramaturg_module, "dramaturg_horizon_path", None)
+        self.assertTrue(callable(route), "fixed Dramaturg route resolver is required")
+
+        self.assertEqual(route("SHARED"), "DRAMATURG/SHARED.yaml")
+        self.assertEqual(
+            route("PLAYER_LOCAL", player_id="player.aria"),
+            "DRAMATURG/PLAYERS/player.aria.yaml",
+        )
+        with self.assertRaises(DramaturgContractError):
+            route("PLAYER_LOCAL", player_id="../player.aria")
+        with self.assertRaises(DramaturgContractError):
+            route("CAMPAIGN_WIDE")
+
+    def test_v2_horizon_carries_typed_scope_and_entry_local_source_basis(
+        self,
+    ) -> None:
+        source = {
+            "owner_domain": "CAMPAIGN",
+            "owner_type": "world.actor",
+            "identity": ["actor.guard"],
+            "currentness": {"kind": "STATE_REVISION", "value": 4},
+        }
+        horizon = validate_dramaturg_horizon(
+            {
+                "schema_version": 2,
+                "scope_id": "campaign.main",
+                "scope": {"kind": "SHARED"},
+                "generation": 1,
+                "source_basis": [source],
+                "entries": [
+                    {
+                        "kind": "SOURCE_ANCHORED_CONSTRAINT",
+                        "text": "The guard's current goal constrains this possibility.",
+                        "source_basis": [source],
+                        "assumptions": [],
+                    }
+                ],
+            }
+        )
+
+        self.assertEqual(horizon["schema_version"], 2)
+        self.assertEqual(horizon["source_basis"], [source])
+        self.assertEqual(horizon["entries"][0]["source_basis"], [source])  # type: ignore[index]
+
+    def test_horizon_contract_rejects_chronology_pc_agency_and_untyped_constraints(
+        self,
+    ) -> None:
+        schema = json.loads(
+            (SCHEMAS / "dramaturg-horizon.schema.json").read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        valid = _retained_dramaturg_horizon(
+            _dramaturg_candidate(kind="PROVISIONAL_DRAMATURGIC_DIRECTION"), 1
+        )
+
+        self.assertTrue(validator.is_valid(valid))
+        for forbidden in ("chronology", "pc_agency", "future_fact", "canonical_truth"):
+            with self.subTest(forbidden=forbidden):
+                self.assertFalse(
+                    validator.is_valid(valid | {forbidden: "not authority"})
+                )
+        mismatched_owner = deepcopy(valid)
+        mismatched_owner["source_basis"] = [
+            {
+                "owner_domain": "LIVE",
+                "owner_type": "world.actor",
+                "identity": ["actor.guard"],
+                "currentness": {"kind": "STATE_REVISION", "value": 4},
+            }
+        ]
+        self.assertFalse(validator.is_valid(mismatched_owner))
+        unanchored = deepcopy(valid)
+        unanchored["entries"] = [
+            {
+                "kind": "SOURCE_ANCHORED_CONSTRAINT",
+                "text": "This unsupported constraint must fail closed.",
+                "source_basis": [],
+                "assumptions": [],
+            }
+        ]
+        self.assertFalse(validator.is_valid(unanchored))
+
     def test_dramaturg_horizon_is_provisional_and_has_no_future_fact_field(
         self,
     ) -> None:
         horizon = validate_dramaturg_horizon(
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "scope_id": "campaign.main",
+                "scope": {"kind": "SHARED"},
                 "generation": 1,
-                "source_basis": ["event.gate_opened"],
+                "source_basis": [],
                 "entries": [
                     {
                         "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
                         "text": "Prepare a guarded route.",
+                        "source_basis": [],
+                        "assumptions": ["The route may remain guarded."],
                     }
                 ],
             }
@@ -3281,56 +3526,587 @@ class StoryPhysicalRouteTests(unittest.TestCase):
 
 
 class DramaturgPublicationTests(unittest.TestCase):
-    def test_unadmitted_dramaturg_candidate_cannot_enter_native_history(self) -> None:
-        history = [_semantic_event()]
-        horizon = validate_dramaturg_horizon(
-            {
-                "schema_version": 1,
-                "scope_id": "campaign.main",
-                "generation": 1,
-                "source_basis": ["event.gate_opened"],
-                "entries": [],
-            }
+    def test_raw_horizon_cannot_enter_narrator_commentator_or_catchup_contracts(
+        self,
+    ) -> None:
+        private_text = "PRIVATE_DRAMATURG_SECRET"
+        candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main",
+            {"kind": "SHARED"},
+            [
+                {
+                    "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                    "text": private_text,
+                    "source_basis": [],
+                    "assumptions": ["Private possibility only."],
+                }
+            ],
+        )
+        horizon = _retained_dramaturg_horizon(candidate, 1)
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+        narrator_request = {
+            "profile_id": "profile.narration",
+            "role": "NARRATOR",
+            "purpose": "narrate",
+            "subject_id": "actor.narrator",
+            "recipient_id": "player.aria",
+            "campaign_id": "campaign.main",
+            "allowed_channels": ["EXPLICIT_REF"],
+            "max_candidates": 1,
+            "required_ids": ["dramaturg-raw"],
+            "allowed_relations": [],
+            "budget": 1000,
+        }
+        raw_candidate = {
+            "candidate_id": "dramaturg-raw",
+            "channel": "EXPLICIT_REF",
+            "role": "NARRATOR",
+            "purpose": "narrate",
+            "subject_id": "actor.narrator",
+            "recipient_id": "player.aria",
+            "owner_family": "dramaturg.horizon",
+            "owner_identity": ["campaign.main"],
+            "payload": horizon,
+            "text": private_text,
+        }
+
+        narrator_result = host.context.assemble(narrator_request, [raw_candidate])
+        with self.assertRaises(CommentatorContractError):
+            build_commentator_snapshot(
+                [horizon],
+                build_commentator_control_projection(_commentator_context_evidence()),
+            )
+        catchup_schema = json.loads(
+            (SCHEMAS / "collaboration-catch-up.schema.json").read_text(encoding="utf-8")
+        )
+        catchup = {
+            "schema_version": 2,
+            "kind": "runtime.collaboration_catch_up",
+            "campaign_id": "campaign.main",
+            "campaign_revision": "a" * 40,
+            "player_id": "player.aria",
+            "controlled_pc_ids": ["pc.aria"],
+            "live_source_keys": [],
+            "obligations": [],
+            "cursor_hint": None,
+        }
+
+        self.assertEqual(narrator_result["outcome"], "UNSATISFIABLE")
+        self.assertNotIn(private_text, json.dumps(narrator_result))
+        self.assertTrue(Draft202012Validator(catchup_schema).is_valid(catchup))
+        self.assertFalse(
+            Draft202012Validator(catchup_schema).is_valid(
+                catchup | {"dramaturg_horizon": horizon}
+            )
+        )
+
+    def test_only_confirmed_w02_publication_promotes_the_prepared_owner_generation(
+        self,
+    ) -> None:
+        publish = getattr(dramaturg_module, "publish_dramaturg_horizon", None)
+        self.assertTrue(
+            callable(publish), "Dramaturg publication must use the W02 owner"
+        )
+        repository = _DramaturgRepository()
+        host, transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host, _dramaturg_candidate(), player_id="player.aria"
+        )
+
+        result = publish(host, prepared)
+
+        self.assertEqual(result.status, "PUBLISHED")
+        self.assertEqual(result.generation, 1)
+        self.assertEqual(repository.records["DRAMATURG/SHARED.yaml"]["generation"], 1)
+        self.assertTrue(
+            any(
+                name == "update_ref" and value[2] is False
+                for name, value in transport.calls
+            )
+        )
+
+    def test_rejected_w02_publication_does_not_promote_candidate_generation(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        host, transport = _dramaturg_runtime(repository)
+        transport.response_status = "rejected"
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host, _dramaturg_candidate(), player_id="player.aria"
+        )
+
+        result = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+
+        self.assertEqual(result.status, "NOT_PUBLISHED")
+        self.assertIsNone(result.generation)
+        self.assertNotIn("DRAMATURG/SHARED.yaml", repository.records)
+
+    def test_successful_campaign_cas_does_not_retain_candidate_after_live_source_moves(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        host, transport = _dramaturg_runtime(repository)
+        current_live = host._live_transport.source
+        source_basis = {
+            "owner_domain": "LIVE",
+            "owner_type": "LIVE",
+            "identity": list(current_live.source_key),
+            "currentness": {
+                "kind": "SOURCE_REVISION",
+                "value": current_live.source_revision,
+            },
+        }
+        candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main",
+            {"kind": "SHARED"},
+            [
+                {
+                    "kind": "SOURCE_ANCHORED_CONSTRAINT",
+                    "text": "The current selected LIVE source anchors this constraint.",
+                    "source_basis": [source_basis],
+                    "assumptions": [],
+                }
+            ],
+        )
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host, candidate, player_id="player.aria"
+        )
+
+        def move_live_source() -> None:
+            old = host._live_transport.source
+            revision = "f" * 40
+            epoch = derive_live_epoch_id(
+                old.campaign_id, old.scene_id, revision, old.claims
+            )
+            host._live_transport.source = LiveEnvelope(
+                campaign_id=old.campaign_id,
+                scene_id=old.scene_id,
+                epoch_id=epoch,
+                source_ref=build_live_ref(old.campaign_id, old.scene_id, epoch),
+                source_revision=revision,
+                claims=old.claims,
+                opening_campaign_revision=old.opening_campaign_revision,
+            )
+
+        transport.before_ref_read = move_live_source
+        result = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+
+        self.assertEqual(result.outcome.status.name, "ACCEPTED")
+        self.assertEqual(result.status, "PUBLISHED_NOT_RETAINABLE")
+        self.assertIsNone(result.generation)
+        self.assertEqual(repository.records["DRAMATURG/SHARED.yaml"]["generation"], 1)
+
+    def test_conflict_with_newer_planning_generation_is_discarded_without_text_merge(
+        self,
+    ) -> None:
+        reconcile = getattr(dramaturg_module, "reconcile_dramaturg_publication", None)
+        self.assertTrue(
+            callable(reconcile), "conflict reconciliation must be owner-local"
+        )
+        repository = _DramaturgRepository()
+        first = _dramaturg_candidate(kind="PROVISIONAL_DRAMATURGIC_DIRECTION")
+        repository.records["DRAMATURG/SHARED.yaml"] = _retained_dramaturg_horizon(
+            first, 1
+        )
+        host, transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            _dramaturg_candidate(planning_base={"kind": "BOUND", "generation": 1}),
+            player_id="player.aria",
+        )
+
+        def publish_competing_horizon() -> None:
+            repository.revision = "d" * 40
+            repository.tree_sha = "e" * 40
+            competing = dramaturg_module.build_dramaturg_candidate(
+                "campaign.main",
+                {"kind": "SHARED"},
+                [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "The other planning generation wins its owner-local route.",
+                        "source_basis": [],
+                        "assumptions": ["A different direction was prepared."],
+                    }
+                ],
+            )
+            repository.records["DRAMATURG/SHARED.yaml"] = _retained_dramaturg_horizon(
+                competing, 2
+            )
+
+        transport.before_ref_read = publish_competing_horizon
+        result = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+        reconciled = reconcile(host, prepared, result)
+
+        self.assertEqual(result.status, "NOT_PUBLISHED")
+        self.assertIsNone(reconciled)
+        self.assertEqual(
+            repository.records["DRAMATURG/SHARED.yaml"]["entries"][0]["text"],
+            "The other planning generation wins its owner-local route.",
+        )
+
+    def test_conflict_without_horizon_movement_reprepares_exact_candidate_without_retrying(
+        self,
+    ) -> None:
+        reconcile = getattr(dramaturg_module, "reconcile_dramaturg_publication", None)
+        self.assertTrue(callable(reconcile))
+        repository = _DramaturgRepository()
+        base = _retained_dramaturg_horizon(
+            _dramaturg_candidate(kind="PROVISIONAL_DRAMATURGIC_DIRECTION"), 1
+        )
+        repository.records["DRAMATURG/SHARED.yaml"] = base
+        host, transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            _dramaturg_candidate(planning_base={"kind": "BOUND", "generation": 1}),
+            player_id="player.aria",
+        )
+
+        def move_unrelated_campaign_base() -> None:
+            repository.revision = "d" * 40
+            repository.tree_sha = "e" * 40
+
+        transport.before_ref_read = move_unrelated_campaign_base
+        result = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+        rebased = reconcile(host, prepared, result)
+
+        self.assertEqual(result.status, "NOT_PUBLISHED")
+        self.assertEqual(rebased.status, "READY")
+        self.assertEqual(rebased.generation, 2)
+        self.assertEqual(
+            rebased.candidate["entries"][0]["text"],
+            _dramaturg_candidate()["entries"][0]["text"],
+        )
+        self.assertFalse(any(name == "update_ref" for name, _value in transport.calls))
+
+    def test_multiplayer_candidate_reads_mode_membership_and_context_profile_before_preparing(
+        self,
+    ) -> None:
+        prepare = getattr(dramaturg_module, "prepare_dramaturg_publication", None)
+        self.assertTrue(
+            callable(prepare), "publication preparation must be owner-routed"
+        )
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+
+        prepared = prepare(host, _dramaturg_candidate(), player_id="player.aria")
+
+        self.assertEqual(prepared.status, "READY")
+        self.assertEqual(prepared.path, "DRAMATURG/SHARED.yaml")
+        self.assertEqual(prepared.generation, 1)
+        self.assertEqual(prepared.candidate["generation"], 1)
+        self.assertIn(
+            route_native_record("world.player", ("player.aria",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn(
+            route_native_record("world.actor", ("actor.guard",)).relative_path,
+            repository.read_paths,
+        )
+        self.assertIn("MANIFEST.yaml", repository.read_paths)
+
+    def test_multiplayer_candidate_cannot_supply_mode_or_generation_authority(
+        self,
+    ) -> None:
+        prepare = getattr(dramaturg_module, "prepare_dramaturg_publication", None)
+        self.assertTrue(callable(prepare))
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+        candidate = _dramaturg_candidate()
+        candidate["generation"] = 900
+
+        with self.assertRaises(DramaturgContractError):
+            prepare(host, candidate, player_id="player.aria")
+        with self.assertRaises(TypeError):
+            prepare(
+                host,
+                _dramaturg_candidate(),
+                player_id="player.aria",
+                mode="multiplayer",
+            )
+
+    def test_active_other_player_id_cannot_replace_authenticated_player_binding(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository(player_ids=("player.aria", "player.borin"))
+        host, _transport = _dramaturg_runtime(repository)
+        candidate = _dramaturg_candidate(
+            scope={"kind": "PLAYER_LOCAL", "player_id": "player.borin"},
+            kind="PROVISIONAL_DRAMATURGIC_DIRECTION",
         )
 
         with self.assertRaises(DramaturgContractError):
-            admit_dramaturg_horizon(horizon, mode="singleplayer")
+            dramaturg_module.prepare_dramaturg_publication(
+                host, candidate, player_id="player.borin"
+            )
+
+    def test_stale_actor_source_basis_cannot_prepare_a_retained_candidate(self) -> None:
+        repository = _DramaturgRepository(actor_revision=5)
+        host, _transport = _dramaturg_runtime(repository)
+
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module.prepare_dramaturg_publication(
+                host, _dramaturg_candidate(actor_revision=4), player_id="player.aria"
+            )
+
+    def test_candidate_based_on_older_published_generation_is_not_a_lww_write(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        current = _retained_dramaturg_horizon(_dramaturg_candidate(), 2)
+        repository.records["DRAMATURG/SHARED.yaml"] = current
+        host, _transport = _dramaturg_runtime(repository)
+        stale_candidate = _dramaturg_candidate(
+            planning_base={"kind": "BOUND", "generation": 1}
+        )
+
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module.prepare_dramaturg_publication(
+                host, stale_candidate, player_id="player.aria"
+            )
+
+    def test_singleplayer_dramaturg_candidate_is_ephemeral_and_never_reads_retained_routes(
+        self,
+    ) -> None:
+        prepare = getattr(dramaturg_module, "prepare_dramaturg_publication", None)
+        self.assertTrue(
+            callable(prepare), "publication preparation must be owner-routed"
+        )
+        repository = _DramaturgRepository(mode="singleplayer")
+        host, transport = _dramaturg_runtime(repository)
+        candidate = _dramaturg_candidate(
+            scope={"kind": "PLAYER_LOCAL", "player_id": "player.aria"},
+            kind="PROVISIONAL_DRAMATURGIC_DIRECTION",
+        )
+
+        prepared = prepare(host, candidate, player_id="player.aria")
+
+        self.assertEqual(prepared.status, "EPHEMERAL")
+        self.assertIsNone(prepared.path)
+        self.assertNotIn("generation", prepared.candidate)
+        self.assertFalse(
+            any(path.startswith("DRAMATURG/") for path in repository.read_paths)
+        )
+        self.assertEqual(transport.calls, [])
+
+    def test_unadmitted_dramaturg_candidate_cannot_enter_native_history(self) -> None:
+        history = [_semantic_event()]
+        repository = _DramaturgRepository(mode="singleplayer")
+        host, _transport = _dramaturg_runtime(repository)
+
+        with self.assertRaises(DramaturgContractError):
+            admit_dramaturg_horizon(host, scope_kind="SHARED", player_id="player.aria")
         self.assertEqual(history, [_semantic_event()])
 
 
 class DramaturgAdmissionTests(unittest.TestCase):
+    def test_singleplayer_disables_both_retained_families_without_reading_bytes(
+        self,
+    ) -> None:
+        shared_projector = getattr(
+            dramaturg_module, "project_shared_dramaturg_horizon", None
+        )
+        local_projector = getattr(
+            dramaturg_module, "project_player_dramaturg_horizon", None
+        )
+        self.assertTrue(
+            callable(shared_projector), "shared admission must be host-routed"
+        )
+        self.assertTrue(
+            callable(local_projector), "local admission must be host-routed"
+        )
+        repository = _DramaturgRepository(mode="singleplayer")
+        shared = _retained_dramaturg_horizon(_dramaturg_candidate(), 4)
+        local_candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main", {"kind": "PLAYER_LOCAL", "player_id": "player.aria"}, []
+        )
+        local = _retained_dramaturg_horizon(local_candidate, 9)
+        repository.records["DRAMATURG/SHARED.yaml"] = shared
+        repository.records["DRAMATURG/PLAYERS/player.aria.yaml"] = local
+        host, _transport = _dramaturg_runtime(repository)
+
+        shared_view = shared_projector(host, player_id="player.aria")
+        local_view = local_projector(host, player_id="player.aria")
+
+        self.assertEqual(shared_view["status"], "INACTIVE_MODE")
+        self.assertEqual(local_view["status"], "INACTIVE_MODE")
+        self.assertFalse(
+            any(path.startswith("DRAMATURG/") for path in repository.read_paths)
+        )
+
+    def test_inactive_player_local_route_is_not_loaded_or_transferred(self) -> None:
+        projector = getattr(dramaturg_module, "project_player_dramaturg_horizon", None)
+        self.assertTrue(callable(projector))
+        repository = _DramaturgRepository(
+            player_ids=("player.aria", "player.borin"), player_status="inactive"
+        )
+        candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main", {"kind": "PLAYER_LOCAL", "player_id": "player.aria"}, []
+        )
+        old_path = "DRAMATURG/PLAYERS/player.aria.yaml"
+        repository.records[old_path] = _retained_dramaturg_horizon(candidate, 3)
+        host, _transport = _dramaturg_runtime(repository, principal_id="account.borin")
+
+        view = projector(host, player_id="player.aria")
+        successor_view = projector(host, player_id="player.borin")
+
+        self.assertEqual(view["status"], "INACTIVE_PLAYER")
+        self.assertEqual(successor_view["status"], "ABSENT")
+        self.assertIsNone(successor_view["horizon"])
+        self.assertNotIn(old_path, repository.read_paths)
+
+    def test_player_local_pc_source_is_invalidated_after_control_changes(self) -> None:
+        repository = _DramaturgRepository()
+        player_pc = {
+            "kind": "world.actor",
+            "id": "pc.aria",
+            "campaign_id": repository.campaign_id,
+            "state_revision": 1,
+            "state": {"roles": ["actor.player_character"]},
+        }
+        repository.records[
+            route_native_record("world.actor", ("pc.aria",)).relative_path
+        ] = player_pc
+        pc_basis = {
+            "owner_domain": "CAMPAIGN",
+            "owner_type": "world.actor",
+            "identity": ["pc.aria"],
+            "currentness": {"kind": "STATE_REVISION", "value": 1},
+        }
+        candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main",
+            {"kind": "PLAYER_LOCAL", "player_id": "player.aria"},
+            [
+                {
+                    "kind": "SOURCE_ANCHORED_CONSTRAINT",
+                    "text": "A current PC source constrains this local possibility.",
+                    "source_basis": [pc_basis],
+                    "assumptions": [],
+                }
+            ],
+        )
+        path = "DRAMATURG/PLAYERS/player.aria.yaml"
+        repository.records[path] = _retained_dramaturg_horizon(candidate, 1)
+        host, _transport = _dramaturg_runtime(repository)
+
+        current = dramaturg_module.project_player_dramaturg_horizon(
+            host, player_id="player.aria"
+        )
+        player_path = route_native_record(
+            "world.player", ("player.aria",)
+        ).relative_path
+        repository.records[player_path]["controlled_pc_ids"] = []
+        stale = dramaturg_module.project_player_dramaturg_horizon(
+            host, player_id="player.aria"
+        )
+
+        self.assertEqual(current["status"], "CURRENT_COMPATIBLE")
+        self.assertEqual(stale["status"], "STALE_OR_INCOMPATIBLE")
+        self.assertIsNone(stale["horizon"])
+
+    def test_player_local_bound_basis_revalidates_exact_shared_generation(self) -> None:
+        projector = getattr(dramaturg_module, "project_player_dramaturg_horizon", None)
+        self.assertTrue(callable(projector))
+        repository = _DramaturgRepository()
+        shared_candidate = _dramaturg_candidate(
+            kind="PROVISIONAL_DRAMATURGIC_DIRECTION"
+        )
+        shared = _retained_dramaturg_horizon(shared_candidate, 7)
+        local_candidate = dramaturg_module.build_dramaturg_candidate(
+            "campaign.main",
+            {"kind": "PLAYER_LOCAL", "player_id": "player.aria"},
+            [],
+            shared_basis={
+                "kind": "BOUND",
+                "scope_id": "campaign.main",
+                "generation": 7,
+            },
+        )
+        local = _retained_dramaturg_horizon(local_candidate, 2)
+        repository.records["DRAMATURG/SHARED.yaml"] = shared
+        repository.records["DRAMATURG/PLAYERS/player.aria.yaml"] = local
+        host, _transport = _dramaturg_runtime(repository)
+
+        current = projector(host, player_id="player.aria")
+        repository.records["DRAMATURG/SHARED.yaml"] = _retained_dramaturg_horizon(
+            shared_candidate, 8
+        )
+        stale = projector(host, player_id="player.aria")
+
+        self.assertEqual(current["status"], "CURRENT_COMPATIBLE")
+        self.assertEqual(current["horizon"]["generation"], 2)
+        self.assertEqual(stale["status"], "STALE_OR_INCOMPATIBLE")
+        self.assertIsNone(stale["horizon"])
+
+    def test_multiplayer_reenable_revalidates_retained_source_before_reuse(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        candidate = _dramaturg_candidate(actor_revision=4)
+        repository.records["DRAMATURG/SHARED.yaml"] = _retained_dramaturg_horizon(
+            candidate, 8
+        )
+        host, _transport = _dramaturg_runtime(repository)
+
+        before_disable = dramaturg_module.project_shared_dramaturg_horizon(
+            host, player_id="player.aria"
+        )
+        repository.records["MANIFEST.yaml"]["mode"] = "singleplayer"
+        repository.read_paths.clear()
+        disabled = dramaturg_module.project_shared_dramaturg_horizon(
+            host, player_id="player.aria"
+        )
+        self.assertFalse(
+            any(path.startswith("DRAMATURG/") for path in repository.read_paths)
+        )
+
+        repository.records["MANIFEST.yaml"]["mode"] = "multiplayer"
+        actor_path = route_native_record("world.actor", ("actor.guard",)).relative_path
+        repository.records[actor_path]["state_revision"] = 5
+        after_reenable = dramaturg_module.project_shared_dramaturg_horizon(
+            host, player_id="player.aria"
+        )
+
+        self.assertEqual(before_disable["status"], "CURRENT_COMPATIBLE")
+        self.assertEqual(disabled["status"], "INACTIVE_MODE")
+        self.assertEqual(after_reenable["status"], "STALE_OR_INCOMPATIBLE")
+        self.assertIsNone(after_reenable["horizon"])
+
     def test_retained_horizon_requires_multiplayer_and_current_source_basis(
         self,
     ) -> None:
-        horizon = {
-            "schema_version": 1,
-            "scope_id": "campaign.main",
-            "generation": 1,
-            "source_basis": ["event.gate_opened"],
-            "entries": [],
-        }
+        candidate = _dramaturg_candidate()
+        multiplayer = _DramaturgRepository()
+        retained = _retained_dramaturg_horizon(candidate, 1)
+        multiplayer.records["DRAMATURG/SHARED.yaml"] = retained
+        host, _transport = _dramaturg_runtime(multiplayer)
+        singleplayer = _DramaturgRepository(mode="singleplayer")
+        single_host, _single_transport = _dramaturg_runtime(singleplayer)
 
         with self.assertRaises(DramaturgContractError):
-            admit_dramaturg_horizon(horizon, mode="singleplayer")
-        self.assertEqual(admit_dramaturg_horizon(horizon, mode="multiplayer"), horizon)
+            admit_dramaturg_horizon(
+                single_host, scope_kind="SHARED", player_id="player.aria"
+            )
+        self.assertEqual(
+            admit_dramaturg_horizon(host, scope_kind="SHARED", player_id="player.aria"),
+            retained,
+        )
 
 
 class DramaturgRebaseTests(unittest.TestCase):
     def test_rebase_rejects_incompatible_native_source_without_silent_merge(
         self,
     ) -> None:
-        horizon = {
-            "schema_version": 1,
-            "scope_id": "campaign.main",
-            "generation": 1,
-            "source_basis": ["event.gate_opened"],
-            "entries": [],
-        }
+        repository = _DramaturgRepository(actor_revision=5)
+        candidate = _dramaturg_candidate(actor_revision=4)
+        repository.records["DRAMATURG/SHARED.yaml"] = _retained_dramaturg_horizon(
+            candidate, 1
+        )
+        host, _transport = _dramaturg_runtime(repository)
 
         with self.assertRaises(DramaturgContractError):
-            rebase_dramaturg_horizon(
-                horizon, current_source_basis=["event.gate_closed"]
-            )
+            rebase_dramaturg_horizon(host, scope_kind="SHARED", player_id="player.aria")
 
 
 class StorySchemaTests(unittest.TestCase):
@@ -3412,7 +4188,7 @@ class StorySchemaTests(unittest.TestCase):
             "commentator-snapshot.schema.json": 2,
             "commentator-control-projection.schema.json": 2,
             "commentator-view.schema.json": 1,
-            "dramaturg-horizon.schema.json": 1,
+            "dramaturg-horizon.schema.json": 2,
         }
         self.assertEqual(
             {
@@ -3625,10 +4401,11 @@ class SchemaVersionTests(unittest.TestCase):
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {
-            "schema_version": 1,
+            "schema_version": 2,
             "scope_id": "campaign.main",
+            "scope": {"kind": "SHARED"},
             "generation": 1,
-            "source_basis": ["event.gate_opened"],
+            "source_basis": [],
             "entries": [],
         }
         valid_control = build_commentator_control_projection(
@@ -3658,7 +4435,7 @@ class SchemaVersionTests(unittest.TestCase):
             filter_commentator_request(valid_snapshot, "player.aria"),
             [_story_projection()],
         )
-        self.assertEqual(validate_dramaturg_horizon(valid_horizon)["schema_version"], 1)
+        self.assertEqual(validate_dramaturg_horizon(valid_horizon)["schema_version"], 2)
 
         invalid_versions: tuple[object, ...] = (1.0, True, "1", None, 2)
         for version in invalid_versions:
@@ -3705,7 +4482,7 @@ class SchemaVersionTests(unittest.TestCase):
                 filter_commentator_request(
                     {**valid_snapshot, "schema_version": version}, "player.aria"
                 )
-        for version in invalid_versions:
+        for version in (1.0, True, "2", None, 1, 3):
             with (
                 self.subTest(version=version, ingress="Dramaturg horizon"),
                 self.assertRaises(DramaturgContractError),
@@ -3800,8 +4577,9 @@ class SchemaVersionTests(unittest.TestCase):
                 {
                     "schema_version": 1.0,
                     "scope_id": "campaign.main",
+                    "scope": {"kind": "SHARED"},
                     "generation": 1,
-                    "source_basis": ["event.gate_opened"],
+                    "source_basis": [],
                     "entries": [],
                 }
             )
@@ -3836,10 +4614,11 @@ class SchemaVersionTests(unittest.TestCase):
         with self.assertRaises(DramaturgContractError):
             validate_dramaturg_horizon(
                 {
-                    "schema_version": 2,
+                    "schema_version": 1,
                     "scope_id": "campaign.main",
+                    "scope": {"kind": "SHARED"},
                     "generation": 1,
-                    "source_basis": ["event.gate_opened"],
+                    "source_basis": [],
                     "entries": [],
                 }
             )
