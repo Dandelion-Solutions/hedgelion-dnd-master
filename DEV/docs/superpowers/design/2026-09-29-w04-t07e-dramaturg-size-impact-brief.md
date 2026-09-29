@@ -1,6 +1,6 @@
 # W04.T07E Dramaturg publication sizing — Implementation Impact Brief
 
-Status: **T07E ACCEPTED/READ BACK — SENIOR IMPACT RESOLUTION REALIZED; T07-INTEGRATION PENDING**
+Status: **T07E ACCEPTED/READ BACK — T07-INTEGRATION PASS; T08A AUTHORIZED**
 
 Date: **2026-09-29**
 
@@ -222,8 +222,12 @@ T07E code candidate `c34c5b20f0657052e4a152bd21abe5fe11202f2d` and synchronized
 verification/status checkpoint `1e3ddfa71e285513ce0d86e6a16096fcf527eeaf` were
 published non-force. A fresh fetch confirmed local HEAD and
 `origin/v1/engine-rearchitecture` both at `1e3ddfa71e285513ce0d86e6a16096fcf527eeaf`.
-T07E is accepted/read back as `W04_COMMENTATOR_DRAMATURG_READY`. Next is the
-independent T07-INTEGRATION review; A26-02 remains separate.
+T07E is accepted/read back as `W04_COMMENTATOR_DRAMATURG_READY`. The required
+T07-INTEGRATION independent review passed with no findings; its item-level
+evidence is recorded in
+`DEV/docs/superpowers/design/2026-09-30-w04-t07-integration-independent-review.md`.
+T04B, T02C and T07-INTEGRATION inputs are satisfied, so W04.T08A is next;
+A26-02 remains separate.
 
 ## Clean exact-candidate verification — 2026-09-30
 
