@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C/T06A/T06B/T08B/T07D-P0/T07D ACCEPTED/READ BACK; PO-012 INCORPORATED; T07E AUTHORIZED
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C/T06A/T06B/T08B/T07D-P0/T07D ACCEPTED/READ BACK; PO-012 INCORPORATED; T07E AT SYSTEM-IMPACT REVIEW GATE
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 04 — collaboration, Context and Story
 LAST_CLOSED_UNIT: W04.T07D output `W04_COMMENTATOR_CONTROL_READY` code `3e80ecb187bd6474471ed53bc08424b5270f4dbb`, independent PASS, focused RD13+P0 111 passed, schema bumps Commentator control/snapshot 1 -> 2, publication/read-back through `c963ff15af22c79581441f63afd59e5cb8ea4c5b`, and composed clean exact-head verification from hosted run `36558943551` (maintenance PASS + canonical DEV unittest PASS); the four separately reproduced pytest-only S6D REDs remain A26-02. W04.T07D-P0 output `W04_COMMENTATOR_CONTROL_CONTEXT_READY` code `d37ed9c1994e78feb51fc147cd3e2e5225b5a548` and prior accepted W04 checkpoints remain retained.
-NEXT_AUTHORIZED_UNIT: W04.T07E is authorized from accepted/read-back T07D. Preserve accepted T07A/B/C/D semantics and the recorded CLS↔HDM preflight. T08B remains accepted/read back.
-REQUIRED_GATE: T07E -> independent PASS -> T07-INTEGRATION; T04B + T02C + T07-INTEGRATION -> T08A; T08A + accepted T08B + accepted T03A -> T08C; then exact-head Wave-04 verification, A26-02 proof/collection repair, and mandatory Senior Wave-04 integration audit.
+NEXT_AUTHORIZED_UNIT: W04.T07E remains the current lane but is stopped at `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED` for exact serialized-size evidence at the existing W02 publication boundary. Await Senior resolution; then resume only within the disposition. Preserve accepted T07A/B/C/D semantics and CLS↔HDM preflight. A26-02 remains separate.
+REQUIRED_GATE: T07E System-Impact resolution -> T07E implementation/review/PASS/read-back -> T07-INTEGRATION independent review -> T04B + T02C + T07-INTEGRATION -> T08A; T08A + accepted T08B + accepted T03A -> T08C; then exact-head Wave-04 verification, A26-02 proof/collection repair, and mandatory Senior Wave-04 integration audit.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: none for T07D; implementation/review/publication/read-back and composed clean exact-head verification are complete. A26-02 remains a separate required proof/collection repair before Wave-04 FINAL_REVIEW. Four known pytest-only S6D tests remain outside hosted unittest collection; do not weaken current semantics to satisfy stale tests. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: W04.T07E has `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED` because the current W02 mapping-valued publication path exposes no exact final serialized UTF-8 measurement required by the mutable-artifact sizing owner; see `DEV/docs/superpowers/design/2026-09-29-w04-t07e-dramaturg-size-impact-brief.md`. T07D is accepted/read back. A26-02 remains a separate required proof/collection repair before Wave-04 FINAL_REVIEW. Four known pytest-only S6D tests remain outside hosted unittest collection; do not weaken current semantics to satisfy stale tests. Wave 05 remains unauthorized.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
 SENIOR_APPROVED_PLAN_SHA: `ce944404d7c9e93ba85b12305b6e74473ccb8ce1`
