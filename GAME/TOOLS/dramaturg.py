@@ -14,6 +14,10 @@ class DramaturgContractError(ValueError):
     """Raised when prospective planning is treated as authority or is stale."""
 
 
+class _CorruptDramaturgHorizonError(DramaturgContractError):
+    """Stored fixed-route horizon bytes cannot represent the current contract."""
+
+
 @dataclass(frozen=True, slots=True)
 class DramaturgPreparation:
     """Ephemeral preparation result; a candidate is never a retained generation."""
@@ -448,15 +452,19 @@ def _read_optional_campaign_mapping(
             f"exact Dramaturg owner read failed: {path}"
         ) from exc
     if not isinstance(value, Mapping):
-        raise DramaturgContractError(f"exact Dramaturg owner is not an object: {path}")
+        raise _CorruptDramaturgHorizonError(
+            f"stored Dramaturg horizon is not an object: {path}"
+        )
     try:
         normalized = json.loads(_canonical_json(value))
     except (TypeError, ValueError, RecursionError) as exc:
-        raise DramaturgContractError(
-            f"exact Dramaturg owner is not JSON-safe: {path}"
+        raise _CorruptDramaturgHorizonError(
+            f"stored Dramaturg horizon is not JSON-safe: {path}"
         ) from exc
     if not isinstance(normalized, dict):
-        raise DramaturgContractError(f"exact Dramaturg owner is not an object: {path}")
+        raise _CorruptDramaturgHorizonError(
+            f"stored Dramaturg horizon is not an object: {path}"
+        )
     return normalized
 
 
@@ -567,20 +575,25 @@ def _read_horizon_owner(
     value = _read_optional_campaign_mapping(host, basis, path)
     if value is None:
         return None
-    horizon = validate_dramaturg_horizon(value)
+    try:
+        horizon = validate_dramaturg_horizon(value)
+    except DramaturgContractError as exc:
+        raise _CorruptDramaturgHorizonError(
+            f"stored Dramaturg horizon is corrupt or unsupported: {path}"
+        ) from exc
     scope = horizon["scope"]
     if not isinstance(scope, Mapping) or horizon["scope_id"] != getattr(
         host, "campaign_id", None
     ):
-        raise DramaturgContractError(
+        raise _CorruptDramaturgHorizonError(
             "retained horizon does not match its fixed campaign route"
         )
     if scope.get("kind") != scope_kind:
-        raise DramaturgContractError(
+        raise _CorruptDramaturgHorizonError(
             "retained horizon scope differs from its fixed route"
         )
     if scope_kind == "PLAYER_LOCAL" and scope.get("player_id") != player_id:
-        raise DramaturgContractError(
+        raise _CorruptDramaturgHorizonError(
             "retained local horizon belongs to another stable PLAYER"
         )
     return horizon
@@ -1256,13 +1269,16 @@ def _project_dramaturg_horizon(
         scope_kind,
         player_id=stable_player_id if scope_kind == "PLAYER_LOCAL" else None,
     )
-    horizon = _read_horizon_owner(
-        host,
-        basis,
-        path,
-        scope_kind=scope_kind,
-        player_id=stable_player_id if scope_kind == "PLAYER_LOCAL" else None,
-    )
+    try:
+        horizon = _read_horizon_owner(
+            host,
+            basis,
+            path,
+            scope_kind=scope_kind,
+            player_id=stable_player_id if scope_kind == "PLAYER_LOCAL" else None,
+        )
+    except _CorruptDramaturgHorizonError:
+        return {"status": "CORRUPT_OR_UNUSABLE", "horizon": None}
     if horizon is None:
         return {"status": "ABSENT", "horizon": None}
     sources = list(horizon["source_basis"])
@@ -1313,6 +1329,8 @@ def _project_dramaturg_horizon(
             current_player,
             scope=scope,
         )
+    except _CorruptDramaturgHorizonError:
+        return {"status": "CORRUPT_OR_UNUSABLE", "horizon": None}
     except DramaturgContractError:
         return {"status": "STALE_OR_INCOMPATIBLE", "horizon": None}
     return {"status": "CURRENT_COMPATIBLE", "horizon": deepcopy(horizon)}

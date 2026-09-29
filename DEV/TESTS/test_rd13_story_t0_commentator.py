@@ -3901,6 +3901,54 @@ class DramaturgPublicationTests(unittest.TestCase):
 
 
 class DramaturgAdmissionTests(unittest.TestCase):
+    def test_corrupt_or_unsupported_retained_horizon_is_unusable_without_repair(
+        self,
+    ) -> None:
+        projector = dramaturg_module.project_shared_dramaturg_horizon
+        path = "DRAMATURG/SHARED.yaml"
+        corrupt_values: tuple[object, ...] = (
+            {
+                "schema_version": 1,
+                "scope_id": "campaign.main",
+                "generation": 4,
+                "source_basis": [],
+                "entries": [],
+            },
+            "not a retained horizon object",
+        )
+
+        for stored in corrupt_values:
+            with self.subTest(stored=stored):
+                repository = _DramaturgRepository()
+                repository.records[path] = deepcopy(stored)
+                host, transport = _dramaturg_runtime(repository)
+
+                view = projector(host, player_id="player.aria")
+
+                self.assertEqual(view["status"], "CORRUPT_OR_UNUSABLE")
+                self.assertIsNone(view["horizon"])
+                self.assertEqual(repository.records[path], stored)
+                self.assertEqual(transport.calls, [])
+
+    def test_horizon_transport_read_error_is_not_reclassified_as_corruption(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+        original_read = repository.read_exact_path
+
+        def fail_horizon_read(pinned: object, path: str) -> object:
+            if path == "DRAMATURG/SHARED.yaml":
+                raise OSError("campaign route unavailable")
+            return original_read(pinned, path)
+
+        repository.read_exact_path = fail_horizon_read  # type: ignore[method-assign]
+
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module.project_shared_dramaturg_horizon(
+                host, player_id="player.aria"
+            )
+
     def test_singleplayer_disables_both_retained_families_without_reading_bytes(
         self,
     ) -> None:
