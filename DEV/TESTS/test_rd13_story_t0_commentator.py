@@ -5,6 +5,7 @@ import pickle
 import unittest
 from collections.abc import Mapping
 from copy import deepcopy
+from dataclasses import replace
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -3452,7 +3453,13 @@ class DramaturgHorizonTests(unittest.TestCase):
         )
 
         self.assertTrue(validator.is_valid(valid))
-        for forbidden in ("chronology", "pc_agency", "future_fact", "canonical_truth"):
+        for forbidden in (
+            "chronology",
+            "pc_agency",
+            "future_fact",
+            "canonical_truth",
+            "size_review_outcome",
+        ):
             with self.subTest(forbidden=forbidden):
                 self.assertFalse(
                     validator.is_valid(valid | {forbidden: "not authority"})
@@ -3641,13 +3648,15 @@ class DramaturgPublicationTests(unittest.TestCase):
         )
         review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
         review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
-            review_request, decision="APPROVE_EXISTING_ROUTE"
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
         )
 
         with self.assertRaises(TypeError):
             pickle.dumps(review)
+        copied_preparation = replace(prepared, _plan=replace(prepared._plan))
         published = dramaturg_module.publish_dramaturg_horizon(
-            host, prepared, size_review_outcome=review
+            host, copied_preparation, size_review_outcome=review
         )
 
         self.assertEqual(review_request.status, "SIZE_REVIEW_REQUIRED")
@@ -3662,6 +3671,64 @@ class DramaturgPublicationTests(unittest.TestCase):
             [name for name, _value in transport.calls],
             ["create_tree", "read_ref", "create_commit", "update_ref"],
         )
+
+    def test_size_review_outcome_has_no_local_issuer_or_measurement_markers(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            dramaturg_module.build_dramaturg_candidate(
+                "campaign.main",
+                {"kind": "SHARED"},
+                [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "x" * (13 * 1024),
+                        "source_basis": [],
+                        "assumptions": ["A trusted owner reviews exact bytes."],
+                    }
+                ],
+            ),
+            player_id="player.aria",
+        )
+        review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+        review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
+        )
+
+        self.assertFalse(hasattr(review, "_issuer"))
+        self.assertFalse(hasattr(review_request, "_measurement_issuer"))
+        self.assertIsNotNone(getattr(review, "publication_base", None))
+
+    def test_owner_review_decision_requires_typed_ephemeral_value(self) -> None:
+        repository = _DramaturgRepository()
+        host, _transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            dramaturg_module.build_dramaturg_candidate(
+                "campaign.main",
+                {"kind": "SHARED"},
+                [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "x" * (13 * 1024),
+                        "source_basis": [],
+                        "assumptions": ["A trusted owner reviews exact bytes."],
+                    }
+                ],
+            ),
+            player_id="player.aria",
+        )
+        review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module._issue_dramaturg_owner_size_review_outcome(
+                review_request,
+                decision="APPROVE_EXISTING_ROUTE",
+            )
 
     def test_review_outcome_cannot_transfer_to_a_different_candidate(self) -> None:
         repository = _DramaturgRepository()
@@ -3698,7 +3765,8 @@ class DramaturgPublicationTests(unittest.TestCase):
         second = prepare_text("y" * (13 * 1024))
         review_request = dramaturg_module.publish_dramaturg_horizon(host, first)
         review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
-            review_request, decision="APPROVE_EXISTING_ROUTE"
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
         )
 
         with self.assertRaises(DramaturgContractError):
@@ -3732,7 +3800,8 @@ class DramaturgPublicationTests(unittest.TestCase):
         )
         review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
         review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
-            review_request, decision="APPROVE_EXISTING_ROUTE"
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
         )
         exact_measure = transport.measure_path_operations
 
@@ -3751,6 +3820,114 @@ class DramaturgPublicationTests(unittest.TestCase):
 
         self.assertEqual(transport.calls, [])
         self.assertNotIn("DRAMATURG/SHARED.yaml", repository.records)
+
+    def test_review_outcome_binds_exact_candidate_route_size_and_publication_base(
+        self,
+    ) -> None:
+        repository = _DramaturgRepository()
+        host, transport = _dramaturg_runtime(repository)
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            dramaturg_module.build_dramaturg_candidate(
+                "campaign.main",
+                {"kind": "SHARED"},
+                [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "x" * (13 * 1024),
+                        "source_basis": [],
+                        "assumptions": ["A review binds the exact write basis."],
+                    }
+                ],
+            ),
+            player_id="player.aria",
+        )
+        review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
+        review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
+        )
+
+        self.assertIsNotNone(getattr(review, "publication_base", None))
+        self.assertEqual(review.candidate_json, prepared._plan.candidate_json)
+        self.assertEqual(review.record_json, prepared._plan.record_json)
+        self.assertEqual(review.fixed_path, prepared.path)
+        self.assertEqual(
+            review.measured_size_bytes,
+            review_request.measured_sizes[prepared.path],
+        )
+        self.assertEqual(
+            review.publication_base.pinned_head_sha,
+            prepared._plan.basis.pinned_campaign.revision,
+        )
+        invalid_outcomes = (
+            replace(review, candidate_json=review.candidate_json + " "),
+            replace(review, record_json=review.record_json + " "),
+            replace(review, fixed_path="DRAMATURG/PLAYERS/player.aria.yaml"),
+            replace(review, measured_size_bytes=review.measured_size_bytes + 1),
+            replace(
+                review,
+                publication_base=replace(
+                    review.publication_base, pinned_head_sha="f" * 40
+                ),
+            ),
+        )
+        for invalid_review in invalid_outcomes:
+            with self.subTest(invalid_review=invalid_review):
+                with self.assertRaises(DramaturgContractError):
+                    dramaturg_module.publish_dramaturg_horizon(
+                        host, prepared, size_review_outcome=invalid_review
+                    )
+
+        self.assertEqual(transport.calls, [])
+        self.assertNotIn("DRAMATURG/SHARED.yaml", repository.records)
+
+    def test_model_shaped_review_mapping_and_horizon_field_are_rejected(self) -> None:
+        repository = _DramaturgRepository()
+        host, transport = _dramaturg_runtime(repository)
+        candidate = _dramaturg_candidate()
+        candidate["size_review_outcome"] = {"decision": "APPROVE_EXISTING_ROUTE"}
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module.prepare_dramaturg_publication(
+                host, candidate, player_id="player.aria"
+            )
+
+        review_mapping = {"decision": "APPROVE_EXISTING_ROUTE"}
+        prepared = dramaturg_module.prepare_dramaturg_publication(
+            host,
+            dramaturg_module.build_dramaturg_candidate(
+                "campaign.main",
+                {"kind": "SHARED"},
+                [
+                    {
+                        "kind": "PROVISIONAL_DRAMATURGIC_DIRECTION",
+                        "text": "x" * (13 * 1024),
+                        "source_basis": [],
+                        "assumptions": ["Only a typed trusted value is admitted."],
+                    }
+                ],
+            ),
+            player_id="player.aria",
+        )
+        with self.assertRaises(DramaturgContractError):
+            dramaturg_module.publish_dramaturg_horizon(
+                host, prepared, size_review_outcome=review_mapping
+            )
+
+        valid_horizon = _retained_dramaturg_horizon(_dramaturg_candidate(), 1)
+        with self.assertRaises(DramaturgContractError):
+            validate_dramaturg_horizon(
+                valid_horizon | {"size_review_outcome": review_mapping}
+            )
+        schema = json.loads(
+            (SCHEMAS / "dramaturg-horizon.schema.json").read_text(encoding="utf-8")
+        )
+        self.assertFalse(
+            Draft202012Validator(schema).is_valid(
+                valid_horizon | {"size_review_outcome": review_mapping}
+            )
+        )
+        self.assertEqual(transport.calls, [])
 
     def test_owner_review_can_require_reprepare_without_campaign_write(self) -> None:
         repository = _DramaturgRepository()
@@ -3772,7 +3949,8 @@ class DramaturgPublicationTests(unittest.TestCase):
         )
         review_request = dramaturg_module.publish_dramaturg_horizon(host, prepared)
         review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
-            review_request, decision="REPREPARE"
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.REPREPARE,
         )
 
         result = dramaturg_module.publish_dramaturg_horizon(
@@ -3814,7 +3992,8 @@ class DramaturgPublicationTests(unittest.TestCase):
         self.assertEqual(transport.calls, [])
 
         review = dramaturg_module._issue_dramaturg_owner_size_review_outcome(
-            review_request, decision="APPROVE_EXISTING_ROUTE"
+            review_request,
+            decision=dramaturg_module.DramaturgSizeReviewDecision.APPROVE_EXISTING_ROUTE,
         )
         published = dramaturg_module.publish_dramaturg_horizon(
             host, prepared, size_review_outcome=review

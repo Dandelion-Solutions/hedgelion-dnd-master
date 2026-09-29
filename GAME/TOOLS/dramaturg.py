@@ -7,6 +7,7 @@ import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass, field
+from enum import StrEnum
 from types import MappingProxyType
 from typing import Final, NoReturn
 
@@ -50,14 +51,34 @@ class _PreparedDramaturgPublication:
     base_generation: int
 
 
+class DramaturgSizeReviewDecision(StrEnum):
+    """One deterministic owner decision for an exact size-review request."""
+
+    APPROVE_EXISTING_ROUTE = "APPROVE_EXISTING_ROUTE"
+    REPREPARE = "REPREPARE"
+
+
 @dataclass(frozen=True, slots=True)
-class _DramaturgSizeReviewOutcome:
-    _issuer: object = field(repr=False, compare=False)
-    plan: _PreparedDramaturgPublication = field(repr=False, compare=False)
+class _DramaturgPublicationBase:
+    campaign_id: str
+    pinned_head_sha: str
+    base_tree_sha: str
+    base_record_json: str | None
+    base_generation: int
+    player_id: str
+    player_json: str
+
+
+@dataclass(frozen=True, slots=True)
+class DramaturgSizeReviewOutcome:
+    """Plain ephemeral owner decision, bound to candidate and publication values."""
+
+    decision: DramaturgSizeReviewDecision
     candidate_json: str = field(repr=False)
+    record_json: str = field(repr=False)
     fixed_path: str
     measured_size_bytes: int
-    decision: str
+    publication_base: _DramaturgPublicationBase = field(repr=False)
 
     def __reduce__(self) -> NoReturn:
         raise TypeError("Dramaturg size review outcomes are ephemeral")
@@ -76,14 +97,12 @@ class DramaturgPublicationResult:
     preparation: DramaturgPreparation
     measured_sizes: Mapping[str, int] | None = None
     size_band: str | None = None
-    _measurement_issuer: object | None = field(default=None, repr=False, compare=False)
 
 
 _ID_PATTERN: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ENTRY_KINDS: Final[frozenset[str]] = frozenset(
     {"SOURCE_ANCHORED_CONSTRAINT", "PROVISIONAL_DRAMATURGIC_DIRECTION"}
 )
-_DRAMATURG_SIZE_REVIEW_ISSUER: Final[object] = object()
 # Approximate owner-guidance transitions only; these values never reject a write.
 _SIZE_TARGET_MAX_BYTES: Final[int] = 12 * 1024
 _SIZE_REVIEW_MAX_BYTES: Final[int] = 16 * 1024
@@ -400,19 +419,18 @@ def _dramaturg_size_band(size_bytes: int) -> str:
 
 
 def _issue_dramaturg_owner_size_review_outcome(
-    result: DramaturgPublicationResult, *, decision: str
-) -> _DramaturgSizeReviewOutcome:
-    """Issue one ephemeral trusted owner outcome for an exact measured candidate."""
+    result: DramaturgPublicationResult, *, decision: DramaturgSizeReviewDecision
+) -> DramaturgSizeReviewOutcome:
+    """Build a plain value for a trusted deterministic caller's exact review."""
 
     if (
         not isinstance(result, DramaturgPublicationResult)
         or result.status != "SIZE_REVIEW_REQUIRED"
-        or result._measurement_issuer is not _DRAMATURG_SIZE_REVIEW_ISSUER
     ):
         raise DramaturgContractError(
             "owner size review requires a measured review-band result"
         )
-    if decision not in {"APPROVE_EXISTING_ROUTE", "REPREPARE"}:
+    if not isinstance(decision, DramaturgSizeReviewDecision):
         raise DramaturgContractError("Dramaturg size review decision is not admitted")
     plan = result.preparation._plan
     sizes = result.measured_sizes
@@ -428,13 +446,49 @@ def _issue_dramaturg_owner_size_review_outcome(
         or result.size_band != _dramaturg_size_band(measured_size)
     ):
         raise DramaturgContractError("owner size review measurement is inconsistent")
-    return _DramaturgSizeReviewOutcome(
-        _issuer=_DRAMATURG_SIZE_REVIEW_ISSUER,
-        plan=plan,
-        candidate_json=plan.record_json,
+    return DramaturgSizeReviewOutcome(
+        decision=decision,
+        candidate_json=plan.candidate_json,
+        record_json=plan.record_json,
         fixed_path=plan.path,
         measured_size_bytes=measured_size,
-        decision=decision,
+        publication_base=_dramaturg_publication_base(plan),
+    )
+
+
+def _dramaturg_publication_base(
+    plan: _PreparedDramaturgPublication,
+) -> _DramaturgPublicationBase:
+    pinned = getattr(plan.basis, "pinned_campaign", None)
+    campaign_id = getattr(pinned, "campaign_id", None)
+    pinned_head_sha = getattr(pinned, "revision", None)
+    base_tree_sha = getattr(pinned, "tree_sha", None)
+    if (
+        not isinstance(campaign_id, str)
+        or not campaign_id
+        or not isinstance(pinned_head_sha, str)
+        or not pinned_head_sha
+        or not isinstance(base_tree_sha, str)
+        or not base_tree_sha
+        or (
+            plan.base_record_json is not None
+            and not isinstance(plan.base_record_json, str)
+        )
+        or type(plan.base_generation) is not int
+        or plan.base_generation < 0
+        or not isinstance(plan.player_id, str)
+        or not plan.player_id
+        or not isinstance(plan.player_json, str)
+    ):
+        raise DramaturgContractError("Dramaturg publication base is incomplete")
+    return _DramaturgPublicationBase(
+        campaign_id=campaign_id,
+        pinned_head_sha=pinned_head_sha,
+        base_tree_sha=base_tree_sha,
+        base_record_json=plan.base_record_json,
+        base_generation=plan.base_generation,
+        player_id=plan.player_id,
+        player_json=plan.player_json,
     )
 
 
@@ -443,18 +497,18 @@ def _validate_dramaturg_size_review_outcome(
     *,
     plan: _PreparedDramaturgPublication,
     size_bytes: int,
-) -> _DramaturgSizeReviewOutcome:
+) -> DramaturgSizeReviewOutcome:
     if (
-        not isinstance(value, _DramaturgSizeReviewOutcome)
-        or value._issuer is not _DRAMATURG_SIZE_REVIEW_ISSUER
-        or value.plan is not plan
-        or value.candidate_json != plan.record_json
+        not isinstance(value, DramaturgSizeReviewOutcome)
+        or not isinstance(value.decision, DramaturgSizeReviewDecision)
+        or value.candidate_json != plan.candidate_json
+        or value.record_json != plan.record_json
         or value.fixed_path != plan.path
         or value.measured_size_bytes != size_bytes
-        or value.decision not in {"APPROVE_EXISTING_ROUTE", "REPREPARE"}
+        or value.publication_base != _dramaturg_publication_base(plan)
     ):
         raise DramaturgContractError(
-            "Dramaturg size review outcome is not bound to this exact candidate/path/size"
+            "Dramaturg size review outcome is not bound to this exact candidate/path/size/base"
         )
     return value
 
@@ -1275,9 +1329,14 @@ def publish_dramaturg_horizon(
     host: object,
     preparation: DramaturgPreparation,
     *,
-    size_review_outcome: object | None = None,
+    size_review_outcome: DramaturgSizeReviewOutcome | None = None,
 ) -> DramaturgPublicationResult:
-    """Publish one fixed-route delta through the existing RuntimeHost/W02 service."""
+    """Publish one fixed-route delta through the existing RuntimeHost/W02 service.
+
+    A size-review outcome is an in-process value supplied only by the trusted
+    deterministic owner caller; it is never read from candidate, request, or
+    campaign data.
+    """
 
     if (
         not isinstance(preparation, DramaturgPreparation)
@@ -1354,14 +1413,13 @@ def publish_dramaturg_horizon(
                 preparation,
                 immutable_sizes,
                 size_band,
-                _DRAMATURG_SIZE_REVIEW_ISSUER,
             )
         review = _validate_dramaturg_size_review_outcome(
             size_review_outcome,
             plan=plan,
             size_bytes=horizon_size,
         )
-        if review.decision == "REPREPARE":
+        if review.decision == DramaturgSizeReviewDecision.REPREPARE:
             return DramaturgPublicationResult(
                 "REPREPARE_REQUIRED",
                 None,
