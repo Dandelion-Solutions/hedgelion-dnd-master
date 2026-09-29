@@ -1,6 +1,6 @@
 # W04.T07E Dramaturg publication sizing — Implementation Impact Brief
 
-Status: **SENIOR IMPACT RESOLUTION ACCEPTED — BOUNDED W02 SIZE MEASUREMENT AUTHORIZED; T07E RESUMED**
+Status: **T07E ACCEPTED/READ BACK — SENIOR IMPACT RESOLUTION REALIZED; T07-INTEGRATION PENDING**
 
 Date: **2026-09-29**
 
@@ -157,7 +157,7 @@ T07E CANDIDATE VERSION IMPACT: dramaturg-horizon.schema.json 1 -> 2;
   RuntimeHost module 1.0.10 -> 1.0.11; campaign_contract_generation,
   storage/catalog/engine, migration and dual-read NONE.
 SYSTEM_IMPACT: RESOLVED TO BOUNDED W02 MEASUREMENT / T07E IMPLEMENTATION RESUMED
-UNPUBLISHED_WORK: T07E commits `cd5c8a2ba78584ab0e1527d20b43db6ca443b417` and `20dd239d109cb2221b85ebd62f217fac509c7a1e` remain local and unpushed.
+UNPUBLISHED_WORK_AT_INITIAL_BRIEF: T07E commits `cd5c8a2ba78584ab0e1527d20b43db6ca443b417` and `20dd239d109cb2221b85ebd62f217fac509c7a1e` were local and unpushed when this impact brief was first recorded.
 ```
 
 ```text
@@ -165,7 +165,7 @@ SYSTEM_IMPACT_RESOLUTION: RESOLVED TO BOUNDED W02 MEASUREMENT PREREQUISITE
 AUTHORIZED_EXTENDED_SCOPE: one exact serialized-byte measurement capability in RuntimeHost/W02 plus its tests; T07E consumes it before publication
 REVIEW_BAND_DISPOSITION: withhold until ephemeral trusted owner outcome tied to candidate/route/byte count
 HARD_CAP_OR_NEW_PARTITION: NOT AUTHORIZED
-T07E_ACCEPTANCE: PENDING IMPLEMENTATION, VERIFICATION, REVIEW AND REMOTE READ-BACK
+T07E_ACCEPTANCE_AT_RULING: PENDING IMPLEMENTATION, VERIFICATION, REVIEW AND REMOTE READ-BACK
 ```
 
 ## T07E measurement implementation and task-review evidence
@@ -218,10 +218,12 @@ Verification evidence:
 and DEV bookkeeping revisions: NONE. The pre-release clean-slate owner remains
 the basis for no campaign migration/aggregate-generation bump.
 
-The candidate commits and this updated status/brief are local and unpushed.
-T07E is implementation/review PASS but not yet accepted/read back. After
-publication and remote read-back, proceed to the independent T07-INTEGRATION
-review as directed; A26-02 remains separate.
+T07E code candidate `c34c5b20f0657052e4a152bd21abe5fe11202f2d` and synchronized
+verification/status checkpoint `1e3ddfa71e285513ce0d86e6a16096fcf527eeaf` were
+published non-force. A fresh fetch confirmed local HEAD and
+`origin/v1/engine-rearchitecture` both at `1e3ddfa71e285513ce0d86e6a16096fcf527eeaf`.
+T07E is accepted/read back as `W04_COMMENTATOR_DRAMATURG_READY`. Next is the
+independent T07-INTEGRATION review; A26-02 remains separate.
 
 ## Clean exact-candidate verification — 2026-09-30
 
