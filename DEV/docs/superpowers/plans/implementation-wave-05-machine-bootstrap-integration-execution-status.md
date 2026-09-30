@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: W05.T02-P0 — W03 LIVE source-native identifier-policy consumer cutover. W05.T02 is held at the resolved System-Impact boundary until P0 independent PASS/read-back.
-LAST_COMPLETED_TASK: W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`.
-LAST_SAFE_SHA: `351a2bceaf8b40d1585e845c3819dd9daf53c179` — freshly fetched authoritative public head; T01 remains accepted, P0 ruling is present
+CURRENT_TASK: W05.T02 — shared catalog, wrapper and identifier writer; reconcile the preserved local candidate before resuming integration.
+LAST_COMPLETED_TASK: W05.T02-P0 -> `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`.
+LAST_SAFE_SHA: `601cea401f4f375232740305c8eb8a7be7f6ee41` — P0 implementation and verification cursor published non-force and freshly read back; T01 remains accepted.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -188,7 +188,8 @@ P0 clean exact-source full DEV: P0 code commit `fe8328867f9552cf670a0963b0c00c9e
 P0 maintenance audit: same clean exact-source worktree and P0 code commit; `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS (`OK: engine consistency audit passed`).
 P0 clean broader DEV / maintenance: PASS at code commit `fe8328867f9552cf670a0963b0c00c9ea68e48d2`; the in-place broad attempt remains recorded above as contaminated, non-acceptance evidence.
 P0 evidence-cursor update VERSION_IMPACT: NONE — status-only; no version-bearing owner or consumer changed.
-P0 publication/read-back: pending non-force publication and fresh remote read-back.
-P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` (verification PASS; not yet published/read back or accepted).
-NEXT EXACT TASK: fresh-fetch and non-force publish the P0 candidate; after independent read-back, record the accepted output/global progress and then reconcile the preserved local T02 candidate.
-UNPUBLISHED_WORK: P0 code commit `fe8328867f9552cf670a0963b0c00c9ea68e48d2` plus this cursor update; preserved local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains on the original local branch; its pre-ruling cursor edit remains in a local stash.
+P0 publication/read-back: PASS — non-force publication; fresh `git fetch --prune origin` confirmed `HEAD == origin/v1/engine-rearchitecture == 601cea401f4f375232740305c8eb8a7be7f6ee41`, with empty changed-file diff.
+P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` — accepted and published/read back at `601cea401f4f375232740305c8eb8a7be7f6ee41`.
+P0 accepted-state cursor/progress synchronization VERSION_IMPACT: NONE — execution/progress evidence only.
+NEXT EXACT TASK: fresh-fetch and rebase/reconcile local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` onto the accepted P0 head; then run the complete T02 review/Version Impact/full clean verification/maintenance gates.
+UNPUBLISHED_WORK: local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` and its pre-ruling cursor stash remain unpublished; P0 is complete and read back.
