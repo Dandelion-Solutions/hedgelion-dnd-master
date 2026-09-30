@@ -101,9 +101,53 @@ Every row is mandatory. None of these 17 current families has a no-durable-recor
 The proof consumer is W06.T02 `R018RuntimeFamilyProofTests` / `R018_RUNTIME_FAMILY_PROOF_READY`, also consumed by PG32. It validates each exact family/schema/root/realization tuple and all six negative cases specified there. Presence of 17 names, a world-only proof or a catalog-gap-only witness cannot substitute for this matrix. Owner-local family work remains independently eligible; only the affected final schema/root/identifier and proof joins order work.
 
 
+## W05.T02-P0 — W03 source-native identifier-policy consumer cutover
+
+System-Impact owner:
+`DEV/docs/superpowers/design/2026-09-30-w05-t02-source-native-policy-consumer-senior-ruling.md`.
+
+Hard inputs: accepted W03 `W03_SOURCE_NATIVE_LIVE_ID_READY` and its closed
+scalar `live_birth` disposition table.
+
+This is a bounded Wave-05 prerequisite with W03 LIVE semantic ownership. It
+does not reopen Wave 03 and does not write the final shared catalog.
+
+Direct writes:
+
+- `GAME/TOOLS/live_state.py`;
+- `DEV/TESTS/test_rd09_access_live.py`;
+- mechanically required module-version/control bookkeeping.
+
+Output checkpoint:
+`W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`.
+
+Cut the LIVE consumer from the pre-final nested
+`live_birth {disposition, encoding}` test/input shape to the accepted final
+scalar disposition:
+
+```text
+SOURCE_NATIVE_LIVE | OWNER_EQUIVALENT | FORBIDDEN
+```
+
+For source-native allocation, scalar disposition must exactly match the local
+closed W03 `LIVE_BIRTH_ADMISSION_TABLE`. Encoding remains fixed by
+`SOURCE_NATIVE_LIVE_ENCODING == "framed_base32hex_v1"`; catalog/caller data
+does not choose it. Keep exact family prefix validation. Do not add an adapter,
+nested dual-read, compatibility alias or migration.
+
+Mandatory REDs: scalar source-native row succeeds; missing/wrong scalar fails;
+nested legacy row fails; forged scalar cannot admit owner-equivalent/forbidden
+families; missing/invalid prefix fails; encoding remains owner-fixed; existing
+ordering/cursor/CAS/ambiguous-publication/history witnesses remain GREEN.
+
+Expected Version Impact: `live_state.py 1.0.21 -> 1.0.22`; final identifier
+policy schema/catalog remain read-only in P0. Fresh Version Impact Gate,
+independent review, clean broader verification, maintenance, non-force
+publication and read-back are required.
+
 ## W05.T02 — Shared catalog, wrapper and identifier writer
 
-Hard inputs: `W01_CATALOG_CONTEXT_READY`, `W02_CATALOG_BACKED_COMMAND_READY`, accepted adjudication basis and the source-native identifier checkpoints. Explicit join: `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY -> JOIN_BEFORE_INTEGRATION -> W05.T02`. Consume the published W05.T01 inputs; do not require an integrated 17x17/R018 proof as an input.
+Hard inputs: `W01_CATALOG_CONTEXT_READY`, `W02_CATALOG_BACKED_COMMAND_READY`, accepted adjudication basis, the source-native identifier checkpoints, and `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`. Explicit joins: `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY -> JOIN_BEFORE_INTEGRATION -> W05.T02` and `W05.T02-P0 -> W05_SOURCE_NATIVE_POLICY_CONSUMER_READY -> W05.T02`. Consume the published inputs; do not require an integrated 17x17/R018 proof as an input.
 
 Perform the one final shared integration of:
 

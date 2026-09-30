@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: none — W05.T01 is complete and accepted; W05.T02 is eligible but not started.
+CURRENT_TASK: W05.T02-P0 — W03 LIVE source-native identifier-policy consumer cutover. W05.T02 is held at the resolved System-Impact boundary until P0 independent PASS/read-back.
 LAST_COMPLETED_TASK: W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`.
-LAST_SAFE_SHA: `a83de39863a34a6b576cf2a0e90420864083d53c`
+LAST_SAFE_SHA: `8fa7b76a1b795c9e6e046a3f6affbdc7db2b57d0` — current remote head; T01 remains accepted, subsequent delta is unrelated dashboard-skill work
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -99,3 +99,44 @@ PUBLISHED CHECKPOINT: `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` — a
 REMOTE READ-BACK: PASS — fresh `git fetch --prune origin` confirmed `HEAD == origin/v1/engine-rearchitecture == a83de39863a34a6b576cf2a0e90420864083d53c`; changed-file read-back diff is empty.
 NEXT EXACT TASK: W05.T02 — Shared catalog, wrapper and identifier writer; eligible from the accepted/read-back T01 checkpoint and subject to its other named inputs. It has not started.
 UNPUBLISHED_WORK: NONE — W05.T01 implementation and acceptance cursor are published/read back; W05.T02 has not started.
+
+
+## W05.T02 System-Impact stop / Senior resolution — 2026-09-30
+
+RULING:
+`DEV/docs/superpowers/design/2026-09-30-w05-t02-source-native-policy-consumer-senior-ruling.md`
+
+```text
+SYSTEM_IMPACT: RESOLVED
+W05.T02-P0: AUTHORIZED
+OUTPUT: W05_SOURCE_NATIVE_POLICY_CONSUMER_READY
+W05.T02: HELD UNTIL P0 PASS/READ-BACK
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+W03 WAVE REOPEN: NO
+```
+
+Verified mismatch:
+
+- accepted W03 final shared policy uses scalar `live_birth` disposition;
+- current W03 runtime consumer expects a nested pre-final test/input shape with
+  `disposition` and `encoding`;
+- no accepted adapter/compiler exists;
+- direct final scalar policy therefore cannot currently be consumed by
+  source-native LIVE allocation.
+
+Senior direction: keep scalar as the canonical shared W05 representation and
+cut the W03 LIVE consumer over to scalar in bounded P0. Encoding remains the
+fixed owner constant `framed_base32hex_v1`; no nested compatibility form or
+generic adapter is retained.
+
+Expected P0 Version Impact:
+`live_state.py 1.0.21 -> 1.0.22`, subject to fresh Version Impact Gate.
+
+Reported local T02 candidate
+`5fdc556c2abb5d4f37a9923b73ede03e16920383` is local/unpublished and was not
+reviewed by Senior. Preserve it locally; do not publish it before P0 acceptance,
+fresh rebase and complete T02 verification.
+
+NEXT_EXACT_TASK: implement/review W05.T02-P0 only.
+UNPUBLISHED_WORK: reported local T02 candidate plus local cursor edits remain
+outside authoritative remote state.

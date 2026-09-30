@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
-NEXT_AUTHORIZED_UNIT: W05.T02 — Shared catalog, wrapper and identifier writer. The W05.T01 owner-local input checkpoint is accepted and read back at `a83de39863a34a6b576cf2a0e90420864083d53c`; all other named T02 inputs still gate execution.
-REQUIRED_GATE: execute Wave-05 from the stable plan. W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` is accepted/published/read back; W05.T02 remains subject to its other named inputs. Wave-06 remains downstream of realized Wave-05 targets.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative task-local execution cursor for Wave 05; W05.T01 is accepted and W05.T02 has not started
-KNOWN_BLOCKERS: none from Wave 04 or W05.T01. Remaining Wave-05 work is individually dependency-gated; no task may skip named inputs, Version Impact, System-Impact, independent review or exact publication/read-back.
+NEXT_AUTHORIZED_UNIT: W05.T02-P0 — bounded W03 LIVE source-native identifier-policy consumer cutover. Senior resolved the scalar-vs-nested policy mismatch in `DEV/docs/superpowers/design/2026-09-30-w05-t02-source-native-policy-consumer-senior-ruling.md`. W05.T02 is held until P0 independent PASS/read-back.
+REQUIRED_GATE: W05.T02-P0 -> `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` -> independent PASS/read-back -> W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`. Other Wave-05 tasks remain separately gated; Wave-06 remains downstream of realized Wave-05 targets.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01 accepted, W05.T02-P0 authorized, W05.T02 held
+KNOWN_BLOCKERS: W05.T02 cannot be accepted/published until T02-P0 reconciles the accepted scalar W03/W05 `live_birth` representation with the W03 LIVE runtime consumer. The reported local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` is not authoritative and must remain unpublished until P0 PASS/read-back and fresh rebase/reverification.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

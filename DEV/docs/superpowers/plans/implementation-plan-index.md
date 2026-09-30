@@ -111,6 +111,7 @@ Mandatory hard/join edges include:
 - current PLAYER/access-policy mutation -> one after-authority collaboration reconciliation -> one campaign publication closure;
 - W04.T07 first RED is preceded by the mandatory fresh CLS <-> HDM preflight in Wave 04: current public Story/Commentator SCC owner + current private CLS integration/audit state are reconciled; private CLS-only repair debt does not block HDM, but any current requirement for a new/changed public-HDM semantic owner, persisted/interface contract or incompatible Story/T0/control law triggers the System-Impact Gate before implementation;
 - information/thread/PLAYER/collaboration/LIVE identifier deltas -> W05.T01 owner-local strict schema/wrapper inputs GREEN at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` -> `JOIN_BEFORE_INTEGRATION` -> W05.T02 final shared write at `RD16_SHARED_MACHINE_INTEGRATION_READY`;
+- W03 source-native scalar disposition owner -> W05.T02-P0 LIVE consumer cutover at `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` -> W05.T02 final shared identifier-policy writer; the prerequisite preserves scalar `live_birth` and fixed owner-side encoding rather than introducing a nested compatibility representation;
 - W05.T02 final shared bytes + the affected final schema/realization checkpoints -> W06.T02 item-bound world/runtime R018 proof; neither final proof nor T02 integration/conformance is a prerequisite of T01 closure;
 - every package proof -> its realized target, never the reverse.
 
