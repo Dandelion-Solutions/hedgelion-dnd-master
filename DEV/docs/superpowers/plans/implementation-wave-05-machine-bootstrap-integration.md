@@ -170,32 +170,54 @@ Output checkpoint: `RD16_SHARED_MACHINE_INTEGRATION_READY`. It proves this final
 
 ## W05.T03 — Retained schema cutovers
 
-Apply one final physical writer and one exact local-version transition for each breaking retained schema:
+Senior reconciliation:
+`DEV/docs/superpowers/design/2026-10-01-w05-t03-retained-schema-final-writer-senior-ruling.md`.
 
-| Schema | Target transition | Required inputs |
+Hard inputs are satisfied. T03 owns only retained schemas not assigned to a
+later explicit final physical writer.
+
+| Schema | Current -> T03 disposition | Required inputs |
 |---|---:|---|
-| checkpoint | 3 -> 4 | recovery/checkpoint + runtime closure |
+| checkpoint | 4 -> VERIFY ONLY / NO BUMP | accepted W02 recovery/checkpoint + runtime closure |
 | current_state | 2 -> 3 | temporal/currentness |
-| thread | 1 -> 2 | thread/visibility/catalog |
+| thread | 1 -> 2 | thread/visibility + accepted T02 catalog |
 | live_scene | 1 -> 2 | source-native LIVE/currentness |
-| index | 1 -> 2 | native route/index/currentness |
-| scene | 2 -> 3 | scene + LIVE route projection |
-| location | 1 -> 2 | native location + routing |
+| index | 2 -> VERIFY ONLY / NO BUMP | accepted W01 native route/index + W03 currentness |
 | event | 1 -> 2 | mechanical/semantic event identity |
 | lore | 1 -> 2 | information owner |
-| player | 1 -> 2 | principal binding + collaboration strict state |
-| campaign_manifest | 4 -> 5 | manifest membership retirement + bootstrap scaffold |
+| session | 1 -> final integrate; keep 1 unless breaking shape proved | durability/publication + recovery/currentness + accepted W04 session delta |
 
-`session` remains version 1 unless the fresh implementation reveals and separately proves a breaking retained-shape change. Retire `pc.schema.yaml`, `npc.schema.yaml` and `item.schema.yaml` only in this final control-plane cutover, after `audit_engine.py` and every remaining legacy-schema consumer are reconciled; retired pc/npc/item/faction contracts get no terminal bump. Do not add migration, dual-read or deprecated aliases solely for unreleased pre-v1 shapes.
+These shared targets are not T03 writers:
 
-Integrate the durability/publication and recovery/currentness deltas to `GAME/SCHEMA/session.schema.yaml` once and close `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; retaining schema version 1 requires proof that its accepted wire shape did not break.
+- `scene.schema.yaml` 2 -> 3 — W05.T04;
+- `location.schema.yaml` 1 -> 2 — W05.T04;
+- `player.schema.yaml` 1 -> 2 — W05.T04;
+- `campaign_manifest.schema.yaml` 4 -> 5 — W05.T07.
+
+Do not double-bump checkpoint or index. A new material change to either reopens
+Version/System Impact.
+
+Integrate durability/publication and recovery/currentness deltas to
+`GAME/SCHEMA/session.schema.yaml` once and close
+`SESSION_SCHEMA_FINAL_INTEGRATION_READY`; retaining version 1 requires proof
+that its wire shape did not break.
+
+Legacy `pc.schema.yaml`, `npc.schema.yaml`, `item.schema.yaml` and any
+remaining retired-faction control-plane reference are retired only by W05.T08,
+after final `audit_engine.py`, PROJECT_MAP and live-consumer reconciliation.
 
 TDD and verification:
 
-- create/complete `DEV/TESTS/test_implementation_package_version_cutovers.py` with retained-schema exact-version and strict-shape assertions;
-- prove all consumers/generators/fixtures use the same target and no old shape remains on a live path.
+- create/complete `DEV/TESTS/test_implementation_package_version_cutovers.py`
+  for T03-owned exact versions/strict shapes and verify-only checkpoint v4/index v2;
+- prove all current consumers of T03-owned schemas use the final targets;
+- do not publish RED tests for T04/T07/T08-owned future writes;
+- do not add migration, dual-read or compatibility aliases for unreleased
+  pre-v1 shapes.
 
-Output checkpoints: `W05_RETAINED_SCHEMA_CUTOVERS_READY` and `SESSION_SCHEMA_FINAL_INTEGRATION_READY`.
+Outputs:
+`W05_RETAINED_SCHEMA_CUTOVERS_READY` and
+`SESSION_SCHEMA_FINAL_INTEGRATION_READY`.
 
 ## W05.T04 — Shared README and physical-file integration
 
@@ -205,9 +227,9 @@ Fresh-read and integrate every GREEN semantic delta into the shared targets belo
 |---|---|---|
 | `GAME/SCHEMA/README.md` | information, Actor/Asset/Effect, routing/HOT, recovery/operational roots, temporal/current-state | `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY` |
 | `GAME/TEMPLATE/STORAGE_README.md` | information, Actor/Asset/Effect, routing/HOT, recovery/operational roots | `SHARED_STORAGE_README_FINAL_INTEGRATION_READY` |
-| scene schema | temporal + LIVE route/currentness | `SCENE_SCHEMA_FINAL_INTEGRATION_READY` |
-| location schema | native location + routing | `LOCATION_SCHEMA_FINAL_INTEGRATION_READY` |
-| player schema | principal route refs + collaboration strict state | `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY` |
+| scene schema 2 -> 3 | temporal + LIVE route/currentness | `SCENE_SCHEMA_FINAL_INTEGRATION_READY` |
+| location schema 1 -> 2 | native location + routing | `LOCATION_SCHEMA_FINAL_INTEGRATION_READY` |
+| player schema 1 -> 2 | principal route refs + collaboration strict state | `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY` |
 
 TDD and verification:
 
@@ -323,7 +345,7 @@ TDD and verification:
 - complete `CoreFrameworkModuleVersionCutoverTests` and the retained version suite;
 - prove final install bytes contain no exhaustive all-campaign card loop, login-only authorization, generic PLAYER_INDEX authorization or stale v0.8 compatibility path; also prove no shipped ordinary Master path uses English, Russian or another fallback solely because an optional language policy/local phrase asset is absent, technical diagnostics remain a separate recipient-safe surface, PO-012 retrospective/Commentator routing never unions multiple controlled-PC knowledge or trusts caller Story visibility, and the final campaign-publication transport exposes exact create-tree-parity size measurement rather than an estimate.
 
-After all module/schema/test paths are final, integrate their routes into `DEV/PROJECT_MAP.md` and all current/stale/schema/catalog/version/package assertions into `DEV/TOOLS/audit_engine.py`. Run the actual maintenance entry point after these edits; do not leave per-task partial writers.
+After all module/schema/test paths are final, integrate their routes into `DEV/PROJECT_MAP.md` and all current/stale/schema/catalog/version/package assertions into `DEV/TOOLS/audit_engine.py`. At this same final control-plane cutover, retire `pc.schema.yaml`, `npc.schema.yaml`, `item.schema.yaml` and any remaining retired-faction contract/reference only after every live consumer and audit route is reconciled; retired contracts receive no terminal version bump. Run the actual maintenance entry point after these edits; do not leave per-task partial writers.
 
 Output checkpoints: `W05_SHIPPED_INTEGRATION_READY`, `PROJECT_MAP_FINAL_INTEGRATION_READY` and `MAINTENANCE_AUDIT_FINAL_INTEGRATION_READY`.
 

@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: none — W05.T02 is accepted/read back; next planned unit is W05.T03 dependency verification.
+CURRENT_TASK: W05.T03 — AUTHORIZED after exact dependency/current-version/final-writer reconciliation.
 LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`.
-LAST_SAFE_SHA: `6740da81c405b7a88b5d4c33e9a708d019bb642f` — T02 implementation, verification and status were published non-force and freshly read back; P0 and T01 remain accepted.
+LAST_SAFE_SHA: `6f60464e27a7a91bf2350bd9b688313cb81cd438` — T02 acceptance/read-back synchronization; exact-head hosted validation PASS.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -249,3 +249,34 @@ T02 output: `RD16_SHARED_MACHINE_INTEGRATION_READY` — accepted and published/r
 T02 accepted-state cursor/progress synchronization VERSION_IMPACT: NONE — execution/progress evidence only.
 NEXT EXACT TASK: W05.T03 retained schema cutovers — first verify its exact named owner/checkpoint inputs; no W05.T03 implementation has started.
 UNPUBLISHED_WORK: NONE for W05.T02. The superseded original local candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains in local reflog history; pre-ruling cursor stash remains unpopped and is superseded by published status.
+
+
+## W05.T03 dependency/current-version Senior gate — 2026-10-01
+
+RULING:
+`DEV/docs/superpowers/design/2026-10-01-w05-t03-retained-schema-final-writer-senior-ruling.md`
+
+```text
+T03_DEPENDENCIES: PASS
+T03_CURRENT_VERSION_CENSUS: PASS
+T03_FINAL_WRITER_RECONCILIATION: PASS
+W05.T03: AUTHORIZED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+```
+
+All named semantic inputs are accepted/read back through Waves 01-04 and
+W05.T02. Fresh census found checkpoint already v4 and index already v2; both
+are verify-only/no-bump in T03.
+
+Final-writer ownership:
+- T03: current_state 2->3, thread 1->2, live_scene 1->2, event 1->2,
+  lore 1->2, session final integration (normally retains v1);
+- T04: scene 2->3, location 1->2, player 1->2;
+- T07: campaign_manifest 4->5;
+- T08: legacy pc/npc/item/retired-faction control-plane retirement after final
+  audit_engine/PROJECT_MAP/live-consumer reconciliation.
+
+Exact current-head hosted `Validate engine source` run `36755147911`:
+SUCCESS, maintenance PASS, canonical DEV unittest PASS.
+
+NEXT_EXACT_TASK: implement/review W05.T03 inside the repaired stable plan.

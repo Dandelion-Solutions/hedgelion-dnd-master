@@ -112,6 +112,7 @@ Mandatory hard/join edges include:
 - W04.T07 first RED is preceded by the mandatory fresh CLS <-> HDM preflight in Wave 04: current public Story/Commentator SCC owner + current private CLS integration/audit state are reconciled; private CLS-only repair debt does not block HDM, but any current requirement for a new/changed public-HDM semantic owner, persisted/interface contract or incompatible Story/T0/control law triggers the System-Impact Gate before implementation;
 - information/thread/PLAYER/collaboration/LIVE identifier deltas -> W05.T01 owner-local strict schema/wrapper inputs GREEN at `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` -> `JOIN_BEFORE_INTEGRATION` -> W05.T02 final shared write at `RD16_SHARED_MACHINE_INTEGRATION_READY`;
 - W03 source-native scalar disposition owner -> W05.T02-P0 LIVE consumer cutover at `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` -> W05.T02 final shared identifier-policy writer; the prerequisite preserves scalar `live_birth` and fixed owner-side encoding rather than introducing a nested compatibility representation;
+- W05.T03 owns current_state/thread/live_scene/event/lore/session cutovers plus verify-only checkpoint v4/index v2; W05.T04 owns scene/location/player final schema bytes; W05.T07 owns campaign_manifest v5; W05.T08 owns final legacy schema/control-plane retirement;
 - W05.T02 final shared bytes + the affected final schema/realization checkpoints -> W06.T02 item-bound world/runtime R018 proof; neither final proof nor T02 integration/conformance is a prerequisite of T01 closure;
 - every package proof -> its realized target, never the reverse.
 
@@ -137,17 +138,17 @@ Mandatory hard/join edges include:
 Retained GAME schemas:
 
 ```text
-checkpoint 3 -> 4
-current_state 2 -> 3
-thread 1 -> 2
-live_scene 1 -> 2
-index 1 -> 2
-scene 2 -> 3
-location 1 -> 2
-event 1 -> 2
-lore 1 -> 2
-player 1 -> 2
-campaign_manifest 4 -> 5
+checkpoint 4 — already realized/accepted upstream; W05.T03 verify-only
+current_state 2 -> 3 — W05.T03
+thread 1 -> 2 — W05.T03
+live_scene 1 -> 2 — W05.T03
+index 2 — already realized/accepted upstream; W05.T03 verify-only
+scene 2 -> 3 — W05.T04 final physical writer
+location 1 -> 2 — W05.T04 final physical writer
+event 1 -> 2 — W05.T03
+lore 1 -> 2 — W05.T03
+player 1 -> 2 — W05.T04 final physical writer
+campaign_manifest 4 -> 5 — W05.T07 final manifest/scaffold writer
 ```
 
 Shared identifier-policy machine:

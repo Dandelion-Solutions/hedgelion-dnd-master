@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
-NEXT_AUTHORIZED_UNIT: W05.T03 — retained schema cutovers; first verify the exact named owner/checkpoint inputs in the stable Wave-05 plan. W05.T02 output `RD16_SHARED_MACHINE_INTEGRATION_READY` is accepted and published/read back at `6740da81c405b7a88b5d4c33e9a708d019bb642f`.
-REQUIRED_GATE: P0 `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` and W05.T02 `RD16_SHARED_MACHINE_INTEGRATION_READY` are accepted/read back; W05.T03 remains dependency-gated on its exact schema/owner inputs. Other Wave-05 tasks remain separately gated; Wave-06 remains downstream of realized Wave-05 targets.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01, W05.T02-P0 and W05.T02 accepted/read back; W05.T03 dependency verification is next, with no implementation started.
-KNOWN_BLOCKERS: None for W05.T02. W05.T03 implementation waits for verification of its exact named dependencies. Hosted CI is unavailable in this local-machine runtime.
+NEXT_AUTHORIZED_UNIT: W05.T03 — retained schema cutovers, AUTHORIZED under `DEV/docs/superpowers/design/2026-10-01-w05-t03-retained-schema-final-writer-senior-ruling.md`. Dependency verification is complete; T03 owns current_state/thread/live_scene/event/lore/session only, with checkpoint v4/index v2 verify-only.
+REQUIRED_GATE: W05.T03 -> `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; scene/location/player final bytes remain W05.T04, campaign_manifest v5 remains W05.T07, and legacy schema/control-plane retirement remains W05.T08.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02 accepted; W05.T03 dependencies verified and implementation authorized.
+KNOWN_BLOCKERS: none for W05.T03 entry. Do not double-bump checkpoint/index or write T04/T07/T08-owned shared targets. Exact current-head hosted CI is GREEN at run `36755147911`.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
