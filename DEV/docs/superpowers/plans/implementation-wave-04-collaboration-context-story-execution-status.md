@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08A accepted/read back; T07-INTEGRATION PASS; T08C implementation/review/clean local verification PASS, publication pending
-CURRENT_TASK: W04.T08C final consumer convergence. Inputs T08A, T08B and T03A are accepted/read back. The convergence test/delta are independently reviewed PASS; clean full DEV reports only the four separate A26-02 failures, and maintenance passes. Publish/read back the coherent T08C checkpoint before final Wave-04 verification. A26-02 remains separate before Wave-04 FINAL_REVIEW.
-LAST_COMPLETED_TASK: W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`; six TDD assertions; independent review PASS; clean exact DEV 1417 passed, 5 skipped, four separately tracked A26-02 failures reproduced sequentially; maintenance PASS; `VERSION_IMPACT: NONE`; non-force publication/read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. W04.T07-INTEGRATION **PASS** with item-level report and 224 focused tests; W04.T07E, T07D/T07D-P0, T08B, T03A and prior W04 checkpoints remain accepted/read back.
-LAST_SAFE_SHA: `2720a6187d5919fb2ca8c8f3265604814510d69b` — T08A code, verification and status checkpoint published/read back.
+STATUS: EXECUTING — W04.T08A/T08B/T08C and T07A-E integration accepted/read back; A26-02 proof/collection repair remains before final Senior audit
+CURRENT_TASK: resolve the four separately tracked A26-02/S6D failures under their accepted owner route, then run final exact-head Wave-04 verification and obtain the mandatory Senior integration audit. Do not weaken accepted semantics to satisfy stale tests. Wave 05 remains unauthorized.
+LAST_COMPLETED_TASK: W04.T08C -> `W04_MULTIPLAYER_SESSION_DELTAS_READY`, candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b`, seven convergence tests, independent review PASS; final exact DEV at status HEAD `aec602a828ef399673b58d2ccd7cb804b3baa5c2`: 1424 passed, 5 skipped, four A26-02 failures reproduced sequentially; maintenance PASS; version/provenance/current-progress 18 passed; `VERSION_IMPACT: NONE`. Non-force publication/read-back at `aec602a828ef399673b58d2ccd7cb804b3baa5c2`. W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`, independent PASS and read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. T08B/T03A and W04.T07-INTEGRATION remain accepted/read back; T07E/T07D and earlier W04 checkpoints remain retained.
+LAST_SAFE_SHA: `aec602a828ef399673b58d2ccd7cb804b3baa5c2` — published/read-back T08C convergence checkpoint.
 
 ## W04.T07D / PO-012 / P0 current disposition — 2026-09-28
 
@@ -342,6 +342,11 @@ T08C_SYSTEM_IMPACT: NONE — no owner boundary or final-writer scope changed.
 T08C_CLEAN_EXACT_FULL_DEV: candidate commit `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` — **1424 passed, 5 skipped, 4 failed**. The exact four A26-02/S6D failures from the T07E/T08A diagnostics were reproduced sequentially; no T08C/T08A/T08B/T03A/RD12/RD16 regression failed. Clean package provenance, version namespace and current-progress checks passed.
 T08C_A26_FAILURES: `test_s6d_04_mechanical_context_contract::test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`; `test_s6d_05_portable_value_contract::test_route_rows_ids_and_embedding_edges_are_machine_verified`; `test_s6d_05_portable_value_contract::test_real_activity_action_request_binding_matrix_and_freeze`; `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`.
 T08C_CLEAN_MAINTENANCE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS (`OK: engine consistency audit passed`).
+T08C_FINAL_STATUS_HEAD_FULL_DEV: `aec602a828ef399673b58d2ccd7cb804b3baa5c2` — 1424 passed, 5 skipped, the same four A26-02 failures; no T08C failure. Fresh run on this exact HEAD.
+T08C_FINAL_STATUS_HEAD_VERSION_AND_MAINTENANCE: version-namespace + package-provenance + current-progress suite 18 passed; canonical maintenance audit PASS.
+T08C_CURRENT_DISPOSITION: **ACCEPTED / W04_MULTIPLAYER_SESSION_DELTAS_READY** — implementation, review, clean exact verification and non-force publication/read-back PASS; `VERSION_IMPACT: NONE`.
+T08C_PUBLICATION_READBACK: PASS — code candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` and synchronized status `aec602a828ef399673b58d2ccd7cb804b3baa5c2`; fresh fetch confirmed local HEAD and `origin/v1/engine-rearchitecture` equal `aec602a828ef399673b58d2ccd7cb804b3baa5c2`.
+T08C_STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — this progress/cursor/impact-brief acceptance/read-back synchronization changes no HDM-owned version/revision/schema/generation namespace.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -692,9 +697,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: synchronize T08C’s clean verification/status evidence; run the clean exact 18-test version/provenance/current-progress suite and maintenance audit on that status commit; publish T08C non-force and verify fresh remote read-back. Then run final exact-head Wave-04 verification, keep A26-02 as its separate proof/collection repair, and obtain the mandatory Senior Wave-04 integration audit.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A. T08C implementation, review, clean full DEV and maintenance PASS; publication/read-back remains pending. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: T08C candidate commit `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` and final status synchronization are local pending coherent non-force publication and read-back. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: complete the separate A26-02/S6D proof and collection repair under its current accepted owner route, then run final exact-head Wave-04 verification and obtain the mandatory Senior Wave-04 integration audit. Do not weaken accepted semantics to satisfy the stale tests. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A-C. T08C is accepted/read back. A26-02 proof/collection repair remains required before Wave-04 FINAL_REVIEW; the four known pytest-only S6D failures remain separate and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for W04.T08C. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
