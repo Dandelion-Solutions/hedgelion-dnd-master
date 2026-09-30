@@ -184,9 +184,11 @@ P0 version-policy regression: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/
 P0 SYSTEM_IMPACT: NONE under the accepted Senior ruling, provided execution remains within this envelope.
 P0 independent review: PASS — `hdm-reviewer` reviewed the uncommitted diff against `351a2bceaf8b40d1585e845c3819dd9daf53c179`; no findings. Reviewer independently confirmed scalar equality/local-table enforcement, fixed encoding, preserved prefix and lifecycle semantics, and exactly scoped version impact.
 P0 broader local DEV attempt: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — 1437 passed, 2 skipped, 7 failed in 210.95s. Failures are local-workspace contamination: duplicate runtime markers under nested `DEV/tmp` checkouts; root-wide source/version scans encountering ignored/untracked workspace artifacts; and a generated `GAME/TOOLS/__pycache__` in a release passthrough test. No failure points to P0 files or scalar-policy behavior. This is NOT clean exact-source acceptance.
-P0 maintenance audit: pending clean exact-source execution.
-P0 clean broader DEV / maintenance: PENDING — rerun both from a clean exact-source worktree; do not remove or rewrite workspace artifacts to force a pass.
-P0 publication/read-back: pending; the local T02 candidate remains unpublished.
-P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` (not yet accepted).
-NEXT EXACT TASK: obtain an accessible clean exact-source verification worktree at the P0 candidate; run canonical full DEV and maintenance audit there.
-UNPUBLISHED_WORK: P0 source/test/cursor delta is uncommitted in the detached checkout; preserved local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains on the original local branch; its pre-ruling cursor edit remains in a local stash.
+P0 clean exact-source full DEV: P0 code commit `fe8328867f9552cf670a0963b0c00c9ea68e48d2` in clean detached worktree `.hdm-devtools/clean-p0`; `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python -m pytest DEV/TESTS -n auto` — 1444 passed, 2 skipped, 24 existing `jsonschema.RefResolver` deprecation warnings in 34.14s.
+P0 maintenance audit: same clean exact-source worktree and P0 code commit; `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS (`OK: engine consistency audit passed`).
+P0 clean broader DEV / maintenance: PASS at code commit `fe8328867f9552cf670a0963b0c00c9ea68e48d2`; the in-place broad attempt remains recorded above as contaminated, non-acceptance evidence.
+P0 evidence-cursor update VERSION_IMPACT: NONE — status-only; no version-bearing owner or consumer changed.
+P0 publication/read-back: pending non-force publication and fresh remote read-back.
+P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` (verification PASS; not yet published/read back or accepted).
+NEXT EXACT TASK: fresh-fetch and non-force publish the P0 candidate; after independent read-back, record the accepted output/global progress and then reconcile the preserved local T02 candidate.
+UNPUBLISHED_WORK: P0 code commit `fe8328867f9552cf670a0963b0c00c9ea68e48d2` plus this cursor update; preserved local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains on the original local branch; its pre-ruling cursor edit remains in a local stash.
