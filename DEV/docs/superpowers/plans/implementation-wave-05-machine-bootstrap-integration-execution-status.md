@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING
-CURRENT_TASK: W05.T01 — owner-local strict schema and wrapper inputs
-LAST_COMPLETED_TASK: none
-LAST_SAFE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
+STATUS: EXECUTING — Wave 05 remains dependency-gated.
+CURRENT_TASK: none — W05.T01 is complete and accepted; W05.T02 is eligible but not started.
+LAST_COMPLETED_TASK: W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`.
+LAST_SAFE_SHA: `a83de39863a34a6b576cf2a0e90420864083d53c`
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -92,10 +92,10 @@ MAINTENANCE AUDIT: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/
 INDEPENDENT REVIEW: spec compliance PASS; task quality PASS after scoped evidence re-review; the original Medium verification-evidence finding is ADDRESSED.
 VERSION_IMPACT: NONE — no material version/revision/schema/generation namespace was changed; see the owner-law classification above.
 SYSTEM_IMPACT: NONE — the schema and fixture formalize accepted W03 stable PLAYER binding, W04 routing-only collaboration references and existing owner schema references; no runtime producer, shared writer, authority, dependency direction or persistence boundary changed.
-FULL DEV CLEAN-EXACT CANDIDATE: commit `e5791baaa11dea697b8dc0622ef6ec82afc68274`; command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest --rootdir=/tmp/opencode/w05t01-verify /tmp/opencode/w05t01-verify/DEV/TESTS -n auto` — 1440 passed, 2 skipped, 24 existing RD09 `RefResolver` deprecation warnings in 20.48s.
-MAINTENANCE AUDIT CLEAN-EXACT CANDIDATE: commit `e5791baaa11dea697b8dc0622ef6ec82afc68274`; canonical `run_maintenance_audit.py` entrypoint at the clean exact-source worktree — PASS (`OK: engine consistency audit passed`).
+FULL DEV CLEAN-EXACT PUBLISHED CHECKPOINT: commit `a83de39863a34a6b576cf2a0e90420864083d53c`; command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest --rootdir=/tmp/opencode/w05t01-verify /tmp/opencode/w05t01-verify/DEV/TESTS -n auto` — 1440 passed, 2 skipped, 24 existing RD09 `RefResolver` deprecation warnings in 20.20s.
+MAINTENANCE AUDIT CLEAN-EXACT PUBLISHED CHECKPOINT: commit `a83de39863a34a6b576cf2a0e90420864083d53c`; canonical `run_maintenance_audit.py` entrypoint at the clean exact-source worktree — PASS (`OK: engine consistency audit passed`).
 TASK REVIEW RE-REVIEW: PASS — scoped verification-evidence finding ADDRESSED; no additional correction required.
-PUBLISHED CHECKPOINT: pending — local candidate commit is verified and independently reviewed; non-force publication and remote read-back remain.
-REMOTE READ-BACK: pending.
-NEXT EXACT TASK: W05.T01 until independent acceptance/publication/read-back; then record the eligible join without starting W05.T02.
-UNPUBLISHED_WORK: local candidate `e5791baaa11dea697b8dc0622ef6ec82afc68274` and the current-progress synchronization are not yet remotely published; no hidden code work remains.
+PUBLISHED CHECKPOINT: `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` — accepted and published in checkpoint `a83de39863a34a6b576cf2a0e90420864083d53c`.
+REMOTE READ-BACK: PASS — fresh `git fetch --prune origin` confirmed `HEAD == origin/v1/engine-rearchitecture == a83de39863a34a6b576cf2a0e90420864083d53c`; changed-file read-back diff is empty.
+NEXT EXACT TASK: W05.T02 — Shared catalog, wrapper and identifier writer; eligible from the accepted/read-back T01 checkpoint and subject to its other named inputs. It has not started.
+UNPUBLISHED_WORK: NONE — W05.T01 implementation and acceptance cursor are published/read back; W05.T02 has not started.
