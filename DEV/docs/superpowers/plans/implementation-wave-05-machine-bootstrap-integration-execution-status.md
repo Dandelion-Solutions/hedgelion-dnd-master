@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: W05.T02 — shared catalog, wrapper and identifier writer; real source-native runtime integration is now represented in RD16 tests.
-LAST_COMPLETED_TASK: W05.T02-P0 -> `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`.
-LAST_SAFE_SHA: `42610cc16583ef7dc3d66ae64466f3ae5cf23583` — P0 output and global-progress synchronization are published/read back; T01 remains accepted.
+CURRENT_TASK: none — W05.T02 is accepted/read back; next planned unit is W05.T03 dependency verification.
+LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`.
+LAST_SAFE_SHA: `6740da81c405b7a88b5d4c33e9a708d019bb642f` — T02 implementation, verification and status were published non-force and freshly read back; P0 and T01 remain accepted.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -244,6 +244,8 @@ T02 VERSION IMPACT GATE: PASS — `DEV/SCHEMAS/identifier-policies.schema.json` 
 T02 SYSTEM_IMPACT: NONE — final policy/schema integration remains within the approved W05.T02 shared-writer envelope; no identity strategy, semantic owner, runtime authority, adapter, alias, dual-read or migration was introduced. `world.thread` prefix is aligned to its existing strict owner ID contract.
 T02 cross-owner verification: PASS — 394 passed across RD16, WP03, RD15, catalog binding/ledger, Step-3 catalog acceptance, W02 execution/durability and W01 information.
 T02 independent review: PASS — `hdm-reviewer` reviewed the final shared writer and global census synchronization against public base `42610cc16583ef7dc3d66ae64466f3ae5cf23583`; no findings. Reviewer verified the 483/35/68 ledger totals, scalar runtime join for all 20 admitted source-native families, thread ID prefix, forbidden PLAYER disposition, and exact version transition; focused reviewer verification passed 19 tests.
-T02 clean exact full DEV / maintenance: PASS. T02 publication/read-back: PENDING.
-NEXT EXACT TASK: fresh-fetch `origin/v1/engine-rearchitecture`, confirm fast-forward from current remote HEAD, publish the T02 candidate without force, and obtain fresh remote read-back before accepting `RD16_SHARED_MACHINE_INTEGRATION_READY`.
-UNPUBLISHED_WORK: T02 candidate commit `284722b5` plus current execution/progress status synchronization; original local candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains in reflog history and the pre-ruling cursor stash remains unpopped. No T02 file has been published.
+T02 clean exact full DEV / maintenance: PASS. T02 publication/read-back: PASS — fresh `git fetch --prune origin` confirmed `HEAD == origin/v1/engine-rearchitecture == 6740da81c405b7a88b5d4c33e9a708d019bb642f`; changed-file read-back diff is empty.
+T02 output: `RD16_SHARED_MACHINE_INTEGRATION_READY` — accepted and published/read back at `6740da81c405b7a88b5d4c33e9a708d019bb642f`.
+T02 accepted-state cursor/progress synchronization VERSION_IMPACT: NONE — execution/progress evidence only.
+NEXT EXACT TASK: W05.T03 retained schema cutovers — first verify its exact named owner/checkpoint inputs; no W05.T03 implementation has started.
+UNPUBLISHED_WORK: NONE for W05.T02. The superseded original local candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains in local reflog history; pre-ruling cursor stash remains unpopped and is superseded by published status.

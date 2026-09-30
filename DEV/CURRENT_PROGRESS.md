@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
-NEXT_AUTHORIZED_UNIT: W05.T02 — shared catalog, wrapper and identifier writer. Its prerequisite `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` passed independent review, clean exact DEV and maintenance, and was published/read back at `601cea401f4f375232740305c8eb8a7be7f6ee41`; the preserved local candidate has been rebased/reconciled onto the accepted P0 head.
-REQUIRED_GATE: accepted/read-back `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` at `601cea401f4f375232740305c8eb8a7be7f6ee41` -> W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`. Other Wave-05 tasks remain separately gated; Wave-06 remains downstream of realized Wave-05 targets.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01 and W05.T02-P0 accepted/read back; W05.T02 executing on the locally rebased candidate.
-KNOWN_BLOCKERS: W05.T02 output remains unaccepted pending non-force publication and fresh remote read-back. Hosted CI is unavailable in this local-machine runtime.
+NEXT_AUTHORIZED_UNIT: W05.T03 — retained schema cutovers; first verify the exact named owner/checkpoint inputs in the stable Wave-05 plan. W05.T02 output `RD16_SHARED_MACHINE_INTEGRATION_READY` is accepted and published/read back at `6740da81c405b7a88b5d4c33e9a708d019bb642f`.
+REQUIRED_GATE: P0 `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` and W05.T02 `RD16_SHARED_MACHINE_INTEGRATION_READY` are accepted/read back; W05.T03 remains dependency-gated on its exact schema/owner inputs. Other Wave-05 tasks remain separately gated; Wave-06 remains downstream of realized Wave-05 targets.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01, W05.T02-P0 and W05.T02 accepted/read back; W05.T03 dependency verification is next, with no implementation started.
+KNOWN_BLOCKERS: None for W05.T02. W05.T03 implementation waits for verification of its exact named dependencies. Hosted CI is unavailable in this local-machine runtime.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -367,16 +367,16 @@ TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bo
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T01 and W05.T02-P0 are complete and accepted; W05.T02 is in progress.
-CURRENT_TASK: W05.T02 — shared catalog, wrapper and identifier writer on the locally rebased candidate.
-LAST_PUBLISHED_SHA: `601cea401f4f375232740305c8eb8a7be7f6ee41`
-LAST_COMPLETED_TASK: W05.T02-P0 -> `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`, independent review PASS, clean exact DEV 1444 passed / 2 skipped, maintenance audit PASS, published/read back at `601cea401f4f375232740305c8eb8a7be7f6ee41`. W05.T01 and the Wave-04 Senior PASS remain accepted as recorded above.
-CURRENT_VERIFICATION_STATE: P0 focused RD09 198 passed; P0 clean exact DEV 1444 passed, 2 skipped; P0 maintenance audit PASS; P0 independent review PASS; P0 non-force publication and fresh remote read-back PASS. T02 focused/cross-owner suites passed 394 tests across RD16, WP03, RD15, catalog binding/ledger, Step-3 catalog acceptance, W02 execution/durability and W01 information; direct runtime allocation/parse covers all 20 source-native catalog rows and validates the generated `world.thread` ID against its strict owner schema. Global ledger census synchronization is GREEN (483/35/68); independent task review and Version Impact Gate PASS; clean exact full DEV 1453 passed, 0 skipped; maintenance audit PASS.
+STATUS: EXECUTING — W05.T01, W05.T02-P0 and W05.T02 are complete and accepted; Wave 05 remains dependency-gated.
+CURRENT_TASK: none — W05.T02 accepted; W05.T03 owner/checkpoint dependency verification is next.
+LAST_PUBLISHED_SHA: `6740da81c405b7a88b5d4c33e9a708d019bb642f`
+LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`, independent review PASS, Version Impact Gate PASS, clean exact DEV 1453 passed / 0 skipped, maintenance audit PASS, published/read back at `6740da81c405b7a88b5d4c33e9a708d019bb642f`. W05.T02-P0 and W05.T01 remain accepted as recorded above.
+CURRENT_VERIFICATION_STATE: P0 focused RD09 198 passed; P0 clean exact DEV 1444 passed, 2 skipped; P0 maintenance audit PASS; P0 independent review PASS; P0 non-force publication and read-back PASS. T02 focused/cross-owner suites 394 passed, census synchronization passed, independent review PASS, Version Impact Gate PASS; clean exact full DEV 1453 passed / 0 skipped; maintenance audit PASS; non-force publication and fresh remote read-back PASS.
 VERSION_IMPACT: P0 `GAME/TOOLS/live_state.py 1.0.21 -> 1.0.22`; T02 `identifier-policies.schema_version 2 -> 3`; `core-catalog.schema_version 2` unchanged; coordinated catalog generation remains 2; admission-ledger schema 2 unchanged; campaign/storage generation and migration/dual-read NONE. Progress/cursor-only status changes NONE.
 SYSTEM_IMPACT: NONE for accepted P0/T02 implementation so far; T02 changes stay within the approved shared-writer envelope and reuse the existing strict `world.thread` ID pattern.
-NEXT_EXACT_TASK: fresh-fetch the target branch, publish the complete T02 candidate non-force, and obtain a read-back before claiming `RD16_SHARED_MACHINE_INTEGRATION_READY`.
-KNOWN_BLOCKERS: T02 is fully locally verified but remains unaccepted until publication/read-back. Hosted CI is unavailable in this local-machine runtime.
-UNPUBLISHED_WORK: local T02 candidate `284722b5` plus final execution/progress status updates; original `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains in local reflog history, and the pre-ruling cursor stash remains unpopped. No T02 file has been published.
+NEXT_EXACT_TASK: read W05.T03's exact hard-input/owner table and verify dependency checkpoints; do not begin retained-schema writes until those inputs are proved.
+KNOWN_BLOCKERS: None for W05.T02. W05.T03 remains dependency-gated pending exact input verification. Hosted CI is unavailable in this local-machine runtime.
+UNPUBLISHED_WORK: NONE for accepted P0/W05.T02. The original candidate commit `5fdc556c2abb5d4f37a9923b73ede03e16920383` and pre-ruling cursor stash remain preserved local provenance; no active T02 diff remains.
 
 ## Historical Wave-04 execution cursor snapshot (pre-closure)
 
