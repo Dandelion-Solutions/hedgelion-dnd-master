@@ -1,0 +1,37 @@
+{
+  "kind": "w04.multiplayer_session_deltas",
+  "output": "W04_MULTIPLAYER_SESSION_DELTAS_READY",
+  "direct_change_paths": [
+    "DEV/TESTS/test_w04_t08_consumer_convergence.py",
+    "DEV/TESTS/fixtures/w04_multiplayer_session_deltas.json"
+  ],
+  "inputs": {
+    "T03A": {
+      "fixture": "DEV/TESTS/fixtures/w04_player_collaboration_delta.json",
+      "output": "W04_PLAYER_COLLABORATION_DELTA_READY"
+    },
+    "T08A": {
+      "fixture": "DEV/TESTS/fixtures/w04_multiplayer_consumer_delta.json",
+      "output": "W04_MULTIPLAYER_CONSUMER_DELTA_READY"
+    },
+    "T08B": {
+      "fixture": "DEV/TESTS/fixtures/w04_session_consumer_delta.json",
+      "output": "W04_SESSION_CONSUMER_DELTA_READY"
+    }
+  },
+  "shared_final_writer_changes": [],
+  "runtime_owner_changes": [],
+  "physical_schema_changes": [],
+  "authorization_fallbacks": [],
+  "planning_leakage": "forbidden",
+  "native_owner_by_dimension": {
+    "campaign": "current_campaign_route_and_exact_revision_owner",
+    "LIVE": "selected_live_route_epoch_and_source_revision_owner",
+    "PLAYER": "verified_stable_id_to_exact_current_PLAYER_access_owner",
+    "collaboration": "current_obligation_record_and_exact_generation_owner",
+    "procedure": "current_native_procedure_or_continuation_owner",
+    "accepted_input": "current_accepted_input_owner"
+  },
+  "currentness_policy": "owner_specific",
+  "universal_cross_domain_currentness_scalar": false
+}

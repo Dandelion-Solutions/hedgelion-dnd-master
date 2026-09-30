@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08A accepted/read back; T07-INTEGRATION PASS; T08C authorized
-CURRENT_TASK: W04.T08C final consumer convergence. Inputs T08A, T08B and T03A are accepted/read back. Follow the approved plan’s test/evidence-only boundary; verify no shared final-writer bytes changed, no scan/index authorization or planning leakage exists, and campaign/LIVE/PLAYER/currentness each retain one native owner. A26-02 remains separate before Wave-04 FINAL_REVIEW.
+STATUS: EXECUTING — W04.T08A accepted/read back; T07-INTEGRATION PASS; T08C implementation/review PASS, clean exact verification pending
+CURRENT_TASK: W04.T08C final consumer convergence. Inputs T08A, T08B and T03A are accepted/read back. The convergence test/delta are implemented and independently reviewed PASS; run clean exact full verification before acceptance/publication. Preserve the approved test/evidence-only boundary and one-owner currentness composition. A26-02 remains separate before Wave-04 FINAL_REVIEW.
 LAST_COMPLETED_TASK: W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`; six TDD assertions; independent review PASS; clean exact DEV 1417 passed, 5 skipped, four separately tracked A26-02 failures reproduced sequentially; maintenance PASS; `VERSION_IMPACT: NONE`; non-force publication/read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. W04.T07-INTEGRATION **PASS** with item-level report and 224 focused tests; W04.T07E, T07D/T07D-P0, T08B, T03A and prior W04 checkpoints remain accepted/read back.
 LAST_SAFE_SHA: `2720a6187d5919fb2ca8c8f3265604814510d69b` — T08A code, verification and status checkpoint published/read back.
 
@@ -334,6 +334,11 @@ PROTECTED INVARIANTS: no shared final-writer bytes changed; no scan/index author
 EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: T08C assertions over accepted T03A/T08A/T08B delta fixtures; relevant T02C/T04B/T07 source/consumer tests; version/provenance/current-progress checks; clean exact full DEV and maintenance audit.
 VERSION IMPACT: NONE expected for DEV tests/evidence only; classify the actual changed set before checkpoint.
 SYSTEM IMPACT: NONE expected. Any need for runtime, shared-schema or final-writer changes is outside this plan row.
+T08C_TDD: six convergence assertions first failed because the bounded convergence delta was absent; after fixture creation the suite was GREEN. The independent review repair added explicit T03A/T08A PLAYER_INDEX fallback and stable-ID/login assertions; the final T08C suite has seven passing tests.
+T08C_FOCUSED_VERIFICATION: canonical T08A/T08B/T03A/RD12/RD16/T08C unittest set — 177 passed, 5 skipped. T08C-specific pytest suite — 7 passed. Scoped Ruff check/format and JSON parse: PASS.
+T08C_INDEPENDENT_REVIEW: PASS after repair. First review's targeted repair required explicit T03A/T08A PLAYER_INDEX and stable-ID/login assertions; those are now asserted against the accepted input fixtures. No runtime/shared-schema changes.
+T08C_VERSION_IMPACT: NONE expected — DEV test and bounded consumer-delta fixture only; no HDM-owned runtime/module/schema/generation namespace.
+T08C_SYSTEM_IMPACT: NONE — no owner boundary or final-writer scope changed.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -684,9 +689,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: execute W04.T08C using the impact envelope above: first write focused convergence tests and observe RED against the absent bounded convergence delta, then add the DEV-only fixture/delta and prove each plan invariant against T03A/T08A/T08B inputs. After independent review, run clean exact full DEV/version/provenance/maintenance checks before publication. A26-02 remains required before Wave-04 FINAL_REVIEW.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A. T08A is accepted/read back; T08C is authorized under the approved plan. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for T08A. T08C is not started; preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: run full DEV and canonical maintenance audit from a clean exact-source worktree after committing the T08C test/fixture and synchronized status. Reproduce/classify the four known A26-02 failures only; do not weaken them. After clean verification and final status sync, publish/read back the T08C checkpoint. A26-02 remains required before Wave-04 FINAL_REVIEW.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A. T08C implementation, independent review and focused verification PASS; clean exact full DEV/maintenance and publication/read-back are pending. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: T08C test/fixture and synchronized status edits are local pending clean exact verification and coherent publication. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
