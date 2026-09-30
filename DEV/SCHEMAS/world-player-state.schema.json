@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/world-player-state.schema.json",
+  "title": "HDM world.player state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "player_id",
+    "status",
+    "github_binding",
+    "controlled_pc_ids",
+    "collaboration_route_refs"
+  ],
+  "properties": {
+    "player_id": {"$ref": "#/$defs/id"},
+    "status": {"enum": ["active", "inactive"]},
+    "deactivated_by": {"enum": ["self", "creator", null]},
+    "display_name": {"type": ["string", "null"]},
+    "github_binding": {"$ref": "#/$defs/githubBinding"},
+    "controlled_pc_ids": {"$ref": "#/$defs/idSet"},
+    "visibility": {"$ref": "#/$defs/visibility"},
+    "preferences": {"$ref": "#/$defs/preferences"},
+    "policy_authority": {"$ref": "#/$defs/policyAuthority"},
+    "joined_event_id": {"$ref": "#/$defs/nullableId"},
+    "last_event_id": {"$ref": "#/$defs/nullableId"},
+    "collaboration_route_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/collaborationRouteRef"}
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {"status": {"const": "active"}},
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {"deactivated_by": {"const": null}}
+      }
+    }
+  ],
+  "$defs": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "nullableId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"
+    },
+    "idSet": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/id"}
+    },
+    "githubBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_id"],
+      "properties": {
+        "user_id": {
+          "oneOf": [
+            {"type": "string", "minLength": 1},
+            {"type": "integer"}
+          ]
+        },
+        "login": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "visibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "private_record_ids": {"$ref": "#/$defs/idSet"}
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "campaign_only": {"$ref": "#/$defs/campaignPreferences"}
+      }
+    },
+    "campaignPreferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanics_detail": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
+        "decision_support_detail": {"type": ["integer", "null"], "minimum": 0, "maximum": 10},
+        "adaptive_mechanics_detail": {"type": ["boolean", "null"]}
+      }
+    },
+    "policyAuthority": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mechanical_override_policy": {"type": ["boolean", "null"]}
+      }
+    },
+    "collaborationRouteRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["obligation_id", "generation"],
+      "properties": {
+        "obligation_id": {"type": "string", "minLength": 1},
+        "generation": {"type": "integer", "minimum": 1}
+      }
+    }
+  }
+}

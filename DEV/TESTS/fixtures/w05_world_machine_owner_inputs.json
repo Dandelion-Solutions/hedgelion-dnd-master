@@ -1,0 +1,44 @@
+{
+  "kind": "w05.world_machine_owner_inputs",
+  "output_checkpoint": "W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY",
+  "world_family_schema_dispatch": [
+    {"family": "world.actor", "schema_path": "DEV/SCHEMAS/world-actor-state.schema.json"},
+    {"family": "world.actor_group", "schema_path": "DEV/SCHEMAS/world-actor-group-state.schema.json"},
+    {"family": "world.asset", "schema_path": "DEV/SCHEMAS/world-asset-state.schema.json"},
+    {"family": "world.location", "schema_path": "DEV/SCHEMAS/world-location-state.schema.json"},
+    {"family": "world.connection", "schema_path": "DEV/SCHEMAS/world-connection-state.schema.json"},
+    {"family": "world.zone", "schema_path": "DEV/SCHEMAS/world-zone-state.schema.json"},
+    {"family": "world.organization", "schema_path": "DEV/SCHEMAS/world-organization-state.schema.json"},
+    {"family": "world.contract", "schema_path": "DEV/SCHEMAS/world-contract-state.schema.json"},
+    {"family": "world.mission", "schema_path": "DEV/SCHEMAS/world-mission-state.schema.json"},
+    {"family": "world.scene", "schema_path": "DEV/SCHEMAS/world-scene-state.schema.json"},
+    {"family": "world.encounter", "schema_path": "DEV/SCHEMAS/world-encounter-state.schema.json"},
+    {"family": "world.hazard", "schema_path": "DEV/SCHEMAS/world-hazard-state.schema.json"},
+    {"family": "world.effect", "schema_path": "DEV/SCHEMAS/world-effect-state.schema.json"},
+    {"family": "world.lore_fact", "schema_path": "DEV/SCHEMAS/world-lore-fact-state.schema.json"},
+    {"family": "world.knowledge", "schema_path": "DEV/SCHEMAS/world-knowledge-state.schema.json"},
+    {"family": "world.thread", "schema_path": "DEV/SCHEMAS/world-thread-state.schema.json"},
+    {"family": "world.player", "schema_path": "DEV/SCHEMAS/world-player-state.schema.json"}
+  ],
+  "definition_binding_inputs": {
+    "base_entity_structures": "DEV/CATALOG/entity-structures.json",
+    "entity_structures_schema": "DEV/SCHEMAS/entity-structures.schema.json",
+    "owner_local_deltas": {
+      "world.thread": {"definition_binding": {"mode": "forbidden"}},
+      "world.player": {"definition_binding": {"mode": "forbidden"}}
+    }
+  },
+  "information_schema_inputs": {
+    "world.lore_fact": "DEV/SCHEMAS/world-lore-fact-state.schema.json",
+    "world.knowledge": "DEV/SCHEMAS/world-knowledge-state.schema.json"
+  },
+  "collaboration_state_input": {
+    "owner_checkpoint": "W04_PLAYER_COLLABORATION_DELTA_READY",
+    "owner_path": "DEV/TESTS/fixtures/w04_player_collaboration_delta.json",
+    "schema_pointer": "/player_fragment_schema"
+  },
+  "source_native_identity_input": {
+    "owner_checkpoint": "W03_SOURCE_NATIVE_LIVE_ID_READY",
+    "owner_path": "DEV/docs/superpowers/plans/implementation-wave-03-principal-live-temporal.md"
+  }
+}
