@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08A/T08B/T08C and T07A-E integration accepted/read back; A26-02 proof/collection repair remains before final Senior audit
-CURRENT_TASK: A26-02 S6D proof/collection repair under the impact envelope at the end of this cursor. Update only the two affected DEV test modules and portable-value consumer routing manifest to current accepted owners, then run canonical unittest collection, full DEV, maintenance and the builder/closure checks for the engine-contract input. Do not change runtime schemas/code, CI runner, or accepted semantic behavior. Wave 05 remains unauthorized.
+STATUS: EXECUTING — W04.T08A/T08B/T08C and T07A-E integration accepted/read back; A26-02 repair published and exact-head verified; final Senior integration audit pending
+CURRENT_TASK: complete final Wave-04 review/audit handoff from verified implementation head `7b652995398c08a327542ce8b9db25f254cf74f1`. A26-02 proof/collection repair is accepted at the implementation-review and local verification level; no runtime/schema/CI changes were made. Wave 05 remains unauthorized.
 LAST_COMPLETED_TASK: W04.T08C -> `W04_MULTIPLAYER_SESSION_DELTAS_READY`, candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b`, seven convergence tests, independent review PASS; final exact DEV at status HEAD `aec602a828ef399673b58d2ccd7cb804b3baa5c2`: 1424 passed, 5 skipped, four A26-02 failures reproduced sequentially; maintenance PASS; version/provenance/current-progress 18 passed; `VERSION_IMPACT: NONE`. Non-force publication/read-back at `aec602a828ef399673b58d2ccd7cb804b3baa5c2`. W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`, independent PASS and read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. T08B/T03A and W04.T07-INTEGRATION remain accepted/read back; T07E/T07D and earlier W04 checkpoints remain retained.
-LAST_SAFE_SHA: `b081e6eeaeb6919c7d3dc01576171b532526e2df` — published T08C acceptance/status and A26-02 repair routing checkpoint.
+LAST_SAFE_SHA: `7b652995398c08a327542ce8b9db25f254cf74f1` — published A26-02 proof/collection repair checkpoint, independently reviewed and full local verification PASS.
 
 ## W04.T07D / PO-012 / P0 current disposition — 2026-09-28
 
@@ -350,7 +350,7 @@ T08C_STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — this progress/cursor/impact
 
 ## A26-02 S6D proof/collection repair impact envelope
 
-STATUS: required separate repair before final Wave-04 review; no production/runtime behavior change is authorized or needed by the observed failures.
+STATUS: required separate repair before final Wave-04 review; implementation, independent review and exact-head local verification PASS; no production/runtime behavior change was made.
 BASE_SHA: `b081e6eeaeb6919c7d3dc01576171b532526e2df` (freshly fetched published T08C acceptance/status checkpoint).
 SPEC / OWNER ROUTE: `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` §§3.2, 5 and 6; `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` §§2, 5 and 10 plus its S6D-09 amendment; `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` (“Builder and loader”; “Projections and durability”); four A26-02 test nodes listed below. A26-02 keeps these owner repairs separate from T07A–T08C.
 
@@ -386,7 +386,18 @@ A26-02 MAIN-WORKTREE DIAGNOSTIC:
 - Full DEV pytest command: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — **1423 passed, 5 skipped, 7 failed**. All four historical A26-02/S6D failures now pass; the remaining failures are workspace-sensitive: `test_game_dev_layout::test_runtime_marker_is_unique`, `test_s6d_11_ruleset_package_closure::test_transitional_identity_keys_are_absent_from_current_carriers`, `test_runtime_package_provenance::{test_built_zip_contains_one_generated_root_provenance_member,test_clean_checkout_metadata_records_exact_head}`, `test_release_game_passthrough::test_new_game_root_file_and_directory_are_automatically_archived`, `test_release_integration::test_canonical_entry_point_builds_reproducible_flat_runtime_and_generator_smoke`, and `test_versioning_namespace_policy::test_census_has_zero_unclassified_hits`.
 - Maintenance audit reports duplicate `GAME/ENGINE_VERSION.yaml` markers under existing `DEV/tmp/` verification worktrees and one transitional-identity token in preserved `.entire/tmp/` data; no preserved artifact was cleaned.
 - Full unittest discovery in this checkout exceeded its 120-second limit while reaching the version-census test. Focused unittest collection is green; rerun the full canonical collector in a clean exact-head verification checkout.
-- Full clean exact-head DEV, unittest, maintenance, release-builder and engine-contract closure verification remain pending.
+- The above dirty-worktree diagnostic is superseded by the clean exact-head verification below; preserved user artifacts remain untouched.
+
+A26-02 CLEAN EXACT-HEAD VERIFICATION — `7b652995398c08a327542ce8b9db25f254cf74f1`:
+- Clean detached verification checkout at the exact published commit, outside the source tree.
+- Canonical unittest discovery: **1435 tests passed, 5 skipped**; version census reported `VERSION_UNCLASSIFIED=[]` and `VERSION_LEGACY_HITS=[]`.
+- Full DEV pytest: **1430 passed, 5 skipped**, 24 existing `jsonschema.RefResolver` deprecation warnings; exact command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` executed in the clean checkout.
+- Canonical maintenance audit: **PASS** (`OK: engine consistency audit passed`).
+- Canonical release builder: **PASS**; it reconstructed engine-contract inventory schema `2` with five families, ran registered package validators, and generated `/tmp/opencode/a26-02-build-7b652995/hedgelion-dnd-master-runtime-v1.0-alpha.zip` plus its SHA-256 sidecar.
+- `VERSION_IMPACT: NONE`; `SYSTEM_IMPACT: NONE`. No hosted-CI result is claimed in this local-machine runtime.
+- Independent task review: **PASS / no findings**. Code checkpoint commit `7b652995398c08a327542ce8b9db25f254cf74f1` was pushed non-force; fresh `git fetch --prune origin` confirmed local and `origin/v1/engine-rearchitecture` both at that SHA.
+- A26-02 disposition: **IMPLEMENTATION / REVIEW / LOCAL VERIFICATION PASS**. Wave 04 remains open solely for the mandatory final Senior integration audit and closure decision.
+- `A26-02_STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE` — execution cursor and `DEV/CURRENT_PROGRESS.md` record task state/evidence only; no version, revision, schema or generation namespace changes.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -737,9 +748,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: publish this focused/reviewed A26-02 repair checkpoint, then create a clean detached exact-head verification checkout outside the source tree and run full `unittest discover -s DEV/TESTS`, the exact full DEV pytest command, maintenance audit, and canonical release builder/engine-contract closure validation. Preserve unrelated workspace material. After clean exact-head evidence is recorded, complete final Wave-04 verification and obtain the mandatory Senior integration audit. Do not weaken accepted semantics to satisfy stale tests. Wave 05 remains unauthorized.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A-C. T08C is accepted/read back. A26-02 implementation and independent task review PASS; the clean exact-head full unittest/DEV/maintenance/builder-closure evidence and final Wave-04 review remain required. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: reviewed A26-02 changes are present in `DEV/CATALOG/portable-value-routes.json`, both S6D-04/S6D-05 test modules, and this execution-status cursor; focused pytest/unittest and Ruff checks pass, while clean exact-head full checks remain pending. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: complete the mandatory Senior Wave-04 integration audit/closure decision against verified implementation head `7b652995398c08a327542ce8b9db25f254cf74f1`, using the A26-02 review and clean exact-head evidence above plus the accepted T07-INTEGRATION/T08C records. Then synchronize final Wave-04 status. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E, T08A-C or A26-02. A26-02 implementation/review/local verification PASS and publication/read-back PASS. Wave 04 is not complete pending the mandatory final Senior integration audit/closure decision; hosted CI is unavailable in this local-machine runtime. Wave 05 is not authorized.
+UNPUBLISHED_WORK: NONE for A26-02; the repair is published and exact-head verified. No runtime/schema implementation remains unpublished. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
