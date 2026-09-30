@@ -294,7 +294,9 @@ class WorldEnvelopeDispatchTests(unittest.TestCase):
 
 
 class DefinitionBindingModeTests(unittest.TestCase):
-    def test_owner_local_binding_deltas_complete_the_exact_world_census(self) -> None:
+    def test_owner_local_binding_deltas_join_the_exact_shared_world_census(
+        self,
+    ) -> None:
         inputs = load_w05_world_machine_inputs(self)
         binding_inputs = inputs["definition_binding_inputs"]
         self.assertEqual(
@@ -306,27 +308,34 @@ class DefinitionBindingModeTests(unittest.TestCase):
             "DEV/SCHEMAS/entity-structures.schema.json",
         )
 
-        base_structures = json.loads(
-            (ROOT / binding_inputs["base_entity_structures"]).read_text(encoding="utf-8")
+        shared_structures = json.loads(
+            (ROOT / binding_inputs["base_entity_structures"]).read_text(
+                encoding="utf-8"
+            )
         )
-        Draft202012Validator(
-            load_schema("entity-structures.schema.json")
-        ).validate(base_structures)
-        base_world = base_structures["world_records"]
+        Draft202012Validator(load_schema("entity-structures.schema.json")).validate(
+            shared_structures
+        )
+        shared_world = shared_structures["world_records"]
         deltas = binding_inputs["owner_local_deltas"]
-        self.assertEqual(set(base_world) & set(deltas), set())
-        self.assertEqual(set(base_world) | set(deltas), CANONICAL_WORLD_FAMILIES)
+        self.assertEqual(set(shared_world), CANONICAL_WORLD_FAMILIES)
         self.assertEqual(set(deltas), {"world.thread", "world.player"})
 
         for family, delta in deltas.items():
             with self.subTest(family=family):
                 self.assertEqual(delta, {"definition_binding": {"mode": "forbidden"}})
+                self.assertEqual(
+                    shared_world[family]["definition_binding"],
+                    delta["definition_binding"],
+                )
 
         core_catalog = json.loads(
             (ROOT / "DEV" / "CATALOG" / "core-catalog.json").read_text(encoding="utf-8")
         )
-        registered_definitions = set(core_catalog["registries"]["content_definition_kinds"])
-        for family, spec in base_world.items():
+        registered_definitions = set(
+            core_catalog["registries"]["content_definition_kinds"]
+        )
+        for family, spec in shared_world.items():
             binding = spec["definition_binding"]
             with self.subTest(family=family):
                 if binding["mode"] == "forbidden":
@@ -339,10 +348,151 @@ class DefinitionBindingModeTests(unittest.TestCase):
                     )
 
 
-@unittest.skip("Wave 05 owns shared catalog integration.")
 class SharedCatalogIntegrationTests(unittest.TestCase):
-    def test_shared_catalog_integration_is_deferred(self) -> None:
-        self.fail("Wave 05 must integrate the shared catalog.")
+    def test_catalog_and_world_admission_match_the_exact_family_census(self) -> None:
+        core_catalog = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "core-catalog.json").read_text(encoding="utf-8")
+        )
+        registries = core_catalog["registries"]
+        self.assertEqual(
+            set(registries["world_record_kinds"]), CANONICAL_WORLD_FAMILIES
+        )
+        self.assertEqual(
+            set(registries["runtime_record_kinds"]), CANONICAL_RUNTIME_FAMILIES
+        )
+        self.assertNotIn("world.faction", registries["world_record_kinds"])
+        self.assertIn("organization.faction", registries["organization_facets"])
+
+        shard = json.loads(
+            (
+                ROOT
+                / "DEV"
+                / "CATALOG"
+                / "catalog-admission-ledger"
+                / "families"
+                / "world_record_kinds.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            shard["registry_census"]["count"], len(CANONICAL_WORLD_FAMILIES)
+        )
+        self.assertEqual(
+            shard["registry_census"]["admitted"], len(CANONICAL_WORLD_FAMILIES)
+        )
+        self.assertEqual(
+            {entry["id"] for entry in shard["entries"]}, CANONICAL_WORLD_FAMILIES
+        )
+        self.assertTrue(
+            all(
+                entry["admission_disposition"] == "ACTIVE_ADMITTED"
+                for entry in shard["entries"]
+            )
+        )
+
+    def test_world_wrapper_dispatches_to_each_strict_owner_schema_once(self) -> None:
+        inputs = load_w05_world_machine_inputs(self)
+        wrapper = load_schema("world-record.schema.json")
+
+        def collect_refs(value: object) -> list[str]:
+            if isinstance(value, dict):
+                refs = [value["$ref"]] if isinstance(value.get("$ref"), str) else []
+                for key, child in value.items():
+                    if key != "$ref":
+                        refs.extend(collect_refs(child))
+                return refs
+            if isinstance(value, list):
+                return [ref for child in value for ref in collect_refs(child)]
+            return []
+
+        refs = collect_refs(wrapper)
+        dispatch = inputs["world_family_schema_dispatch"]
+        self.assertEqual(
+            {entry["family"] for entry in dispatch}, CANONICAL_WORLD_FAMILIES
+        )
+        for entry in dispatch:
+            owner_schema = load_schema(Path(entry["schema_path"]).name)
+            with self.subTest(family=entry["family"]):
+                self.assertEqual(refs.count(owner_schema["$id"]), 1)
+
+        shared_world = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "entity-structures.json").read_text(
+                encoding="utf-8"
+            )
+        )["world_records"]
+        envelope_branch = next(
+            branch for branch in wrapper["oneOf"] if "$ref" not in branch
+        )
+        binding_conditions = {
+            condition["if"]["properties"]["kind"]["const"]: condition["then"]
+            for condition in envelope_branch["allOf"]
+        }
+        for family in CANONICAL_WORLD_FAMILIES - {"world.thread"}:
+            binding = shared_world[family]["definition_binding"]
+            then = binding_conditions[family]
+            with self.subTest(family=family, definition_binding=binding["mode"]):
+                if binding["mode"] == "forbidden":
+                    self.assertEqual(then["not"], {"required": ["definition_id"]})
+                elif binding["mode"] == "required":
+                    self.assertIn("definition_id", then["required"])
+                else:
+                    self.assertNotIn("definition_id", then.get("required", []))
+                    self.assertNotIn("not", then)
+
+        validator = Draft202012Validator(wrapper, registry=local_schema_registry())
+        for family in CANONICAL_WORLD_FAMILIES - {"world.thread"}:
+            with (
+                self.subTest(family=family, state="unmodeled"),
+                self.assertRaises(ValidationError),
+            ):
+                validator.validate(
+                    {
+                        "id": "record-0001",
+                        "kind": family,
+                        "state": {"unmodeled_authority": True},
+                    }
+                )
+
+        validator.validate(
+            {
+                "record_kind": "world.thread",
+                "id": "THREAD_market_siege",
+                "state_revision": 1,
+                "status": "active",
+                "kind": "goal",
+                "state": {"stage": None, "progress": None},
+            }
+        )
+        with self.assertRaises(ValidationError):
+            validator.validate(
+                {
+                    "record_kind": "world.thread",
+                    "id": "THREAD_market_siege",
+                    "state_revision": 1,
+                    "status": "active",
+                    "kind": "goal",
+                    "state": {
+                        "stage": None,
+                        "progress": None,
+                        "unmodeled_authority": True,
+                    },
+                }
+            )
+        with self.assertRaises(ValidationError):
+            validator.validate(
+                {
+                    "record_kind": "world.thread",
+                    "id": "THREAD_market_siege",
+                    "state_revision": 1,
+                    "status": "active",
+                    "kind": "goal",
+                    "definition_id": "definition.thread",
+                    "state": {"stage": None, "progress": None},
+                }
+            )
+        with self.assertRaises(ValidationError):
+            validator.validate(
+                {"id": "record-0001", "kind": "world.unknown", "state": {}}
+            )
 
 
 class PlayerCollaborationStrictStateIntegrationTests(unittest.TestCase):
@@ -510,10 +660,80 @@ class WorldPlayerNativeIdentityTests(unittest.TestCase):
         self.assertIn("| world.player | FORBIDDEN |", w03_owner)
 
 
-@unittest.skip("Wave 05 owns source-native identifier-policy integration.")
 class SourceNativeIdentifierPolicyIntegrationTests(unittest.TestCase):
-    def test_source_native_identifier_policy_is_deferred(self) -> None:
-        self.fail("Wave 05 must integrate source-native identifier policy.")
+    def test_identifier_policies_join_the_exact_w03_disposition_table(self) -> None:
+        from GAME.TOOLS.live_state import (
+            LIVE_BIRTH_ADMISSION_TABLE,
+            SOURCE_NATIVE_LIVE_ENCODING,
+        )
+
+        policies = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "identifier-policies.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        schema = load_schema("identifier-policies.schema.json")
+        Draft202012Validator(schema).validate(policies)
+
+        self.assertEqual(policies["catalog_generation"], 2)
+        self.assertEqual(policies["schema_version"], 3)
+        all_policies = {**policies["world"], **policies["runtime"]}
+        self.assertEqual(set(all_policies), set(LIVE_BIRTH_ADMISSION_TABLE))
+        self.assertEqual(len(all_policies), 34)
+        self.assertEqual(
+            policies["world"]["world.thread"],
+            {
+                "strategy": "target_key",
+                "target_field": "id",
+                "live_birth": "SOURCE_NATIVE_LIVE",
+            },
+        )
+        self.assertEqual(
+            policies["world"]["world.player"],
+            {
+                "strategy": "target_key",
+                "target_field": "player_id",
+                "live_birth": "FORBIDDEN",
+            },
+        )
+        for family, policy in all_policies.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    policy["live_birth"], LIVE_BIRTH_ADMISSION_TABLE[family]
+                )
+                self.assertNotIn("live_birth_fallback", policy)
+        self.assertEqual(SOURCE_NATIVE_LIVE_ENCODING, "framed_base32hex_v1")
+
+    def test_live_birth_disposition_is_required_closed_and_has_no_fallback_field(
+        self,
+    ) -> None:
+        from copy import deepcopy
+
+        from jsonschema import ValidationError as SchemaValidationError
+
+        schema = load_schema("identifier-policies.schema.json")
+        policies = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "identifier-policies.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        validator = Draft202012Validator(schema)
+
+        missing_disposition = deepcopy(policies)
+        missing_disposition["world"]["world.actor"]["live_birth"] = "SOURCE_NATIVE_LIVE"
+        del missing_disposition["world"]["world.actor"]["live_birth"]
+        with self.assertRaises(SchemaValidationError):
+            validator.validate(missing_disposition)
+
+        unknown_disposition = deepcopy(policies)
+        unknown_disposition["world"]["world.actor"]["live_birth"] = "DEFAULT"
+        with self.assertRaises(SchemaValidationError):
+            validator.validate(unknown_disposition)
+
+        fallback = deepcopy(policies)
+        fallback["world"]["world.actor"]["live_birth_fallback"] = "campaign_allocator"
+        with self.assertRaises(SchemaValidationError):
+            validator.validate(fallback)
 
 
 if __name__ == "__main__":

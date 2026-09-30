@@ -2,9 +2,48 @@ import json
 import unittest
 from pathlib import Path
 
+from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[2]
 CATALOG_GENERATION = 2
+WORLD_RECORD_FAMILIES = {
+    "world.actor",
+    "world.actor_group",
+    "world.asset",
+    "world.location",
+    "world.connection",
+    "world.zone",
+    "world.organization",
+    "world.contract",
+    "world.mission",
+    "world.scene",
+    "world.encounter",
+    "world.hazard",
+    "world.effect",
+    "world.lore_fact",
+    "world.knowledge",
+    "world.thread",
+    "world.player",
+}
+RUNTIME_RECORD_FAMILIES = {
+    "runtime.session",
+    "runtime.message",
+    "runtime.interaction",
+    "runtime.procedure",
+    "runtime.intent_plan",
+    "runtime.command",
+    "runtime.resolution",
+    "runtime.continuation",
+    "runtime.mechanical_event",
+    "runtime.semantic_event",
+    "runtime.resolution_trace",
+    "runtime.disclosure",
+    "runtime.collaboration_obligation",
+    "runtime.checkpoint",
+    "runtime.id_allocator",
+    "runtime.maintenance_audit",
+    "runtime.catalog_gap_report",
+}
 
 
 class R27WP03CatalogConformanceTests(unittest.TestCase):
@@ -19,6 +58,83 @@ class R27WP03CatalogConformanceTests(unittest.TestCase):
             self.load_json("DEV/CATALOG/mechanical-surfaces.json")["catalog_generation"],
         }
         self.assertEqual(generations, {CATALOG_GENERATION})
+
+    def test_exact_world_and_runtime_record_censuses_remain_closed(self):
+        registries = self.load_json("DEV/CATALOG/core-catalog.json")["registries"]
+        self.assertEqual(set(registries["world_record_kinds"]), WORLD_RECORD_FAMILIES)
+        self.assertEqual(
+            set(registries["runtime_record_kinds"]), RUNTIME_RECORD_FAMILIES
+        )
+        self.assertEqual(len(registries["world_record_kinds"]), 17)
+        self.assertEqual(len(registries["runtime_record_kinds"]), 17)
+        self.assertNotIn("world.faction", registries["world_record_kinds"])
+        self.assertIn("organization.faction", registries["organization_facets"])
+
+    def test_world_admission_shard_matches_the_final_core_registry(self):
+        core_world = set(
+            self.load_json("DEV/CATALOG/core-catalog.json")["registries"][
+                "world_record_kinds"
+            ]
+        )
+        shard = self.load_json(
+            "DEV/CATALOG/catalog-admission-ledger/families/world_record_kinds.json"
+        )
+        census = shard["registry_census"]
+        admitted_ids = {
+            entry["id"]
+            for entry in shard["entries"]
+            if entry["admission_disposition"] == "ACTIVE_ADMITTED"
+        }
+        self.assertEqual(shard["registry_family"], "world_record_kinds")
+        self.assertEqual(census["count"], len(WORLD_RECORD_FAMILIES))
+        self.assertEqual(census["admitted"], len(WORLD_RECORD_FAMILIES))
+        self.assertEqual(admitted_ids, core_world)
+        self.assertEqual({entry["id"] for entry in shard["entries"]}, core_world)
+
+    def test_identifier_policy_schema_v3_matches_the_exact_w03_live_birth_table(self):
+        from GAME.TOOLS.live_state import (
+            LIVE_BIRTH_ADMISSION_TABLE,
+            SOURCE_NATIVE_LIVE_ENCODING,
+        )
+
+        policies = self.load_json("DEV/CATALOG/identifier-policies.json")
+        schema = self.load_json("DEV/SCHEMAS/identifier-policies.schema.json")
+        Draft202012Validator(schema).validate(policies)
+
+        self.assertEqual(policies["catalog_generation"], CATALOG_GENERATION)
+        self.assertEqual(policies["schema_version"], 3)
+        self.assertEqual(schema["properties"]["schema_version"]["const"], 3)
+        all_policies = {**policies["world"], **policies["runtime"]}
+        self.assertEqual(set(all_policies), set(LIVE_BIRTH_ADMISSION_TABLE))
+        self.assertEqual(
+            set(all_policies), WORLD_RECORD_FAMILIES | RUNTIME_RECORD_FAMILIES
+        )
+        self.assertEqual(len(all_policies), 34)
+        for family, policy in all_policies.items():
+            with self.subTest(family=family):
+                self.assertEqual(
+                    policy["live_birth"], LIVE_BIRTH_ADMISSION_TABLE[family]
+                )
+        self.assertEqual(SOURCE_NATIVE_LIVE_ENCODING, "framed_base32hex_v1")
+
+    def test_shared_entity_structure_joins_owner_binding_inputs_once(self):
+        structures = self.load_json("DEV/CATALOG/entity-structures.json")
+        shared_world = structures["world_records"]
+        self.assertEqual(set(shared_world), WORLD_RECORD_FAMILIES)
+        self.assertEqual(
+            shared_world["world.thread"]["definition_binding"], {"mode": "forbidden"}
+        )
+        self.assertEqual(
+            shared_world["world.player"]["definition_binding"], {"mode": "forbidden"}
+        )
+        for family, spec in shared_world.items():
+            with self.subTest(family=family):
+                self.assertIn(
+                    spec["definition_binding"]["mode"],
+                    {"forbidden", "optional", "required"},
+                )
+                if spec["definition_binding"]["mode"] == "forbidden":
+                    self.assertEqual(spec["definition_binding"], {"mode": "forbidden"})
 
     def test_accepted_record_classes_replace_stale_generic_owners(self):
         core = self.load_json("DEV/CATALOG/core-catalog.json")["registries"]
@@ -207,6 +323,7 @@ class R27WP03CatalogConformanceTests(unittest.TestCase):
                 "strategy": "composite_key",
                 "fields": ["knower_id", "fact_id"],
                 "scope": "campaign",
+                "live_birth": "OWNER_EQUIVALENT",
             },
         )
         self.assertEqual(
@@ -215,6 +332,7 @@ class R27WP03CatalogConformanceTests(unittest.TestCase):
                 "strategy": "composite_key",
                 "fields": ["player_id", "fact_id"],
                 "scope": "campaign",
+                "live_birth": "OWNER_EQUIVALENT",
             },
         )
         self.assertIn("runtime.collaboration_obligation", policies["runtime"])

@@ -56,7 +56,9 @@
             "world.hazard",
             "world.effect",
             "world.lore_fact",
-            "world.knowledge"
+            "world.knowledge",
+            "world.thread",
+            "world.player"
         ],
         "runtime_record_kinds": [
             "runtime.session",

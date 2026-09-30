@@ -107,6 +107,11 @@ Catalog generation 2 world owners are:
 | `world.effect` | concrete Effect/Condition application owner |
 | `world.lore_fact` | independently identified objective proposition + truth/lifecycle |
 | `world.knowledge` | current fictional subject-to-proposition epistemic relation |
+| `world.thread` | narrow independently persistent generic process owner; not a universal workflow, knowledge/disclosure, Procedure-timing or global-time owner |
+| `world.player` | stable campaign PLAYER identity and current binding/status used by the accepted access-control route; login remains mutable display/audit metadata |
+
+`world.faction` is not a record family. Faction classification remains the
+`organization.faction` facet of `world.organization`.
 
 ### Retired generic relationship record
 

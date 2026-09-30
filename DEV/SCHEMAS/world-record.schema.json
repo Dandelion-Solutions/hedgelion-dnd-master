@@ -2,42 +2,134 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/world-record.schema.json",
   "title": "HDM world-record envelope",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["id", "kind", "state"],
-  "properties": {
-    "id": {
-      "allOf": [{"$ref": "#/$defs/machineId"}],
-      "description": "Validated further by the record kind's policy in CATALOG/identifier-policies.json."
-    },
-    "kind": {"type": "string", "pattern": "^world\\.[a-z][a-z0-9_]*$"},
-    "definition_id": {"$ref": "#/$defs/machineId"},
-    "state": {"type": "object"}
-  },
-  "allOf": [
+  "oneOf": [
     {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor"}}},
-      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-state.schema.json"}}}
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "state"],
+      "properties": {
+        "id": {
+          "allOf": [{"$ref": "#/$defs/machineId"}],
+          "description": "Validated further by the record kind's policy in CATALOG/identifier-policies.json."
+        },
+        "kind": {
+          "enum": [
+            "world.actor",
+            "world.actor_group",
+            "world.asset",
+            "world.location",
+            "world.connection",
+            "world.zone",
+            "world.organization",
+            "world.contract",
+            "world.mission",
+            "world.scene",
+            "world.encounter",
+            "world.hazard",
+            "world.effect",
+            "world.lore_fact",
+            "world.knowledge",
+            "world.player"
+          ]
+        },
+        "definition_id": {"$ref": "#/$defs/machineId"},
+        "state": {"type": "object"}
+      },
+      "allOf": [
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor_group"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-group-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.asset"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-asset-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.location"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-location-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.connection"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-connection-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.zone"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-zone-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.organization"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-organization-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.contract"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-contract-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.mission"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-mission-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.scene"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-scene-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.encounter"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-encounter-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.hazard"}}},
+          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-hazard-state.schema.json"}}}
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.effect"}}},
+          "then": {
+            "required": ["definition_id"],
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-effect-state.schema.json"}}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.lore_fact"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-lore-fact-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.knowledge"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-knowledge-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        },
+        {
+          "if": {"required": ["kind"], "properties": {"kind": {"const": "world.player"}}},
+          "then": {
+            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-player-state.schema.json"}},
+            "not": {"required": ["definition_id"]}
+          }
+        }
+      ]
     },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor_group"}}},
-      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-group-state.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.asset"}}},
-      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-asset-state.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.location"}}},
-      "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-location-state.schema.json"}}}
-    },
-    {
-      "if": {"required": ["kind"], "properties": {"kind": {"const": "world.effect"}}},
-      "then": {
-        "required": ["definition_id"],
-        "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-effect-state.schema.json"}}
-      }
-    }
+    {"$ref": "https://hedgelion.invalid/schemas/world-thread-state.schema.json"}
   ],
   "$defs": {
     "machineId": {
@@ -47,4 +139,3 @@
     }
   }
 }
-

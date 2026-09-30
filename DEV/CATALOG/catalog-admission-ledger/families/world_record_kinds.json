@@ -2,9 +2,9 @@
   "registry_family": "world_record_kinds",
   "registry_census": {
     "registry_family": "world_record_kinds",
-    "count": 15,
+    "count": 17,
     "scope_stratum": "S6D_PRIMARY",
-    "admitted": 15,
+    "admitted": 17,
     "embedded_nonowner": 0,
     "dormant_nonselectable": 0,
     "stale_remove": 0
@@ -216,6 +216,32 @@
       "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
       "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md Р вЂ™Р’В§3 and DEV/ARCHITECTURE/ENTITY_STRUCTURES.md world-record table; exact admitted ID: world.knowledge",
       "consumer_or_dependency": "durable world-record validation, persistence, and publication; exact ID: world.knowledge"
+    },
+    {
+      "registry_family": "world_record_kinds",
+      "id": "world.thread",
+      "profile": "world_record_kinds",
+      "scope_stratum": "S6D_PRIMARY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_CONTRACTS.md + DEV/ARCHITECTURE/ENTITY_STRUCTURES.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md §3 and DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-15-temporal-owners-processes-chronology-canonical-spec.md §15; exact admitted ID: world.thread",
+      "consumer_or_dependency": "narrow native process/temporal owner and world-record validation; exact ID: world.thread"
+    },
+    {
+      "registry_family": "world_record_kinds",
+      "id": "world.player",
+      "profile": "world_record_kinds",
+      "scope_stratum": "S6D_PRIMARY",
+      "realization_state": "COMPLETE",
+      "downstream_owner": null,
+      "semantic_owner": "DEV/ARCHITECTURE/CATALOG_CONTRACTS.md + DEV/ARCHITECTURE/ENTITY_STRUCTURES.md",
+      "admission_disposition": "ACTIVE_ADMITTED",
+      "evidence_class": "ACCEPTED_OWNER_REQUIREMENT",
+      "evidence_citation": "DEV/ARCHITECTURE/CATALOG_INVENTORY.md §3, DEV/ARCHITECTURE/ACCESS_CONTROL.md and DEV/docs/superpowers/specs/2026-09-03-r2-7-WP-16-multiplayer-access-control-live-state-canonical-spec.md §2; exact admitted ID: world.player",
+      "consumer_or_dependency": "stable campaign PLAYER binding/access owner and world-record validation; exact ID: world.player"
     }
   ]
 }

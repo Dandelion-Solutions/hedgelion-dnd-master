@@ -56,6 +56,8 @@
     "world.hazard": {"required": ["status"], "expected": ["location_id", "zone_id", "detected_by_actor_ids", "effect_ids"], "definition_binding": {"mode": "optional", "allowed_definition_kinds": ["definition.hazard"]}},
     "world.effect": {"required": ["target_id", "lifecycle"], "expected": ["source_id", "rules_origin_id", "application_order_key", "parameters", "support_effect_id", "temporal_binding", "scheduled_trigger_state"], "definition_binding": {"mode": "required", "allowed_definition_kinds": ["definition.effect", "definition.condition"]}},
     "world.lore_fact": {"required": ["statement", "truth_status", "record_status"], "expected": ["subject_refs", "scope", "chronology", "provenance_refs", "supersedes_fact_id", "superseded_by_fact_id", "importance", "last_truth_transition_ref"], "definition_binding": {"mode": "forbidden"}},
-    "world.knowledge": {"required": ["knower_id", "fact_id", "stance"], "expected": ["supporting_source_refs", "last_changed_event_id", "confidence"], "definition_binding": {"mode": "forbidden"}}
+    "world.knowledge": {"required": ["knower_id", "fact_id", "stance"], "expected": ["supporting_source_refs", "last_changed_event_id", "confidence"], "definition_binding": {"mode": "forbidden"}},
+    "world.thread": {"required": ["stage", "progress"], "expected": [], "definition_binding": {"mode": "forbidden"}},
+    "world.player": {"required": ["player_id", "status", "github_binding", "controlled_pc_ids", "collaboration_route_refs"], "expected": ["deactivated_by", "display_name", "visibility", "preferences", "policy_authority", "joined_event_id", "last_event_id"], "definition_binding": {"mode": "forbidden"}}
   }
 }

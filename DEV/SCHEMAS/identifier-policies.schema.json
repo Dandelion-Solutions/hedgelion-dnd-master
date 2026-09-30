@@ -7,7 +7,7 @@
   "required": ["catalog_generation", "schema_version", "world", "runtime", "non_records"],
   "properties": {
     "catalog_generation": {"const": 2},
-    "schema_version": {"const": 2},
+    "schema_version": {"const": 3},
     "world": {
       "type": "object",
       "additionalProperties": false,
@@ -15,7 +15,8 @@
         "world.actor", "world.actor_group", "world.asset", "world.location",
         "world.connection", "world.zone", "world.organization",
         "world.contract", "world.mission", "world.scene", "world.encounter",
-        "world.hazard", "world.effect", "world.lore_fact", "world.knowledge"
+        "world.hazard", "world.effect", "world.lore_fact", "world.knowledge",
+        "world.thread", "world.player"
       ],
       "properties": {
         "world.actor": {"$ref": "#/$defs/sequentialPolicy"},
@@ -32,7 +33,9 @@
         "world.hazard": {"$ref": "#/$defs/sequentialPolicy"},
         "world.effect": {"$ref": "#/$defs/sequentialPolicy"},
         "world.lore_fact": {"$ref": "#/$defs/sequentialPolicy"},
-        "world.knowledge": {"$ref": "#/$defs/recordPolicy"}
+        "world.knowledge": {"$ref": "#/$defs/recordPolicy"},
+        "world.thread": {"$ref": "#/$defs/targetKeyPolicy"},
+        "world.player": {"$ref": "#/$defs/targetKeyPolicy"}
       }
     },
     "runtime": {
@@ -90,22 +93,26 @@
         "scope": {"const": "session"}
       }
     },
+    "liveBirthDisposition": {
+      "enum": ["SOURCE_NATIVE_LIVE", "OWNER_EQUIVALENT", "FORBIDDEN"]
+    },
     "sequentialPolicy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["strategy", "prefix", "minimum_width", "scope"],
+      "required": ["strategy", "prefix", "minimum_width", "scope", "live_birth"],
       "properties": {
         "strategy": {"const": "sequential"},
         "prefix": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
         "minimum_width": {"type": "integer", "minimum": 1, "maximum": 12},
         "scope": {"enum": ["campaign", "session"]},
-        "local": {"$ref": "#/$defs/localPolicy"}
+        "local": {"$ref": "#/$defs/localPolicy"},
+        "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
       }
     },
     "compositeKeyPolicy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["strategy", "fields", "scope"],
+      "required": ["strategy", "fields", "scope", "live_birth"],
       "properties": {
         "strategy": {"const": "composite_key"},
         "fields": {
@@ -114,7 +121,8 @@
           "uniqueItems": true,
           "items": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
         },
-        "scope": {"enum": ["campaign", "session"]}
+        "scope": {"enum": ["campaign", "session"]},
+        "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
       }
     },
     "recordPolicy": {
@@ -124,33 +132,37 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["strategy", "parent_kind", "suffix"],
+          "required": ["strategy", "parent_kind", "suffix", "live_birth"],
           "properties": {
             "strategy": {"const": "derived"},
             "parent_kind": {"type": "string", "pattern": "^runtime\\.[a-z][a-z0-9_]*$"},
             "suffix": {"type": "string", "pattern": "^[a-z][a-z0-9.-]*$"},
-            "ordinal_width": {"type": "integer", "minimum": 1, "maximum": 6}
+            "ordinal_width": {"type": "integer", "minimum": 1, "maximum": 6},
+            "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
           }
         },
+        {"$ref": "#/$defs/targetKeyPolicy"},
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["strategy", "target_field"],
-          "properties": {
-            "strategy": {"const": "target_key"},
-            "target_field": {"type": "string", "minLength": 1}
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["strategy", "id"],
+          "required": ["strategy", "id", "live_birth"],
           "properties": {
             "strategy": {"const": "singleton"},
-            "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"}
+            "id": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+            "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
           }
         }
       ]
+    },
+    "targetKeyPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "target_field", "live_birth"],
+      "properties": {
+        "strategy": {"const": "target_key"},
+        "target_field": {"type": "string", "minLength": 1},
+        "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
+      }
     }
   }
 }

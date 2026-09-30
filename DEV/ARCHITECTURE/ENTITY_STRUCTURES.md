@@ -162,6 +162,16 @@ The loader validates the relation; it is not inferred from names.
 | `world.effect` | `target_id`, `lifecycle` | `source_id`, `rules_origin_id`, `parameters`, `support_effect_id`, `temporal_binding`, `scheduled_trigger_state` | required `definition.effect` or `definition.condition` |
 | `world.lore_fact` | `statement`, `truth_status` | `subject_ids`, `chronology`, `importance` | forbidden |
 | `world.knowledge` | `fact_id`, `knower_id`, `status` | `learned_from_id`, `confidence` | forbidden |
+| `world.thread` | `stage`, `progress` | — | forbidden |
+| `world.player` | `player_id`, `status`, `github_binding`, `controlled_pc_ids`, `collaboration_route_refs` | `deactivated_by`, `display_name`, `visibility`, `preferences`, `policy_authority`, `joined_event_id`, `last_event_id` | forbidden |
+
+The W01 owner-native `world.thread` schema carries its complete native record
+shape, including `record_kind`, status, thread subtype and temporal occurrence;
+the `required`/`expected` inventory above names only fields in its nested
+`state` object. The strict shared world dispatcher consumes that owner schema
+directly. The `world.player` state inventory comes from the W05.T01 owner-local
+schema; its stable campaign identity remains distinct from mutable GitHub login,
+and collaboration route references remain routing-only.
 
 `world.timeline_marker` is deliberately absent. Step 5.0 retired the old
 standalone scalar-placement owner. Sparse numeric/local ordering remains allowed
