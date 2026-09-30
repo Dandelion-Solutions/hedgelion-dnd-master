@@ -4,8 +4,8 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08A accepted/read back; T07-INTEGRATION PASS; T08C implementation/review PASS, clean exact verification pending
-CURRENT_TASK: W04.T08C final consumer convergence. Inputs T08A, T08B and T03A are accepted/read back. The convergence test/delta are implemented and independently reviewed PASS; run clean exact full verification before acceptance/publication. Preserve the approved test/evidence-only boundary and one-owner currentness composition. A26-02 remains separate before Wave-04 FINAL_REVIEW.
+STATUS: EXECUTING — W04.T08A accepted/read back; T07-INTEGRATION PASS; T08C implementation/review/clean local verification PASS, publication pending
+CURRENT_TASK: W04.T08C final consumer convergence. Inputs T08A, T08B and T03A are accepted/read back. The convergence test/delta are independently reviewed PASS; clean full DEV reports only the four separate A26-02 failures, and maintenance passes. Publish/read back the coherent T08C checkpoint before final Wave-04 verification. A26-02 remains separate before Wave-04 FINAL_REVIEW.
 LAST_COMPLETED_TASK: W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`; six TDD assertions; independent review PASS; clean exact DEV 1417 passed, 5 skipped, four separately tracked A26-02 failures reproduced sequentially; maintenance PASS; `VERSION_IMPACT: NONE`; non-force publication/read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. W04.T07-INTEGRATION **PASS** with item-level report and 224 focused tests; W04.T07E, T07D/T07D-P0, T08B, T03A and prior W04 checkpoints remain accepted/read back.
 LAST_SAFE_SHA: `2720a6187d5919fb2ca8c8f3265604814510d69b` — T08A code, verification and status checkpoint published/read back.
 
@@ -339,6 +339,9 @@ T08C_FOCUSED_VERIFICATION: canonical T08A/T08B/T03A/RD12/RD16/T08C unittest set 
 T08C_INDEPENDENT_REVIEW: PASS after repair. First review's targeted repair required explicit T03A/T08A PLAYER_INDEX and stable-ID/login assertions; those are now asserted against the accepted input fixtures. No runtime/shared-schema changes.
 T08C_VERSION_IMPACT: NONE expected — DEV test and bounded consumer-delta fixture only; no HDM-owned runtime/module/schema/generation namespace.
 T08C_SYSTEM_IMPACT: NONE — no owner boundary or final-writer scope changed.
+T08C_CLEAN_EXACT_FULL_DEV: candidate commit `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` — **1424 passed, 5 skipped, 4 failed**. The exact four A26-02/S6D failures from the T07E/T08A diagnostics were reproduced sequentially; no T08C/T08A/T08B/T03A/RD12/RD16 regression failed. Clean package provenance, version namespace and current-progress checks passed.
+T08C_A26_FAILURES: `test_s6d_04_mechanical_context_contract::test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`; `test_s6d_05_portable_value_contract::test_route_rows_ids_and_embedding_edges_are_machine_verified`; `test_s6d_05_portable_value_contract::test_real_activity_action_request_binding_matrix_and_freeze`; `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`.
+T08C_CLEAN_MAINTENANCE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py` — PASS (`OK: engine consistency audit passed`).
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -689,9 +692,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: run full DEV and canonical maintenance audit from a clean exact-source worktree after committing the T08C test/fixture and synchronized status. Reproduce/classify the four known A26-02 failures only; do not weaken them. After clean verification and final status sync, publish/read back the T08C checkpoint. A26-02 remains required before Wave-04 FINAL_REVIEW.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A. T08C implementation, independent review and focused verification PASS; clean exact full DEV/maintenance and publication/read-back are pending. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: T08C test/fixture and synchronized status edits are local pending clean exact verification and coherent publication. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: synchronize T08C’s clean verification/status evidence; run the clean exact 18-test version/provenance/current-progress suite and maintenance audit on that status commit; publish T08C non-force and verify fresh remote read-back. Then run final exact-head Wave-04 verification, keep A26-02 as its separate proof/collection repair, and obtain the mandatory Senior Wave-04 integration audit.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A. T08C implementation, review, clean full DEV and maintenance PASS; publication/read-back remains pending. The four sequentially reproduced pytest-only S6D failures remain separate A26-02 and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: T08C candidate commit `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` and final status synchronization are local pending coherent non-force publication and read-back. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
