@@ -1,6 +1,6 @@
 # W04.T07E Dramaturg publication sizing — Implementation Impact Brief
 
-Status: **T07E ACCEPTED/READ BACK — T07-INTEGRATION PASS; T08A AUTHORIZED**
+Status: **T07E/T08A ACCEPTED/READ BACK — T07-INTEGRATION PASS; T08C AUTHORIZED**
 
 Date: **2026-09-29**
 
@@ -226,8 +226,9 @@ T07E is accepted/read back as `W04_COMMENTATOR_DRAMATURG_READY`. The required
 T07-INTEGRATION independent review passed with no findings; its item-level
 evidence is recorded in
 `DEV/docs/superpowers/design/2026-09-30-w04-t07-integration-independent-review.md`.
-T04B, T02C and T07-INTEGRATION inputs are satisfied, so W04.T08A is next;
-A26-02 remains separate.
+T08A `W04_MULTIPLAYER_CONSUMER_DELTA_READY` was accepted/read back at status
+checkpoint `2720a6187d5919fb2ca8c8f3265604814510d69b`. With accepted T08B and
+T03A, W04.T08C final consumer convergence is next; A26-02 remains separate.
 
 ## Clean exact-candidate verification — 2026-09-30
 
