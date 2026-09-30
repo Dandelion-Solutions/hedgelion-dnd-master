@@ -149,7 +149,7 @@ class SelectorMetadataContractTests(unittest.TestCase):
     def test_global_disposition_totals(self):
         totals = Counter(e["admission_disposition"] for e in load_catalog_admission_ledger(ROOT)["entries"])
         assert totals == {
-            "ACTIVE_ADMITTED": 481,
+            "ACTIVE_ADMITTED": 483,  # Includes W05's admitted world.thread and world.player rows.
             "EMBEDDED_NONOWNER": 35,
             "DORMANT_NONSELECTABLE": 68,
         }
