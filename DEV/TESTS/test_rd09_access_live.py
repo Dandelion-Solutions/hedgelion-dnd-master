@@ -139,28 +139,19 @@ SOURCE_NATIVE_POLICY = {
         "world.actor": {
             "strategy": "sequential",
             "prefix": "actor",
-            "live_birth": {
-                "disposition": "source_native_live",
-                "encoding": "framed_base32hex_v1",
-            },
+            "live_birth": "SOURCE_NATIVE_LIVE",
         },
         "world.asset": {
             "strategy": "sequential",
             "prefix": "asset",
-            "live_birth": {
-                "disposition": "source_native_live",
-                "encoding": "framed_base32hex_v1",
-            },
+            "live_birth": "SOURCE_NATIVE_LIVE",
         },
     },
     "runtime": {
         "runtime.message": {
             "strategy": "sequential",
             "prefix": "message",
-            "live_birth": {
-                "disposition": "source_native_live",
-                "encoding": "framed_base32hex_v1",
-            },
+            "live_birth": "SOURCE_NATIVE_LIVE",
         },
     },
 }
@@ -795,7 +786,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.21")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.22")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -1455,6 +1446,32 @@ class SourceNativeIdentityTests(unittest.TestCase):
 
 
 class SourceNativeLiveIdEncodingTests(unittest.TestCase):
+    def test_scalar_live_birth_uses_owner_fixed_encoding(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "0" * 64)
+        policy_with_untrusted_encoding = {
+            **SOURCE_NATIVE_POLICY,
+            "world": {
+                **SOURCE_NATIVE_POLICY["world"],
+                "world.actor": {
+                    **SOURCE_NATIVE_POLICY["world"]["world.actor"],
+                    "encoding": "caller-selected-encoding",
+                },
+            },
+        }
+
+        encoded = encode_source_native_live_id(
+            source_key, "world.actor", 1, SOURCE_NATIVE_POLICY
+        )
+        encoded_with_untrusted_encoding = encode_source_native_live_id(
+            source_key, "world.actor", 1, policy_with_untrusted_encoding
+        )
+        parsed = parse_source_native_live_id(
+            encoded_with_untrusted_encoding, policy_with_untrusted_encoding
+        )
+
+        self.assertEqual(encoded_with_untrusted_encoding, encoded)
+        self.assertEqual(parsed.encoding, SOURCE_NATIVE_LIVE_ENCODING)
+
     def test_known_vector_uses_domain_framing_and_unpadded_lowercase_base32hex(self) -> None:
         source_key = ("campaign-1", "scene-1", "e1-" + "d" * 64)
         frame = (
@@ -1497,32 +1514,80 @@ class SourceNativeLiveIdEncodingTests(unittest.TestCase):
         with self.assertRaisesRegex(LiveContractError, "policy|source_native_live|encoding|disposition"):
             encode_source_native_live_id(source_key, "world.actor", 1, missing)
 
+    def test_wrong_scalar_disposition_fails_closed(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        wrong_disposition = {
+            "world": {
+                "world.actor": {
+                    **SOURCE_NATIVE_POLICY["world"]["world.actor"],
+                    "live_birth": "OWNER_EQUIVALENT",
+                }
+            }
+        }
+
+        with self.assertRaisesRegex(
+            LiveContractError, "family live_birth disposition does not match"
+        ):
+            encode_source_native_live_id(
+                source_key, "world.actor", 1, wrong_disposition
+            )
+
+    def test_nested_legacy_live_birth_is_rejected(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        legacy_policy = {
+            "world": {
+                "world.actor": {
+                    **SOURCE_NATIVE_POLICY["world"]["world.actor"],
+                    "live_birth": {
+                        "disposition": "SOURCE_NATIVE_LIVE",
+                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
+                    },
+                }
+            }
+        }
+
+        with self.assertRaisesRegex(LiveContractError, "scalar|disposition"):
+            encode_source_native_live_id(
+                source_key, "world.actor", 1, legacy_policy
+            )
+
+    def test_missing_or_invalid_prefix_fails_closed_for_scalar_policy(self) -> None:
+        source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
+        actor_policy = SOURCE_NATIVE_POLICY["world"]["world.actor"]
+        invalid_policies = (
+            {"world": {"world.actor": {"live_birth": "SOURCE_NATIVE_LIVE"}}},
+            {
+                "world": {
+                    "world.actor": {**actor_policy, "prefix": "invalid prefix"}
+                }
+            },
+        )
+
+        for policy in invalid_policies:
+            with self.subTest(policy=policy), self.assertRaisesRegex(
+                LiveContractError, "prefix"
+            ):
+                encode_source_native_live_id(
+                    source_key, "world.actor", 1, policy
+                )
+
     def test_closed_live_birth_table_rejects_owner_equivalent_and_forbidden_families(self) -> None:
         source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
         forged_policy = {
             "world": {
                 "world.knowledge": {
                     "prefix": "knowledge",
-                    "live_birth": {
-                        "disposition": "source_native_live",
-                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
-                    },
+                    "live_birth": "SOURCE_NATIVE_LIVE",
                 },
                 "world.player": {
                     "prefix": "player",
-                    "live_birth": {
-                        "disposition": "source_native_live",
-                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
-                    },
+                    "live_birth": "SOURCE_NATIVE_LIVE",
                 },
             },
             "runtime": {
                 "runtime.session": {
                     "prefix": "session",
-                    "live_birth": {
-                        "disposition": "source_native_live",
-                        "encoding": SOURCE_NATIVE_LIVE_ENCODING,
-                    },
+                    "live_birth": "SOURCE_NATIVE_LIVE",
                 },
             },
         }
@@ -1536,10 +1601,7 @@ class SourceNativeLiveIdEncodingTests(unittest.TestCase):
         source_key = ("campaign-1", "scene-1", "e1-" + "f" * 64)
         domain_fallback = {
             "prefix": "actor",
-            "live_birth": {
-                "disposition": "source_native_live",
-                "encoding": SOURCE_NATIVE_LIVE_ENCODING,
-            },
+            "live_birth": "SOURCE_NATIVE_LIVE",
         }
 
         with self.assertRaisesRegex(LiveContractError, "policy|family|exact"):
@@ -2755,7 +2817,7 @@ class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
     def test_live_module_version_advances_without_schema_projection_changes(
         self,
     ) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.21")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.22")
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION, 1)

@@ -36,8 +36,8 @@ if TYPE_CHECKING:
     from .publication import PublicationOutcome
 
 
-# framework_module_version: 1.0.21
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.21"
+# framework_module_version: 1.0.22
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.22"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -288,12 +288,12 @@ def _source_native_policy_row(
             f"{disposition or 'UNKNOWN'}"
         )
     live_birth = row.get("live_birth")
-    if not isinstance(live_birth, Mapping):
+    if live_birth is None:
         raise LiveContractError("source-native LIVE disposition is missing")
-    if str(live_birth.get("disposition", "")).upper() != disposition:
+    if not isinstance(live_birth, str):
+        raise LiveContractError("source-native LIVE disposition must be a scalar string")
+    if live_birth != disposition:
         raise LiveContractError("family live_birth disposition does not match the closed T04 table")
-    if live_birth.get("encoding") != SOURCE_NATIVE_LIVE_ENCODING:
-        raise LiveContractError("source-native LIVE encoding is not admitted")
     prefix = row.get("prefix")
     if not isinstance(prefix, str) or re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", prefix) is None:
         raise LiveContractError("source-native LIVE policy prefix is invalid")

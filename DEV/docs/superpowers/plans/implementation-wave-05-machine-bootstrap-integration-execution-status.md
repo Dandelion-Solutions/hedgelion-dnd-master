@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
 CURRENT_TASK: W05.T02-P0 — W03 LIVE source-native identifier-policy consumer cutover. W05.T02 is held at the resolved System-Impact boundary until P0 independent PASS/read-back.
 LAST_COMPLETED_TASK: W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`.
-LAST_SAFE_SHA: `8fa7b76a1b795c9e6e046a3f6affbdc7db2b57d0` — current remote head; T01 remains accepted, subsequent delta is unrelated dashboard-skill work
+LAST_SAFE_SHA: `351a2bceaf8b40d1585e845c3819dd9daf53c179` — freshly fetched authoritative public head; T01 remains accepted, P0 ruling is present
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -140,3 +140,53 @@ fresh rebase and complete T02 verification.
 NEXT_EXACT_TASK: implement/review W05.T02-P0 only.
 UNPUBLISHED_WORK: reported local T02 candidate plus local cursor edits remain
 outside authoritative remote state.
+
+## W05.T02-P0 Implementation Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- Stable prerequisite `W05.T02-P0` in `implementation-wave-05-machine-bootstrap-integration.md`.
+- Senior ruling `DEV/docs/superpowers/design/2026-09-30-w05-t02-source-native-policy-consumer-senior-ruling.md`.
+- Accepted W03.T04 scalar disposition table and source-native ID encoding owner.
+
+BASELINE REF OR SHA: `v1/engine-rearchitecture` at freshly fetched `351a2bceaf8b40d1585e845c3819dd9daf53c179`.
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/TOOLS/live_state.py` — consume exact scalar `live_birth` and retain fixed owner encoding.
+- `DEV/TESTS/test_rd09_access_live.py` — scalar policy fixtures and required positive/negative lifecycle witnesses.
+- This Wave-05 execution-status cursor; update `DEV/CURRENT_PROGRESS.md` only when P0 is independently accepted and published.
+- Mechanically required module-version/control bookkeeping only.
+
+EXPECTED CONSUMERS TO CHANGE:
+- Source-native encode/parse/allocation, opening, accepted-CAS, ambiguous-publication and persisted-history paths exercised by RD09.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- Replace the pre-final nested W03 test/input shape with scalar `live_birth` in the existing source-native policy consumer. `LIVE_BIRTH_ADMISSION_TABLE` remains the local closed admission authority; exact family prefix behavior remains.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- Shared scalar disposition vocabulary is exactly `SOURCE_NATIVE_LIVE`, `OWNER_EQUIVALENT`, `FORBIDDEN`.
+- Scalar source-native disposition must exactly equal the local closed table; owner-equivalent/forbidden families cannot be forged into admission.
+- Encoding remains fixed as `framed_base32hex_v1`; caller/catalog data cannot select it.
+- Missing/wrong dispositions and legacy nested mappings fail closed; no adapter, dual-read, alias or migration.
+- Preserve ordering, uint64 cursor, accepted exact-source CAS, ambiguous-publication reconciliation, and contiguous identity history behavior.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- TDD witnesses for scalar success across encode/parse/allocation/opening/history; missing/wrong/nested disposition failures; forged owner-equivalent/forbidden failure; missing/invalid prefix; fixed encoding; existing ordering/cursor/CAS/recovery/history witnesses.
+- Focused `test_rd09_access_live.py`, clean broader DEV verification, maintenance audit, and independent task review.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- `DEV/CATALOG/identifier-policies.json`, `DEV/SCHEMAS/identifier-policies.schema.json`, shared catalog/wrapper/identifier-policy writer, RD16/WP03 T02 implementation except status evidence, retained GAME schemas, CORE, W05.T03–T08, and W06 proof.
+
+P0 BASELINE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd09_access_live.py` — 194 passed, 2 existing `jsonschema.RefResolver` deprecation warnings at public HEAD `351a2bceaf8b40d1585e845c3819dd9daf53c179`.
+P0 RED: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd09_access_live.py::SourceNativeLiveIdEncodingTests` — 6 failed, 3 passed at the expected pre-fix boundary: scalar rows were rejected, the nested legacy row was still accepted, and disposition/prefix diagnostics could not be reached through the scalar contract.
+P0 GREEN / focused lifecycle verification: `SourceNativeLiveIdEncodingTests` — 9 passed; full `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd09_access_live.py` — 198 passed, 2 existing `jsonschema.RefResolver` deprecation warnings. The full RD09 source-native allocation/opening/CAS/ambiguous-publication/history suite exercises the updated scalar fixture.
+P0 VERSION_IMPACT: `GAME/TOOLS/live_state.py` `1.0.21 -> 1.0.22`. Fresh comparison against the detailed module-version owner confirms this material logical consumer-contract edit advances the module-local revision exactly once. The header/constant and both RD09 version assertions are synchronized. LIVE claim/routing/publication/opening/seed/native-pack/absorption schema versions remain `2/4/5/1/2/2/1`; identifier-policy schema version, catalog generation, campaign/storage generation, migration and dual-read: NONE.
+P0 version-policy regression: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_versioning_namespace_policy.py -k 'not census_has_zero_unclassified_hits'` — 11 passed, 1 deliberately deselected because its repository-wide census is not safe/clean in the current workspace.
+P0 SYSTEM_IMPACT: NONE under the accepted Senior ruling, provided execution remains within this envelope.
+P0 independent review: PASS — `hdm-reviewer` reviewed the uncommitted diff against `351a2bceaf8b40d1585e845c3819dd9daf53c179`; no findings. Reviewer independently confirmed scalar equality/local-table enforcement, fixed encoding, preserved prefix and lifecycle semantics, and exactly scoped version impact.
+P0 broader local DEV attempt: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — 1437 passed, 2 skipped, 7 failed in 210.95s. Failures are local-workspace contamination: duplicate runtime markers under nested `DEV/tmp` checkouts; root-wide source/version scans encountering ignored/untracked workspace artifacts; and a generated `GAME/TOOLS/__pycache__` in a release passthrough test. No failure points to P0 files or scalar-policy behavior. This is NOT clean exact-source acceptance.
+P0 maintenance audit: pending clean exact-source execution.
+P0 clean broader DEV / maintenance: PENDING — rerun both from a clean exact-source worktree; do not remove or rewrite workspace artifacts to force a pass.
+P0 publication/read-back: pending; the local T02 candidate remains unpublished.
+P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` (not yet accepted).
+NEXT EXACT TASK: obtain an accessible clean exact-source verification worktree at the P0 candidate; run canonical full DEV and maintenance audit there.
+UNPUBLISHED_WORK: P0 source/test/cursor delta is uncommitted in the detached checkout; preserved local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains on the original local branch; its pre-ruling cursor edit remains in a local stash.
