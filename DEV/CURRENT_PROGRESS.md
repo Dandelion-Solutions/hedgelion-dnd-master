@@ -9,7 +9,7 @@ CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
 NEXT_AUTHORIZED_UNIT: W05.T01 — owner-local strict schema and wrapper inputs. Other Wave-05 tasks remain individually dependency-gated by their named inputs; Wave-05 authorization does not bypass task-local joins or final-writer ownership.
 REQUIRED_GATE: execute Wave-05 from the stable plan. W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`; every later task remains gated by its named producer/join checkpoints. Wave-06 remains downstream of realized Wave-05 targets.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative task-local execution cursor for Wave 05; W05.T01 remains current until its output is published and read back
 KNOWN_BLOCKERS: none from Wave 04. Wave-05 shared/final-writer work remains dependency-gated; no task may treat Wave-05 authorization as permission to skip named inputs, Version Impact, System-Impact, independent review or exact publication/read-back.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
@@ -359,7 +359,28 @@ CLS_HDM_REFRESH:
 
 T04A and T07B prior PASS remain accepted. T07C's accepted version transition is History 1.0.5, T0 basis schema 2, Story 1.0.8, EVENTS unit schema 4 and E-EVT semantic generation 2. SemanticEvent outer schema 1 and Story projection-state schema 4 remain valid through their already-separate nested/schema-generation axes. No migration or campaign-contract generation bump is required for the current pre-release unshipped shapes.
 
-## Durable cursor
+## Durable Wave-05 cursor
+
+PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
+CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md`
+SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
+BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
+
+STATUS: EXECUTING — W05.T01 candidate `e5791baaa11dea697b8dc0622ef6ec82afc68274` has focused/cross-owner tests, clean exact full DEV, maintenance audit and independent task review PASS; publication/read-back remain.
+CURRENT_TASK: W05.T01 — `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` is not accepted until published and read back.
+LAST_PUBLISHED_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
+LAST_COMPLETED_TASK: Wave-04 mandatory Senior integration audit — PASS at the closure head above.
+CURRENT_VERIFICATION_STATE: RD16 20 passed, 2 W05.T02-owned skips; named cross-owner suites 584 passed; clean exact full DEV 1440 passed, 2 skipped; maintenance audit PASS; independent spec/task-quality review and evidence re-review PASS. The local checkout broad run was contaminated by ignored/untracked workspace artifacts; exact-source verification passed in the approved detached worktree.
+VERSION_IMPACT: NONE.
+SYSTEM_IMPACT: NONE.
+NEXT_EXACT_TASK: publish/read back W05.T01. Do not start W05.T02 before `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY` is independently accepted and published/read back.
+KNOWN_BLOCKERS: none in T01 implementation; hosted CI is unavailable in this local-machine runtime.
+UNPUBLISHED_WORK: local candidate `e5791baaa11dea697b8dc0622ef6ec82afc68274` awaits non-force publication and remote read-back.
+
+## Historical Wave-04 execution cursor snapshot (pre-closure)
+
+The following Wave-04 cursor content is preserved as a pre-closure execution snapshot. Current global scheduling is owned by the top-level fields and the Wave-05 cursor above; Wave 04 remains closed at the Senior-audited head recorded above.
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
 CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story.md`
