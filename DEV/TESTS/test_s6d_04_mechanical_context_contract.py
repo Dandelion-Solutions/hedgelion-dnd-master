@@ -1,12 +1,13 @@
 import json
 import sys
+import unittest
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "DEV" / "TOOLS"))
-from catalog_admission import load_catalog_admission_ledger  # noqa: E402
+from catalog_admission import load_catalog_admission_ledger
 
 CATALOG = ROOT / "DEV" / "CATALOG"
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -17,6 +18,16 @@ ACCESSORS = {
     "resource.available", "owner_effect.parameter",
 }
 FACTS = {"fiction.target_visible", "fiction.target_reachable"}
+DORMANT_FACTS = {"fiction.target_visible"}
+REACHABLE_FACT_CONSUMERS = {
+    "activity.attack.ranged_weapon",
+    "activity.spell.fire_bolt",
+    "activity.spell.poison_spray",
+    "activity.spell.thunderclap",
+    "activity.spell.acid_splash",
+    "activity.spell.magic_missile",
+    "activity.spell.burning_hands",
+}
 DERIVED = {
     "effect_availability", "effect_arbitration",
     "condition_aggregation", "condition_intrinsic",
@@ -210,32 +221,45 @@ def test_exact_accessor_consumer_and_view_permission():
         assert "view" in str(exc)
 
 
-def test_dormant_ids_rejected_before_input_class_and_false_is_not_missing():
+def test_dormant_fact_ids_rejected_before_input_class():
     surfaces = load(CATALOG / "mechanical-surfaces.json")
     try:
         compile_accessor(surfaces, "condition.value", "predicate:def:1")
         assert False, "dormant accessor accepted"
     except ValueError as exc:
         assert "dormant" in str(exc)
-    for fact_id in FACTS:
+    for fact_id in DORMANT_FACTS:
         for supplied in (False, None):
             try:
                 compile_fact(surfaces, fact_id, "activity:def:1", supplied)
                 assert False, "dormant fact accepted"
             except ValueError as exc:
                 assert "dormant" in str(exc)
-    active = dict(surfaces)
-    active["context_facts"] = dict(surfaces["context_facts"])
-    meta = dict(active["context_facts"]["fiction.target_visible"])
-    meta["disposition"] = "ACTIVE_ADMITTED"
-    meta["permitted_consumer_ids"] = ["activity:def:1"]
-    active["context_facts"]["fiction.target_visible"] = meta
-    assert compile_fact(active, "fiction.target_visible", "activity:def:1", False) is False
+
+
+def test_target_reachable_false_is_not_missing_for_exact_active_consumers():
+    surfaces = load(CATALOG / "mechanical-surfaces.json")
+    meta = surfaces["context_facts"]["fiction.target_reachable"]
+    assert meta["disposition"] == "ACTIVE_ADMITTED"
+    assert set(meta["permitted_consumer_ids"]) == REACHABLE_FACT_CONSUMERS
+
+    for consumer_id in REACHABLE_FACT_CONSUMERS:
+        assert compile_fact(
+            surfaces, "fiction.target_reachable", consumer_id, False
+        ) is False
+        try:
+            compile_fact(surfaces, "fiction.target_reachable", consumer_id, None)
+            assert False, "missing reachability was coerced to false"
+        except ValueError as exc:
+            assert "missing" in str(exc)
+
     try:
-        compile_fact(active, "fiction.target_visible", "activity:def:1", None)
-        assert False, "missing coerced to false"
+        compile_fact(
+            surfaces, "fiction.target_reachable", "activity:def:1", False
+        )
+        assert False, "unauthorized reachability consumer accepted"
     except ValueError as exc:
-        assert "missing" in str(exc)
+        assert "unauthorized exact consumer" in str(exc)
 
 
 def test_fact_identity_is_invocation_generation_not_universal_boundary():
@@ -330,3 +354,12 @@ def test_structural_schemas_do_not_claim_execution_authority():
     for name in ("mechanical-accessor-ref.schema.json", "mechanical-predicate.schema.json"):
         assert "Structural shape only" in load(SCHEMAS / name)["$comment"]
 
+
+def load_tests(loader, standard_tests, pattern):
+    suite = unittest.TestSuite(standard_tests)
+    suite.addTests(
+        unittest.FunctionTestCase(test, description=name)
+        for name, test in sorted(globals().items())
+        if name.startswith("test_") and callable(test)
+    )
+    return suite

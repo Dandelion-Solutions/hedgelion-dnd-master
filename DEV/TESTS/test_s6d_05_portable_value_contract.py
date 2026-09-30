@@ -1,12 +1,37 @@
 import json
 import re
+import unittest
 from pathlib import Path
+from urllib.parse import urldefrag, urljoin
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
 CATALOG = ROOT / "DEV" / "CATALOG"
 
 def load(path): return json.loads(path.read_text(encoding="utf-8"))
+
+REFERENCE_DATA_KEYWORDS = {"default", "examples", "const", "enum"}
+
+def schema_refs(value, base_uri=""):
+    if isinstance(value, dict):
+        current_base = (
+            urljoin(base_uri, value["$id"])
+            if isinstance(value.get("$id"), str)
+            else base_uri
+        )
+        own = []
+        if isinstance(value.get("$ref"), str):
+            own.append(urldefrag(urljoin(current_base, value["$ref"])).url)
+        children = [
+            reference
+            for key, child in value.items()
+            if key not in REFERENCE_DATA_KEYWORDS
+            for reference in schema_refs(child, current_base)
+        ]
+        return own + children
+    if isinstance(value, list):
+        return [reference for child in value for reference in schema_refs(child, base_uri)]
+    return []
 
 EXPECTED = {
 "value.runtime_command","value.action_request","value.transition_request","value.intent_clause",
@@ -184,8 +209,13 @@ def test_route_rows_ids_and_embedding_edges_are_machine_verified():
         assert set(row)=={"value_id","schema_file","authority","disposition","embedding_consumers"}
         root=load(SCHEMAS/row["schema_file"])
         assert root["$id"].endswith("/"+row["schema_file"])
-        actual=sorted(p.name for p in SCHEMAS.glob("*.schema.json")
-                      if p.name != row["schema_file"] and row["schema_file"] in p.read_text(encoding="utf-8"))
+        target_uri = urldefrag(root["$id"]).url
+        actual = sorted(
+            path.name
+            for path in SCHEMAS.glob("*.schema.json")
+            if path.name != row["schema_file"]
+            and target_uri in schema_refs(load(path), path.as_uri())
+        )
         assert sorted(row["embedding_consumers"])==actual
 
 def binding_value_type_ok(value, value_type):
@@ -225,8 +255,19 @@ def compile_bindings(declarations, supplied, engine_values=None):
     return accepted
 
 def expect_rejected(fn):
-    try: fn(); assert False
-    except (AssertionError,KeyError,TypeError): pass
+    try:
+        fn()
+    except (AssertionError, KeyError, TypeError):
+        return
+    raise AssertionError("operation was unexpectedly accepted")
+
+def test_expect_rejected_helper_fails_if_invalid_operation_is_accepted():
+    try:
+        expect_rejected(lambda: None)
+    except AssertionError as exc:
+        assert "unexpectedly accepted" in str(exc)
+    else:
+        assert False, "expect_rejected failed to report acceptance"
 
 def test_real_activity_action_request_binding_matrix_and_freeze():
     activity={"family_id":"activity.test","parameters":{
@@ -247,7 +288,7 @@ def test_real_activity_action_request_binding_matrix_and_freeze():
     expect_rejected(lambda: compile_bindings(activity["parameters"],{"dc":adjudicated,"unknown":1},{"actor":"actor-1"}))
     expect_rejected(lambda: compile_bindings(activity["parameters"],{"dc":adjudicated},{"actor":"actor-1"}))
     frozen=json.loads(json.dumps(accepted,sort_keys=True))
-    continuation={"generation":1,"root_command_id":"command-1","resolution_id":"resolution-1","activity_id":"activity.test.generic","actor_id":"actor-1","parameter_bindings":frozen,"catalog_context_fingerprint":"ctx","execution_cursor":"step-1","safe_recompute_phase":"determine","invocation_facts":[],"fixed_rng_results":[],"prior_step_exports":{},"committed_segment_refs":[],"dependency_frontier_refs":[],"expected_child_resolution_ids":[],"future_rng_frontier":"rng:1"}
+    continuation={"generation":1,"root_command_id":"command-1","resolution_id":"resolution-1","activity_id":"activity.test.generic","actor_id":"actor-1","parameter_bindings":frozen,"ruleset_set_digest_generation":1,"ruleset_set_sha256":"4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca","catalog_context_fingerprint_generation":1,"catalog_context_fingerprint":"ctx","execution_cursor":"step-1","safe_recompute_phase":"determine","invocation_facts":[],"fixed_rng_results":[],"prior_step_exports":{},"committed_segment_refs":[],"dependency_frontier_refs":[],"expected_child_resolution_ids":[],"future_rng_frontier":"rng:1"}
     assert set(load(SCHEMAS/"runtime-continuation-state.schema.json")["required"]) <= set(continuation)
     assert continuation["parameter_bindings"]==accepted
 
@@ -318,7 +359,7 @@ def test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner():
         if req["roll_id"] in fixed: assert fixed[req["roll_id"]]==res
         else: fixed[req["roll_id"]]=res
         return fixed[req["roll_id"]]
-    continuation={"generation":1,"root_command_id":"command-1","resolution_id":"resolution-0001","activity_id":"activity.attack.basic","actor_id":"actor-1","catalog_context_fingerprint":"ctx","execution_cursor":"roll-1","safe_recompute_phase":"determine","invocation_facts":[],"fixed_rng_results":[],"prior_step_exports":{},"committed_segment_refs":[],"dependency_frontier_refs":[],"expected_child_resolution_ids":[],"future_rng_frontier":"rng:2"}
+    continuation={"generation":1,"root_command_id":"command-1","resolution_id":"resolution-0001","activity_id":"activity.attack.basic","actor_id":"actor-1","ruleset_set_digest_generation":1,"ruleset_set_sha256":"4007f3a2c51669ce621f281480629c586e67ba1a3cbf7dccebb21df4919d0eca","catalog_context_fingerprint_generation":1,"catalog_context_fingerprint":"ctx","execution_cursor":"roll-1","safe_recompute_phase":"determine","invocation_facts":[],"fixed_rng_results":[],"prior_step_exports":{},"committed_segment_refs":[],"dependency_frontier_refs":[],"expected_child_resolution_ids":[],"future_rng_frontier":"rng:2"}
     assert set(load(SCHEMAS/"runtime-continuation-state.schema.json")["required"]) <= set(continuation)
     fixed={x["request_id"]:x for x in continuation["fixed_rng_results"]}
     assert accept(request,result,fixed)==result; continuation["fixed_rng_results"]=list(fixed.values())
@@ -342,3 +383,13 @@ def test_nested_activity_and_continuation_examples_track_child_requirements():
     roll_required=set(load(SCHEMAS/"roll-result.schema.json")["required"])
     for example in continuation["examples"]:
         for result in example["fixed_rng_results"]: assert roll_required <= set(result)
+
+
+def load_tests(loader, standard_tests, pattern):
+    suite = unittest.TestSuite(standard_tests)
+    suite.addTests(
+        unittest.FunctionTestCase(test, description=name)
+        for name, test in sorted(globals().items())
+        if name.startswith("test_") and callable(test)
+    )
+    return suite

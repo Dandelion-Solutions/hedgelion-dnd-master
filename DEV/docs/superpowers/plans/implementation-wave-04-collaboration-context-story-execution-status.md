@@ -5,9 +5,9 @@ SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-plan
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
 STATUS: EXECUTING — W04.T08A/T08B/T08C and T07A-E integration accepted/read back; A26-02 proof/collection repair remains before final Senior audit
-CURRENT_TASK: resolve the four separately tracked A26-02/S6D failures under their accepted owner route, then run final exact-head Wave-04 verification and obtain the mandatory Senior integration audit. Do not weaken accepted semantics to satisfy stale tests. Wave 05 remains unauthorized.
+CURRENT_TASK: A26-02 S6D proof/collection repair under the impact envelope at the end of this cursor. Update only the two affected DEV test modules and portable-value consumer routing manifest to current accepted owners, then run canonical unittest collection, full DEV, maintenance and the builder/closure checks for the engine-contract input. Do not change runtime schemas/code, CI runner, or accepted semantic behavior. Wave 05 remains unauthorized.
 LAST_COMPLETED_TASK: W04.T08C -> `W04_MULTIPLAYER_SESSION_DELTAS_READY`, candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b`, seven convergence tests, independent review PASS; final exact DEV at status HEAD `aec602a828ef399673b58d2ccd7cb804b3baa5c2`: 1424 passed, 5 skipped, four A26-02 failures reproduced sequentially; maintenance PASS; version/provenance/current-progress 18 passed; `VERSION_IMPACT: NONE`. Non-force publication/read-back at `aec602a828ef399673b58d2ccd7cb804b3baa5c2`. W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`, independent PASS and read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. T08B/T03A and W04.T07-INTEGRATION remain accepted/read back; T07E/T07D and earlier W04 checkpoints remain retained.
-LAST_SAFE_SHA: `aec602a828ef399673b58d2ccd7cb804b3baa5c2` — published/read-back T08C convergence checkpoint.
+LAST_SAFE_SHA: `b081e6eeaeb6919c7d3dc01576171b532526e2df` — published T08C acceptance/status and A26-02 repair routing checkpoint.
 
 ## W04.T07D / PO-012 / P0 current disposition — 2026-09-28
 
@@ -347,6 +347,46 @@ T08C_FINAL_STATUS_HEAD_VERSION_AND_MAINTENANCE: version-namespace + package-prov
 T08C_CURRENT_DISPOSITION: **ACCEPTED / W04_MULTIPLAYER_SESSION_DELTAS_READY** — implementation, review, clean exact verification and non-force publication/read-back PASS; `VERSION_IMPACT: NONE`.
 T08C_PUBLICATION_READBACK: PASS — code candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b` and synchronized status `aec602a828ef399673b58d2ccd7cb804b3baa5c2`; fresh fetch confirmed local HEAD and `origin/v1/engine-rearchitecture` equal `aec602a828ef399673b58d2ccd7cb804b3baa5c2`.
 T08C_STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — this progress/cursor/impact-brief acceptance/read-back synchronization changes no HDM-owned version/revision/schema/generation namespace.
+
+## A26-02 S6D proof/collection repair impact envelope
+
+STATUS: required separate repair before final Wave-04 review; no production/runtime behavior change is authorized or needed by the observed failures.
+BASE_SHA: `b081e6eeaeb6919c7d3dc01576171b532526e2df` (freshly fetched published T08C acceptance/status checkpoint).
+SPEC / OWNER ROUTE: `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md` §§3.2, 5 and 6; `DEV/ARCHITECTURE/PORTABLE_ACTIVITY_VALUES.md` §§2, 5 and 10 plus its S6D-09 amendment; `DEV/ARCHITECTURE/RULESET_PACKAGE_MACHINE_CLOSURE.md` (“Builder and loader”; “Projections and durability”); four A26-02 test nodes listed below. A26-02 keeps these owner repairs separate from T07A–T08C.
+
+ROOT-CAUSE DISPOSITION:
+- S6D-04 fact test includes `fiction.target_reachable` in an all-dormant loop and supplies unauthorized `activity:def:1`; current owner admits `fiction.target_reachable` for seven exact S6D-09 consumers and keeps only `fiction.target_visible` dormant. Test active authorized false-vs-missing behavior separately; do not change runtime fact admission.
+- S6D-05 embedding test infers edges from arbitrary filename text. The manifest is stale relative to actual direct schema `$ref` edges introduced by accepted later consumers. Repair the test to traverse exact `$ref` values and synchronize `DEV/CATALOG/portable-value-routes.json` with all current direct embedding consumers, without adding new values or consumers.
+- Two S6D-05 continuation examples predate the currently required `ruleset_set_digest_generation`, `ruleset_set_sha256`, and `catalog_context_fingerprint_generation`; update only test examples using the current typed identities.
+- The four affected tests are top-level pytest functions and `unittest discover -s DEV/TESTS` collected **0 tests** from the two modules. Add standard `unittest` `load_tests` collection adapters for the existing `test_*` functions in these two modules; do not change the canonical CI runner or add dependencies.
+- `expect_rejected` catches its own deliberate assertion on success. Repair the helper so unexpected acceptance fails the test, and add a guard test for that helper.
+
+EXPECTED OWNERS TO CHANGE: `DEV/TESTS/test_s6d_04_mechanical_context_contract.py`, `DEV/TESTS/test_s6d_05_portable_value_contract.py`, and `DEV/CATALOG/portable-value-routes.json` only. No GAME runtime/schema, workflow, toolchain, package manifest or lock file is directly edited.
+EXPECTED CONSUMERS TO CHANGE: the canonical unittest test collector, local pytest suite, maintenance/package-closure validator, and build-time engine-contract inventory derivation that consumes `portable-value-routes.json`. The release builder recomputes that inventory in generated package metadata; no derived hash is hand-edited.
+PROTECTED INVARIANTS: preserve exact active S6D-09 `fiction.target_reachable` consumers, dormant `fiction.target_visible`, false-vs-missing distinction, exact direct `$ref` consumer edges, the current continuation identity fields, and the existing ruleset/package identity algorithm. Do not weaken assertions or alter runtime code to satisfy stale test assumptions.
+ALLOWED CHANGE: test evidence/collection and the existing consumer-edge inventory values needed to match actual current schema `$ref`s. The release builder/closure validator recomputes the path-neutral engine-contract inventory digest from this input; no hand-edited derived hash or package-identity alias is authorized.
+VERSION_IMPACT: NONE expected — `portable-value-routes.json` retains `schema_version: 1` and identical shape; mechanical catalog generation, ruleset package revision/family/generation, engine release, runtime modules/schemas, campaign/storage generations, migration and dual-read remain unchanged. The derived engine-contract inventory content hash is recomputed under its existing generation and is not a version namespace.
+SYSTEM_IMPACT: NONE expected. If the direct consumer edges require a new capability, schema, runtime owner or executable vocabulary, stop before broadening scope.
+
+A26-02 TEST NODES:
+- `test_s6d_04_mechanical_context_contract::test_dormant_ids_rejected_before_input_class_and_false_is_not_missing`
+- `test_s6d_05_portable_value_contract::test_route_rows_ids_and_embedding_edges_are_machine_verified`
+- `test_s6d_05_portable_value_contract::test_real_activity_action_request_binding_matrix_and_freeze`
+- `test_s6d_05_portable_value_contract::test_roll_retry_is_single_fixed_result_and_offers_reject_stale_owner`
+
+A26-02 IMPLEMENTATION / FOCUSED VERIFICATION:
+- Scoped repair is implemented in the three expected owners above; the current pytest modules pass **31 tests** and the same two modules pass **31 tests** through standard `unittest` `load_tests` collection.
+- Independent `hdm-reviewer` review: **PASS / no findings** after cursor reconciliation; reviewer also confirmed all 19 portable-value route rows match current direct schema `$ref` edges.
+- Direct build-time inventory reconstruction: PASS — inventory schema `2`, five families, ruleset-set identity `0700d3ccf367ade9ff56f620c4330bd5b4544fb9e22031f9d1eac3718a88ef2d`, inventory digest `c17a0cddc21720ac7bd97ce413ed519b122d9c5f55ac8718bb1a151fab298678`.
+- Scoped Ruff check and `git diff --check`: PASS. `ruff format --check` reports pre-existing whole-file formatting drift in both modules; no broad reformat was applied.
+- `VERSION_IMPACT: NONE` — the route manifest keeps `schema_version: 1` and the same shape; the corrected rows name existing direct schema `$ref` edges, changing only the derived portable-value semantic hash and enclosing engine-contract inventory hash under their existing schema/digest generations. No incompatible coordinated vocabulary, package identity algorithm, runtime/module/schema namespace, or persistence contract changes.
+- `SYSTEM_IMPACT: NONE` — no new capability, runtime owner, schema or executable vocabulary is introduced.
+
+A26-02 MAIN-WORKTREE DIAGNOSTIC:
+- Full DEV pytest command: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — **1423 passed, 5 skipped, 7 failed**. All four historical A26-02/S6D failures now pass; the remaining failures are workspace-sensitive: `test_game_dev_layout::test_runtime_marker_is_unique`, `test_s6d_11_ruleset_package_closure::test_transitional_identity_keys_are_absent_from_current_carriers`, `test_runtime_package_provenance::{test_built_zip_contains_one_generated_root_provenance_member,test_clean_checkout_metadata_records_exact_head}`, `test_release_game_passthrough::test_new_game_root_file_and_directory_are_automatically_archived`, `test_release_integration::test_canonical_entry_point_builds_reproducible_flat_runtime_and_generator_smoke`, and `test_versioning_namespace_policy::test_census_has_zero_unclassified_hits`.
+- Maintenance audit reports duplicate `GAME/ENGINE_VERSION.yaml` markers under existing `DEV/tmp/` verification worktrees and one transitional-identity token in preserved `.entire/tmp/` data; no preserved artifact was cleaned.
+- Full unittest discovery in this checkout exceeded its 120-second limit while reaching the version-census test. Focused unittest collection is green; rerun the full canonical collector in a clean exact-head verification checkout.
+- Full clean exact-head DEV, unittest, maintenance, release-builder and engine-contract closure verification remain pending.
 
 ## W04.T07D System-Impact stop and accepted resolution
 
@@ -697,9 +737,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: complete the separate A26-02/S6D proof and collection repair under its current accepted owner route, then run final exact-head Wave-04 verification and obtain the mandatory Senior Wave-04 integration audit. Do not weaken accepted semantics to satisfy the stale tests. Wave 05 remains unauthorized.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A-C. T08C is accepted/read back. A26-02 proof/collection repair remains required before Wave-04 FINAL_REVIEW; the four known pytest-only S6D failures remain separate and must not be weakened. Wave 04 is not complete; Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for W04.T08C. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: publish this focused/reviewed A26-02 repair checkpoint, then create a clean detached exact-head verification checkout outside the source tree and run full `unittest discover -s DEV/TESTS`, the exact full DEV pytest command, maintenance audit, and canonical release builder/engine-contract closure validation. Preserve unrelated workspace material. After clean exact-head evidence is recorded, complete final Wave-04 verification and obtain the mandatory Senior integration audit. Do not weaken accepted semantics to satisfy stale tests. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E or T08A-C. T08C is accepted/read back. A26-02 implementation and independent task review PASS; the clean exact-head full unittest/DEV/maintenance/builder-closure evidence and final Wave-04 review remain required. Wave 04 is not complete; Wave 05 is not authorized.
+UNPUBLISHED_WORK: reviewed A26-02 changes are present in `DEV/CATALOG/portable-value-routes.json`, both S6D-04/S6D-05 test modules, and this execution-status cursor; focused pytest/unittest and Ruff checks pass, while clean exact-head full checks remain pending. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
