@@ -10,7 +10,7 @@ LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at revi
 NEXT_AUTHORIZED_UNIT: W05.T03 — retained schema cutovers, AUTHORIZED under `DEV/docs/superpowers/design/2026-10-01-w05-t03-retained-schema-final-writer-senior-ruling.md`. Dependency verification is complete; T03 owns current_state/thread/live_scene/event/lore/session only, with checkpoint v4/index v2 verify-only.
 REQUIRED_GATE: W05.T03 -> `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; scene/location/player final bytes remain W05.T04, campaign_manifest v5 remains W05.T07, and legacy schema/control-plane retirement remains W05.T08.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02 accepted; W05.T03 dependencies verified and implementation authorized.
-KNOWN_BLOCKERS: none for W05.T03 entry. Do not double-bump checkpoint/index or write T04/T07/T08-owned shared targets. Exact current-head hosted CI is GREEN at run `36755147911`.
+KNOWN_BLOCKERS: none for W05.T03 semantics/dependencies. Do not double-bump checkpoint/index or write T04/T07/T08-owned shared targets. Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` had hosted run `36755147911` GREEN; the current T03 authorization/fix head must itself pass hosted CI before worker implementation starts.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
