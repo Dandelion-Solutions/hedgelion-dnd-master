@@ -30,7 +30,7 @@ The plan derives from the accepted current architecture/specification owners, es
 - `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`;
 - the exact `R27-R###` item evidence in `DEV/docs/superpowers/design/2026-09-10-r2-7-WP-27-step-2-evidence-ledger.md`;
 - current domain, access, LIVE, persistence, temporal, collaboration, Story, bootstrap, versioning and Product Owner owners routed by `DEV/PROJECT_MAP.md`;
-- `DEV/PRODUCT_OWNER_INPUT.md`, including PO-004 clean-slate v1, PO-005 fail-closed creator-login policy with login-facing invitation plus stable-account-ID PLAYER binding, PO-006 absolute branch/ref deletion prohibition, and PO-011 Master-to-human response-language semantics;
+- `DEV/PRODUCT_OWNER_INPUT.md`, including PO-004 clean-slate v1, PO-005 fail-closed creator-login policy with login-facing invitation plus stable-account-ID PLAYER binding, PO-006 absolute branch/ref deletion prohibition, PO-011 Master-to-human response-language semantics, and PO-012 Commentator PLAYER + at-most-one selected controlled-PC perspective semantics;
 - `AGENTS.md`, `DEV/AGENT_RUNTIMES/CHATGPT_WORK.md` when applicable and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
 
 Consolidation source HEAD: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`.

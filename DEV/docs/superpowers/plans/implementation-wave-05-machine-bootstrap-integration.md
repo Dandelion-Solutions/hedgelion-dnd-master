@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **PLANNED / DEPENDENCY-GATED ON NAMED OWNER + INTEGRATION CHECKPOINTS**
+Status: **SENIOR-APPROVED / DEPENDENCY-GATED; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, complete bootstrap and product paths, and perform every shared physical write exactly once with the approved version cutovers.
 
@@ -197,7 +197,7 @@ Output checkpoints: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` and `W05_BLANK_SCAFFO
 
 ## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 
-Hard inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, plus the completed owner checkpoints consumed by each product path.
+Hard inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, accepted T07E RuntimeHost/W02 exact-size measurement contract, PO-012, plus the completed owner checkpoints consumed by each product path.
 
 Implement the product-facing flows over the completed owners:
 
@@ -205,15 +205,18 @@ Implement the product-facing flows over the completed owners:
 - creator binding uses verified stable account ID; login remains visible for selection and invitations;
 - creator uncertainty or login rename does not transfer ownership and yields read-only/fail-closed behavior;
 - multiplayer join/rejoin uses the principal route and exact PLAYER reload;
-- ordinary retrospective routes to native history/Story/current permissions;
+- ordinary retrospective routes to native history/Story/current permissions and applies PO-012 exactly: PUBLIC is available to an admitted Commentator reader; current PLAYER disclosure may widen protected eligibility; at most one selected currently controlled PC's exact `epistemic.known` may widen it; multiple controlled PCs are never unioned and no PLAYER means public-only;
 - save/exit uses the accepted durability promise and reports typed publication outcomes;
 - failures/retries do not duplicate campaign, PLAYER, LIVE source or accepted mechanics;
-- after campaign selection, product/runtime flow creates or reuses one campaign-bound RuntimeHost composition root; gameplay callers never supply/replace RepositoryPort, LIVE transport, native-ordering, Context or History services.
+- after campaign selection, product/runtime flow creates or reuses one campaign-bound RuntimeHost composition root; gameplay callers never supply/replace RepositoryPort, LIVE transport, native-ordering, Context or History services;
+- the bound `CampaignPublicationTransport` supplies T07E's exact `measure_path_operations(...)` capability using the same serializer as `create_tree`; an adapter without that capability fails closed before any writer that requires accepted size-band review and must never substitute an estimate, hard cap or second serialization.
 
 TDD and verification:
 
 - complete `CampaignSelectionBarrierTests`, `CreationIdentityTests`, `ProgressiveOnboardingTests`, `MultiplayerJoinRejoinTests`, `OrdinaryRetrospectiveRoutingTests`, `SaveExitMenuTests`, `CreatorAuthorityTests`, `ShippedBootstrapProjectionTests` and remaining bootstrap cases;
-- include login display/invitation success, email rejection, login-only takeover rejection and legitimate stable-ID rejoin.
+- include login display/invitation success, email rejection, login-only takeover rejection and legitimate stable-ID rejoin;
+- prove PO-012 retrospective filtering is public-only without PLAYER, uses exact current PLAYER disclosure when present, uses at most one selected controlled PC, rejects multi-PC knowledge union and does not infer access from caller Story IDs/legacy `visible_to`;
+- prove the shipped campaign-publication adapter exposes exact `measure_path_operations(...)` with create-tree serializer parity and that missing measurement capability fails closed before a size-governed publication.
 
 The earlier umbrella `ProductExitCreatorTests` is not recreated: its save/exit and creator fail-closed duties are discharged by the task-local `SaveExitMenuTests` and `CreatorAuthorityTests` at their coherent checkpoints.
 
@@ -245,12 +248,12 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 
 | Module | Target | Required semantic inputs |
 |---|---:|---|
-| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` + `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY` + PO-011 player-visible bootstrap/technical-surface separation |
+| BOOTSTRAP_RUNTIME | 1.0.9 | current transport/currentness + bounded bootstrap discovery + `W04_RUNTIME_HOST_BOOTSTRAP_DELTA_READY` + `W04_RUNTIME_HOST_IO_BOOTSTRAP_DELTA_READY` + T07E `CampaignPublicationTransport.measure_path_operations(...)` exact-serializer wiring + PO-011 player-visible bootstrap/technical-surface separation |
 | RANDOMNESS | 1.0.3 | fixed RNG acceptance/recovery |
 | EXPLORATION | 1.0.2 | current exploration/domain cutover |
 | STORAGE | 1.0.2 | routing/HOT + exact recovery/operational roots |
 | SAVE_CONTRACT | 1.0.2 | durability promise/save-exit |
-| PERSISTENCE | 1.0.4 | publication/recovery/currentness + CampaignPublicationService/W02 plan execution wiring |
+| PERSISTENCE | 1.0.4 | publication/recovery/currentness + CampaignPublicationService/W02 plan execution wiring + exact `measure_path_operations(...)` transport capability from T07E |
 | CHRONOLOGY | 1.0.2 | temporal/thread/current-state |
 | PROCESSES | 1.0.3 | procedure/continuation/operational roots + owner-native ordered-response evidence route |
 | AI_REASONING | 1.0.4 | typed role/context/protected result + campaign-bound RuntimeHost Context composition + PO-011 `ResolvedResponseLanguage` / internal-vs-visible presentation law |
@@ -265,7 +268,7 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 Shared physical checkpoints:
 
 - integrate `GAME/INSTALL/README.md`, `GAME/INSTALL/PROJECT_INSTRUCTIONS.txt` and `GAME/INSTALL/00_DND_BOOTSTRAP.md` at `RD14_INSTALL_BOOTSTRAP_FINAL_INTEGRATION_READY`, projecting PO-011 so player-visible bootstrap/setup/failure wording follows the current response language while technical internals remain separate;
-- integrate `GAME/CORE/BOOTSTRAP_RUNTIME.md` at `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY`, including the final deployment wiring law: authenticated Step-5.6 RepositoryPort + campaign publication transport + Step-5.8 LIVE/source-domain adapters compose the Wave-04 RuntimeHost after campaign selection, while no gameplay/model surface can inject those capabilities;
+- integrate `GAME/CORE/BOOTSTRAP_RUNTIME.md` at `CORE_BOOTSTRAP_RUNTIME_FINAL_INTEGRATION_READY`, including the final deployment wiring law: authenticated Step-5.6 RepositoryPort + campaign publication transport + Step-5.8 LIVE/source-domain adapters compose the Wave-04 RuntimeHost after campaign selection, while no gameplay/model surface can inject those capabilities; the publication transport must implement T07E's exact `measure_path_operations(...)` contract with the same serializer as `create_tree`, and absence must remain fail-closed;
 - integrate `GAME/CORE/STORAGE.md` at `CORE_STORAGE_FINAL_INTEGRATION_READY`;
 - integrate `GAME/CORE/MULTIPLAYER.md` at `CORE_MULTIPLAYER_FINAL_INTEGRATION_READY`;
 - integrate all other material CORE modules once with their listed owner inputs.
@@ -274,7 +277,7 @@ TDD and verification:
 
 - use `InstallBootstrapSharedWriterTests` (`STATIC_AUDIT`) and `BoundedCampaignDiscoveryTests` (`FOCUSED_BEHAVIOR`);
 - complete `CoreFrameworkModuleVersionCutoverTests` and the retained version suite;
-- prove final install bytes contain no exhaustive all-campaign card loop, login-only authorization, generic PLAYER_INDEX authorization or stale v0.8 compatibility path; also prove no shipped ordinary Master path uses English, Russian or another fallback solely because an optional language policy/local phrase asset is absent, and technical diagnostics remain a separate recipient-safe surface.
+- prove final install bytes contain no exhaustive all-campaign card loop, login-only authorization, generic PLAYER_INDEX authorization or stale v0.8 compatibility path; also prove no shipped ordinary Master path uses English, Russian or another fallback solely because an optional language policy/local phrase asset is absent, technical diagnostics remain a separate recipient-safe surface, PO-012 retrospective/Commentator routing never unions multiple controlled-PC knowledge or trusts caller Story visibility, and the final campaign-publication transport exposes exact create-tree-parity size measurement rather than an estimate.
 
 After all module/schema/test paths are final, integrate their routes into `DEV/PROJECT_MAP.md` and all current/stale/schema/catalog/version/package assertions into `DEV/TOOLS/audit_engine.py`. Run the actual maintenance entry point after these edits; do not leave per-task partial writers.
 

@@ -32,7 +32,7 @@ Run every owner suite named by Waves 01–05 after all physical writers are comp
 - `test_rd10_role_emission.py` — including PO-011 transient response-language binding, same-language finite fallback and internal/diagnostic separation;
 - `test_rd11_context_runtime.py`;
 - `test_rd12_collaboration.py`;
-- `test_rd13_story_t0_commentator.py`;
+- `test_rd13_story_t0_commentator.py` — including PO-012 PUBLIC / current PLAYER disclosure / at-most-one selected controlled-PC `epistemic.known` behavior and T07E exact-size review/measurement behavior;
 - `test_rd14_bootstrap.py`;
 - `test_rd15_catalog_runtime.py`;
 - `test_rd16_world_family_machine_integration.py`;
@@ -59,6 +59,15 @@ R004 absent
 ```
 
 Every active record points to an executed task/checkpoint and evidence channel. Every trigger-gated record retains its exact dormant trigger and cannot be activated by wave placement. Every no-work terminal retains its reason. Counts are cross-checks; item-level mapping is authority.
+
+### Wave-04 carry-forward proof obligations
+
+Before final proof closure, preserve the two Wave-04 Senior-audit carry-forward repairs:
+
+1. **PO-012 Commentator perspective** — `CommentatorSelfContainedProofTests` plus the relevant RD11/RD13 evidence must prove PUBLIC-only behavior without PLAYER, exact current PLAYER disclosure contribution, at most one selected currently controlled PC's `epistemic.known` contribution, no automatic multi-PC union, and no authority from caller Story IDs or legacy `visible_to`.
+2. **T07E exact serialized-byte measurement** — RuntimeHost/bootstrap/publication proof must show the shipped `CampaignPublicationTransport` implements `measure_path_operations(...)` with the same serializer as `create_tree`; missing/incomplete measurement fails closed before any size-governed writer, and no estimate/hard-cap/second-representation substitute is accepted.
+
+These are realization/proof consumers of accepted Wave-04 semantics, not new authorities or new Wave-06 product decisions.
 
 ### Exact runtime-family proof and negative witnesses
 

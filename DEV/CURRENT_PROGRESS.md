@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-03 COMPLETE / SENIOR PASS — WAVE 04 EXECUTING — T05C/T06A/T06B/T07D-P0/T07D/T07E/T08A/T08C ACCEPTED/READ BACK; T07-INTEGRATION PASS; A26-02 REPAIR PUBLISHED/VERIFIED; FINAL SENIOR AUDIT PENDING; PO-012 INCORPORATED
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUTHORIZED / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
 CURRENT_WORKSTREAM: production implementation
-CURRENT_SLICE: Wave 04 — collaboration, Context and Story
-LAST_CLOSED_UNIT: W04.T08C output `W04_MULTIPLAYER_SESSION_DELTAS_READY`, candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b`, seven convergence tests, independent review PASS; exact full DEV at final status head `aec602a828ef399673b58d2ccd7cb804b3baa5c2` reported 1424 passed/5 skipped with four separately tracked A26-02 failures reproduced sequentially; maintenance PASS; `VERSION_IMPACT: NONE`; non-force publication/read-back at `aec602a828ef399673b58d2ccd7cb804b3baa5c2`. Separate A26-02 proof/collection repair implementation review and local exact-head gates PASS/read back at `7b652995398c08a327542ce8b9db25f254cf74f1`; final Wave-04 Senior audit remains pending. T08A `W04_MULTIPLAYER_CONSUMER_DELTA_READY` remains accepted/read back at `2720a6187d5919fb2ca8c8f3265604814510d69b`; T07-INTEGRATION PASS at `3c61f636257f5febbfd47339e25a6be420852be9`; T07E/T07D/T07D-P0 and prior W04 checkpoints remain accepted. Hosted CI unavailable locally.
-NEXT_AUTHORIZED_UNIT: Complete the mandatory Senior Wave-04 integration audit/closure decision against the exact verified A26-02 implementation head. Do not weaken current semantics to satisfy stale tests. Wave 05 remains unauthorized.
-REQUIRED_GATE: mandatory Senior Wave-04 integration audit/closure decision (A26-02 repair and clean exact-head local verification passed at `7b652995398c08a327542ce8b9db25f254cf74f1`).
+CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
+LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
+NEXT_AUTHORIZED_UNIT: W05.T01 — owner-local strict schema and wrapper inputs. Other Wave-05 tasks remain individually dependency-gated by their named inputs; Wave-05 authorization does not bypass task-local joins or final-writer ownership.
+REQUIRED_GATE: execute Wave-05 from the stable plan. W05.T01 -> `W05_OWNER_LOCAL_STRICT_SCHEMA_WRAPPER_INPUTS_READY`; every later task remains gated by its named producer/join checkpoints. Wave-06 remains downstream of realized Wave-05 targets.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-story-execution-status.md` — authoritative task-local scheduling cursor for the decomposed Wave-04 lanes
-KNOWN_BLOCKERS: W04.T08C and A26-02 repair are accepted/read back; clean exact-head unittest, full DEV pytest, maintenance and package-builder verification pass at `7b652995398c08a327542ce8b9db25f254cf74f1`. Wave 04 awaits the mandatory Senior integration audit/closure decision. Hosted CI is unavailable locally. Wave 05 remains unauthorized.
+KNOWN_BLOCKERS: none from Wave 04. Wave-05 shared/final-writer work remains dependency-gated; no task may treat Wave-05 authorization as permission to skip named inputs, Version Impact, System-Impact, independent review or exact publication/read-back.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

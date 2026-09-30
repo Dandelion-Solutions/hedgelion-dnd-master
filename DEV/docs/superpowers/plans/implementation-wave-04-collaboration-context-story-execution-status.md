@@ -4,10 +4,10 @@ PLAN: DEV/docs/superpowers/plans/implementation-wave-04-collaboration-context-st
 SPEC: DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md
 BASE_SHA: 3319314e5d4a140a9de01cd52bafc6c25a33b975
 
-STATUS: EXECUTING — W04.T08A/T08B/T08C and T07A-E integration accepted/read back; A26-02 repair published and exact-head verified; final Senior integration audit pending
-CURRENT_TASK: complete final Wave-04 review/audit handoff from verified implementation head `7b652995398c08a327542ce8b9db25f254cf74f1`. A26-02 proof/collection repair is accepted at the implementation-review and local verification level; no runtime/schema/CI changes were made. Wave 05 remains unauthorized.
+STATUS: COMPLETE — WAVE 04 SENIOR INTEGRATION PASS
+CURRENT_TASK: NONE — Wave 04 closed. Global continuation is Wave 05 under `DEV/CURRENT_PROGRESS.md`; W05.T01 is the current exact entry task.
 LAST_COMPLETED_TASK: W04.T08C -> `W04_MULTIPLAYER_SESSION_DELTAS_READY`, candidate `46ea4a472c6a8d403ad96f6b60867b31b23bf98b`, seven convergence tests, independent review PASS; final exact DEV at status HEAD `aec602a828ef399673b58d2ccd7cb804b3baa5c2`: 1424 passed, 5 skipped, four A26-02 failures reproduced sequentially; maintenance PASS; version/provenance/current-progress 18 passed; `VERSION_IMPACT: NONE`. Non-force publication/read-back at `aec602a828ef399673b58d2ccd7cb804b3baa5c2`. W04.T08A -> `W04_MULTIPLAYER_CONSUMER_DELTA_READY`, code `48cd790d93b8d7cbbf883f086fcbeab34a4235df`, independent PASS and read-back at `2720a6187d5919fb2ca8c8f3265604814510d69b`. T08B/T03A and W04.T07-INTEGRATION remain accepted/read back; T07E/T07D and earlier W04 checkpoints remain retained.
-LAST_SAFE_SHA: `7b652995398c08a327542ce8b9db25f254cf74f1` — published A26-02 proof/collection repair checkpoint, independently reviewed and full local verification PASS.
+LAST_SAFE_SHA: `ceed7f8711163089e1905e60cbda785bb62e11ad` — reviewed Wave-04 implementation/status head; exact hosted validation PASS.
 
 ## W04.T07D / PO-012 / P0 current disposition — 2026-09-28
 
@@ -748,9 +748,9 @@ T05C_CLEAN_FULL_DEV_FAILURE_ID_CORRECTION: The fourth exact failing node ID is `
 T05C_INDEPENDENT_REVIEW: **PASS** — spec/code PASS; prior HIGH recipient-scope disclosure and MEDIUM malformed-lifecycle findings CLOSED; the independent status-focused re-review confirmed the reconciled verification counts and task-state bookkeeping.
 T05C_REVIEW_BOOKKEEPING_RECONCILIATION: **PASS** — focused verification 42/209 and review state independently confirmed consistent across this cursor and `DEV/CURRENT_PROGRESS.md`.
 
-NEXT_EXACT_TASK: complete the mandatory Senior Wave-04 integration audit/closure decision against verified implementation head `7b652995398c08a327542ce8b9db25f254cf74f1`, using the A26-02 review and clean exact-head evidence above plus the accepted T07-INTEGRATION/T08C records. Then synchronize final Wave-04 status. Wave 05 remains unauthorized.
-KNOWN_BLOCKERS: no Senior System-Impact gate remains open for T07A-E, T08A-C or A26-02. A26-02 implementation/review/local verification PASS and publication/read-back PASS. Wave 04 is not complete pending the mandatory final Senior integration audit/closure decision; hosted CI is unavailable in this local-machine runtime. Wave 05 is not authorized.
-UNPUBLISHED_WORK: NONE for A26-02; the repair is published and exact-head verified. No runtime/schema implementation remains unpublished. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
+NEXT_EXACT_TASK: Wave 04 is closed. Continue from the stable Wave-05 plan at W05.T01, subject to fresh currentness and its named hard inputs.
+KNOWN_BLOCKERS: none inside Wave 04. A26-02 is CLOSED. Wave-05 shared/final writers remain separately dependency-gated and are not implicitly accepted by this closure.
+UNPUBLISHED_WORK: NONE for Wave 04. Preserve unrelated `.agents/skills/`, `.entire/`, and `DEV/.lavish/` workspace material without staging or modifying it.
 
 ## W04.T06A accepted Context-basis gate adjudication
 
@@ -814,3 +814,23 @@ Earlier review/candidate evidence is retained verbatim at this cursor path:
 - Commit `b13496b19bc8a7f11b82a24e11508036e815596f`, blob `82560dd4b321a91c9f438401b964bcd6904f6ed3`: complete earlier Source Manifests, System-Impact rulings, rejected attempts/restores, version chains, original CLS preflight and author verification.
 
 Those snapshots are historical evidence, not competing current cursors or planning authorities. No whole-wave restore, new host prerequisite, production implementation by the reviewer, migration, release, gameplay bootstrap, new branch/ref or force update is authorized here.
+
+## Wave-04 mandatory Senior integration audit — 2026-09-30
+
+REPORT: `DEV/docs/superpowers/design/2026-09-30-w04-senior-integration-audit.md`
+REVIEWED_IMPLEMENTATION_HEAD: `ceed7f8711163089e1905e60cbda785bb62e11ad`
+
+```text
+SENIOR_INTEGRATION_AUDIT: PASS
+WAVE_04: COMPLETE
+BLOCKING_FINDINGS: NONE
+A26-02: CLOSED
+WAVE_05: AUTHORIZED / DEPENDENCY-GATED
+NEXT_EXACT_TASK: W05.T01
+```
+
+Exact-head hosted verification: `Validate engine source` run `36665654868`, job `109729652299`, conclusion SUCCESS; clean checkout, maintenance PASS and canonical DEV unittest PASS. A26-02 exact clean local verification at `7b652995398c08a327542ce8b9db25f254cf74f1`: unittest discovery 1435 passed/5 skipped, full pytest 1430 passed/5 skipped, maintenance/release/engine-contract closure PASS.
+
+Senior closure repaired two planning-only carry-forward defects before PASS: PO-012 Commentator perspective was routed into Wave-05 product paths/Wave-06 proof, and T07E `CampaignPublicationTransport.measure_path_operations(...)` exact-serializer capability was routed into Wave-05 final deployment wiring/Wave-06 proof. No production/runtime byte was changed by those repairs.
+
+Wave-04 final-writer boundary remained intact: no `GAME/CORE/*` file and no Wave-05-owned retained shared schema changed in the Wave-04 implementation range; the only shipped GAME schema added by Wave 04 is owner-local `GAME/SCHEMA/collaboration_obligation.schema.yaml`.
