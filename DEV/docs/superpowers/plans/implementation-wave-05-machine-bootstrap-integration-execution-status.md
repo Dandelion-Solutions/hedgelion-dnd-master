@@ -276,6 +276,6 @@ Final-writer ownership:
 - T08: legacy pc/npc/item/retired-faction control-plane retirement after final
   audit_engine/PROJECT_MAP/live-consumer reconciliation.
 
-Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` hosted `Validate engine source` run `36755147911`: SUCCESS, maintenance PASS, canonical DEV unittest PASS. The first T03 ruling head failed one machine-readable plan wording assertion only; this follow-up restores the required retirement phrase without changing the Senior ownership ruling. Current-head hosted CI must be GREEN before implementation starts.
+Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` hosted `Validate engine source` run `36755147911`: SUCCESS, maintenance PASS, canonical DEV unittest PASS. The T03 ruling and first follow-up exposed two machine-readable wording assertions in the same legacy-retirement contract. This follow-up preserves both required routing phrases without changing the Senior ownership ruling. Current-head hosted CI must be GREEN before implementation starts.
 
 NEXT_EXACT_TASK: implement/review W05.T03 inside the repaired stable plan.
