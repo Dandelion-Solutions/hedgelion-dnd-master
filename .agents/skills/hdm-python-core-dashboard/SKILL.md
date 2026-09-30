@@ -8,6 +8,7 @@ description: Use when the HDM PO or architect wants to inspect actual Python mod
 Show how the current implementation is connected and what the evidence can establish. This is a read-only inspection skill, not permission to repair code or approve it.
 
 Read the shared [projection contract](../hdm-architecture-dashboard/references/projection-contract.md) and [local review adapter](../hdm-architecture-dashboard/references/local-review.md). Write `python-core.json` and `python-core.html`. Complete the current repository/runtime bootstrap; use `DEV/PROJECT_MAP.md` to locate actual Python owners, composition roots, related schemas and tests. Do not assume all Python is in one directory or that similarly named legacy files are active.
+Write human-facing HTML in Russian by default; preserve source-native statuses and exact technical identifiers as defined in the shared projection contract.
 
 ## Inspect a bounded implementation slice
 

@@ -8,6 +8,7 @@ description: Use when the HDM PO or architect wants to inspect Master reasoning,
 Explain the actual LLM-to-deterministic boundary and its evidence. Do not optimize prompts, run provider calls, change models or implement runtime behavior as part of a dashboard refresh.
 
 Read the shared [projection contract](../hdm-architecture-dashboard/references/projection-contract.md) and [local review adapter](../hdm-architecture-dashboard/references/local-review.md). Write `llm-runtime.json` and `llm-runtime.html`. Bootstrap the current repository/runtime; discover owning reasoning, truth/knowledge/disclosure, Context, tool/execution, publication, Story and performance contracts through `DEV/PROJECT_MAP.md`. Inspect their actual current owners and implementation consumers; indexes alone do not prove behavior.
+Write human-facing HTML in Russian by default; preserve source-native statuses and exact technical identifiers as defined in the shared projection contract.
 
 ## Separate the planes
 

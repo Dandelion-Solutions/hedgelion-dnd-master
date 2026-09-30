@@ -8,6 +8,7 @@ description: Use when the HDM PO or architect wants a visual project review of p
 Answer what changed, what it means for the product, and which judgment is actually needed. Aggregate bounded evidence; do not become a task tracker, dispatcher, new authority or whole-project auditor.
 
 Read the shared [projection contract](../hdm-architecture-dashboard/references/projection-contract.md) and [local review adapter](../hdm-architecture-dashboard/references/local-review.md). Write local `development.json`, `po-cockpit.json` and `po-cockpit.html`; development is an internal projection, not a sixth skill.
+Write human-facing HTML in Russian by default; preserve source-native statuses and exact technical identifiers as defined in the shared projection contract.
 
 ## Acquire and compose
 

@@ -16,6 +16,7 @@ Complete current HDM `AGENTS.md` and runtime bootstrap. Use `DEV/PROJECT_MAP.md`
 ## Output recipe
 
 Write `architecture.json` and `architecture.html` under the contract's local directories.
+Write human-facing HTML in Russian by default; preserve source-native statuses and exact technical identifiers as defined in the shared projection contract.
 
 | Surface | Required contents |
 |---|---|

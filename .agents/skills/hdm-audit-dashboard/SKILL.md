@@ -8,6 +8,7 @@ description: Use when the HDM PO or architect wants the independent audit's scop
 Project existing audit evidence; do not perform or impersonate a Senior audit, close findings, repair sources or change public acceptance state. A fresh report fetch is not a fresh audit.
 
 Read the shared [projection contract](../hdm-architecture-dashboard/references/projection-contract.md) and [local review adapter](../hdm-architecture-dashboard/references/local-review.md). Write local `audit.json` and `audit.html`; cockpit consumes this output and does not reinterpret audit records itself.
+Write human-facing HTML in Russian by default; preserve source-native statuses and exact technical identifiers as defined in the shared projection contract.
 
 ## Resolve two independent sources
 
