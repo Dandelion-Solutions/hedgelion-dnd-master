@@ -685,6 +685,7 @@ class SourceNativeIdentifierPolicyIntegrationTests(unittest.TestCase):
             {
                 "strategy": "target_key",
                 "target_field": "id",
+                "prefix": "THREAD_",
                 "live_birth": "SOURCE_NATIVE_LIVE",
             },
         )
@@ -703,6 +704,65 @@ class SourceNativeIdentifierPolicyIntegrationTests(unittest.TestCase):
                 )
                 self.assertNotIn("live_birth_fallback", policy)
         self.assertEqual(SOURCE_NATIVE_LIVE_ENCODING, "framed_base32hex_v1")
+
+    def test_scalar_catalog_policies_drive_the_closed_source_native_runtime(self) -> None:
+        from GAME.TOOLS.live_state import (
+            LIVE_BIRTH_ADMISSION_TABLE,
+            SOURCE_NATIVE_LIVE_ENCODING,
+            SourceNativeCreation,
+            SourceNativeCursor,
+            allocate_source_native_creations,
+            parse_source_native_live_id,
+        )
+
+        policies = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "identifier-policies.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        source_native_families = tuple(
+            sorted(
+                family
+                for family, disposition in LIVE_BIRTH_ADMISSION_TABLE.items()
+                if disposition == "SOURCE_NATIVE_LIVE"
+            )
+        )
+        source_key = ("campaign.t02", "scene.t02", "e1-" + "a" * 64)
+        creations = tuple(
+            SourceNativeCreation(family, index)
+            for index, family in enumerate(source_native_families)
+        )
+
+        allocations = allocate_source_native_creations(
+            source_key, creations, SourceNativeCursor(1), policies
+        )
+
+        self.assertEqual(len(allocations), len(source_native_families))
+        for allocation in allocations:
+            with self.subTest(family=allocation.native_family):
+                parsed = parse_source_native_live_id(
+                    allocation.native_id,
+                    policies,
+                    expected_source_key=source_key,
+                    expected_native_family=allocation.native_family,
+                    expected_source_local_creation_ordinal=(
+                        allocation.source_local_creation_ordinal
+                    ),
+                )
+                self.assertEqual(parsed.encoding, SOURCE_NATIVE_LIVE_ENCODING)
+                if allocation.native_family == "world.thread":
+                    Draft202012Validator(
+                        load_schema("world-thread-state.schema.json")
+                    ).validate(
+                        {
+                            "record_kind": "world.thread",
+                            "id": allocation.native_id,
+                            "state_revision": 1,
+                            "status": "active",
+                            "kind": "goal",
+                            "state": {"stage": None, "progress": None},
+                        }
+                    )
 
     def test_live_birth_disposition_is_required_closed_and_has_no_fallback_field(
         self,
@@ -724,6 +784,14 @@ class SourceNativeIdentifierPolicyIntegrationTests(unittest.TestCase):
         del missing_disposition["world"]["world.actor"]["live_birth"]
         with self.assertRaises(SchemaValidationError):
             validator.validate(missing_disposition)
+
+        missing_source_native_target_key_prefix = deepcopy(policies)
+        missing_source_native_target_key_prefix["world"]["world.thread"][
+            "prefix"
+        ] = "THREAD_"
+        del missing_source_native_target_key_prefix["world"]["world.thread"]["prefix"]
+        with self.assertRaises(SchemaValidationError):
+            validator.validate(missing_source_native_target_key_prefix)
 
         unknown_disposition = deepcopy(policies)
         unknown_disposition["world"]["world.actor"]["live_birth"] = "DEFAULT"

@@ -17,7 +17,7 @@
     "world.effect": {"strategy": "sequential", "prefix": "effect", "minimum_width": 6, "scope": "campaign", "local": {"prefix": "local-effect", "minimum_width": 5, "scope": "session"}, "live_birth": "SOURCE_NATIVE_LIVE"},
     "world.lore_fact": {"strategy": "sequential", "prefix": "fact", "minimum_width": 4, "scope": "campaign", "live_birth": "SOURCE_NATIVE_LIVE"},
     "world.knowledge": {"strategy": "composite_key", "fields": ["knower_id", "fact_id"], "scope": "campaign", "live_birth": "OWNER_EQUIVALENT"},
-    "world.thread": {"strategy": "target_key", "target_field": "id", "live_birth": "SOURCE_NATIVE_LIVE"},
+    "world.thread": {"strategy": "target_key", "target_field": "id", "prefix": "THREAD_", "live_birth": "SOURCE_NATIVE_LIVE"},
     "world.player": {"strategy": "target_key", "target_field": "player_id", "live_birth": "FORBIDDEN"}
   },
   "runtime": {

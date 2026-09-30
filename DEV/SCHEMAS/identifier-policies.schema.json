@@ -161,8 +161,16 @@
       "properties": {
         "strategy": {"const": "target_key"},
         "target_field": {"type": "string", "minLength": 1},
+        "prefix": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
         "live_birth": {"$ref": "#/$defs/liveBirthDisposition"}
-      }
+      },
+      "allOf": [{
+        "if": {
+          "properties": {"live_birth": {"const": "SOURCE_NATIVE_LIVE"}},
+          "required": ["live_birth"]
+        },
+        "then": {"required": ["prefix"]}
+      }]
     }
   }
 }

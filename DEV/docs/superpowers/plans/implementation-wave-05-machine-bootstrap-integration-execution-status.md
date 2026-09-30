@@ -5,9 +5,9 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: W05.T02 — shared catalog, wrapper and identifier writer; reconcile the preserved local candidate before resuming integration.
+CURRENT_TASK: W05.T02 — shared catalog, wrapper and identifier writer; real source-native runtime integration is now represented in RD16 tests.
 LAST_COMPLETED_TASK: W05.T02-P0 -> `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY`.
-LAST_SAFE_SHA: `601cea401f4f375232740305c8eb8a7be7f6ee41` — P0 implementation and verification cursor published non-force and freshly read back; T01 remains accepted.
+LAST_SAFE_SHA: `42610cc16583ef7dc3d66ae64466f3ae5cf23583` — P0 output and global-progress synchronization are published/read back; T01 remains accepted.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -191,5 +191,51 @@ P0 evidence-cursor update VERSION_IMPACT: NONE — status-only; no version-beari
 P0 publication/read-back: PASS — non-force publication; fresh `git fetch --prune origin` confirmed `HEAD == origin/v1/engine-rearchitecture == 601cea401f4f375232740305c8eb8a7be7f6ee41`, with empty changed-file diff.
 P0 output: `W05_SOURCE_NATIVE_POLICY_CONSUMER_READY` — accepted and published/read back at `601cea401f4f375232740305c8eb8a7be7f6ee41`.
 P0 accepted-state cursor/progress synchronization VERSION_IMPACT: NONE — execution/progress evidence only.
-NEXT EXACT TASK: fresh-fetch and rebase/reconcile local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` onto the accepted P0 head; then run the complete T02 review/Version Impact/full clean verification/maintenance gates.
-UNPUBLISHED_WORK: local T02 candidate `5fdc556c2abb5d4f37a9923b73ede03e16920383` and its pre-ruling cursor stash remain unpublished; P0 is complete and read back.
+NEXT EXACT TASK: run clean exact full DEV and maintenance for the final T02 candidate; then publish only after PASS and obtain remote read-back.
+UNPUBLISHED_WORK: rebased local T02 candidate `45c705d5239c6c71943764599dbfa5287dff1b89` plus current policy/schema/RD16/status updates; original candidate commit `5fdc556c2abb5d4f37a9923b73ede03e16920383` remains in local ref history; pre-ruling cursor stash remains local. T02 is not published; P0 is complete/read back.
+
+## W05.T02 Resumed Implementation Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- W05.T02 in `implementation-wave-05-machine-bootstrap-integration.md`, with the accepted W05.T02-P0 Senior ruling above.
+- Published/read-back W05.T01 owner inputs and W05.T02-P0 output at the accepted P0 head.
+- Current W01/W02 catalog/context/adjudication owners and W03 source-native identity owner.
+
+BASELINE REF OR SHA: `v1/engine-rearchitecture` at freshly fetched public head `42610cc16583ef7dc3d66ae64466f3ae5cf23583`.
+LOCAL CANDIDATE: original `5fdc556c2abb5d4f37a9923b73ede03e16920383`; rebased candidate `45c705d5239c6c71943764599dbfa5287dff1b89`.
+
+EXPECTED OWNERS TO CHANGE:
+- Shared catalog, entity-structure, admission-ledger and identifier-policy data/schema; world wrapper; two catalog architecture projections; RD16/WP03 integration tests; Wave-05 status/progress evidence.
+
+EXPECTED CONSUMERS TO VERIFY:
+- W01 catalog-context/information owners; W02 catalog-backed command and accepted adjudication; W03 source-native LIVE consumer; W05.T01 dispatch/binding inputs; current catalog-bound execution/instruction consumers.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- Only W05.T02 final shared catalog/wrapper/identifier integration and its prescribed identifier-policy schema-version transition `2 -> 3`. Keep scalar `live_birth`; exact family disposition equals `LIVE_BIRTH_ADMISSION_TABLE`; encoding remains fixed at `framed_base32hex_v1`; catalog generation remains 2.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- Exactly 17 world + 17 runtime families; no `world.faction` family; one schema ref per family; no loose fallback or duplicate owner.
+- Preserve exact definition-binding modes and registered definitions; `world.thread` and `world.player` definition binding stays forbidden.
+- No source-native fallback for owner-equivalent/forbidden families; `world.player` remains LIVE-forbidden.
+- P0 scalar policy-consumer cutover is accepted/read back. T02 tests must exercise the real runtime consumer against the final shared policy, not just compare table values.
+- Preserve exact catalog context/currentness binding, admission-ledger equality, W01 information-schema ownership, and no generic/index/latest or PLAYER_INDEX authority.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- RD16 shared catalog/wrapper/source-native integration; WP03 catalog conformance; real runtime encode/parse/allocation join for catalog policies; W01.T08 catalog-runtime suites; ledger/catalog binding and RD15 exact-context suites; clean full DEV, maintenance and independent task review.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- W05.T03–T08, W06 R018 proof, runtime GAME schemas/CORE, semantic owner changes not explicitly admitted by the approved T02 plan, adapters/dual-read/migrations.
+
+T02 VERSION IMPACT GATE: PASS — `DEV/SCHEMAS/identifier-policies.schema.json` and `DEV/CATALOG/identifier-policies.json` schema version `2 -> 3`, exactly once. `core-catalog.json` schema version 2 unchanged; coordinated catalog generation remains 2; admission-ledger manifest schema 2 unchanged; `entity-structures.json` has no local schema namespace; `world-record.schema.json` has no explicit version namespace. No new engine/module revision, persistent GAME schema, campaign/storage generation, migration or dual-read. The prior P0 `GAME/TOOLS/live_state.py 1.0.21 -> 1.0.22` was already accepted/published and is not part of T02.
+SYSTEM_IMPACT: NONE under the accepted P0 ruling and T02 plan unless implementation reveals a requirement to change a semantic owner or add an unapproved identity rule.
+
+T02 REBASE VERIFICATION: T01/P0/public progress history is retained at accepted `42610cc`; original T02 file delta reapplied cleanly as rebased candidate `45c705d` with the same 10 intended T02 paths.
+T02 RED: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd16_world_family_machine_integration.py::SourceNativeIdentifierPolicyIntegrationTests` — 3 expected failures before the T02 policy repair: `world.thread` lacked the source-native prefix required by the accepted runtime consumer; the conformance witness did not yet pin its owner-native prefix; the target-key schema admitted that missing prefix.
+T02 GREEN: after adding `world.thread` prefix `THREAD_` and making the T02 target-key schema require a valid prefix for SOURCE_NATIVE_LIVE target-key rows, `SourceNativeIdentifierPolicyIntegrationTests` plus `test_r2_7_wp03_catalog_conformance.py` — 15 passed.
+T02 source-native consumer join: the new RD16 test passes all 20 final scalar SOURCE_NATIVE_LIVE rows through the real W03 allocator and parser; it also validates the generated `world.thread` identity against `world-thread-state.schema.json`. `THREAD_` is the exact prefix required by that owner schema's `^THREAD_[A-Za-z0-9_.:-]+$` ID contract.
+T02 CROSS-OWNER VERIFICATION: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd16_world_family_machine_integration.py DEV/TESTS/test_r2_7_wp03_catalog_conformance.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_catalog_definition_binding_contract.py DEV/TESTS/test_catalog_admission_ledger_split.py DEV/TESTS/test_step3_execution_catalog_contract.py DEV/TESTS/test_rd05_runtime_execution.py DEV/TESTS/test_rd06_durability_publication.py DEV/TESTS/test_rd02_information_native_contracts.py DEV/TESTS/test_rd09_access_live.py` — 394 passed, 2 existing RD09 `RefResolver` deprecation warnings.
+T02 VERSION_IMPACT: `DEV/SCHEMAS/identifier-policies.schema.json` / data `schema_version 2 -> 3`; the material shape change is included in this single prescribed transition. `DEV/CATALOG/core-catalog.json schema_version 2` unchanged; all coordinated catalog projections remain `catalog_generation 2`; admission-ledger manifest schema 2 unchanged; `entity-structures.json` has no local schema namespace; `world-record.schema.json` has no explicit version namespace. No engine/module, persistent GAME schema, campaign/storage generation, migration or dual-read changes in T02. The earlier P0 `live_state.py 1.0.21 -> 1.0.22` is already accepted/published and is not part of the T02 delta.
+T02 SYSTEM_IMPACT: NONE — final policy/schema integration remains within the approved W05.T02 shared-writer envelope; no identity strategy, semantic owner, runtime authority, adapter, alias, dual-read or migration was introduced. `world.thread` prefix is aligned to its existing strict owner ID contract.
+T02 cross-owner verification: PASS — 394 passed across RD16, WP03, RD15, catalog binding/ledger, Step-3 catalog acceptance, W02 execution/durability and W01 information.
+T02 independent review: PASS — `hdm-reviewer` reviewed the rebased candidate and current T02 diff against public base `42610cc16583ef7dc3d66ae64466f3ae5cf23583`; no findings. Reviewer independently reran the 394-test cross-owner command and confirmed `THREAD_` is mechanically supported by the strict owner schema.
+T02 clean exact full DEV / maintenance / publication-read-back: PENDING.
