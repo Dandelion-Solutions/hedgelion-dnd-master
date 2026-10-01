@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: FINAL_REVIEW — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 implementation and README fix are published/read back; independent P1 PASS remains pending; the blank-scaffold completion slice remains held.
-CURRENT_TASK: W05.T05-P1 — bootstrap-specific initial campaign publication capability.
-LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `1282019041747c6bb87145d07aa6a680525f6a37` — W05.T05-P1 implementation plus fix-round-1 checkpoint, worker-verified and published/read back; independent P1 PASS pending.
+STATUS: EXECUTING — W05.T05 bounded campaign discovery and W05.T05-P1 initial campaign publication are accepted/read back; the held T05 blank-scaffold completion slice is resumed.
+CURRENT_TASK: W05.T05 — CURRENT v3 generator/scaffold synchronization and blank owner-native root completeness using the accepted P1 publication capability.
+LAST_COMPLETED_TASK: W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
+LAST_SAFE_SHA: `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc` — final P1 implementation/fix with exact clean DEV and maintenance evidence; T05 scaffold work is now authorized.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1185,6 +1185,10 @@ NEXT_EXACT_TASK: implement/review W05.T05-P1 only.
 
 ## W05.T05-P1 worker execution evidence — 2026-10-01
 
+INTERIM SNAPSHOT: the pending-review state below records worker completion and
+implementation read-back time; the final independent review/verification state
+is recorded in the final acceptance section that follows the fix-round evidence.
+
 CONTROLLING RULING:
 `DEV/docs/superpowers/design/2026-10-01-w05-t05-initial-campaign-publication-senior-ruling.md`
 
@@ -1233,6 +1237,10 @@ UNPUBLISHED_WORK: NONE for P1 implementation/tests; the implementation checkpoin
 
 ## W05.T05-P1 fix round 1 — campaign README preservation — 2026-10-01
 
+INTERIM SNAPSHOT: the pending-review state below records fix publication time;
+the final independent review/verification state is recorded in the final
+acceptance section that follows.
+
 REVIEW FINDING: `FrozenInitialCampaignPublication.__post_init__` rejected root `README.md` solely by path. Verified the source in `GAME/TOOLS/init_campaign.py`: `shutil.copytree(source_campaign, output)` copies `GAME/CAMPAIGN/` contents into the generated campaign root, including `GAME/CAMPAIGN/README.md`.
 
 BASE_SHA: `de955adde7ace7e39258b2f8d049911dcd57469f`
@@ -1264,3 +1272,72 @@ CURRENT FIX CHECKPOINT: focused `InitialCampaignPublicationTests` (19 passed), f
 NEXT_EXACT_TASK: obtain independent P1 review/PASS; only after P1 independent PASS and read-back may the held T05 blank-scaffold slice resume. W05.T06 remains unauthorized.
 
 UNPUBLISHED_WORK: NONE for W05.T05-P1 fix round 1. Independent P1 PASS remains pending.
+
+
+## W05.T05-P1 final independent acceptance — 2026-10-01
+
+OUTPUT: `W05_INITIAL_CAMPAIGN_PUBLICATION_READY` — **ACCEPTED / READ BACK** at
+`fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`.
+
+INDEPENDENT TASK REVIEW:
+- Initial P1 review found one High spec finding: campaign-root `README.md` was
+  incorrectly treated as storage-root content. Fix round 1 permits the exact
+  `GAME/CAMPAIGN/README.md` bytes copied by the generator while retaining the
+  storage-marker exclusions and no-base-tree publication boundary.
+- Scoped independent re-review of
+  `de955adde7ace7e39258b2f8d049911dcd57469f..fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`:
+  original finding **ADDRESSED**, no new blocking/important breakage.
+- One MINOR observation is deferred: add a focused negative witness proving
+  storage-marker paths are rejected by the input freeze. Existing guards and the
+  exact generated-map/tree witness remain in place.
+
+FINAL FOCUSED VERIFICATION:
+- `InitialCampaignPublicationTests`: 19 passed.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py` — 41 passed.
+- Scoped Ruff (excluding the pre-existing unchanged `SIM117`), Ruff format and
+  `git diff --check`: PASS.
+
+CLEAN EXACT FULL DEV:
+- `env -C "/tmp/opencode/w05t05-p1-clean-fdf679aa" PYTHONDONTWRITEBYTECODE=1 /home/denis/hdm/repos/hedgelion-dnd-master/.hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto`
+  — **1497 passed, 24 existing RD09 `RefResolver` deprecation warnings** at exact
+  published code HEAD `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc` in a clean detached
+  verification checkout.
+- The executable came from the repository-declared `.hdm-devtools/venv` with a
+  matching requirements fingerprint. Fresh environment bootstrap in the clean
+  checkout rejected a downloaded wheel hash; the existing matching repo-owned
+  environment was reused for verification.
+
+MAINTENANCE:
+- `env -C "/tmp/opencode/w05t05-p1-maint-fdf679aa" PYTHONDONTWRITEBYTECODE=1 python3 DEV/TOOLS/run_maintenance_audit.py`
+  — **PASS**. The canonical launcher reused the matching repository-owned tool
+  environment described above.
+
+HOSTED CI: unavailable in this local-machine runtime; no hosted result is claimed
+for P1.
+
+VERSION_IMPACT: `GAME/TOOLS/bootstrap.py framework_module_version 1.0.1 -> 1.0.2`.
+No persistent schema, campaign-contract/storage generation, catalog generation,
+migration, dual-read, or DEV/GAME projection synchronization.
+
+SYSTEM_IMPACT: NONE under the accepted Senior ruling. W02 publication semantics
+and W04 RuntimeHost semantics remain unchanged; the README repair only separates
+campaign-template content from storage-root ancestry.
+
+P1 REMOTE READ-BACK: PASS — fresh fetch confirmed
+`HEAD == origin/v1/engine-rearchitecture == fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`.
+
+T05 STATE: P1 is complete; resume the held blank-scaffold slice. It still owns
+CURRENT.yaml v2 -> v3, removal of `world_time.frontier`, generator/scaffold
+validation synchronization and all blank owner-native roots. `W05_T06` remains
+NOT AUTHORIZED.
+
+NEXT_EXACT_TASK: resume W05.T05 blank-scaffold/generator completion using the
+accepted P1 capability. Do not begin W05.T06.
+
+KNOWN_BLOCKERS: none for resuming the T05 scaffold slice. A deployment adapter
+must expose the combined bootstrap discovery/publication capability; an
+unsupported adapter fails closed. The deferred minor marker-rejection witness
+is tracked above.
+
+UNPUBLISHED_WORK: NONE — P1 implementation, fix, verification, review and
+read-back are complete.
