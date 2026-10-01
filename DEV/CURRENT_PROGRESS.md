@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: NONE — W05.T06 remains **NOT AUTHORIZED**; await explicit owner authorization for the next Wave-05 unit.
-REQUIRED_GATE: T05 is closed. Do not begin W05.T06 without its explicit authorization and hard-input gate. Preserve T07 manifest-v5 ownership; do not repurpose ordinary update_ref or synthesize a selected campaign.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03/T04 and T05 outputs are accepted; no next unit is currently authorized.
-KNOWN_BLOCKERS: No technical blocker remains for closed T05. W05.T06 and subsequent Wave-05 work remain unauthorized pending the owning gate. `GAME/CAMPAIGN/STATE/CURRENT.yaml` is now a v3 instance aligned to the current_state v3 schema.
+NEXT_AUTHORIZED_UNIT: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths; AUTHORIZED by `DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md`.
+REQUIRED_GATE: W05.T06 -> `W05_PRODUCT_PATHS_READY` with TDD, Version/System Impact, independent review, clean verification, publication and read-back. Preserve T07 manifest-v5 ownership and T08 final shipped-integration ownership.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 accepted; W05.T06 authorized.
+KNOWN_BLOCKERS: none for W05.T06 entry. If product composition requires a new transport semantic/interface beyond accepted CampaignPublicationTransport or admits gameplay-supplied capability replacement, stop at System Impact. T07 manifest v5 remains later-owned.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

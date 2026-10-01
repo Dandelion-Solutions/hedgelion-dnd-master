@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: COMPLETE — W05.T05 outputs are accepted/read back; final Senior integration audit PASS at `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`.
-CURRENT_TASK: NONE — no next Wave-05 unit is authorized; W05.T06 remains NOT AUTHORIZED.
+STATUS: EXECUTING — W05.T05 accepted/read back; W05.T06 authorized.
+CURRENT_TASK: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8` — final Senior-audited/read-back T05 head; W05.T06 is not authorized.
+LAST_SAFE_SHA: `90bed94945c453b0aa5d5d4ae5776e2a6ca0208e` — T05 acceptance/status head; hosted `Validate engine source` run `36937045996` SUCCESS.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1555,3 +1555,32 @@ Wave-05 unit until the required owner authorization is received.
 
 UNPUBLISHED_WORK: NONE — T05 implementation, review, verification, Senior audit
 and closure state are published/read back.
+
+
+## W05.T06 Senior entry gate — 2026-10-02
+
+REPORT:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md`
+
+```text
+W05.T06 HARD INPUTS: PASS
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+SYSTEM_IMPACT_GATE_AT_ENTRY: PASS
+W05.T06: AUTHORIZED
+OUTPUT: W05_PRODUCT_PATHS_READY
+```
+
+Wave-04 Senior closure satisfies the RuntimeHost composition/IO chains; T07E
+exact-size measurement and PO-012 are accepted; W02/W03/W04 owner outputs and
+W05.T02-T05 final inputs are GREEN/read back.
+
+T07 manifest-v5 retirement is not a T06 prerequisite. T06 must ignore the still
+present v4 `MANIFEST.players.player_ids` for authority and route join/rejoin
+through exact current PLAYER/principal owners. T07 remains the physical
+manifest-v5 writer.
+
+T06 owns product composition/use and fail-closed capability checks over the
+accepted RuntimeHost/publication interfaces. It does not own a new repository
+transport protocol. T08 remains the final shipped CORE/install/module writer.
+
+NEXT_EXACT_TASK: implement/review W05.T06 only.
