@@ -17,8 +17,8 @@ from typing import Final, Literal, Protocol, cast
 from .policy_basis import AuthenticatedPrincipalEvidence
 from .publication import PublicationOutcome, PublicationStatus
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -377,11 +377,12 @@ class FrozenInitialCampaignPublication:
                 raise BootstrapContractError(
                     "generated campaign file path must be normalized"
                 )
-            if raw_path in {
-                "README.md",
-                "DND_STORAGE.yaml",
-                "DND_STORAGE",
-            } or raw_path.startswith("DND_STORAGE/"):
+            # README.md is valid campaign scaffold content. Because publication
+            # builds only this exact map from scratch, no storage-root README is
+            # inherited; explicit storage markers remain forbidden.
+            if raw_path in {"DND_STORAGE.yaml", "DND_STORAGE"} or raw_path.startswith(
+                "DND_STORAGE/"
+            ):
                 raise BootstrapContractError(
                     "generated campaign tree cannot include storage-root files"
                 )

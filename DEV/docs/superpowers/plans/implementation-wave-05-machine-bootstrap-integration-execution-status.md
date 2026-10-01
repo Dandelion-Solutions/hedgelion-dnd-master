@@ -1229,3 +1229,35 @@ NEXT_EXACT_TASK: obtain independent P1 review/PASS; only after P1 independent PA
 KNOWN_BLOCKERS: broader workspace suite is non-green/non-acceptance as recorded above; no private-artifact inspection or cleanup is authorized. A concrete deployment adapter must implement the combined bootstrap capability view; unsupported adapters return a typed fail-closed outcome.
 
 UNPUBLISHED_WORK: NONE for P1 implementation/tests; the implementation checkpoint is published/read back. Independent P1 PASS remains pending.
+
+
+## W05.T05-P1 fix round 1 — campaign README preservation — 2026-10-01
+
+REVIEW FINDING: `FrozenInitialCampaignPublication.__post_init__` rejected root `README.md` solely by path. Verified the source in `GAME/TOOLS/init_campaign.py`: `shutil.copytree(source_campaign, output)` copies `GAME/CAMPAIGN/` contents into the generated campaign root, including `GAME/CAMPAIGN/README.md`.
+
+BASE_SHA: `de955adde7ace7e39258b2f8d049911dcd57469f`
+
+TDD RED:
+- Updated the exact scratch-tree witness to include bytes from `GAME/CAMPAIGN/README.md` and assert those bytes pass through unchanged.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::InitialCampaignPublicationTests::test_scratch_tree_is_exact_scaffold_without_storage_root_readme_or_marker` — 1 expected failure at freeze: `BootstrapContractError: generated campaign tree cannot include storage-root files` for campaign `README.md`.
+- Version RED: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::InitialCampaignPublicationTests::test_bootstrap_module_version_tracks_material_publication_contract` — expected mismatch, actual `1.0.1`, expected `1.0.2` for the material callable-contract repair.
+
+FIX / GREEN:
+- `README.md` is now permitted in the exact generated map; `DND_STORAGE.yaml`, `DND_STORAGE`, and `DND_STORAGE/` remain rejected. The one-tree API still accepts only the complete frozen file map and has no base-tree argument.
+- The tree witness asserts the full fake tree equals the exact generated map, the root README bytes equal `GAME/CAMPAIGN/README.md` byte-for-byte, and storage marker paths are absent. It no longer asserts that all README files must be absent.
+- `GAME/TOOLS/bootstrap.py` module version advances `1.0.1 -> 1.0.2` for this material behavior correction; the test expects `1.0.2`.
+- A fixture-only intermediate run failed the freeze fingerprint assertion because the expected tuple omitted the newly included README. Updating the expected tuple with the actual template bytes resolved it.
+- `InitialCampaignPublicationTests` — 19 passed; `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py` — 41 passed.
+- `.hdm-devtools/venv/bin/ruff check --ignore SIM117 GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS; `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS; `git diff --check` — PASS.
+
+VERSION_IMPACT: `GAME/TOOLS/bootstrap.py framework_module_version 1.0.1 -> 1.0.2`; no persistent schema, campaign-contract/storage generation, catalog generation, migration, dual-read, or projection synchronization.
+
+SYSTEM_IMPACT: NONE — this is the ruling-authorized campaign template README case. No writer, protocol owner, scaffold generator, RuntimeHost, W02 owner, or other out-of-lane surface changed. The from-scratch tree/no-base guarantee remains the protection against inherited storage-root content.
+
+BROAD CHECK LIMITATION: no new broad DEV run was made in this fix round. The latest full DEV diagnostic recorded above remains non-acceptance evidence (1490 passed, 7 failed); no private ignored artifacts were inspected or cleaned.
+
+CURRENT FIX CHECKPOINT: focused P1 tests and scoped Ruff/format checks are GREEN locally. The fix files and this execution record are local at BASE_SHA pending the coherent fix commit and publication/read-back. Independent P1 PASS is still pending; blank scaffold and W05.T06 remain held.
+
+NEXT_EXACT_TASK: commit and publish only this P1 README-preservation/version correction, refresh/read back the active ref, then append the final fix read-back report here.
+
+UNPUBLISHED_WORK: `GAME/TOOLS/bootstrap.py`, `DEV/TESTS/test_rd14_bootstrap.py`, and this P1 execution-cursor fix record are local pending the fix checkpoint commit/publication/read-back.

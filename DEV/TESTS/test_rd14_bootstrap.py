@@ -82,6 +82,7 @@ def _generated_initial_files(
     return {
         "MANIFEST.yaml": f"campaign_id: {result.campaign_id}\n".encode(),
         "CAMPAIGN_CARD.yaml": f"campaign_id: {result.campaign_id}\n".encode(),
+        "README.md": (ROOT / "GAME" / "CAMPAIGN" / "README.md").read_bytes(),
         "STATE/CURRENT.yaml": b"schema_version: 3\n",
     }
 
@@ -107,10 +108,10 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
 
 
 class InitialCampaignPublicationTests(unittest.TestCase):
-    def test_bootstrap_module_starts_its_versioned_publication_contract_at_one(
+    def test_bootstrap_module_version_tracks_material_publication_contract(
         self,
     ) -> None:
-        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.1")
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.2")
 
     def test_freeze_initial_publication_copies_exact_generated_file_identity(
         self,
@@ -137,6 +138,10 @@ class InitialCampaignPublicationTests(unittest.TestCase):
             (
                 ("CAMPAIGN_CARD.yaml", f"campaign_id: {result.campaign_id}\n".encode()),
                 ("MANIFEST.yaml", f"campaign_id: {result.campaign_id}\n".encode()),
+                (
+                    "README.md",
+                    (ROOT / "GAME" / "CAMPAIGN" / "README.md").read_bytes(),
+                ),
                 ("STATE/CURRENT.yaml", b"schema_version: 3\n"),
             ),
         )
@@ -206,7 +211,7 @@ class InitialCampaignPublicationTests(unittest.TestCase):
             [result.pinned_storage_head],
         )
 
-    def test_scratch_tree_is_exact_scaffold_without_storage_root_readme_or_marker(
+    def test_scratch_tree_passes_campaign_readme_unchanged_without_storage_marker(
         self,
     ) -> None:
         result = _bootstrap_result()
@@ -217,7 +222,10 @@ class InitialCampaignPublicationTests(unittest.TestCase):
         bootstrap.publish_initial_campaign(deployment, attempt)
 
         self.assertEqual(deployment.tree_files, [generated_files])
-        self.assertNotIn("README.md", deployment.tree_files[0])
+        self.assertEqual(
+            deployment.tree_files[0]["README.md"],
+            (ROOT / "GAME" / "CAMPAIGN" / "README.md").read_bytes(),
+        )
         self.assertNotIn("DND_STORAGE.yaml", deployment.tree_files[0])
         self.assertFalse(
             any(
