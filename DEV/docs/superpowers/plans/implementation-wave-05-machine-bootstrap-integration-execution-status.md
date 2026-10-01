@@ -682,10 +682,53 @@ and maintenance verification.
 CURRENT_VERIFICATION_STATE: expanded T04 focused proof/consumer suites PASS
 (526 tests); post-formatting proof/W03 rerun PASS (27 tests); version-policy
 subset PASS (11 tests); Ruff scoped checks PASS as qualified above; clean exact
-full DEV, maintenance audit, local code checkpoint, and remote
-publication/read-back pending; independent task review/re-review PASS.
-NEXT_EXACT_TASK: commit the reviewed coherent T04 slice locally, run clean exact
-full DEV and maintenance verification against that committed source, then
-publish without force and obtain fresh remote read-back.
-UNPUBLISHED_WORK: T04 schema/readme/proof-test/consumer-test changes and cursor
-evidence are local and uncommitted.
+full DEV/maintenance/package checks and non-force publication/read-back PASS at
+`ea858dc247510d0019f75d894205f3b3e53cd428`; independent task review/re-review
+PASS. Routine Senior final integration audit remains pending.
+NEXT_EXACT_TASK: Senior review the freshly read-back T04 implementation at
+`ea858dc247510d0019f75d894205f3b3e53cd428`; on PASS, publish T04 checkpoint
+acceptance and update `DEV/CURRENT_PROGRESS.md` before advancing to W05.T05.
+UNPUBLISHED_WORK: NONE for implementation; T04 Senior audit and acceptance/status
+closure remain pending.
+
+## W05.T04 clean exact verification and publication — 2026-10-01
+
+CODE_CHECKPOINT: `ea858dc247510d0019f75d894205f3b3e53cd428` — published on
+`v1/engine-rearchitecture`; fresh `git fetch --prune origin` read-back matched
+the branch HEAD exactly. Changed-file read-back diff was empty.
+
+CLEAN EXACT FULL DEV:
+- In detached clean worktree `.hdm-devtools/clean-t04-full` at the exact code
+  checkpoint: `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python -m pytest DEV/TESTS
+  -n auto` — 1467 passed, 24 existing RD09 `RefResolver` deprecation warnings
+  in 32.19s.
+- `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python DEV/TOOLS/run_maintenance_audit.py`
+  — PASS (`OK: engine consistency audit passed`).
+- The canonical `DEV/TOOLS/run_release_build.py` built
+  `/tmp/opencode/w05-t04-package-check/hedgelion-dnd-master-runtime-v1.0-alpha.zip`;
+  builder exit 0. Archive inspection confirmed all five T04 GAME schema/readme
+  paths are present and the generated SHA-256 sidecar matches
+  `4fbff6c69826413321a63cb89dceb41f1660e12fee15fa50fa46d35b50152606`.
+- A diagnostic build from the primary workspace was rejected by the existing
+  repository-wide transitional-identity census after it encountered an ignored
+  local artifact. No repository source was changed; the clean exact package
+  build above is the acceptance evidence for the same output destination.
+
+T04 OUTPUTS READY FOR SENIOR AUDIT:
+`SCENE_SCHEMA_FINAL_INTEGRATION_READY`,
+`LOCATION_SCHEMA_FINAL_INTEGRATION_READY`,
+`RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`,
+`SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`,
+`SHARED_STORAGE_README_FINAL_INTEGRATION_READY`,
+`SHARED_SCHEMA_STORAGE_README_PROOF_READY`.
+These are implementation-ready outputs, not yet Senior-accepted checkpoints.
+
+VERSION_IMPACT: `scene.schema_version` 2 -> 3;
+`location.schema_version` 1 -> 2; `player.schema_version` 1 -> 2.
+No other namespace changes. SYSTEM_IMPACT: NONE. Independent task review and
+scoped re-review: PASS. Senior final integration audit: pending.
+
+POST-PUBLICATION CURSOR-SYNC CHECKS: proof ledger + Step-5.1 frontier contract,
+10 passed; version-policy subset, 11 passed / 1 workspace-wide census test
+excluded in the primary workspace; `git diff --check`: PASS. The cursor-only
+status delta has `VERSION_IMPACT: NONE` and changes no runtime/schema owner.
