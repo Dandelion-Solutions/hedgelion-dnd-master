@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: FINAL_REVIEW — W05.T05 scaffold/generator implementation is published; independent task review, clean exact DEV, maintenance and release/package checks pass; final Senior integration audit is pending.
-CURRENT_TASK: W05.T05 final Senior integration audit for `W05_BLANK_SCAFFOLD_READY`. W05.T06 remains unauthorized.
-LAST_COMPLETED_TASK: W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `7eff900e6b9a3ee3fe2445865f44086ab7d7e176` — T05 scaffold/generator implementation with exact clean DEV, maintenance and release/package evidence; final Senior integration audit pending.
+STATUS: COMPLETE — W05.T05 outputs are accepted/read back; final Senior integration audit PASS at `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`.
+CURRENT_TASK: NONE — no next Wave-05 unit is authorized; W05.T06 remains NOT AUTHORIZED.
+LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
+LAST_SAFE_SHA: `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8` — final Senior-audited/read-back T05 head; W05.T06 is not authorized.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1434,6 +1434,10 @@ checkpoint above is already published/read back.
 
 ## W05.T05 final verification candidate — 2026-10-02
 
+INTERIM SNAPSHOT: the candidate state below was recorded before the final Senior
+integration audit. The controlling final disposition appears in the final
+Senior-audit section at the end of this cursor.
+
 CODE HEAD: `7eff900e6b9a3ee3fe2445865f44086ab7d7e176`; fresh remote read-back
 confirmed this exact published HEAD before verification.
 
@@ -1495,12 +1499,59 @@ T05 ACCEPTANCE GATE: `W05_BLANK_SCAFFOLD_READY` is a reviewed, fully verified
 candidate; final Senior integration audit and its fresh read-back disposition
 are still pending. Do not mark T05 complete before that audit PASS.
 
-NEXT_EXACT_TASK: perform the final Senior integration audit against the full
-T05 implementation delta and the verification/review evidence above. W05.T06
-remains NOT AUTHORIZED.
+NEXT_EXACT_TASK: superseded by the final Senior integration audit disposition
+recorded below. W05.T06 remains NOT AUTHORIZED.
 
 KNOWN_BLOCKERS: no implementation, task-review, test, maintenance or
 release/package blocker remains. Final Senior integration audit is pending.
 
-UNPUBLISHED_WORK: NONE for T05 implementation; this cursor-only final-review
-synchronization is pending publication.
+UNPUBLISHED_WORK: NONE for T05 code/test deliverables; final audit disposition
+and current authorization state are recorded below.
+
+
+## W05.T05 final Senior integration audit — 2026-10-02
+
+SENIOR_AUDIT_REPORT:
+`DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md`
+
+AUDITED_HEAD: `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`.
+
+```text
+SENIOR_INTEGRATION_AUDIT: PASS
+W05_BOUNDED_CAMPAIGN_DISCOVERY_READY: ACCEPTED / NOT REOPENED
+W05_INITIAL_CAMPAIGN_PUBLICATION_READY: ACCEPTED
+W05_BLANK_SCAFFOLD_READY: ACCEPTED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+BLOCKING: 0
+SIGNIFICANT: 0
+MINOR: 1, corrected in this post-audit status synchronization
+SYSTEM_IMPACT: RESOLVED / NONE
+W02/W04 semantics: PRESERVED
+W05.T06: NOT AUTHORIZED
+```
+
+The sole MINOR finding was stale wording at the candidate cursor's prior
+`UNPUBLISHED_WORK` field. This final synchronization corrects it; no code repair
+was required. Audit review compared the accepted owners/plan/envelope against
+the exact T05 delta, actual changed set, protected invariants, Version Impact,
+System-Impact ruling and final verification evidence.
+
+FINAL_VERSION_IMPACT: P1 bootstrap module version `1.0.1 -> 1.0.2`; T05
+`CURRENT.yaml` instance schema version `2 -> 3`. No other schema/module/
+generation transition, migration, dual-read or projection synchronization.
+FINAL_SYSTEM_IMPACT: NONE. W02 and W04 owners remain unchanged; T07 and T06
+remain untouched.
+
+FINAL_VERIFICATION: exact clean DEV `1507 passed, 24 existing warnings`;
+maintenance audit PASS; runtime package build and checksum PASS; packaged CURRENT
+v3/no-frontier, campaign README and roots verified. See the preceding evidence
+section and linked Senior report. Hosted CI is unavailable and is not claimed.
+
+FINAL_T05_OUTPUT: `W05_BLANK_SCAFFOLD_READY` ACCEPTED / READ BACK at audited
+HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`.
+
+NEXT_AUTHORIZED_UNIT: NONE. W05.T06 remains NOT AUTHORIZED; do not begin the next
+Wave-05 unit until the required owner authorization is received.
+
+UNPUBLISHED_WORK: NONE — T05 implementation, review, verification, Senior audit
+and closure state are published/read back.
