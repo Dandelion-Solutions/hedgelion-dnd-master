@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -15,7 +14,9 @@ class Step51FrontierContractTests(unittest.TestCase):
         self.assertNotIn("last_event_id", schema)
         self.assertNotIn("last_event_id", template)
 
-    def test_current_state_v3_retires_frontier_and_defers_old_scaffold(self):
+    def test_current_state_v3_scaffold_retires_frontier_and_preserves_chronology_law(
+        self,
+    ):
         schema = self.read("GAME/SCHEMA/current_state.schema.yaml")
         template = self.read("GAME/CAMPAIGN/STATE/CURRENT.yaml")
         cursor = self.read(
@@ -27,13 +28,9 @@ class Step51FrontierContractTests(unittest.TestCase):
         self.assertNotIn("player_character_ids", schema)
         self.assertNotIn("path:", schema)
 
-        # CURRENT remains the old blank scaffold until W05.T05; it is not a
-        # valid current_state-v3 instance during that interval.
-        self.assertIn("schema_version: 2", template)
-        self.assertIn("frontier:", template)
-        self.assertIn(
-            "CURRENT_SCAFFOLD_ALIGNMENT: DEFERRED_TO_W05_T05", cursor
-        )
+        self.assertIn("schema_version: 3", template)
+        self.assertNotIn("frontier:", template)
+        self.assertIn("display: null", template)
         self.assertIn("CURRENT.yaml -> schema_version 3", cursor)
         self.assertIn("remove world_time.frontier", cursor)
 

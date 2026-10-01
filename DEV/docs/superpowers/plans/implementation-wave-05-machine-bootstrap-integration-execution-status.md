@@ -1341,3 +1341,87 @@ is tracked above.
 
 UNPUBLISHED_WORK: NONE — P1 implementation, fix, verification, review and
 read-back are complete.
+
+
+## W05.T05 blank-scaffold/generator implementation checkpoint — 2026-10-01
+
+BASELINE REF: `v1/engine-rearchitecture` at freshly fetched HEAD
+`7e9bb4f3efbed1abf145093a33c08e0e55400d22`.
+
+T05 OUTPUT: `W05_BLANK_SCAFFOLD_READY` — implementation slice is locally ready
+for its coherent published checkpoint; independent review, clean broad
+verification and final Senior audit remain controller completion gates. W05.T06
+has not started and remains unauthorized.
+
+T05 BASELINE:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_step_5_1_frontier_contract.py`
+  — 44 passed before T05 scaffold test additions.
+
+T05 RED:
+- The first expanded T05 run of those two modules produced 7 failures and 46
+  passes: CURRENT was still v2/frontier; the current-state-v3 projection did
+  not match; 25 native roots were absent; the operational-root page was absent
+  from generated output; an incomplete identity companion was accepted; and the
+  Step-5.1 consumer still expected the old scaffold. One additional failure was
+  a test expectation defect: the 17+17 catalog includes exceptional
+  `runtime.id_allocator`, which is intentionally absent from
+  `native_storage.FAMILY_ROOTS`; the expectation was corrected to account for
+  its fixed `STATE/ID_ALLOCATOR.yaml` route and the non-family `world.faction`
+  route.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::FailureRetryTests::test_populated_blank_routing_companion_fails_before_output`
+  — 1 expected failure: the generator accepted a non-empty LIVE routing page
+  in an otherwise blank selected-package template.
+
+T05 GREEN / FOCUSED VERIFICATION:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_runtime_identity_schema.py`
+  — 57 passed. This includes `GeneratorScaffoldTests`,
+  `InitialPublicationTests`, `FailureRetryTests`,
+  `GeneratorConsumerProjectionTests`, `BlankScaffoldCompletenessTests`,
+  `BoundedCampaignDiscoveryTests`, all existing P1 publication tests, and the
+  Step-5.1 CURRENT consumer.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py::NativeContractSchemaTests DEV/TESTS/test_rd07_recovery.py::OperationalRootRecoveryTests DEV/TESTS/test_rd09_access_live.py::PrincipalPlayerRouteCompanionTests`
+  — 11 passed; 2 existing RD09 `jsonschema.RefResolver` deprecation warnings.
+- Scoped Ruff check and format check on `GAME/TOOLS/init_campaign.py`,
+  `DEV/TESTS/test_rd14_bootstrap.py`, and
+  `DEV/TESTS/test_step_5_1_frontier_contract.py` passed with existing
+  `SIM117` and `EXE001` diagnostics excluded; `git diff --check` passed.
+
+RELEASE/PACKAGE DIAGNOSTIC LIMITATION:
+- A release-integration test was inadvertently included in an early local test
+  invocation. It failed before generator smoke at the package identity census
+  because ignored local `.entire` workspace content was classified as a
+  transitional identity carrier. This is not release/package acceptance
+  evidence. No ignored workspace contents were read or modified; no cleanup or
+  further inspection was attempted. The controller must run the planned clean
+  release/package validation.
+
+VERSION_IMPACT: `GAME/CAMPAIGN/STATE/CURRENT.yaml` instance schema version
+`2 -> 3`, aligned to the already-current
+`GAME/SCHEMA/current_state.schema.yaml` v3. `MANIFEST.yaml` remains schema v4
+with `players.player_ids`; campaign-contract generation 2, storage generation
+3, catalog generation 2 and ruleset-set digest generation 1 remain unchanged.
+No additional schema/module version, migration or dual-read is required for
+this unreleased scaffold cutover. `GAME/TOOLS/bootstrap.py` is unchanged at its
+accepted P1 version `1.0.2`.
+
+SYSTEM_IMPACT: NONE — the generator, exact package scaffold projection and
+owner-native empty-root completeness stay within the accepted W05.T05 envelope.
+The generated validator's exact path-to-bytes map is passed through the
+accepted P1 freeze/publication capability in focused tests. No W02 publication,
+RuntimeHost, provider, catalog, schema, root README or T06 product owner changed.
+
+SELF-REVIEW: changed production/test/scaffold paths are within the T05 Impact
+Envelope; `world.faction` remains only a native route/organization facet and
+does not increase the 17-world-family census; the id allocator remains the
+fixed singleton; output preserves campaign README bytes and contains no
+storage-root marker or package-root engine files. Independent task review,
+clean exact full DEV, maintenance, release/package validation and final Senior
+audit remain pending under the controller's completion gate.
+
+NEXT_EXACT_TASK: publish/read back the coherent T05 scaffold checkpoint and
+hand it to the controller for final verification/review gates. Do not start
+W05.T06.
+KNOWN_BLOCKERS: clean exact broad verification and independent/final review are
+controller-owned and pending; see the release/package diagnostic limitation.
+UNPUBLISHED_WORK: T05 implementation edits and this cursor update are local
+until the checkpoint commit is published and independently read back.

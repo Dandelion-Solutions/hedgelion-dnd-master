@@ -1,14 +1,19 @@
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
+import sys
+import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
 
+import yaml
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
-from GAME.TOOLS import bootstrap
+from GAME.TOOLS import bootstrap, init_campaign, native_storage
 from GAME.TOOLS.bootstrap import (
     BootstrapContractError,
     CampaignSelection,
@@ -85,6 +90,79 @@ def _generated_initial_files(
         "README.md": (ROOT / "GAME" / "CAMPAIGN" / "README.md").read_bytes(),
         "STATE/CURRENT.yaml": b"schema_version: 3\n",
     }
+
+
+def _run_campaign_generator(
+    output: Path,
+    result: bootstrap.BootstrapResult,
+    *,
+    source_root: Path = ROOT / "GAME",
+) -> subprocess.CompletedProcess[str]:
+    generator = source_root / "TOOLS" / "init_campaign.py"
+    if not generator.is_file():
+        generator = ROOT / "GAME" / "TOOLS" / "init_campaign.py"
+    arguments = [
+        sys.executable,
+        str(generator),
+        "--output",
+        str(output),
+        "--campaign-id",
+        result.campaign_id,
+        "--branch",
+        result.campaign_branch,
+        "--engine-version",
+        result.engine_version,
+        "--package-id",
+        result.package_id,
+        "--package-sha256",
+        result.package_sha256,
+        "--ruleset-set-sha256",
+        result.ruleset_set_sha256,
+        "--created-at",
+        result.created_at,
+        "--creator-github-login",
+        result.creator.login,
+        "--mode",
+        result.mode,
+        "--source-root",
+        str(source_root),
+    ]
+    if result.source_commit_sha is not None:
+        arguments.extend(["--source-commit-sha", result.source_commit_sha])
+    return subprocess.run(arguments, capture_output=True, text=True, check=False)
+
+
+def _copy_campaign_package(destination: Path) -> tuple[Path, Path]:
+    source_root = destination / "selected-package"
+    source_campaign = source_root / "CAMPAIGN"
+    source_campaign.parent.mkdir(parents=True)
+    shutil.copytree(ROOT / "GAME" / "CAMPAIGN", source_campaign)
+    tools = source_root / "TOOLS"
+    tools.mkdir()
+    for relative_path in ("init_campaign.py", "native_storage.py"):
+        shutil.copy2(ROOT / "GAME" / "TOOLS" / relative_path, tools / relative_path)
+    return source_root, source_campaign
+
+
+def _campaign_file_map(campaign_root: Path) -> dict[str, bytes]:
+    return {
+        path.relative_to(campaign_root).as_posix(): path.read_bytes()
+        for path in sorted(campaign_root.rglob("*"))
+        if path.is_file()
+    }
+
+
+def _generate_campaign(
+    output: Path,
+    result: bootstrap.BootstrapResult | None = None,
+    *,
+    source_root: Path = ROOT / "GAME",
+) -> tuple[bootstrap.BootstrapResult, subprocess.CompletedProcess[str]]:
+    frozen_identity = _bootstrap_result() if result is None else result
+    completed = _run_campaign_generator(
+        output, frozen_identity, source_root=source_root
+    )
+    return frozen_identity, completed
 
 
 class CampaignSelectionBarrierTests(unittest.TestCase):
@@ -233,6 +311,19 @@ class InitialCampaignPublicationTests(unittest.TestCase):
                 for path in deployment.tree_files[0]
             )
         )
+
+    def test_freeze_rejects_storage_marker_file_and_directory_paths(self) -> None:
+        result = _bootstrap_result()
+        files = _generated_initial_files(result)
+
+        for path in ("DND_STORAGE.yaml", "DND_STORAGE/owner.yaml"):
+            with (
+                self.subTest(path=path),
+                self.assertRaisesRegex(BootstrapContractError, "storage-root files"),
+            ):
+                bootstrap.freeze_initial_campaign_publication(
+                    result, files | {path: b"storage marker"}
+                )
 
     def test_preexisting_target_conflicts_without_any_write(self) -> None:
         result = _bootstrap_result()
@@ -778,6 +869,186 @@ class GeneratorScaffoldTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validator.validate(invalid)
 
+    def test_generator_writes_current_v3_and_exact_identity_to_all_five_companions(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "campaign"
+            campaign, completed = _generate_campaign(output, result)
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertTrue(output.is_dir())
+            self.assertEqual(campaign.campaign_id, result.campaign_id)
+
+            current = yaml.safe_load(
+                (output / "STATE" / "CURRENT.yaml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(current["schema_version"], 3)
+            self.assertEqual(current["campaign_id"], result.campaign_id)
+            self.assertEqual(current["world_time"], {"display": None})
+            self.assertEqual(current["active_scenes"], [])
+            self.assertEqual(current["active_threads"], [])
+
+            companion_paths = (
+                "STATE/CURRENT.yaml",
+                "STATE/ID_ALLOCATOR.yaml",
+                "STATE/RUNTIME/LIVE_ROUTING.yaml",
+                "STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml",
+                "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml",
+            )
+            for relative_path in companion_paths:
+                with self.subTest(relative_path=relative_path):
+                    value = yaml.safe_load(
+                        (output / relative_path).read_text(encoding="utf-8")
+                    )
+                    self.assertEqual(value["campaign_id"], result.campaign_id)
+                    if relative_path == "STATE/ID_ALLOCATOR.yaml":
+                        self.assertEqual(value["counters"], {})
+                    if relative_path in {
+                        "STATE/RUNTIME/LIVE_ROUTING.yaml",
+                        "STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml",
+                    }:
+                        self.assertTrue(value["complete"])
+                        self.assertEqual(value["entries"], [])
+
+            manifest = yaml.safe_load(
+                (output / "MANIFEST.yaml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["schema_version"], 4)
+            self.assertEqual(manifest["players"]["player_ids"], [])
+
+    def test_generator_copies_only_selected_package_campaign_bytes_and_readme(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source_root, source_campaign = _copy_campaign_package(
+                Path(temporary_directory)
+            )
+            expected_readme = b"Selected campaign README\n"
+            (source_campaign / "README.md").write_bytes(expected_readme)
+            (source_root / "README.md").write_text(
+                "Storage-root README must not be copied\n", encoding="utf-8"
+            )
+            (source_root / "DND_STORAGE.yaml").write_text(
+                "storage marker must not be copied\n", encoding="utf-8"
+            )
+            engine_file = source_root / "CORE" / "ENGINE_SENTINEL.md"
+            engine_file.parent.mkdir()
+            engine_file.write_text("engine file", encoding="utf-8")
+
+            output = Path(temporary_directory) / "campaign"
+            _, completed = _generate_campaign(output, result, source_root=source_root)
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            self.assertEqual((output / "README.md").read_bytes(), expected_readme)
+            self.assertFalse((output / "DND_STORAGE.yaml").exists())
+            self.assertFalse((output / "CORE").exists())
+            self.assertNotEqual(
+                (output / "README.md").read_bytes(),
+                (source_root / "README.md").read_bytes(),
+            )
+
+
+class GeneratorConsumerProjectionTests(unittest.TestCase):
+    def test_generated_current_record_matches_current_state_v3_owner(self) -> None:
+        schema = yaml.safe_load(
+            (ROOT / "GAME" / "SCHEMA" / "current_state.schema.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "campaign"
+            _, completed = _generate_campaign(output, result)
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            current = yaml.safe_load(
+                (output / "STATE" / "CURRENT.yaml").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(current["schema_version"], schema["schema_version"])
+        self.assertEqual(set(current), set(schema["required"]))
+        self.assertEqual(set(current["world_time"]), {"display"})
+        self.assertEqual(current["campaign_id"], result.campaign_id)
+
+    def test_catalog_census_and_current_native_root_owner_map_are_exact(self) -> None:
+        catalog = json.loads(
+            (ROOT / "DEV" / "CATALOG" / "core-catalog.json").read_text(encoding="utf-8")
+        )
+        registries = catalog["registries"]
+        world_families = set(registries["world_record_kinds"])
+        runtime_families = set(registries["runtime_record_kinds"])
+
+        self.assertEqual(len(world_families), 17)
+        self.assertEqual(len(runtime_families), 17)
+        self.assertEqual(
+            world_families | runtime_families,
+            (set(native_storage.FAMILY_ROOTS) - {"world.faction"})
+            | {"runtime.id_allocator"},
+        )
+        self.assertNotIn("world.faction", world_families)
+        self.assertIn("organization.faction", registries["organization_facets"])
+
+
+class BlankScaffoldCompletenessTests(unittest.TestCase):
+    def test_generated_blank_campaign_has_every_native_root_and_companion(self) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "campaign"
+            _, completed = _generate_campaign(output, result)
+
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+
+            missing_roots = sorted(
+                root
+                for root in set(native_storage.FAMILY_ROOTS.values())
+                if not (output / root).is_dir()
+            )
+            self.assertEqual(missing_roots, [])
+            self.assertTrue((output / "STATE" / "ID_ALLOCATOR.yaml").is_file())
+
+            index_files = {
+                "EVENT_INDEX.yaml",
+                "FACTION_INDEX.yaml",
+                "ITEM_INDEX.yaml",
+                "LOCATION_INDEX.yaml",
+                "LORE_INDEX.yaml",
+                "NPC_INDEX.yaml",
+                "PC_INDEX.yaml",
+                "PLAYER_INDEX.yaml",
+                "SCENE_INDEX.yaml",
+                "THREAD_INDEX.yaml",
+            }
+            self.assertEqual(
+                {path.name for path in (output / "INDEX").iterdir()}, index_files
+            )
+            for root in (
+                "STORY/EVENTS",
+                "STORY/MECHANICS",
+                "STORY/NARRATIVE",
+                "STORY/TRANSCRIPT",
+                "DRAMATURG/PLAYERS",
+            ):
+                self.assertTrue((output / root).is_dir(), root)
+            self.assertTrue((output / "DRAMATURG" / "SHARED.yaml").is_file())
+
+            routing = yaml.safe_load(
+                (
+                    output / "STATE" / "RUNTIME" / "RECOVERY_ROOTS" / "ROUTING.yaml"
+                ).read_text(encoding="utf-8")
+            )
+            self.assertEqual(routing["campaign_id"], result.campaign_id)
+            self.assertTrue(routing["complete"])
+            self.assertEqual(routing["roots"], [])
+
+            manifest = yaml.safe_load(
+                (output / "MANIFEST.yaml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(manifest["schema_version"], 4)
+            self.assertEqual(manifest["players"]["player_ids"], [])
+
 
 class _FakeCampaignDiscoveryProvider:
     def __init__(
@@ -933,6 +1204,138 @@ class _InitialPublicationDeployment(_FakeCampaignDiscoveryProvider):
     ) -> object:
         self.update_ref_calls.append((target_ref, new_commit_sha, force))
         raise AssertionError("ordinary update_ref must never publish an initial ref")
+
+
+class InitialPublicationTests(unittest.TestCase):
+    def test_exact_generated_file_map_is_published_through_accepted_p1_capability(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "campaign"
+            _, completed = _generate_campaign(output, result)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            generated_files = init_campaign.validate_generated_scaffold(
+                output, result.campaign_id
+            )
+
+            attempt = bootstrap.freeze_initial_campaign_publication(
+                result, generated_files
+            )
+            deployment = _InitialPublicationDeployment()
+            publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(dict(publication.attempt.generated_files), generated_files)
+        self.assertEqual(deployment.tree_files, [generated_files])
+        self.assertEqual(
+            deployment.tree_files[0]["README.md"],
+            (ROOT / "GAME" / "CAMPAIGN" / "README.md").read_bytes(),
+        )
+        self.assertNotIn("DND_STORAGE.yaml", generated_files)
+        self.assertIn("STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml", generated_files)
+
+
+class FailureRetryTests(unittest.TestCase):
+    def test_missing_identity_companion_fails_before_output_and_can_retry_same_root(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source_root, source_campaign = _copy_campaign_package(
+                Path(temporary_directory)
+            )
+            allocator = source_campaign / "STATE" / "ID_ALLOCATOR.yaml"
+            original_allocator = allocator.read_bytes()
+            allocator.write_bytes(
+                original_allocator.replace(b"campaign_id: null", b"campaign_id: stale")
+            )
+            output = Path(temporary_directory) / "campaign"
+
+            invalid = _run_campaign_generator(output, result, source_root=source_root)
+            self.assertNotEqual(invalid.returncode, 0)
+            self.assertFalse(output.exists())
+
+            allocator.write_bytes(original_allocator)
+            retry = _run_campaign_generator(output, result, source_root=source_root)
+            self.assertEqual(retry.returncode, 0, retry.stderr)
+            self.assertTrue((output / "STATE" / "ID_ALLOCATOR.yaml").is_file())
+
+    def test_populated_blank_routing_companion_fails_before_output(self) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            source_root, source_campaign = _copy_campaign_package(
+                Path(temporary_directory)
+            )
+            live_routing = source_campaign / "STATE" / "RUNTIME" / "LIVE_ROUTING.yaml"
+            live_routing.write_bytes(
+                live_routing.read_bytes().replace(
+                    b"entries: []", b"entries: [unexpected]"
+                )
+            )
+            output = Path(temporary_directory) / "campaign"
+
+            completed = _run_campaign_generator(output, result, source_root=source_root)
+
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertFalse(output.exists())
+
+    def test_indeterminate_p1_retry_reuses_generated_file_map_and_commit(self) -> None:
+        result = _bootstrap_result()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            output = Path(temporary_directory) / "campaign"
+            _, completed = _generate_campaign(output, result)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            generated_files = _campaign_file_map(output)
+
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.INDETERMINATE,
+                    "2" * 40,
+                    None,
+                    "INDETERMINATE",
+                    True,
+                ),
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    "2" * 40,
+                    "2" * 40,
+                    "CONFIRMED_ACCEPTED",
+                    True,
+                ),
+            ),
+        )
+        attempt = bootstrap.freeze_initial_campaign_publication(result, generated_files)
+
+        first = bootstrap.publish_initial_campaign(deployment, attempt)
+        retry = bootstrap.publish_initial_campaign(deployment, first.attempt)
+
+        self.assertEqual(first.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(retry.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(
+            retry.attempt.generated_files_fingerprint,
+            attempt.generated_files_fingerprint,
+        )
+        self.assertEqual(
+            retry.attempt.initialization_commit_sha,
+            first.attempt.initialization_commit_sha,
+        )
+        self.assertEqual(len(deployment.tree_calls), 1)
+        self.assertEqual(len(deployment.commit_calls), 1)
+        self.assertEqual(
+            deployment.create_ref_calls,
+            [
+                (result.campaign_branch, first.attempt.initialization_commit_sha),
+                (result.campaign_branch, first.attempt.initialization_commit_sha),
+            ],
+        )
+        self.assertEqual(deployment.update_ref_calls, [])
 
 
 class BoundedCampaignDiscoveryTests(unittest.TestCase):

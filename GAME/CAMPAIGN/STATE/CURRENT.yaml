@@ -1,7 +1,6 @@
-schema_version: 2
+schema_version: 3
 campaign_id: null
 world_time:
-  frontier: null
   display: null
 active_scenes: []
 active_threads: []
