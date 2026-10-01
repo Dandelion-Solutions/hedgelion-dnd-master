@@ -1,8 +1,8 @@
 schema_name: semantic_event
-schema_version: 1
+schema_version: 2
 required: [schema_version, id, kind, world_order, participants, delta]
 fields:
-  schema_version: integer
+  schema_version: integer[2]
   id: string
   kind: enum[action, consequence, discovery, transfer, relationship, process, combat, travel, social, maintenance, custom]
   world_order:
@@ -38,10 +38,12 @@ invariants:
   - hidden objective facts may exist in delta without being player-visible
   - random/check data is stored when it materially caused durable state
   - caused_by_event_ids represents actual causal ancestry; after_event_ids represents required relative order without asserting causation
-  - world_order.sequence is optional/local and MUST NOT be treated as a mandatory campaign-global event counter
-  - world_order.time is optional and should be populated only when temporal precision materially matters
+  - world_order.sequence is optional and local to an explicitly defined order domain; it is never a campaign-global event counter
+  - world_order.time is optional and is populated only when temporal precision materially matters under a compatible context/provider
   - independent events may remain unordered when no causal/gameplay dependency requires a relation
   - when a durable transition is directly initiated by a player's decision, player_intent.player_id records the stable campaign PLAYER id and player_intent.pc_id records the acting PC when applicable
   - never use GitHub login as player_intent.player_id; Git identity is authorization/audit evidence, not the canonical gameplay actor
   - a downstream consequence may omit player_intent when caused_by_event_ids preserves the causal chain to the initiating event
   - do not attribute NPC, world-process, maintenance, or incidental derived changes to a player merely because that player's Git commit persisted the same batch
+  - event identity, storage order, world_order.sequence, and world_order.time do not become currentness or campaign-global chronology authority
+  - knowledge_changes and visibility are historical evidence only; current world.knowledge and runtime.disclosure remain separate native owners

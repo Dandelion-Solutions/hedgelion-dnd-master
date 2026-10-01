@@ -1,27 +1,33 @@
 schema_name: thread
-schema_version: 1
-required: [schema_version, id, status, kind, state]
+schema_version: 2
+required: [record_kind, id, state_revision, status, kind, state]
 fields:
-  schema_version: integer
-  id: string
+  record_kind: const(world.thread)
+  id:
+    type: string
+    pattern: ^THREAD_[A-Za-z0-9_.:-]+$
+  state_revision: integer[>=1]
   status: enum[active, paused, resolved, failed, obsolete]
   kind: enum[threat, goal, project, countdown, investigation, pursuit, custom]
-  owner_entity_id: string|null
-  objective: string
+  owner_entity_id: native_identifier
   state:
     stage: string|null
     progress: object|null
-    next_development: string|null
-    advancement_conditions: array[object]
-    deadline: object|null
-    resources: array[string]
-  affected_entity_ids: array[string]
-  visibility:
-    known_by_pc_ids: array[string]
-    public: boolean
-  created_event_id: string|null
-  last_event_id: string|null
+  temporal:
+    binding_id: native_identifier
+    occurrence_id: native_identifier
+    occurrence_state: enum[ARMED, CLAIMED, CLOSED]
+    binding: typed_temporal_binding
+    dependency_keys: unique_array[typed_dependency_key]
+  created_event_id: native_identifier
+  last_event_id: native_identifier
 invariants:
-  - advancement requires an established cause/condition
-  - clocks/progress are abstractions with predefined meaning, not arbitrary drama meters
+  - thread is the narrow generic process owner; specific mission, contract, effect, resource, and procedure state remains with its native owner
+  - status and temporal occurrence lifecycle are distinct; status alone does not establish ARMED, DUE, or permission to advance
+  - advancement requires an established owner-defined cause/condition
+  - stage and progress have only their process-defined meaning and are not chronology, DUE truth, or a drama meter
+  - owner_entity_id is an in-fiction association only and grants no persistence, repository, or current-state authority
+  - created_event_id and last_event_id are provenance/dependency references; identifier allocation or order is not chronology
+  - thread owns no fictional knowledge or disclosure relation; thread.visibility and embedded per-PC knowledge are absent
+  - THREAD_INDEX and CURRENT.active_threads are routing/discovery hints, not temporal-root completeness or scheduler authority
   - dormant processes are not simulated continuously without a trigger

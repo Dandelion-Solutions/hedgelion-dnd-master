@@ -78,7 +78,7 @@ class Step50ContaminationRetirementTests(unittest.TestCase):
             self.assertNotIn("CAMPAIGN/LIVE/LIVE_STATE.yaml", text)
         self.assertIn("LIVE/LIVE_STATE.yaml", live)
         self.assertIn("LIVE/LIVE_STATE.yaml", multiplayer)
-        self.assertIn("LIVE/LIVE_STATE.yaml", live_schema)
+        self.assertIn("runtime.live_native_state_pack", live_schema)
         self.assertNotIn("CAMPAIGN/MANIFEST", multiplayer)
 
     def test_partial_order_chronology_remains_available(self):

@@ -1,25 +1,24 @@
 schema_name: current_state
-schema_version: 2
+schema_version: 3
 required: [schema_version, campaign_id, world_time, active_scenes, active_threads]
 fields:
   schema_version: integer
   campaign_id: string|null
   world_time:
-    frontier: object|null
     display: string|null
   active_scenes:
     type: array
     item:
       scene_id: string
-      path: string
-      player_character_ids: array[string]
   active_threads: array[string]
 invariants:
-  - keep this record compact and infrequently changing
+  - keep this record compact and infrequently changing; it is a routing/current summary, not current-state authority or closed-world proof
   - local scene details belong in separate SCENES files
   - multiplayer may have multiple independent active scenes
-  - world_time.frontier is a compact globally reconciled chronology frontier, not necessarily a timestamp or a total ordering of all scenes
-  - independent scene chronologies may remain unordered until a cross-scene/shared dependency makes relative order material
+  - active-scene entries contain scene_id only; derive their routes from the native Scene route
+  - world_time.display is presentation/observation only and cannot decide chronology, DUE, currentness, or ordering
+  - independent scene chronologies may remain unordered until a typed cross-scene dependency makes relative order material
+  - CURRENT has no generic global chronology frontier
   - pending work belongs to its typed owner; CURRENT has no generic pending-consequence bucket
   - do not advance/update world_time merely to account for harmless minute-by-minute passage that cannot affect play
   - biographies/history belong elsewhere

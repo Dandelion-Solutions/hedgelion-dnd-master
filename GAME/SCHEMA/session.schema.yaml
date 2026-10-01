@@ -15,7 +15,11 @@ fields:
   notes: string|null
 invariants:
   - session metadata is coordination/recovery data, not full chat history
+  - session metadata is not authoritative for campaign, LIVE, PLAYER, write authority, current gameplay, successful save/handoff, or recovery completeness
   - in multiplayer, player_id is resolved from the authenticated GitHub binding and must not be accepted only from user self-identification
   - pc_id must belong to the resolved player binding when the session acts through a PC
-  - base_head_sha is refreshed on resync/new chat
+  - base_head_sha and last_published_head_sha are observations only; current campaign/LIVE/PLAYER sources are revalidated at the operation boundary
+  - a controlled handoff names the exact durable/current source basis and is not proven by session metadata
+  - no session heartbeat, lease, or no-op publication is required
+  - ordinary cold recovery does not require a session record
   - session records may be updated only at persistence boundaries, not after every turn

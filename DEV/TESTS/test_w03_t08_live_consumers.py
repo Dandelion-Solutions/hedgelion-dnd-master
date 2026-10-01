@@ -31,7 +31,6 @@ ROOT = Path(__file__).resolve().parents[2]
 LIVE_SCENE_CORE_SHA256 = "faf9b1be0bb023570d93f3e2f26decef36da518060b4753926331de360b59dbf"
 MULTIPLAYER_CORE_SHA256 = "45b65daa63d9c4cab02b39216bbe94baf3c3ee4d902ecca854a45401d1b33f7f"
 SCENE_SCHEMA_SHA256 = "85237b5b76cd847c1db5d66d105f310c5a3a115add37bff6c229c6126d7fc5e1"
-LIVE_SCENE_SCHEMA_SHA256 = "0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638"
 
 
 def _live_source(
@@ -501,15 +500,18 @@ class ShippedLiveCoreCutoverTests(unittest.TestCase):
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         self.assertEqual(digest, LIVE_SCENE_CORE_SHA256)
 
-    def test_shared_scene_schemas_remain_deferred_to_wave05(self) -> None:
-        for relative, expected in (
-            ("GAME/SCHEMA/scene.schema.yaml", SCENE_SCHEMA_SHA256),
-            ("GAME/SCHEMA/live_scene.schema.yaml", LIVE_SCENE_SCHEMA_SHA256),
-        ):
-            with self.subTest(relative=relative):
-                self.assertEqual(
-                    hashlib.sha256((ROOT / relative).read_bytes()).hexdigest(), expected
-                )
+    def test_scene_schema_remains_deferred_but_live_scene_uses_t03_target(self) -> None:
+        scene_schema = ROOT / "GAME" / "SCHEMA" / "scene.schema.yaml"
+        self.assertEqual(
+            hashlib.sha256(scene_schema.read_bytes()).hexdigest(),
+            SCENE_SCHEMA_SHA256,
+        )
+
+        live_scene_schema = (
+            ROOT / "GAME" / "SCHEMA" / "live_scene.schema.yaml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("schema_version: 2", live_scene_schema)
+        self.assertIn("runtime.live_native_state_pack", live_scene_schema)
 
 
 class MultiplayerCoreCutoverTests(unittest.TestCase):

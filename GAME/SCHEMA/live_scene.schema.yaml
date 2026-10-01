@@ -1,74 +1,33 @@
 schema_name: live_scene_state
-schema_version: 1
+schema_version: 2
 required:
   - schema_version
-  - epoch_id
-  - campaign_branch
-  - live_branch
-  - scene_id
-  - status
-  - base_campaign_sha
-  - revision
-  - participant_ids
-  - player_character_ids
+  - kind
+  - source_key
+  - source_revision
+  - next_source_native_creation_ordinal
+  - source_native_ids
+  - native_owner_states
+  - provenance
+  - privacy
+  - chronology
+  - unresolved_work
 fields:
-  schema_version: integer
-  epoch_id: string
-  campaign_branch: string
-  live_branch: string
-  scene_id: string
-  status: enum[active, closed]
-  base_campaign_sha: string
-  base_scene_blob_sha: string|null
-  revision: integer
-  local_time: object|null
-  participant_ids: array[string]
-  player_character_ids: array[string]
-  scene_overlay:
-    set: array[object]
-    unset: array[string]
-  entity_overlays:
-    type: array[object]
-    item_fields:
-      entity_id: string
-      entity_type: string
-      set: array[object]
-      unset: array[string]
-  created_entities:
-    type: array[object]
-    item_fields:
-      provisional_id: string
-      entity_type: string
-      data: object
-  live_facts:
-    type: array[object]
-    item_fields:
-      fact_id: string
-      fact: object
-      known_by_pc_ids: array[string]
-      established_by_live_event_id: string|null
-  observable_events:
-    type: array[object]
-    item_fields:
-      live_event_id: string
-      world_time: object|null
-      actor_player_id: string|null
-      actor_pc_id: string|null
-      summary: string
-      perceived_by_pc_ids: array[string]
-      touched_entity_ids: array[string]
-  pending_durable_events: array[object]
-  touched_campaign_paths: array[string]
-  touched_entity_ids: array[string]
+  schema_version: integer[2]
+  kind: const(runtime.live_native_state_pack)
+  source_key: tuple[campaign_id, scene_id, epoch_id]
+  source_revision: exact_source_revision
+  next_source_native_creation_ordinal: integer[>=1]
+  source_native_ids: unique_array[native_identifier]
+  native_owner_states: object[native_family, native_owner_state]
+  provenance: object[owner_provenance]
+  privacy: object[owner_privacy_state]
+  chronology: object[typed_chronology_evidence]
+  unresolved_work: object[owner_unresolved_work]
 invariants:
-  - only LIVE/LIVE_STATE.yaml is runtime-mutated on a live branch
-  - revision increments once for each successful logical live-state write
-  - absent overlay fields inherit from base_campaign_sha
-  - overlay set/unset paths are explicit and deterministic; prose is not a merge instruction
-  - touched_campaign_paths and touched_entity_ids are cumulative for the whole epoch
-  - observable_events are compact semantic perception facts, not a transcript
-  - objective truth and per-PC knowledge/disclosure remain distinct
-  - epoch-scoped provisional entity IDs cannot escape the epoch before durable compaction
-  - one mutable entity cannot be actively owned by two live epochs
-  - status closed accepts no new ordinary gameplay writes
-  - status closed freezes the epoch but does not itself prove durable absorption; the campaign scene last_absorbed_live_head_sha/routing state proves handoff completion
+  - this is the lossless physical carrier for explicitly routed native owner states and cross-cutting evidence; it does not create a scene-wide semantic owner
+  - source_key and source_revision bind the pack to the exact selected LIVE source; currentness and lifecycle status remain in the owner-typed campaign route
+  - source-native identities and the next creation ordinal are preserved without campaign-allocator fallback or rekeying
+  - native owner states remain subject to their own identity, state, privacy, chronology, and durability contracts
+  - provenance, privacy, chronology, and unresolved-work sections are typed owner evidence, not alternate semantic owners
+  - no transcript, broad scene overlays, copied PLAYER roster, or legacy per-PC knowledge/disclosure authority is stored here

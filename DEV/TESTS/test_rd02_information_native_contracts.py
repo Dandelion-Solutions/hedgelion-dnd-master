@@ -231,11 +231,15 @@ class InformationNormalizationTests(unittest.TestCase):
 
 
 class LegacyInformationProjectionTests(unittest.TestCase):
-    def test_legacy_lore_schema_is_not_the_native_information_contract(self) -> None:
+    def test_lore_v2_projects_native_truth_without_legacy_disputed_status(self) -> None:
         legacy_lore = (ROOT / "GAME" / "SCHEMA" / "lore.schema.yaml").read_text(encoding="utf-8")
         information = (ROOT / "GAME" / "CORE" / "INFORMATION.md").read_text(encoding="utf-8")
 
-        self.assertIn("disputed_in_world", legacy_lore)
+        self.assertIn("schema_version: 2", legacy_lore)
+        self.assertIn("truth_status", legacy_lore)
+        self.assertIn("record_status", legacy_lore)
+        self.assertNotIn("disputed_in_world", legacy_lore)
+        self.assertNotIn("known_by_pc_ids", legacy_lore)
         self.assertIn("legacy embedded pc/npc/faction knowledge arrays", information.lower())
         self.assertIn("world.lore_fact", information)
         self.assertIn("world.knowledge", information)

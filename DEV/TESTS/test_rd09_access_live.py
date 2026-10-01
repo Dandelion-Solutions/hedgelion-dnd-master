@@ -155,11 +155,6 @@ SOURCE_NATIVE_POLICY = {
         },
     },
 }
-PRE_T03_LIVE_SCENE_SCHEMA_SHA256 = (
-    "0e5cceac5b29d1bcad1fcfe5779905092402d1c8b00d9c3d04157a822ceb5638"
-)
-
-
 def _live_source(
     *,
     revision: str = LIVE_H0,
@@ -880,13 +875,14 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             )
             self.assertFalse(list(validator.iter_errors(mapping)), filename)
 
-    def test_w03_does_not_edit_wave05_retained_live_scene_schema(self) -> None:
+    def test_t03_live_scene_schema_uses_source_native_state_pack_v2(self) -> None:
         retained_schema = ROOT / "GAME/SCHEMA/live_scene.schema.yaml"
-
-        self.assertEqual(
-            hashlib.sha256(retained_schema.read_bytes()).hexdigest(),
-            PRE_T03_LIVE_SCENE_SCHEMA_SHA256,
-        )
+        schema = retained_schema.read_text(encoding="utf-8")
+        self.assertIn("schema_version: 2", schema)
+        self.assertIn("runtime.live_native_state_pack", schema)
+        self.assertNotIn("campaign_branch", schema)
+        self.assertNotIn("live_branch", schema)
+        self.assertNotIn("player_character_ids", schema)
 
     def test_schema_and_python_reject_illegal_claim_companion_fields(self) -> None:
         schema = json.loads(

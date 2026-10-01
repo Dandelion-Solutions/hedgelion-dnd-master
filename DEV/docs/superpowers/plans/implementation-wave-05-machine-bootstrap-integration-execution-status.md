@@ -276,6 +276,175 @@ Final-writer ownership:
 - T08: legacy pc/npc/item/retired-faction control-plane retirement after final
   audit_engine/PROJECT_MAP/live-consumer reconciliation.
 
-Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` hosted `Validate engine source` run `36755147911`: SUCCESS, maintenance PASS, canonical DEV unittest PASS. The T03 ruling and first follow-up exposed two machine-readable wording assertions in the same legacy-retirement contract. This follow-up preserves both required routing phrases without changing the Senior ownership ruling. Current-head hosted CI must be GREEN before implementation starts.
+Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` hosted `Validate engine source` run `36755147911`: SUCCESS, maintenance PASS, canonical DEV unittest PASS. The T03 ruling and first follow-up exposed two machine-readable wording assertions in the same legacy-retirement contract. This follow-up preserves both required routing phrases without changing the Senior ownership ruling. The current-head hosted-CI start gate was satisfied by the exact-head evidence recorded below.
 
 NEXT_EXACT_TASK: implement/review W05.T03 inside the repaired stable plan.
+
+Current-head hosted prerequisite supplied by the repository owner:
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9`, run `36785974398` — SUCCESS,
+maintenance PASS, canonical DEV unit suite PASS. The T03 implementation-start
+CI gate is satisfied.
+
+## W05.T03 Implementation Impact Envelope — 2026-10-01
+
+SPEC / APPROVED DESIGN:
+- W05.T03 in `implementation-wave-05-machine-bootstrap-integration.md`.
+- Accepted Senior final-writer ruling above.
+- Current accepted semantic owners: WP-11 storage/routing, WP-14 recovery/session,
+  WP-15 chronology/thread/information, WP-16 LIVE/currentness, Step-4
+  information/history, and W01/W02/W03/W04 producer outputs.
+
+BASELINE REF OR SHA: `v1/engine-rearchitecture` at freshly fetched public HEAD
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9`.
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/SCHEMA/current_state.schema.yaml` — schema 2 -> 3; remove generic
+  `world_time.frontier` and align the current-summary fields with accepted
+  native routing.
+- `GAME/SCHEMA/thread.schema.yaml` — schema 1 -> 2; align with narrow native
+  process state and retired thread knowledge/disclosure authority.
+- `GAME/SCHEMA/live_scene.schema.yaml` — schema 1 -> 2; align with source-native
+  LIVE/currentness and owner-separated packed state.
+- `GAME/SCHEMA/event.schema.yaml` — schema 1 -> 2; align with accepted
+  semantic/causal event identity without global-order authority.
+- `GAME/SCHEMA/lore.schema.yaml` — schema 1 -> 2; align with native objective
+  lore truth and information-owner distinctions.
+- `GAME/SCHEMA/session.schema.yaml` — final W02/W04 integration; retain schema
+  1 unless an actual breaking wire-shape change is established.
+- Create/complete `DEV/TESTS/test_implementation_package_version_cutovers.py`.
+- Update only current tests/fixtures that assert superseded T03-owned schema
+  bytes or semantics, including the Step-5.1 frontier regression and W03
+  retained-LIVE-schema deferral guards.
+- This execution-status cursor, including the explicit W05.T05 scaffold handoff.
+
+EXPECTED CONSUMERS TO VERIFY:
+- Current schema/owner tests for chronology, thread, information, LIVE and
+  session/recovery, including `test_step_5_0_contamination.py`,
+  `test_step_5_1_frontier_contract.py`, `test_rd02_information_native_contracts.py`,
+  `test_rd08_temporal.py`, `test_rd09_access_live.py`,
+  `test_w03_t08_live_consumers.py`, `test_w04_t08_session_consumer_delta.py`,
+  and the applicable W02 recovery/durability tests.
+- Strict DEV native owners for `world.thread`, `world.lore_fact`, and
+  `runtime.semantic_event`; their independent owner schema versions remain
+  unchanged unless the actual T03 delta proves otherwise.
+- Runtime LIVE/history/information/session consumers and retained schema
+  assertions; no consumer may use a cache, index, session or projection as
+  semantic/currentness authority.
+- Verify checkpoint schema v4 and index schema v2 only; do not double-bump or
+  rewrite them.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- The six T03-owned retained schemas and their current T03-owned consumer/test
+  witnesses, at the exact versions admitted by the Senior ruling.
+- Session v1 wording/invariants may be integrated when this clarifies existing
+  coordination-only semantics without changing its wire shape.
+- No new semantic owner, runtime primitive, migration, dual-read, compatibility
+  alias or unsupported pre-v1 compatibility shape.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- `CURRENT` is routing/current-summary evidence, not global chronology,
+  currentness, authorization or recovery authority; no campaign-global mutable
+  fictional clock/frontier.
+- Active-scene current-summary routing is by `scene_id`; native routes derive
+  the record path.
+- `world.thread` remains a narrow process owner; thread state does not own
+  fictional knowledge, disclosure, generic due truth or scheduler authority.
+- LIVE source/currentness remains selected-route/exact-source; physical LIVE
+  packing does not create a second native owner or information authority.
+- Semantic event IDs and typed causal/order evidence do not establish
+  chronology through allocation, storage, Git or global sequence order.
+- `world.lore_fact` owns objective proposition truth; knowledge, disclosure
+  and communication remain separate owners.
+- Session is coordination/navigation/audit/observability only. Checkpoints and
+  indexes remain optional/derived evidence, not current authority.
+- No old T03-owned shape remains on a current T03-owned runtime/schema path;
+  later-writer projections are tracked explicitly below and are not treated as
+  instances of the new T03 schema.
+
+ARCHITECTURE-SENSITIVE SURFACES:
+- CURRENT/chronology semantics and route-only current-state summary;
+- thread lifecycle/temporal occurrence/knowledge boundaries;
+- source-native LIVE claim and exact-currentness representation;
+- semantic event identity/order and lore truth/information ownership;
+- session and checkpoint recovery/currentness non-authority.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- RED/GREEN for exact T03 schema versions and strict-shape/retirement
+  assertions, including checkpoint v4/index v2 verify-only witnesses.
+- Current chronology, native thread/lore/event, LIVE, information and
+  session/recovery consumer suites listed above.
+- Exact comparison of changed owners/consumers against this envelope;
+  mandatory Version Impact Gate; focused task review and independent review.
+- Clean exact-source full DEV suite, maintenance audit and all plan-required
+  package/currentness checks before acceptance/publication.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- `GAME/CAMPAIGN/STATE/CURRENT.yaml`, `GAME/TOOLS/init_campaign.py`, and
+  generator/scaffold validation are final physical writers of W05.T05.
+- Scene/location/player schemas are W05.T04; campaign manifest v5 is W05.T07;
+  legacy pc/npc/item/retired-faction control-plane retirement is W05.T08.
+- Checkpoint/index schema bytes are verify-only; CORE final writers remain
+  their assigned later W05 tasks. No README edits.
+
+CURRENT_SCAFFOLD_ALIGNMENT: DEFERRED_TO_W05_T05
+
+producer:
+  W05.T03 / W05_RETAINED_SCHEMA_CUTOVERS_READY
+
+consumer:
+  W05.T05 blank scaffold/generator final writer
+
+T05 obligation:
+  CURRENT.yaml -> schema_version 3
+  remove world_time.frontier
+  synchronize generator / scaffold validation atomically
+
+The current repository blank `CURRENT.yaml` remains schema v2 and is not a
+valid current_state-v3 instance during this interval. Its copy by the existing
+`init_campaign.py` scaffold path is a deferred T05 projection, not a T03 v3
+runtime read. The scoped `GAME/TOOLS` currentness scan found no runtime reader
+that treats the repository template as a v3 instance; if such a path is found,
+stop at System Impact rather than widening T03.
+
+T03 TDD RED:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_package_version_cutovers.py` — 7 expected
+  failures at the pre-cutover target versions/shapes.
+- The updated Step-5.1 frontier regression and the replaced RD02/W03 LIVE
+  deferral guards also failed at their superseded schema expectations before
+  implementation.
+
+T03 FOCUSED GREEN:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_package_version_cutovers.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_step_5_0_contamination.py DEV/TESTS/test_rd02_information_native_contracts.py DEV/TESTS/test_rd08_temporal.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_w03_t08_live_consumers.py DEV/TESTS/test_w04_t08_session_consumer_delta.py DEV/TESTS/test_rd06_durability_publication.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd16_world_family_machine_integration.py DEV/TESTS/test_rd13_story_t0_commentator.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd12_collaboration.py DEV/TESTS/test_house_rules_policy_authority_contract.py DEV/TESTS/test_wp26_routing_supersession_contract.py DEV/TESTS/test_runtime_host_composition.py` — 770 passed, 2 existing RD09 `RefResolver` deprecation warnings.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_versioning_namespace_policy.py -k 'not census_has_zero_unclassified_hits'` — 11 passed, 1 excluded workspace-wide census check.
+
+T03 BROAD WORKSPACE DIAGNOSTIC (NOT CLEAN-EXACT ACCEPTANCE):
+- Exact canonical command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — 1453 passed, 7 failed, 24 existing RD09 warnings in 188.52s.
+- Failures were repository/workspace contamination: duplicate `ENGINE_VERSION.yaml` discovery under nested `DEV/tmp` verification trees; root-wide identity/version scans encountering local generated/session artifacts; and a generated `GAME/TOOLS/__pycache__` copied by the release passthrough test. None points to a T03-owned schema or test. This run is not acceptance evidence; clean exact-source verification remains required.
+- `git diff --check`: PASS.
+
+T03 VERSION IMPACT: `current_state` 2 -> 3; `thread` 1 -> 2;
+`live_scene` 1 -> 2; `event` 1 -> 2; `lore` 1 -> 2. Session wire shape is
+unchanged at v1; checkpoint v4 and index v2 remain verify-only/no-bump. No
+engine/module, DEV native-owner schema, catalog, storage, or campaign-contract
+generation changed. No migration/dual-read is required for these unreleased
+pre-v1 shapes under the accepted clean-slate owner.
+
+T03 SYSTEM IMPACT: NONE — changes remain within the six T03 retained-schema
+contracts and their existing consumer/test witnesses. The W05.T05 scaffold
+projection remains deferred under the explicit Senior ruling; no runtime path
+was found that consumes the blank scaffold as a v3 instance.
+
+INDEPENDENT REVIEW: initial review returned TARGETED_REPAIR for this cursor's
+stale `UNPUBLISHED_WORK` statement. This evidence update corrects that finding;
+scoped re-review remains pending.
+
+CURRENT_VERIFICATION_STATE: T03 focused cross-owner suites PASS (770 tests);
+version-policy subset PASS (11 tests); full local DEV run contaminated as above;
+clean exact full DEV, maintenance audit, final review and publication/read-back
+remain pending.
+NEXT_EXACT_TASK: obtain scoped independent re-review of this cursor correction,
+then commit the coherent T03 slice and run clean exact-source full DEV plus
+maintenance audit before non-force publication.
+UNPUBLISHED_WORK: W05.T03 schema/test/cursor slice is present locally and remains
+unpublished; clean exact-source full DEV, maintenance audit and remote
+publication/read-back are pending.

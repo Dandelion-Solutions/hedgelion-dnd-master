@@ -1,17 +1,22 @@
 schema_name: lore_fact
-schema_version: 1
-required: [schema_version, id, status, statement]
+schema_version: 2
+required: [fact_id, statement, truth_status, record_status]
 fields:
-  schema_version: integer
-  id: string
-  status: enum[canonical, superseded, disputed_in_world]
+  fact_id: native_identifier
   statement: string
-  scope: array[string]
-  established_by_event_id: string|null
-  source_record_ids: array[string]
-  supersedes_id: string|null
-  notes: string|null
+  truth_status: enum[truth.undetermined, truth.established, truth.disproven]
+  record_status: enum[lore_record.active, lore_record.superseded]
+  subject_refs: unique_array[native_identifier]
+  scope: object[typed_fact_scope]
+  chronology: object[typed_chronology_qualifier]
+  provenance_refs: unique_array[native_identifier]
+  supersedes_fact_id: native_identifier
+  superseded_by_fact_id: native_identifier
+  importance: string
+  last_truth_transition_ref: native_identifier
 invariants:
-  - this record stores objective canonical fact, not merely a rumor
-  - in-world disputed beliefs belong in NPC/faction knowledge, not as contradictory objective truths
-  - superseding a canon fact requires explicit supported change/retcon decision, never silent rewrite
+  - world.lore_fact owns an independently identified objective proposition; it is not a generic copy of current state
+  - truth_status is limited to undetermined, established, or disproven; in-world disagreement belongs to subject knowledge/belief, not objective truth
+  - world.knowledge and runtime.disclosure remain separate native owners; lore owns neither PC knowledge nor player delivery
+  - scope, chronology, and provenance preserve their typed meanings and do not imply a universal timeline
+  - superseding a fact requires explicit supported change/retcon evidence, never a silent rewrite
