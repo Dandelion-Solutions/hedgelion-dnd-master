@@ -1009,6 +1009,11 @@ T05 LOCAL PAGING RULING:
   resolver without enumerating refs.
 - This is a task-local producer cap, not a WP-24-selected layout/transport
   contract or a campaign registry/index.
+- Ruling: use 20 as the bounded per-invocation implementation page cap because
+  WP-24 requires finite menu discovery but deliberately selects no numeric page
+  layout; exact direct selectors bypass it, and more items use explicit
+  continuation/narrowing. If this cap is too small, the cost is an extra user
+  continuation/narrowing step; it does not omit or retire campaign refs.
 
 T05 RED:
 - `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests`
@@ -1062,9 +1067,11 @@ and may supply the direct exact-ID resolver; if it cannot, this slice returns
 typed inability without list fallback. No external transport expansion is
 included or assumed here.
 
-DISCOVERY OUTPUT STATUS: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` — local code/test
-checkpoint reached. `W05_BLANK_SCAFFOLD_READY` remains pending. The task
-explicitly prohibits remote push; this checkpoint is local and has not been
-published/read back remotely. NEXT_EXACT_TASK: continue only with the separately
-authorized W05.T05 generator/scaffold slice. UNPUBLISHED_WORK: none beyond this
-complete local discovery checkpoint.
+DISCOVERY OUTPUT STATUS: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` — published and
+freshly read back at `4afa066f827cecca690724623afe44e07e10088a`; changed-file
+read-back diff is empty. Independent task review `hdm-reviewer` PASS over
+`5c095b118676e7628da116ca67fe2a4e41d845ca..4afa066f827cecca690724623afe44e07e10088a`;
+no findings. `W05_BLANK_SCAFFOLD_READY` remains pending. NEXT_EXACT_TASK: T05's
+separate generator/blank-scaffold/initial-publication slice; do not begin
+W05.T06. UNPUBLISHED_WORK: NONE for the bounded discovery slice; the remaining
+T05 scaffold slice has not started.
