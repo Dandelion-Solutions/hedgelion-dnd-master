@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T05 blank-scaffold/generator checkpoint is published/read back; controller final verification and review gates remain pending.
-CURRENT_TASK: W05.T05 — scaffold/generator implementation checkpoint published; await controller completion gates. W05.T06 remains unauthorized.
-LAST_COMPLETED_TASK: W05.T05 scaffold/generator implementation -> `W05_BLANK_SCAFFOLD_READY` checkpoint at `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9` (controller completion gates pending); W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9` — T05 implementation/scaffold checkpoint published and read back; final independent review, clean broad validation and Senior integration audit remain pending.
+STATUS: FINAL_REVIEW — W05.T05 scaffold/generator implementation is published; independent task review, clean exact DEV, maintenance and release/package checks pass; final Senior integration audit is pending.
+CURRENT_TASK: W05.T05 final Senior integration audit for `W05_BLANK_SCAFFOLD_READY`. W05.T06 remains unauthorized.
+LAST_COMPLETED_TASK: W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
+LAST_SAFE_SHA: `7eff900e6b9a3ee3fe2445865f44086ab7d7e176` — T05 scaffold/generator implementation with exact clean DEV, maintenance and release/package evidence; final Senior integration audit pending.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1430,3 +1430,77 @@ changed-file read-back diff is empty.
 UNPUBLISHED_WORK: NONE for T05 implementation, tests or scaffold. The current
 execution-status change is limited to this cursor-only synchronization; the code
 checkpoint above is already published/read back.
+
+
+## W05.T05 final verification candidate — 2026-10-02
+
+CODE HEAD: `7eff900e6b9a3ee3fe2445865f44086ab7d7e176`; fresh remote read-back
+confirmed this exact published HEAD before verification.
+
+INDEPENDENT TASK REVIEW:
+- `hdm-reviewer` reviewed
+  `7e9bb4f3efbed1abf145093a33c08e0e55400d22..7eff900e6b9a3ee3fe2445865f44086ab7d7e176`.
+- SPEC COMPLIANCE: PASS. TASK QUALITY: PASS. No blocking/important findings.
+- The P1 minor storage-marker negative-witness observation is closed by
+  `InitialCampaignPublicationTests.test_freeze_rejects_storage_marker_file_and_directory_paths`.
+
+FOCUSED VERIFICATION:
+- T05 bootstrap, Step-5.1 CURRENT consumer and runtime-identity schema tests —
+  57 passed.
+- Native routing, operational-root recovery and principal-player route suites —
+  11 passed with 2 existing RD09 `RefResolver` deprecation warnings.
+- Scoped Ruff/format and `git diff --check` — PASS, excluding existing
+  `SIM117` and `EXE001` diagnostics outside the changed behavior.
+
+CLEAN EXACT FULL DEV:
+- `env -C "/tmp/opencode/w05t05-p1-clean-fdf679aa" PYTHONDONTWRITEBYTECODE=1 /home/denis/hdm/repos/hedgelion-dnd-master/.hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto`
+  — **1507 passed, 24 existing RD09 `RefResolver` deprecation warnings** at exact
+  code HEAD `7eff900e6b9a3ee3fe2445865f44086ab7d7e176`.
+- The command used the repository-declared `.hdm-devtools/venv` with a matching
+  requirements fingerprint in a clean detached verification checkout.
+
+MAINTENANCE:
+- `env -C "/tmp/opencode/w05t05-p1-maint-fdf679aa" PYTHONDONTWRITEBYTECODE=1 python3 DEV/TOOLS/run_maintenance_audit.py`
+  — **PASS** at exact code HEAD `7eff900e6b9a3ee3fe2445865f44086ab7d7e176`.
+- The canonical launcher reused the matching repository-owned tool environment;
+  fresh environment bootstrap in that clean checkout had earlier rejected a
+  downloaded wheel hash.
+
+RELEASE / PACKAGE:
+- `env -C "/tmp/opencode/w05t05-p1-maint-fdf679aa" PYTHONDONTWRITEBYTECODE=1 python3 DEV/TOOLS/run_release_build.py --output "/tmp/opencode/w05t05-runtime-builds-confirm"`
+  — PASS; produced `hedgelion-dnd-master-runtime-v1.0-alpha.zip` and SHA-256
+  sidecar.
+- Package SHA-256: `38bdd65b45aae38acc97e6c5e13e33fcb26c5614bb7320a2ae15a2db9a34765e`.
+- Archive/sidecar verification PASS: package contains CURRENT v3 with no
+  frontier, the campaign README, required native-root samples and no storage
+  marker. The full DEV suite also passed release reproducibility and generator
+  smoke tests.
+
+HOSTED CI: unavailable in this local-machine runtime; no hosted result is claimed
+for T05.
+
+VERSION_IMPACT: `GAME/CAMPAIGN/STATE/CURRENT.yaml` instance schema version
+`2 -> 3`, aligned to the already-current `GAME/SCHEMA/current_state.schema.yaml`
+v3. `MANIFEST.yaml` remains v4 with `players.player_ids`; campaign-contract
+generation 2, storage generation 3, catalog generation 2 and ruleset-set digest
+generation 1 remain unchanged. No persistent schema/module revision, migration,
+dual-read or DEV/GAME projection synchronization was required; bootstrap.py
+remains at its accepted P1 module version `1.0.2`.
+
+SYSTEM_IMPACT: NONE under the accepted P1 Senior ruling. T05 stayed within its
+Impact Envelope; W02/W04, T07, T06, provider adapters and shared schema/catalog
+owners were not changed.
+
+T05 ACCEPTANCE GATE: `W05_BLANK_SCAFFOLD_READY` is a reviewed, fully verified
+candidate; final Senior integration audit and its fresh read-back disposition
+are still pending. Do not mark T05 complete before that audit PASS.
+
+NEXT_EXACT_TASK: perform the final Senior integration audit against the full
+T05 implementation delta and the verification/review evidence above. W05.T06
+remains NOT AUTHORIZED.
+
+KNOWN_BLOCKERS: no implementation, task-review, test, maintenance or
+release/package blocker remains. Final Senior integration audit is pending.
+
+UNPUBLISHED_WORK: NONE for T05 implementation; this cursor-only final-review
+synchronization is pending publication.
