@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T05 bounded campaign discovery and W05.T05-P1 initial campaign publication are accepted/read back; the held T05 blank-scaffold completion slice is resumed.
-CURRENT_TASK: W05.T05 — CURRENT v3 generator/scaffold synchronization and blank owner-native root completeness using the accepted P1 publication capability.
-LAST_COMPLETED_TASK: W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc` — final P1 implementation/fix with exact clean DEV and maintenance evidence; T05 scaffold work is now authorized.
+STATUS: EXECUTING — W05.T05 blank-scaffold/generator checkpoint is published/read back; controller final verification and review gates remain pending.
+CURRENT_TASK: W05.T05 — scaffold/generator implementation checkpoint published; await controller completion gates. W05.T06 remains unauthorized.
+LAST_COMPLETED_TASK: W05.T05 scaffold/generator implementation -> `W05_BLANK_SCAFFOLD_READY` checkpoint at `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9` (controller completion gates pending); W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, independently reviewed and accepted/read back at `fdf679aa8c251c767c8b2c39f3ab56d57ab782bc`; W05 bounded discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
+LAST_SAFE_SHA: `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9` — T05 implementation/scaffold checkpoint published and read back; final independent review, clean broad validation and Senior integration audit remain pending.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1348,10 +1348,10 @@ read-back are complete.
 BASELINE REF: `v1/engine-rearchitecture` at freshly fetched HEAD
 `7e9bb4f3efbed1abf145093a33c08e0e55400d22`.
 
-T05 OUTPUT: `W05_BLANK_SCAFFOLD_READY` — implementation slice is locally ready
-for its coherent published checkpoint; independent review, clean broad
-verification and final Senior audit remain controller completion gates. W05.T06
-has not started and remains unauthorized.
+T05 OUTPUT: `W05_BLANK_SCAFFOLD_READY` — implementation checkpoint published
+and read back at `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9`; independent review,
+clean broad verification and final Senior audit remain controller completion
+gates. W05.T06 has not started and remains unauthorized.
 
 T05 BASELINE:
 - `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_step_5_1_frontier_contract.py`
@@ -1418,10 +1418,15 @@ storage-root marker or package-root engine files. Independent task review,
 clean exact full DEV, maintenance, release/package validation and final Senior
 audit remain pending under the controller's completion gate.
 
-NEXT_EXACT_TASK: publish/read back the coherent T05 scaffold checkpoint and
-hand it to the controller for final verification/review gates. Do not start
-W05.T06.
+NEXT_EXACT_TASK: controller completion gate — clean exact full DEV, maintenance,
+release/package validation, independent task review and final Senior integration
+audit for W05.T05. Do not start W05.T06.
 KNOWN_BLOCKERS: clean exact broad verification and independent/final review are
 controller-owned and pending; see the release/package diagnostic limitation.
-UNPUBLISHED_WORK: T05 implementation edits and this cursor update are local
-until the checkpoint commit is published and independently read back.
+CODE CHECKPOINT: `e76cbe92b7db01ad0d42212dcbce02cbbd3a75b9` (`feat(w05):
+complete campaign scaffold generator`); fresh `git fetch --prune origin`
+confirmed `HEAD == origin/v1/engine-rearchitecture` at that SHA and the
+changed-file read-back diff is empty.
+UNPUBLISHED_WORK: NONE for T05 implementation, tests or scaffold. The current
+execution-status change is limited to this cursor-only synchronization; the code
+checkpoint above is already published/read back.
