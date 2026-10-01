@@ -1,38 +1,21 @@
-schema_name: scene_state
-schema_version: 2
-required: [schema_version, scene_id, status, participant_ids, player_character_ids]
+schema_name: world_scene_state
+schema_version: 3
+strict: true
+required: [name]
 fields:
-  schema_version: integer
-  scene_id: string
-  status: enum[active, suspended, resolved]
-  location_id: string|null
-  local_time: object|null
-  chronology_frontier_event_id: string|null
-  participant_ids: array[string]
-  player_character_ids: array[string]
-  active_thread_ids: array[string]
-  environment:
-    relevant_item_ids: array[string]
-    persistent_feature_refs: array[string]
-    transient_facts: array[object]
-  summary: string
-  last_event_id: string|null
-  live_epoch:
-    type: object|null
-    fields:
-      epoch_id: string
-      branch: string
-      state_path: string
-      base_campaign_sha: string
-      opening_live_head_sha: string
-  last_absorbed_live_head_sha: string|null
+  name: nonempty_string
+  location_id: native_identifier
+  participant_ids: unique_array[native_identifier]
+  focal_entity_ids: unique_array[native_identifier]
+  status: object
+  details: object
 invariants:
-  - scene is an environment-level concurrency boundary when practical
-  - summary contains current actionable state, not session transcript
-  - local_time may be exact, approximate, narrative, or null according to what materially matters; do not force timestamps for bookkeeping
-  - chronology_frontier_event_id identifies the local event frontier when future ordering/reconciliation needs it; it is not a global clock
-  - persistent entity changes still belong in canonical entity records after live compaction
-  - exact tactical/procedure state belongs to typed owners; scene has no generic tactical-state storage path
-  - at most one live_epoch may be authoritative for a scene at a time
-  - when live_epoch is non-null, current mutable scene truth is base campaign state plus the referenced live state
-  - clearing live_epoch after compaction records the exact absorbed live HEAD in last_absorbed_live_head_sha
+  - this is the native world.scene state; record identity and exact file route are derived from the outer world-record id
+  - scene is an environment-level state owner and bounded routing context, not a universal catch-all relevance database
+  - location_id references a native world.location; participant_ids and focal_entity_ids do not grant PLAYER membership or controlled-PC authority
+  - details remain descriptive owner data, not an implicit source of mechanics, references, routing, constraints, or automatic indexes
+  - if a compact current actionable summary is retained, it remains descriptive Scene detail and is not a session transcript or LOG history
+  - scene-local chronology remains typed and sparse; no mandatory singleton chronology_frontier_event_id or campaign-global frontier is required
+  - world_time/local-time observations cannot independently establish DUE, currentness, or cross-scene ordering
+  - current LIVE selection and immutable claims come from the exact current campaign STATE/RUNTIME/LIVE_ROUTING.yaml owner; Scene identity or physical co-location does not select a source or authorize mutation
+  - LIVE currentness is validated against the selected exact source revision; a Scene pointer or cached blob alone cannot prove it

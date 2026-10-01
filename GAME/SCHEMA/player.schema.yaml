@@ -1,27 +1,34 @@
-schema_name: player_binding
-schema_version: 1
-required: [schema_version, player_id, status, controlled_pc_ids]
+schema_name: world_player_state
+schema_version: 2
+strict: true
+required: [player_id, status, github_binding, controlled_pc_ids, collaboration_route_refs]
 fields:
-  schema_version: integer
-  player_id: string
+  player_id: native_identifier
   status: enum[active, inactive]
   deactivated_by: enum[self, creator]|null
   display_name: string|null
   github_binding:
-    user_id: integer|null
-    login: string|null
-  controlled_pc_ids: array[string]
+    user_id: integer|nonempty_string
+    login: nonempty_string|null
+  controlled_pc_ids: unique_array[native_identifier]
   visibility:
-    private_record_ids: array[string]
+    private_record_ids: unique_array[native_identifier]
   preferences:
     campaign_only:
-      mechanics_detail: integer|null
-      decision_support_detail: integer|null
+      mechanics_detail: integer[0..10]|null
+      decision_support_detail: integer[0..10]|null
       adaptive_mechanics_detail: boolean|null
   policy_authority:
     mechanical_override_policy: boolean|null
-  joined_event_id: string|null
-  last_event_id: string|null
+  joined_event_id: native_identifier|null
+  last_event_id: native_identifier|null
+  collaboration_route_refs:
+    type: array
+    uniqueItems: true
+    required: [obligation_id, generation]
+    item_fields:
+      obligation_id: nonempty_string
+      generation: integer[>=1]
 invariants:
   - store only campaign-relevant identity/binding; do not mirror personal ChatGPT Memory/profile
   - player_id is the canonical campaign identity used by sessions/events; never use GitHub login as the gameplay actor ID
@@ -45,3 +52,6 @@ invariants:
   - if a player explicitly requests no technical mechanics, both detail values should be 0 unless they specify otherwise
   - a PC controller change requires explicit persistent event
   - player binding is not a source for real-world sensitive personal data
+  - collaboration_route_refs are unique scoped obligation/generation routing-only references; they grant no membership, PC, lifecycle, input, currentness, or write authority
+  - missing, stale, duplicate, or mismatched collaboration route references fail closed through the native collaboration owner
+  - no manifest member list, generic index, repository permission, or self-declared player id is an authorization fallback

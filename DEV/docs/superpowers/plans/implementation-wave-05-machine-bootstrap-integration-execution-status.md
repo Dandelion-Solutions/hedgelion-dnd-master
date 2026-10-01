@@ -510,3 +510,182 @@ The T05 handoff remains mandatory: the repository blank
 `GAME/CAMPAIGN/STATE/CURRENT.yaml` is still v2 by design and is not a valid
 current_state-v3 instance; W05.T05 must atomically cut it to v3, remove
 `world_time.frontier` and synchronize generator/scaffold validation.
+
+## W05.T04 Implementation Impact Envelope — 2026-10-01
+
+SPEC / APPROVED DESIGN:
+- W05.T04 in `implementation-wave-05-machine-bootstrap-integration.md` and the
+  shared-writer contract in `implementation-plan-execution-contract.md`.
+- Accepted T03 outputs and Senior audit; current `DEV/CURRENT_PROGRESS.md`
+  explicitly authorizes W05.T04 at freshly published HEAD
+  `06991568b7b8cb54c924a44e3120456c90ac594f`.
+- Native scene/location/player state and route owners: WP-11 physical routing,
+  WP-14 recovery, WP-15 chronology, WP-16 principal/LIVE currentness,
+  Step-4 information ownership, W04 strict PLAYER collaboration delta, and
+  accepted W01/W02/W03/T03 outputs.
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/SCHEMA/scene.schema.yaml` — 2 -> 3.
+- `GAME/SCHEMA/location.schema.yaml` — 1 -> 2.
+- `GAME/SCHEMA/player.schema.yaml` — 1 -> 2.
+- `GAME/SCHEMA/README.md` — T04's one final schema-catalog/documentation
+  integration.
+- `GAME/TEMPLATE/STORAGE_README.md` — T04's one final storage-template
+  integration; supporting human-facing prose, never semantic authority.
+- `DEV/TESTS/test_implementation_proof_ledger.py` — currently absent at the
+  baseline; create only `SharedSchemaStorageReadmeIntegrationProofTests` for
+  T04. W06 adds its other proof classes only after their targets are realized.
+- `DEV/TESTS/test_w03_t08_live_consumers.py` — replace the old Scene-schema
+  deferred-byte guard with the T04 scene-v3 witness; keep the LIVE CORE and
+  multiplayer CORE deferral guards.
+- This execution-status cursor; update `DEV/CURRENT_PROGRESS.md` only after
+  T04 outputs are independently accepted and published.
+
+CURRENTNESS / SOURCE RE-READ SET:
+- Fresh remote HEAD, `DEV/CURRENT_PROGRESS.md`, the T03 Senior audit, stable W05
+  plan, execution plan shared-writer contract and this cursor.
+- `DEV/SCHEMAS/world-scene-state.schema.json`, `world-location-state.schema.json`,
+  `world-player-state.schema.json`, `world-record.schema.json`, current
+  `DEV/CATALOG/entity-structures.json` / `identifier-policies.json`, and
+  `DEV/ARCHITECTURE/ENTITY_STRUCTURES.md` / `CATALOG_INVENTORY.md`.
+- W04 `W04_PLAYER_COLLABORATION_DELTA_READY`:
+  `DEV/docs/superpowers/design/2026-09-22-w04-t03a-player-collaboration-delta.md`
+  and `DEV/TESTS/fixtures/w04_player_collaboration_delta.json`.
+- Relevant Step-4, WP-11, WP-12, WP-13, WP-14, WP-15, WP-16 and WP-17
+  canonical owners; current `GAME/CORE/INFORMATION.md`, `STORAGE.md`,
+  `PERSISTENCE.md`, `CHRONOLOGY.md`, `MULTIPLAYER.md`; and the actual current
+  `GAME/SCHEMA/README.md` / `GAME/TEMPLATE/STORAGE_README.md` bytes.
+
+EXPECTED CONSUMERS TO VERIFY:
+- T04 proof class joins each retained schema's exact version/shape to its
+  strict native DEV owner and the actual shared README/template bytes.
+- Current RD16 world-family/strict PLAYER tests, House-Rules PLAYER policy
+  authority witness, WP-11 route tests, RD08 temporal/currentness tests,
+  W03 LIVE/scene consumers, W04 PLAYER/collaboration tests, and destination
+  storage-template/release checks.
+- Operational-root and recovery semantics: the complete bounded
+  `STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml` page nominates only current
+  `runtime.command`, `runtime.procedure`, `runtime.interaction`, and
+  `runtime.intent_plan` owners; exact native owners decide lifecycle.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- The three T04-owned GAME schema contracts at their exact assigned versions
+  and the two T04 shared documentation/template targets.
+- Create the explicitly named proof class in the central ledger test file,
+  which is absent at this baseline; do not create other W06 future proof classes.
+- Existing strict DEV owner schemas, record wrapper/catalog, runtime modules,
+  generator/scaffold and migration surfaces are read-only unless a concrete
+  contradiction triggers System Impact before any out-of-envelope edit.
+- No v0.8/pre-v1 migration, dual-read, alias, or compatibility form.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- `world.scene`, `world.location`, and `world.player` remain native record
+  owners with exact WP-11 routes; data stays aligned to their strict state
+  schemas and record-wrapper constraints.
+- `details` remains descriptive only; no duplicate placement, knowledge,
+  disclosure, player membership, currentness, live-route or authorization
+  authority is hidden there.
+- Scene chronology remains local/typed; no mandatory singleton scene frontier,
+  total campaign clock, or chronology from repository/route order.
+- Current LIVE source/claims are selected and exact-validated by the accepted
+  campaign LiveRouting/source owners. Scene identity, file location or
+  `LIVE_STATE.yaml` presence alone is not a route/currentness grant.
+- PLAYER uses stable authenticated GitHub `user_id` separately from mutable
+  login; controlled PCs and creator-only policy grants remain distinct. W04
+  `collaboration_route_refs` are unique scoped routing hints and grant no
+  authorization/lifecycle/currentness.
+- Actor/Asset own current entity placement; Location does not maintain a
+  reverse present-entity registry. `world.knowledge`, `runtime.disclosure`,
+  and objective lore remain distinct; no Secret or duplicate knowledge owner.
+- Index/HOT/cache/checkpoint/session/routing pages are not semantic or
+  authorization authority. Storage template prose remains supporting only.
+
+ARCHITECTURE-SENSITIVE SURFACES:
+- Scene-local chronology and LIVE route/currentness boundary;
+- durable Location identity/topology versus Actor/Asset placement;
+- stable PLAYER identity, controlled-PC and creator-grant boundaries, and
+  non-authoritative collaboration route references;
+- schema/readme routing of information, HOT/index, recovery and operational
+  roots; storage-template destination correctness.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- RED/GREEN for `scene` v3, `location` v2, `player` v2 and native strict-shape
+  joins; proof against actual README/template bytes, exact links/targets and
+  all four operational-root owner kinds.
+- Updated W03 T08 scene schema consumer plus current `test_rd16`, House-Rules,
+  RD08, RD09, W04 PLAYER/collaboration, recovery/durability and destination
+  template tests.
+- Focused cross-owner tests, clean exact full DEV, maintenance audit, release
+  package/schema validation, Version Impact Gate, independent task review,
+  fresh remote read-back and final Senior integration audit.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- W05.T03-owned `current_state`, `thread`, `live_scene`, `event`, `lore`,
+  `session` schemas; checkpoint v4/index v2 remain verify-only.
+- W05.T05 `CURRENT.yaml` v3 scaffold and generator/validation handoff;
+  W05.T07 campaign_manifest v5 and its scaffold; W05.T08 legacy PC/NPC/item/
+  retired-faction retirement, `audit_engine.py`, and final `PROJECT_MAP.md`.
+- All GAME/CORE and install/Project Instructions writers, campaign scaffold
+  files, runtime modules, root `README.md`, unrelated test/cleanup surfaces.
+
+VERSION IMPACT EXPECTED: `scene.schema_version` 2 -> 3;
+`location.schema_version` 1 -> 2; `player.schema_version` 1 -> 2. No
+`campaign_contract_generation` bump/migration for these admitted unreleased
+pre-v1 shapes; storage generation 3/catalog generation 2/engine and module
+versions are expected NONE. Reclassify the actual final changed set.
+SYSTEM IMPACT EXPECTED: NONE if implementation uses the accepted strict owners
+and introduces no new state field/authority, dependency or compatibility law.
+
+## W05.T04 TDD and verification state
+
+T04 TDD RED:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_proof_ledger.py DEV/TESTS/test_w03_t08_live_consumers.py::ShippedLiveCoreCutoverTests::test_scene_schema_uses_t04_native_target_while_live_core_stays_deferred` — 7 expected failures before schema/readme integration: v2/v1 retained versions, legacy scene/location/player shapes, missing collaboration fragment and missing readme/storage owner markers.
+
+T04 FOCUSED GREEN:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_proof_ledger.py DEV/TESTS/test_implementation_package_version_cutovers.py DEV/TESTS/test_house_rules_policy_authority_contract.py DEV/TESTS/test_rd16_world_family_machine_integration.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_rd08_temporal.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd02_information_native_contracts.py DEV/TESTS/test_w03_t08_live_consumers.py DEV/TESTS/test_step_5_0_contamination.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_destination_template_boundary.py DEV/TESTS/test_r2_7_wp03_catalog_conformance.py DEV/TESTS/test_r2_7_wp04_actor_asset_conformance.py` — 368 passed, 2 existing RD09 `RefResolver` deprecation warnings.
+- Expanded cross-owner rerun, adding accepted W04 collaboration producer/consumer suites:
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_proof_ledger.py DEV/TESTS/test_implementation_package_version_cutovers.py DEV/TESTS/test_house_rules_policy_authority_contract.py DEV/TESTS/test_rd16_world_family_machine_integration.py DEV/TESTS/test_rd12_collaboration.py DEV/TESTS/test_w04_t08_multiplayer_consumer_delta.py DEV/TESTS/test_w04_t08_consumer_convergence.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_rd08_temporal.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd02_information_native_contracts.py DEV/TESTS/test_w03_t08_live_consumers.py DEV/TESTS/test_step_5_0_contamination.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_destination_template_boundary.py DEV/TESTS/test_r2_7_wp03_catalog_conformance.py DEV/TESTS/test_r2_7_wp04_actor_asset_conformance.py` — 526 passed, 2 existing RD09 `RefResolver` deprecation warnings after owner-constraint repair.
+- Post-formatting focused rerun: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_proof_ledger.py DEV/TESTS/test_w03_t08_live_consumers.py` — 27 passed.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_versioning_namespace_policy.py -k 'not census_has_zero_unclassified_hits'` — 11 passed, 1 excluded workspace-wide census check.
+- Ruff: new proof test `check` and `format --check` PASS; W03 test `check --ignore I001,SIM117` PASS. Whole-file W03 format check reports existing formatting drift only outside the changed T04 hunk; no formatter diff remains in that hunk.
+- `git diff --check`: PASS.
+
+T04 VERSION IMPACT: `scene.schema_version` 2 -> 3,
+`location.schema_version` 1 -> 2, and `player.schema_version` 1 -> 2.
+`engine_version`/module versions, campaign-contract generation, storage
+generation, catalog generation, and strict DEV-owner schemas remain unchanged.
+No released-data migration or dual-read is required under the accepted pre-v1
+clean-slate owner. This classification is based on the actual changed owner set
+and the canonical versioning policy.
+T04 SYSTEM IMPACT: NONE; implementation remains on the accepted strict owners
+and adds no state field, authority, dependency, or compatibility law.
+
+T04 REVIEW ROUND 1:
+- Independent reviewer found a medium native-owner parity gap: Scene/Location
+  names and PLAYER GitHub user-id/login did not retain strict nonempty-string
+  constraints; the proof tested only top-level shape. This was verified against
+  the current strict DEV schemas.
+- RED: targeted proof tests failed on the expected missing `nonempty_string`
+  declarations. GREEN: Scene/Location `name`, PLAYER string-form GitHub ID and
+  optional login now preserve nonempty constraints; proof also checks bounded
+  collaboration-ref string/integer constraints. Proof suite: 7 passed; expanded
+  cross-owner suite: 526 passed; version subset: 11 passed; scoped Ruff and
+  `git diff --check`: PASS.
+- Independent scoped re-review of the repair is pending.
+
+T04 REVIEW ROUND 2: **PASS** — independent reviewer confirmed the nonempty
+Scene/Location/PLAYER constraints and collaboration-reference bounds now match
+their strict native owners. No further substantive findings, envelope drift, or
+System-Impact trigger. Checkpoint acceptance remains subject to clean full DEV
+and maintenance verification.
+
+CURRENT_VERIFICATION_STATE: expanded T04 focused proof/consumer suites PASS
+(526 tests); post-formatting proof/W03 rerun PASS (27 tests); version-policy
+subset PASS (11 tests); Ruff scoped checks PASS as qualified above; clean exact
+full DEV, maintenance audit, local code checkpoint, and remote
+publication/read-back pending; independent task review/re-review PASS.
+NEXT_EXACT_TASK: commit the reviewed coherent T04 slice locally, run clean exact
+full DEV and maintenance verification against that committed source, then
+publish without force and obtain fresh remote read-back.
+UNPUBLISHED_WORK: T04 schema/readme/proof-test/consumer-test changes and cursor
+evidence are local and uncommitted.

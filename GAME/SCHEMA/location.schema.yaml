@@ -1,29 +1,19 @@
-schema_name: location
-schema_version: 1
-required: [schema_version, id, status, identity, spatial]
+schema_name: world_location_state
+schema_version: 2
+strict: true
+required: [name]
 fields:
-  schema_version: integer
-  id: string
-  status: enum[active, destroyed, inaccessible, unknown]
-  identity:
-    name: string
-    aliases: array[string]
-    type: string|null
-    description: string|null
-  parent_location_id: string|null
-  spatial:
-    connections: array[object]
-    persistent_features: array[object]
-    geometry_ref: string|null
-  state:
-    controlling_faction_id: string|null
-    present_entity_ids: array[string]
-    active_thread_ids: array[string]
-    environmental_state: object
-  known_fact_ids: array[string]
-  secret_ids: array[string]
-  last_event_id: string|null
+  name: nonempty_string
+  parent_location_id: native_identifier
+  organization_id: native_identifier
+  environment_ids: unique_array[native_identifier]
+  status: object
+  details: object
 invariants:
-  - persistent geometry/connections do not move for narrative convenience
-  - present_entity_ids are only maintained when useful; indexes/state may be authoritative for mobile entities
-  - description is compact; historical events belong in LOG
+  - this is the native world.location state; its exact file route derives from the outer world-record id
+  - parent/location topology and environment references remain with world.location; arbitrary path text is not a route
+  - current Actor and Asset placement belongs to those native owners; Location does not keep a reverse present-entity registry
+  - scene/thread participation is not inferred from location co-presence
+  - objective truth, fictional knowledge and player disclosure remain with their native owners; Location has no known-fact or Secret collection
+  - details are descriptive and do not create mechanics, references, currentness, authorization, or index authority
+  - LOCATION_INDEX is a discovery projection; known-ID reads derive and validate the exact native route
