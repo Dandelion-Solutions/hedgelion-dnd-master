@@ -679,22 +679,17 @@ their strict native owners. No further substantive findings, envelope drift, or
 System-Impact trigger. Checkpoint acceptance remains subject to clean full DEV
 and maintenance verification.
 
-CURRENT_VERIFICATION_STATE: published code `ea858dc247510d0019f75d894205f3b3e53cd428`
-has clean exact full DEV/maintenance/package PASS and remote read-back; independent
-task review/re-review PASS. Senior audit round 1 at `bf24b27a7f06147ad0990f59f7aefc1188f01db1`
-found the nested PLAYER `github_binding.user_id` required-field parity gap. The
-bounded repair is local: proof suite 7 passed, expanded cross-owner suite 526
-passed, version subset 11 passed, scoped Ruff and `git diff --check` PASS.
-Independent task re-review of the repair: PASS. Clean exact full DEV/maintenance/
-package for the repair, non-force publication/read-back, and repeat Senior audit
+CURRENT_VERIFICATION_STATE: repaired code checkpoint
+`4f2525e546af3b8d651c501948276aa976a3c5d0` is published and freshly read back.
+Clean exact full DEV 1467 passed / 24 existing RD09 deprecation warnings;
+maintenance audit PASS; canonical release package build and T04 member/hash
+verification PASS. Repair task review PASS. The second/final Senior audit and
+T04 output acceptance remain pending.
+NEXT_EXACT_TASK: Senior review the repaired current branch HEAD
+`4f2525e546af3b8d651c501948276aa976a3c5d0`; on PASS, record accepted T04
+checkpoints and update `DEV/CURRENT_PROGRESS.md` before advancing to W05.T05.
+UNPUBLISHED_WORK: NONE for code. Final Senior audit and acceptance/status closure
 remain pending.
-NEXT_EXACT_TASK: commit this reviewed PLAYER nested-required repair, obtain a
-clean exact verification worktree for that commit, run full DEV/maintenance/
-package checks, then publish/read back and repeat the Senior audit before
-updating `DEV/CURRENT_PROGRESS.md` or advancing to W05.T05.
-UNPUBLISHED_WORK: `GAME/SCHEMA/player.schema.yaml` now declares nested
-`github_binding.required: [user_id]`, and the proof test checks parity; these
-two repair paths are local and uncommitted.
 
 ## W05.T04 clean exact verification and publication — 2026-10-01
 
@@ -760,3 +755,33 @@ strict owner contract without changing authority or ownership.
 INDEPENDENT REPAIR REVIEW: **PASS** — nested required-field notation matches the
 existing GAME schema idiom; proof checks strict-owner key/required parity; no
 new authority, scope, version impact, or System-Impact trigger.
+
+## W05.T04 repaired-code verification and publication — 2026-10-01
+
+REPAIR_CODE_CHECKPOINT: `4f2525e546af3b8d651c501948276aa976a3c5d0` — published on
+`v1/engine-rearchitecture`; fresh fetch confirmed `HEAD == origin` and changed
+repair-file read-back diff was empty.
+
+CLEAN EXACT REPAIR VERIFICATION in detached worktree
+`.hdm-devtools/clean-t04-repair` at that exact code SHA:
+- `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python -m pytest DEV/TESTS -n auto`
+  — 1467 passed, 24 existing RD09 `RefResolver` deprecation warnings in 32.15s.
+- `PYTHONDONTWRITEBYTECODE=1 ../venv/bin/python DEV/TOOLS/run_maintenance_audit.py`
+  — PASS (`OK: engine consistency audit passed`).
+- Canonical `DEV/TOOLS/run_release_build.py` — PASS, emitted
+  `/tmp/opencode/w05-t04-repair-package-check/hedgelion-dnd-master-runtime-v1.0-alpha.zip`.
+  Archive check confirmed all five T04 GAME schema/readme paths, nested
+  `SCHEMA/player.schema.yaml` `github_binding.required: [user_id]`, and matching
+  SHA-256 sidecar `51efc1982e52ee647ece73fa80b47da6fa4da9a2da361affb6f6b69e6c0724e8`.
+- Independent repair task review: PASS; focused proof suite 7 passed; expanded
+  cross-owner suite 526 passed; version subset 11 passed; scoped Ruff and
+  `git diff --check` PASS.
+
+VERSION_IMPACT remains the single T04 set: scene 2 -> 3, location 1 -> 2,
+player 1 -> 2. The nested `user_id` requirement is included in the same PLAYER v2
+cutover; no additional bump. SYSTEM_IMPACT: NONE. Final Senior audit: pending.
+
+POST-REPAIR CURSOR-SYNC CHECKS: proof ledger + Step-5.1 frontier contract,
+10 passed; version-policy subset, 11 passed / 1 primary-workspace census test
+excluded; `git diff --check`: PASS. This cursor-only synchronization has
+`VERSION_IMPACT: NONE` and `SYSTEM_IMPACT: NONE`.
