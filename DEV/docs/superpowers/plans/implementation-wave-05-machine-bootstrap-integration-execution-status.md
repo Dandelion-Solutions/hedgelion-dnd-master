@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — Wave 05 remains dependency-gated.
-CURRENT_TASK: W05.T03 — AUTHORIZED after exact dependency/current-version/final-writer reconciliation.
+STATUS: FINAL_REVIEW — Wave 05 remains dependency-gated pending the W05.T03 Senior integration audit.
+CURRENT_TASK: W05.T03 — implementation verified, published, and read back; Senior integration audit pending.
 LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`.
-LAST_SAFE_SHA: `6f60464e27a7a91bf2350bd9b688313cb81cd438` — T02 acceptance/read-back synchronization; exact-head hosted validation PASS.
+LAST_SAFE_SHA: `295237782453cb1cd1d440db2329f827b774e2a9` — W05.T03 implementation and verification cursor published/read back; final Senior integration audit pending.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -435,8 +435,9 @@ projection remains deferred under the explicit Senior ruling; no runtime path
 was found that consumes the blank scaffold as a v3 instance.
 
 T03 LOCAL CODE CHECKPOINT: `27e8d274b198f7e88284b1501a5c8d252f0d7df6`
-(`feat(w05): cut over retained schemas`), committed locally on
-`v1/engine-rearchitecture`; remote publication/read-back pending.
+(`feat(w05): cut over retained schemas`). Final evidence/status synchronization:
+`295237782453cb1cd1d440db2329f827b774e2a9` (`docs(w05): record T03
+verification`).
 
 T03 CLEAN-EXACT FULL DEV:
 - Source commit `27e8d274b198f7e88284b1501a5c8d252f0d7df6` in clean detached
@@ -448,14 +449,15 @@ T03 CLEAN-EXACT MAINTENANCE AUDIT:
   reused the repository-declared `.hdm-devtools/venv` environment — PASS
   (`OK: engine consistency audit passed`).
 
-INDEPENDENT REVIEW: initial review's cursor-state finding was repaired and
-scoped re-review marked it ADDRESSED. Final whole-delta review is pending.
+INDEPENDENT REVIEW: **PASS** — `hdm-reviewer` reviewed the complete
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9..27e8d274b198f7e88284b1501a5c8d252f0d7df6`
+implementation delta plus the final verification/status synchronization; no
+findings. Earlier cursor findings were addressed and re-reviewed.
 
 CURRENT_VERIFICATION_STATE: focused cross-owner suites PASS (770 tests);
 version-policy subset PASS (11 tests); clean exact full DEV PASS (1460 tests);
-clean exact maintenance audit PASS; final independent review and remote
-publication/read-back remain pending. The contaminated in-place diagnostic
-remains recorded above and is not acceptance evidence.
+clean exact maintenance audit PASS; final task review PASS. The contaminated
+in-place diagnostic remains recorded above and is not acceptance evidence.
 VERSION_IMPACT: `current_state` 2 -> 3; `thread` 1 -> 2; `live_scene` 1 -> 2;
 `event` 1 -> 2; `lore` 1 -> 2; session NONE (unchanged v1 wire shape); checkpoint
 NONE (v4 verify-only); index NONE (v2 verify-only); engine/module, catalog,
@@ -463,13 +465,26 @@ storage and campaign-contract generations NONE; migration/dual-read NONE for
 the admitted unreleased pre-v1 shapes.
 SYSTEM_IMPACT: NONE — implementation stayed inside the accepted T03 schema and
 existing consumer/test envelope; CURRENT scaffold remains deferred to W05.T05.
-FINAL TASK REVIEW: **PASS** — `hdm-reviewer` reviewed the
-`4c5e0d85517a358b0fd2cd6605008239351c5dd9..27e8d274b198f7e88284b1501a5c8d252f0d7df6`
-delta and current execution-cursor verification update; no findings.
-NEXT_EXACT_TASK: commit this final verification/cursor synchronization, refresh
-`origin` and confirm a fast-forward from the published baseline, non-force
-publish the coherent T03 checkpoint, then obtain a fresh remote read-back.
-UNPUBLISHED_WORK: T03 code checkpoint
-`27e8d274b198f7e88284b1501a5c8d252f0d7df6` and its final-review cursor
-synchronization are local and not yet published; remote publication/read-back
+
+REMOTE PUBLICATION / READ-BACK: PASS — ordinary non-force push on
+`v1/engine-rearchitecture`; subsequent fresh `git fetch --prune origin`
+confirmed `HEAD == origin/v1/engine-rearchitecture ==
+295237782453cb1cd1d440db2329f827b774e2a9`; `git diff HEAD
+origin/v1/engine-rearchitecture` is empty. The refreshed `4c5e0d8..origin`
+changed-file list matches the 13 intended T03 paths.
+
+HOSTED_CI: no final-head hosted run is available from this local-machine
+runtime. The owner-provided exact-head hosted run `36785974398` at baseline
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9` was SUCCESS with maintenance and
+canonical DEV unit suite PASS; it is not a claim about final SHA `2952377`.
+
+W05.T03 OUTPUTS: `W05_RETAINED_SCHEMA_CUTOVERS_READY` and
+`SESSION_SCHEMA_FINAL_INTEGRATION_READY` are implementation-ready at published
+HEAD `295237782453cb1cd1d440db2329f827b774e2a9`; routine Senior final integration
+audit remains pending.
+NEXT_EXACT_TASK: Senior final integration audit of
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9..295237782453cb1cd1d440db2329f827b774e2a9`
+against the approved Wave-05 plan/Impact Envelope and recorded verification.
+UNPUBLISHED_WORK: NONE for W05.T03 implementation and verification; published
+and read back. Final Senior integration audit and global progress advancement
 remain pending.
