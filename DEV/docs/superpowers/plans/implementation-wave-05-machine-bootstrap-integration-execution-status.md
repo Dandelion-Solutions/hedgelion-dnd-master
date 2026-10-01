@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T05 accepted/read back; W05.T06 authorized.
+STATUS: EXECUTING — W05.T05 accepted/read back; W05.T06 authorized; the fresh T06 Impact Envelope is recorded before implementation.
 CURRENT_TASK: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `90bed94945c453b0aa5d5d4ae5776e2a6ca0208e` — T05 acceptance/status head; hosted `Validate engine source` run `36937045996` SUCCESS.
+LAST_SAFE_SHA: `4a2c8f9bd5780372cabb76762bdead75636c4b29` — current public implementation base. The intervening commit changes only `.opencode/agents/hdm-reviewer.md`; product owners/code remain the validated T06 entry baseline.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1584,3 +1584,212 @@ accepted RuntimeHost/publication interfaces. It does not own a new repository
 transport protocol. T08 remains the final shipped CORE/install/module writer.
 
 NEXT_EXACT_TASK: implement/review W05.T06 only.
+
+
+## W05.T06 Implementation Impact Envelope — 2026-10-02
+
+SPEC / APPROVED DESIGN:
+- W05.T06 in `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`.
+- Entry authorization and hard-input reconciliation in
+  `DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md`.
+- Accepted product/consumer semantics: WP-19 §§2, 3, 5–8; PO-002
+  `2026-09-05-hdm-gameplay-retrospective-and-campaign-exit-owner-decision.md`;
+  creator-login continuity owner decision; WP-16 + `ACCESS_CONTROL.md`;
+  R2.5 join/rejoin; PO-012; W02 WP-13/Step-5.5/5.6; accepted W04 RuntimeHost,
+  Context, History/Story/T0 and multiplayer/session outputs; accepted T07E exact
+  serialized-byte measurement contract.
+
+AUTHORIZED ENTRY REF / SHA: `v1/engine-rearchitecture@1a128e4dbee202c3ce7eae4f3f59e9dfaf7d478f`, supplied with the Senior T06 authorization.
+IMPLEMENTATION BASE / SHA: fresh `git fetch --prune origin` confirmed current
+`v1/engine-rearchitecture@4a2c8f9bd5780372cabb76762bdead75636c4b29`. The only
+intervening commit changes `.opencode/agents/hdm-reviewer.md`'s configured model;
+it does not change GAME/DEV product owners, T06 hard inputs, or approved scope.
+
+ENTRY HARD INPUTS:
+- `W04_RUNTIME_HOST_COMPOSITION_READY` and
+  `W04_RUNTIME_HOST_IO_EXTENSIONS_READY` are accepted/read back.
+- Accepted T07E exact-serialized-byte `measure_path_operations(...)` contract
+  and PO-012 are current hard inputs.
+- W02 durability/publication/recovery and W03 principal/PLAYER/access/LIVE
+  currentness owners are accepted/read back.
+- W04 Context/protected emission, native History/Story/T0/Commentator, and
+  multiplayer/session consumer outputs are accepted/read back.
+- W05.T02-T04 final catalog/schema inputs are accepted; T04 outputs include
+  `SCENE_SCHEMA_FINAL_INTEGRATION_READY`,
+  `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`,
+  `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`,
+  `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`,
+  `SHARED_STORAGE_README_FINAL_INTEGRATION_READY`, and
+  `SHARED_SCHEMA_STORAGE_README_PROOF_READY`.
+- All three T05 outputs are accepted/read back:
+  `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`,
+  `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`,
+  `W05_BLANK_SCAFFOLD_READY`.
+- Senior T06 entry gate records `PRODUCT_OWNER_DECISION_REQUIRED: NO` and
+  `SYSTEM_IMPACT_GATE_AT_ENTRY: PASS`; no owner semantic decision is open at
+  entry.
+- Current baseline regression command:
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_runtime_host_composition.py::RuntimeHostCompositionTests DEV/TESTS/test_rd12_collaboration.py::CollaborationJoinCatchUpTests DEV/TESTS/test_rd11_context_runtime.py::RetrospectiveContextTests DEV/TESTS/test_rd13_story_t0_commentator.py::CommentatorControlEvidenceTests DEV/TESTS/test_rd06_durability_publication.py::PublicationOutcomeTests DEV/TESTS/test_rd09_access_live.py::PrincipalAuthorizationTests`
+  — 132 passed, 2 existing RD09 `RefResolver` deprecation warnings.
+
+SOURCE / OWNER MANIFEST:
+- `DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md` —
+  accepted entry authorization, hard-input PASS and exact System-Impact stop.
+- Stable W05 plan T06 row — required product paths, exact named test classes,
+  T07/T08 ownership boundaries and `W05_PRODUCT_PATHS_READY` output.
+- WP-19 and the PO-002 owner decision — explicit campaign selection, progressive
+  `initializing`/READY_PC behavior, active-player retrospective, and save-success
+  before context clear/selection return; no new lifecycle or save authority.
+- WP-16 and `DEV/ARCHITECTURE/ACCESS_CONTROL.md` — verified stable external ID
+  to exact current PLAYER route; mutable login is display/invitation data;
+  creator provenance remains historical login; creator-authorization and
+  open-contributor exceptions stay narrow.
+- PO-012 — PUBLIC + exact current PLAYER disclosure + at most one selected
+  currently controlled PC's exact-current `epistemic.known`; no PLAYER means
+  PUBLIC-only; no multi-PC union, caller Story-ID or `visible_to` authority.
+- R2.5 and current Collaboration implementation — join/rejoin catch-up follows
+  principal -> candidate PLAYER -> exact current PLAYER reload before mutable
+  input; existing `join_participant` / `rejoin_participant` remain the consumer.
+- W02 WP-13/Step-5.5/5.6 and existing `durability.py`, `publication.py` — typed
+  accepted/rejected/conflict/indeterminate save outcomes; no false acknowledgement,
+  blind retry, replay or alternate writer.
+- Accepted W04 Context/History/Story/T0/Commentator and current
+  `runtime_host.py`, `context_runtime.py`, `history.py`, `commentator.py` —
+  current owner reads and protected-emission/eligibility; caches and Story are
+  not authority.
+- Accepted T07E resolution and current `CampaignPublicationTransport` — exact
+  `measure_path_operations(...)` uses the same serializer as `create_tree`;
+  `RuntimeHost.publication.measure_path_operations` fails closed when unavailable.
+- Current `test_rd14_bootstrap.py` — preserve existing
+  `CampaignSelectionBarrierTests`, `CreationIdentityTests` and
+  `CreatorAuthorityTests`; the named new product classes are not yet present.
+- Existing `test_runtime_host_composition.py`, `test_rd09_access_live.py`,
+  `test_rd12_collaboration.py`, `test_rd11_context_runtime.py`,
+  `test_rd13_story_t0_commentator.py` and `test_rd06_durability_publication.py`
+  are owner regression consumers.
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/TOOLS/bootstrap.py` — T06 product orchestration/callables and
+  nonpersistent result values for explicit selection, progressive onboarding,
+  creator binding/display/invitation use, post-selection RuntimeHost use,
+  ordinary retrospective routing, and save/exit return-to-selection.
+- `GAME/TOOLS/access_control.py` — only a narrow existing-owner callable if
+  needed to realize the already accepted creator-established or eligible
+  own-initial-PLAYER binding; no new policy or authority semantics.
+- `DEV/TESTS/test_rd14_bootstrap.py` — complete the named T06 product tests and
+  preserve the existing T01/T05/P1 witnesses. If Access Control receives the
+  bounded callable above, update its existing `test_rd09_access_live.py`
+  owner-consumer witnesses in the same logical slice.
+- `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md`
+  — this envelope, TDD/review/verification cursor and final output evidence.
+- `GAME/TOOLS/access_control.py` and `GAME/TOOLS/collaboration.py` remain
+  accepted semantic owners and expected consumers. No access policy, join/rejoin
+  semantic, or authority rule is intended to change; product code uses their
+  existing owner-issued decisions and exact PLAYER route. Any required owner
+  callable addition must be test-first and remain within the already accepted
+  creator-authorized binding/self-enrollment/reactivation semantics.
+
+EXPECTED CONSUMERS TO VERIFY:
+- `CampaignSelectionBarrierTests`, `CreationIdentityTests`,
+  `ProgressiveOnboardingTests`, `MultiplayerJoinRejoinTests`,
+  `OrdinaryRetrospectiveRoutingTests`, `SaveExitMenuTests`,
+  `CreatorAuthorityTests`, `ShippedBootstrapProjectionTests` and remaining
+  bootstrap cases in `DEV/TESTS/test_rd14_bootstrap.py`.
+- RuntimeHost composition/data-plane override and exact measurement tests;
+  principal/current-PLAYER and creator-provenance tests; collaboration join/rejoin
+  catch-up tests; Context retrospective/recipient tests; Story/Commentator PO-012
+  tests; W02 publication/save outcome tests; T05 discovery/generator regression.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- T06-local product callables and transient result values in `bootstrap.py`.
+- A narrow callable in existing Access Control may be added only to realize an
+  already accepted creator-established or eligible own initial PLAYER binding;
+  it must preserve the Access Control owner and existing stable-ID/login split.
+  Rejoin always reuses the exact current PLAYER identity and never creates a
+  replacement PLAYER/PC.
+- Product orchestration may call the existing `compose_runtime_host`, fixed host
+  services, Access Control, Collaboration, Context, History, W02 publication and
+  accepted T07E measurement capabilities. No caller/model/request value may
+  choose or replace those services.
+- `ShippedBootstrapProjectionTests` is a T06 product-projection witness in the
+  RD14 suite. It must not write T08-owned CORE/install/Project Instructions bytes.
+- No new persistent field/schema, catalog member, campaign/storage generation,
+  transport method, repository operation, or provider-specific Git API.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- Explicit current-chat campaign selection remains mandatory; no sole-candidate,
+  recency, previous-chat or session-cache inference.
+- Creator authority remains first campaign initialization commit `author.login`
+  plus current verified login equality. Stable account ID binds PLAYER only;
+  login rename/uncertainty fails closed and cannot transfer creator authority.
+  Invite/display login is presentation only; binding requires verified stable
+  account-ID evidence. Email or login-only claims cannot bind/take over a PLAYER.
+- Join/rejoin authority comes only from verified stable account ID -> current
+  principal route -> exact current PLAYER reload -> current controlled-PC and
+  operation-specific policy. v4 `MANIFEST.players.player_ids`, indexes, login,
+  session metadata and caller claims are never authorization fallbacks.
+- Retry preserves campaign/PLAYER/LIVE identities and accepted mechanics/RNG;
+  no duplicated canonical consequences, lifecycle advancement or inferred
+  membership/PC-control changes.
+- Current PLAYER login labels used for selection/invitation display remain
+  projections only and update with their authoritative membership transaction;
+  they never replace the stable account-ID binding or creator provenance.
+- Retrospective is an ordinary gameplay interaction, not a Commentator mode
+  switch, and does not advance time or mutate truth/knowledge. Apply PO-012
+  exactly; Story/orientation never grants eligibility.
+- Save/exit composes existing SAVE_ALL_DIRTY, session-context clearing and
+  selection. Clear/reselect only after confirmed required save; failed or
+  indeterminate outcomes retain recovery-safe context and are not called saved.
+  Exit is not pause, archive, completion or membership leave.
+- Exact path-size measurement uses the bound transport's exact `create_tree`
+  serializer and is required before any size-governed writer; missing capability,
+  estimates, caller sizes and second serialization fail closed.
+- `MANIFEST.yaml` remains v4 with `players.player_ids`; no T07 retirement. T08
+  final shipped CORE/install/module and control-plane writers remain deferred.
+
+INSPECT-ONLY / OUT OF SCOPE:
+- `GAME/TOOLS/runtime_host.py`, `publication.py`, `policy_basis.py` and W02
+  owners/tests: consume existing contracts; do not change transport semantics or
+  add repository operations.
+- `GAME/TOOLS/context_runtime.py`, `history.py`, `story.py`, `commentator.py`,
+  `collaboration.py` and persistent schemas/catalogs: consume accepted owner
+  outputs; do not create duplicate authority or persistent state classes.
+- `GAME/INSTALL/*`, shipped `GAME/CORE/*`, `DEV/PROJECT_MAP.md`,
+  `DEV/TOOLS/audit_engine.py`, `GAME/SCHEMA/campaign_manifest.schema.yaml` v4->v5,
+  `MANIFEST.players.player_ids` retirement, T08 cleanup, W06 proof, root README.
+
+SYSTEM-IMPACT STOP CONDITIONS:
+- Any new repository/Connector operation, CampaignPublicationTransport semantic
+  change, alternate writer, or need to route gameplay through T05's pre-campaign
+  P1 capability.
+- Any new ordinary-path network/LLM lookup or identity-resolution protocol not
+  already supplied by the accepted authenticated host boundary.
+- Any new authority rule, persistent field/schema/generation, lifecycle/membership
+  transition, compatibility behavior, or PLAYER authority fallback not already
+  settled by the accepted owners.
+- Any gameplay/request/model-supplied capability replacement or service locator.
+- Any product path that cannot use exact T07E measurement with the actual
+  create-tree serializer before its required write.
+
+VERSION IMPACT EXPECTED: no persistent schema or generation change.
+`bootstrap.py` is currently at framework module version 1.0.2; increment only if
+its material callable contract changes. `access_control.py` is currently at
+1.0.6; increment to 1.0.7 only if the T06 delta materially changes that owner's
+callable contract. Reclassify actual owners before each checkpoint.
+Campaign contract generation 2, storage generation 3, catalog generation 2,
+ruleset-set digest generation 1 and manifest v4 remain unchanged.
+
+SYSTEM IMPACT EXPECTED: NONE if T06 stays within the accepted product semantics
+and existing owner interfaces; re-evaluate actual delta before each checkpoint.
+
+CURRENT VERIFICATION BASELINE: the Product Owner supplied exact-head hosted
+validation for authorized product/code HEAD `1a128e4dbee202c3ce7eae4f3f59e9dfaf7d478f`:
+run `36938015151` SUCCESS, maintenance PASS, DEV unit suite PASS. The intervening
+public commit `4a2c8f9b` changes only reviewer configuration. Focused local
+consumer baseline: 132 passed, 2 existing warnings.
+
+NEXT_EXACT_TASK: begin T06 RED in the authorized product/callable/test lane only;
+do not start T07, T08 or W06.
+KNOWN_BLOCKERS: none at entry. No code changes have begun under this envelope.
+UNPUBLISHED_WORK: NONE for production code; the T06 Impact Envelope is the
+current published-task boundary, and no T06 implementation changes have begun.
