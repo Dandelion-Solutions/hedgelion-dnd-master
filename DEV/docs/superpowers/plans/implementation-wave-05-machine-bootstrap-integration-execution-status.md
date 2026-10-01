@@ -434,17 +434,42 @@ contracts and their existing consumer/test witnesses. The W05.T05 scaffold
 projection remains deferred under the explicit Senior ruling; no runtime path
 was found that consumes the blank scaffold as a v3 instance.
 
-INDEPENDENT REVIEW: initial review returned TARGETED_REPAIR for this cursor's
-stale `UNPUBLISHED_WORK` statement. This evidence update corrects that finding;
-scoped re-review remains pending.
+T03 LOCAL CODE CHECKPOINT: `27e8d274b198f7e88284b1501a5c8d252f0d7df6`
+(`feat(w05): cut over retained schemas`), committed locally on
+`v1/engine-rearchitecture`; remote publication/read-back pending.
 
-CURRENT_VERIFICATION_STATE: T03 focused cross-owner suites PASS (770 tests);
-version-policy subset PASS (11 tests); full local DEV run contaminated as above;
-clean exact full DEV, maintenance audit, final review and publication/read-back
+T03 CLEAN-EXACT FULL DEV:
+- Source commit `27e8d274b198f7e88284b1501a5c8d252f0d7df6` in clean detached
+  worktree `/tmp/opencode/w05t03-clean-27e8d274`.
+- `PYTHONDONTWRITEBYTECODE=1 /home/denis/hdm/repos/hedgelion-dnd-master/.hdm-devtools/venv/bin/python -m pytest /tmp/opencode/w05t03-clean-27e8d274/DEV/TESTS -n auto` — 1460 passed, 24 existing RD09 `RefResolver` deprecation warnings in 28.65s.
+
+T03 CLEAN-EXACT MAINTENANCE AUDIT:
+- Same source commit/worktree; canonical `run_maintenance_audit.py` entry point
+  reused the repository-declared `.hdm-devtools/venv` environment — PASS
+  (`OK: engine consistency audit passed`).
+
+INDEPENDENT REVIEW: initial review's cursor-state finding was repaired and
+scoped re-review marked it ADDRESSED. Final whole-delta review is pending.
+
+CURRENT_VERIFICATION_STATE: focused cross-owner suites PASS (770 tests);
+version-policy subset PASS (11 tests); clean exact full DEV PASS (1460 tests);
+clean exact maintenance audit PASS; final independent review and remote
+publication/read-back remain pending. The contaminated in-place diagnostic
+remains recorded above and is not acceptance evidence.
+VERSION_IMPACT: `current_state` 2 -> 3; `thread` 1 -> 2; `live_scene` 1 -> 2;
+`event` 1 -> 2; `lore` 1 -> 2; session NONE (unchanged v1 wire shape); checkpoint
+NONE (v4 verify-only); index NONE (v2 verify-only); engine/module, catalog,
+storage and campaign-contract generations NONE; migration/dual-read NONE for
+the admitted unreleased pre-v1 shapes.
+SYSTEM_IMPACT: NONE — implementation stayed inside the accepted T03 schema and
+existing consumer/test envelope; CURRENT scaffold remains deferred to W05.T05.
+FINAL TASK REVIEW: **PASS** — `hdm-reviewer` reviewed the
+`4c5e0d85517a358b0fd2cd6605008239351c5dd9..27e8d274b198f7e88284b1501a5c8d252f0d7df6`
+delta and current execution-cursor verification update; no findings.
+NEXT_EXACT_TASK: commit this final verification/cursor synchronization, refresh
+`origin` and confirm a fast-forward from the published baseline, non-force
+publish the coherent T03 checkpoint, then obtain a fresh remote read-back.
+UNPUBLISHED_WORK: T03 code checkpoint
+`27e8d274b198f7e88284b1501a5c8d252f0d7df6` and its final-review cursor
+synchronization are local and not yet published; remote publication/read-back
 remain pending.
-NEXT_EXACT_TASK: obtain scoped independent re-review of this cursor correction,
-then commit the coherent T03 slice and run clean exact-source full DEV plus
-maintenance audit before non-force publication.
-UNPUBLISHED_WORK: W05.T03 schema/test/cursor slice is present locally and remains
-unpublished; clean exact-source full DEV, maintenance audit and remote
-publication/read-back are pending.
