@@ -6,11 +6,11 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUTHORIZED / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
-LAST_CLOSED_UNIT: Wave-04 mandatory Senior integration audit -> **PASS** at reviewed implementation head `ceed7f8711163089e1905e60cbda785bb62e11ad`; T07-INTEGRATION, T08A/T08B/T08C and A26-02 are closed, exact-head hosted `Validate engine source` run `36665654868` succeeded, and two downstream planning carry-forward findings were repaired into the stable Wave-05/Wave-06 plans before closure.
-NEXT_AUTHORIZED_UNIT: W05.T03 — retained schema cutovers, AUTHORIZED under `DEV/docs/superpowers/design/2026-10-01-w05-t03-retained-schema-final-writer-senior-ruling.md`. Dependency verification is complete; T03 owns current_state/thread/live_scene/event/lore/session only, with checkpoint v4/index v2 verify-only.
-REQUIRED_GATE: W05.T03 -> `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; scene/location/player final bytes remain W05.T04, campaign_manifest v5 remains W05.T07, and legacy schema/control-plane retirement remains W05.T08.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02 accepted; W05.T03 dependencies verified and implementation authorized.
-KNOWN_BLOCKERS: none for W05.T03 semantics/dependencies. Do not double-bump checkpoint/index or write T04/T07/T08-owned shared targets. Pre-ruling T02 status head `6f60464e27a7a91bf2350bd9b688313cb81cd438` had hosted run `36755147911` GREEN; the current T03 authorization/fix head must itself pass hosted CI before worker implementation starts.
+LAST_CLOSED_UNIT: W05.T03 -> **PASS / ACCEPTED** at `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433`; outputs `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; routine Senior integration audit PASS; exact-head hosted `Validate engine source` run `36825464528` SUCCESS.
+NEXT_AUTHORIZED_UNIT: W05.T04 — Shared README and physical-file integration. T03 outputs are accepted/read back; T04 retains the final scene 2->3, location 1->2 and player 1->2 writers plus shared schema/storage README integration.
+REQUIRED_GATE: W05.T04 -> `SCENE_SCHEMA_FINAL_INTEGRATION_READY` + `LOCATION_SCHEMA_FINAL_INTEGRATION_READY` + `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY` + `SHARED_SCHEMA_STORAGE_README_PROOF_READY`; W05.T05 then consumes final schemas/catalogs and must close the recorded `CURRENT.yaml` v3 scaffold handoff.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03 accepted; W05.T04 authorized.
+KNOWN_BLOCKERS: none for W05.T04 entry. W05.T05 must not consume `GAME/CAMPAIGN/STATE/CURRENT.yaml` as v3 until its own final scaffold writer updates it from the explicitly deferred v2 template.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

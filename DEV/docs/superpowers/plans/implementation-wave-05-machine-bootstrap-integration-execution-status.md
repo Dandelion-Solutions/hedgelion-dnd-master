@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: FINAL_REVIEW — Wave 05 remains dependency-gated pending the W05.T03 Senior integration audit.
-CURRENT_TASK: W05.T03 — implementation verified, published, and read back; Senior integration audit pending.
-LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`.
-LAST_SAFE_SHA: `295237782453cb1cd1d440db2329f827b774e2a9` — W05.T03 implementation and verification cursor published/read back; final Senior integration audit pending.
+STATUS: EXECUTING — W05.T03 accepted/read back; W05.T04 authorized.
+CURRENT_TASK: W05.T04 — shared README and physical-file integration.
+LAST_COMPLETED_TASK: W05.T03 -> `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY` — Senior integration audit PASS.
+LAST_SAFE_SHA: `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433` — final T03 review/read-back head; exact-head hosted run `36825464528` SUCCESS.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -478,13 +478,35 @@ runtime. The owner-provided exact-head hosted run `36785974398` at baseline
 `4c5e0d85517a358b0fd2cd6605008239351c5dd9` was SUCCESS with maintenance and
 canonical DEV unit suite PASS; it is not a claim about final SHA `2952377`.
 
-W05.T03 OUTPUTS: `W05_RETAINED_SCHEMA_CUTOVERS_READY` and
-`SESSION_SCHEMA_FINAL_INTEGRATION_READY` are implementation-ready at published
-HEAD `295237782453cb1cd1d440db2329f827b774e2a9`; routine Senior final integration
-audit remains pending.
-NEXT_EXACT_TASK: Senior final integration audit of
-`4c5e0d85517a358b0fd2cd6605008239351c5dd9..295237782453cb1cd1d440db2329f827b774e2a9`
-against the approved Wave-05 plan/Impact Envelope and recorded verification.
-UNPUBLISHED_WORK: NONE for W05.T03 implementation and verification; published
-and read back. Final Senior integration audit and global progress advancement
-remain pending.
+W05.T03 OUTPUTS: **ACCEPTED / READ BACK** — `W05_RETAINED_SCHEMA_CUTOVERS_READY` and `SESSION_SCHEMA_FINAL_INTEGRATION_READY` at `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433`. Routine Senior final integration audit: **PASS**.
+NEXT_EXACT_TASK: W05.T04 shared README and physical-file integration. Preserve T03/T04/T05/T07/T08 final-writer boundaries and the explicit `CURRENT_SCAFFOLD_ALIGNMENT: DEFERRED_TO_W05_T05` handoff.
+UNPUBLISHED_WORK: NONE for W05.T03.
+
+
+## W05.T03 routine Senior final integration audit — 2026-10-01
+
+REPORT:
+`DEV/docs/superpowers/design/2026-10-01-w05-t03-senior-integration-audit.md`
+
+```text
+DISPOSITION: PASS
+REVIEW_RANGE: 4c5e0d85517a358b0fd2cd6605008239351c5dd9..88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433
+CHANGED_PATHS: 13 / all within Impact Envelope
+BLOCKING: 0
+SIGNIFICANT: 0
+SYSTEM_IMPACT: NONE
+W05_RETAINED_SCHEMA_CUTOVERS_READY: ACCEPTED
+SESSION_SCHEMA_FINAL_INTEGRATION_READY: ACCEPTED
+NEXT: W05.T04
+```
+
+Final exact-head hosted validation at `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433`:
+`Validate engine source` run `36825464528` SUCCESS; maintenance PASS and DEV
+unit suite PASS. The clean exact implementation checkpoint additionally has
+1460-pytest PASS, maintenance PASS, focused cross-owner 770 PASS, version subset
+11 PASS and independent review PASS.
+
+The T05 handoff remains mandatory: the repository blank
+`GAME/CAMPAIGN/STATE/CURRENT.yaml` is still v2 by design and is not a valid
+current_state-v3 instance; W05.T05 must atomically cut it to v3, remove
+`world_time.frontier` and synchronize generator/scaffold validation.
