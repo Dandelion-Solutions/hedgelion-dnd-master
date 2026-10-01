@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T03 accepted/read back; W05.T04 authorized.
-CURRENT_TASK: W05.T04 — shared README and physical-file integration.
-LAST_COMPLETED_TASK: W05.T03 -> `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY` — Senior integration audit PASS.
-LAST_SAFE_SHA: `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433` — final T03 review/read-back head; exact-head hosted run `36825464528` SUCCESS.
+STATUS: EXECUTING — W05.T03 and W05.T04 accepted/read back; W05.T05 authorized as the next eligible unit.
+CURRENT_TASK: W05.T05 — bounded campaign discovery, generator and blank scaffold.
+LAST_COMPLETED_TASK: W05.T04 -> all six named schema/README/proof outputs — routine Senior integration audit PASS at `31000ae02ec8046c1b9deffadfce6b4297e01375`.
+LAST_SAFE_SHA: `31000ae02ec8046c1b9deffadfce6b4297e01375` — T04 Senior-audited/read-back head; full clean exact verification is recorded below.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -676,20 +676,25 @@ T04 REVIEW ROUND 1:
 T04 REVIEW ROUND 2: **PASS** — independent reviewer confirmed the nonempty
 Scene/Location/PLAYER constraints and collaboration-reference bounds now match
 their strict native owners. No further substantive findings, envelope drift, or
-System-Impact trigger. Checkpoint acceptance remains subject to clean full DEV
-and maintenance verification.
+System-Impact trigger. At that point clean exact full DEV/maintenance verification
+was still pending; it is recorded below.
 
-CURRENT_VERIFICATION_STATE: repaired code checkpoint
-`4f2525e546af3b8d651c501948276aa976a3c5d0` is published and freshly read back.
-Clean exact full DEV 1467 passed / 24 existing RD09 deprecation warnings;
-maintenance audit PASS; canonical release package build and T04 member/hash
-verification PASS. Repair task review PASS. The second/final Senior audit and
-T04 output acceptance remain pending.
-NEXT_EXACT_TASK: Senior review the repaired current branch HEAD
-`4f2525e546af3b8d651c501948276aa976a3c5d0`; on PASS, record accepted T04
-checkpoints and update `DEV/CURRENT_PROGRESS.md` before advancing to W05.T05.
-UNPUBLISHED_WORK: NONE for code. Final Senior audit and acceptance/status closure
-remain pending.
+CURRENT_VERIFICATION_STATE: W05.T04 accepted by final Senior integration audit
+at `31000ae02ec8046c1b9deffadfce6b4297e01375`; all six outputs accepted.
+Repaired code checkpoint `4f2525e546af3b8d651c501948276aa976a3c5d0` has clean exact
+full DEV 1467 passed / 24 existing RD09 warnings, maintenance PASS, canonical
+package build/member/hash PASS, independent repair review PASS, publication and
+read-back PASS. Final audit/progress/cursor closure checks: current-progress,
+product-owner-routing, proof and Step-5.1 frontier, 17 passed; version-policy
+subset 11 passed / one primary-workspace census test excluded; `git diff --check`
+PASS. `DEV/CURRENT_PROGRESS.md` and the final audit report record W05.T05 as next
+eligible. Only the documentation closure checkpoint and its remote read-back
+remain; no implementation/code work is unpublished.
+NEXT_EXACT_TASK: publish the final Senior audit/progress/cursor closure without
+force and obtain fresh read-back; then W05.T05 begins with its exact hard-input/
+owner-table verification.
+UNPUBLISHED_WORK: final audit report, global progress acceptance and cursor
+closure are the docs-only local checkpoint; no code/schema work remains.
 
 ## W05.T04 clean exact verification and publication — 2026-10-01
 
@@ -714,7 +719,7 @@ CLEAN EXACT FULL DEV:
   local artifact. No repository source was changed; the clean exact package
   build above is the acceptance evidence for the same output destination.
 
-T04 OUTPUTS PENDING SENIOR RE-REVIEW:
+T04 OUTPUTS AFTER SENIOR AUDIT ROUND 1 (SUPERSEDED BY FINAL PASS BELOW):
 `SCENE_SCHEMA_FINAL_INTEGRATION_READY`,
 `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`,
 `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`,
@@ -779,9 +784,31 @@ CLEAN EXACT REPAIR VERIFICATION in detached worktree
 
 VERSION_IMPACT remains the single T04 set: scene 2 -> 3, location 1 -> 2,
 player 1 -> 2. The nested `user_id` requirement is included in the same PLAYER v2
-cutover; no additional bump. SYSTEM_IMPACT: NONE. Final Senior audit: pending.
+cutover; no additional bump. SYSTEM_IMPACT: NONE. Final Senior audit: pending at
+the time of this repair verification; final disposition follows below.
 
 POST-REPAIR CURSOR-SYNC CHECKS: proof ledger + Step-5.1 frontier contract,
 10 passed; version-policy subset, 11 passed / 1 primary-workspace census test
 excluded; `git diff --check`: PASS. This cursor-only synchronization has
 `VERSION_IMPACT: NONE` and `SYSTEM_IMPACT: NONE`.
+
+## W05.T04 final Senior integration audit — 2026-10-01
+
+FINAL_SENIOR_AUDIT: **PASS / OUTPUTS ACCEPTED** at exact published/read-back
+HEAD `31000ae02ec8046c1b9deffadfce6b4297e01375`.
+REPORT: `DEV/docs/superpowers/design/2026-10-01-w05-t04-senior-integration-audit.md`.
+BLOCKING: 0. SIGNIFICANT: 0. PRODUCT_OWNER_DECISION_REQUIRED: NO.
+
+ACCEPTED_OUTPUTS:
+- `SCENE_SCHEMA_FINAL_INTEGRATION_READY`
+- `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`
+- `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`
+- `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`
+- `SHARED_STORAGE_README_FINAL_INTEGRATION_READY`
+- `SHARED_SCHEMA_STORAGE_README_PROOF_READY`
+
+FINAL_VERSION_IMPACT: scene 2 -> 3, location 1 -> 2, player 1 -> 2; no
+additional namespace change for the nested PLAYER required-field repair.
+FINAL_SYSTEM_IMPACT: NONE. W05.T05 is next eligible after this acceptance and
+global progress/cursor status synchronization; its `CURRENT.yaml` v3 scaffold
+handoff remains mandatory and T05-owned.

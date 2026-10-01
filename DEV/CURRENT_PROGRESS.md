@@ -3,14 +3,14 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 AUTHORIZED / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACTIVE / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
-LAST_CLOSED_UNIT: W05.T03 -> **PASS / ACCEPTED** at `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433`; outputs `W05_RETAINED_SCHEMA_CUTOVERS_READY` + `SESSION_SCHEMA_FINAL_INTEGRATION_READY`; routine Senior integration audit PASS; exact-head hosted `Validate engine source` run `36825464528` SUCCESS.
-NEXT_AUTHORIZED_UNIT: W05.T04 — Shared README and physical-file integration. T03 outputs are accepted/read back; T04 retains the final scene 2->3, location 1->2 and player 1->2 writers plus shared schema/storage README integration.
-REQUIRED_GATE: W05.T04 -> `SCENE_SCHEMA_FINAL_INTEGRATION_READY` + `LOCATION_SCHEMA_FINAL_INTEGRATION_READY` + `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY` + `SHARED_SCHEMA_STORAGE_README_PROOF_READY`; W05.T05 then consumes final schemas/catalogs and must close the recorded `CURRENT.yaml` v3 scaffold handoff.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03 accepted; W05.T04 authorized.
-KNOWN_BLOCKERS: none for W05.T04 entry. W05.T05 must not consume `GAME/CAMPAIGN/STATE/CURRENT.yaml` as v3 until its own final scaffold writer updates it from the explicitly deferred v2 template.
+LAST_CLOSED_UNIT: W05.T04 -> **PASS / ACCEPTED** at Senior-audited HEAD `31000ae02ec8046c1b9deffadfce6b4297e01375`; outputs `SCENE_SCHEMA_FINAL_INTEGRATION_READY`, `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`, `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`, `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`, `SHARED_STORAGE_README_FINAL_INTEGRATION_READY`, and `SHARED_SCHEMA_STORAGE_README_PROOF_READY`; routine Senior integration audit PASS, report `DEV/docs/superpowers/design/2026-10-01-w05-t04-senior-integration-audit.md`.
+NEXT_AUTHORIZED_UNIT: W05.T05 — Bounded campaign discovery, generator and blank scaffold. T04 schemas/catalogs are accepted/read back; T05 owns the atomic `CURRENT.yaml` v3 blank-scaffold cutover, removal of `world_time.frontier`, and generator/scaffold validation synchronization.
+REQUIRED_GATE: W05.T05 consumes the accepted final schemas/catalogs and performs its own scaffold/generator writer; until that checkpoint, `GAME/CAMPAIGN/STATE/CURRENT.yaml` remains v2 and is not a current_state-v3 instance.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03/T04 accepted; W05.T05 is next eligible.
+KNOWN_BLOCKERS: none for W05.T05 entry. Preserve the explicit T05 obligation to update the blank `CURRENT.yaml` v2 template, remove `world_time.frontier`, and synchronize generator/scaffold validation atomically.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -367,16 +367,16 @@ TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bo
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T01, W05.T02-P0 and W05.T02 are complete and accepted; Wave 05 remains dependency-gated.
-CURRENT_TASK: none — W05.T02 accepted; W05.T03 owner/checkpoint dependency verification is next.
-LAST_PUBLISHED_SHA: `6740da81c405b7a88b5d4c33e9a708d019bb642f`
-LAST_COMPLETED_TASK: W05.T02 -> `RD16_SHARED_MACHINE_INTEGRATION_READY`, independent review PASS, Version Impact Gate PASS, clean exact DEV 1453 passed / 0 skipped, maintenance audit PASS, published/read back at `6740da81c405b7a88b5d4c33e9a708d019bb642f`. W05.T02-P0 and W05.T01 remain accepted as recorded above.
-CURRENT_VERIFICATION_STATE: P0 focused RD09 198 passed; P0 clean exact DEV 1444 passed, 2 skipped; P0 maintenance audit PASS; P0 independent review PASS; P0 non-force publication and read-back PASS. T02 focused/cross-owner suites 394 passed, census synchronization passed, independent review PASS, Version Impact Gate PASS; clean exact full DEV 1453 passed / 0 skipped; maintenance audit PASS; non-force publication and fresh remote read-back PASS.
-VERSION_IMPACT: P0 `GAME/TOOLS/live_state.py 1.0.21 -> 1.0.22`; T02 `identifier-policies.schema_version 2 -> 3`; `core-catalog.schema_version 2` unchanged; coordinated catalog generation remains 2; admission-ledger schema 2 unchanged; campaign/storage generation and migration/dual-read NONE. Progress/cursor-only status changes NONE.
-SYSTEM_IMPACT: NONE for accepted P0/T02 implementation so far; T02 changes stay within the approved shared-writer envelope and reuse the existing strict `world.thread` ID pattern.
-NEXT_EXACT_TASK: read W05.T03's exact hard-input/owner table and verify dependency checkpoints; do not begin retained-schema writes until those inputs are proved.
-KNOWN_BLOCKERS: None for W05.T02. W05.T03 remains dependency-gated pending exact input verification. Hosted CI is unavailable in this local-machine runtime.
-UNPUBLISHED_WORK: NONE for accepted P0/W05.T02. The original candidate commit `5fdc556c2abb5d4f37a9923b73ede03e16920383` and pre-ruling cursor stash remain preserved local provenance; no active T02 diff remains.
+STATUS: EXECUTING — W05.T01, W05.T02-P0, W05.T02, W05.T03 and W05.T04 are complete and accepted; Wave 05 remains dependency-gated.
+CURRENT_TASK: W05.T05 — Bounded campaign discovery, generator and blank scaffold; exact hard-input/owner verification is next.
+LAST_PUBLISHED_SHA: `31000ae02ec8046c1b9deffadfce6b4297e01375` — Senior-audited T04 acceptance head, freshly read back from `origin/v1/engine-rearchitecture`.
+LAST_COMPLETED_TASK: W05.T04 -> six named schema/README/proof outputs ACCEPTED by routine Senior integration audit at `31000ae02ec8046c1b9deffadfce6b4297e01375`; independent task review/re-review PASS; full exact DEV and maintenance PASS at code checkpoint `4f2525e546af3b8d651c501948276aa976a3c5d0`; canonical runtime package build/hash check PASS; non-force publication/read-back PASS.
+CURRENT_VERIFICATION_STATE: T04 expanded cross-owner suite 526 passed; clean exact full DEV 1467 passed with 24 existing RD09 `RefResolver` deprecation warnings; maintenance audit PASS; runtime package build PASS with all five T04 GAME paths and matching SHA-256 sidecar; version-policy subset 11 passed; repair proof/W03 post-format rerun PASS; final Senior audit PASS; final current-progress/product-owner-routing/proof/frontier checks 17 passed. Hosted CI is unavailable in this local-machine runtime and is not claimed.
+VERSION_IMPACT: T04 `scene.schema_version` 2 -> 3, `location.schema_version` 1 -> 2, `player.schema_version` 1 -> 2; no engine/module, campaign-contract, storage, catalog, migration, or dual-read changes. Cursor/current-progress/audit-report synchronization: NONE.
+SYSTEM_IMPACT: NONE. T04 remains within accepted native Scene/Location/PLAYER owners and existing routing/currentness/authorization boundaries.
+NEXT_EXACT_TASK: read W05.T05's exact hard-input/owner table, verify accepted dependencies, then begin only its bounded campaign discovery/generator/blank-scaffold scope. Keep `CURRENT.yaml` v2 non-authoritative as a v3 instance until the T05 atomic writer completes.
+KNOWN_BLOCKERS: None for W05.T05 entry. The blank scaffold v2 handoff is an explicit T05-owned obligation, not a T04 defect. Hosted CI remains unavailable locally.
+UNPUBLISHED_WORK: NONE for T04; W05.T05 implementation has not started.
 
 ## Historical Wave-04 execution cursor snapshot (pre-closure)
 
