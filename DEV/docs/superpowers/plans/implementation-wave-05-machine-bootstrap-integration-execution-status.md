@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 initial-publication capability is authorized; the blank-scaffold completion slice remains held until P1 PASS/read-back.
+STATUS: FINAL_REVIEW — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 implementation/test checkpoint is published/read back; independent P1 PASS remains pending; the blank-scaffold completion slice remains held.
 CURRENT_TASK: W05.T05-P1 — bootstrap-specific initial campaign publication capability.
 LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `16e647d8775d8218e04c765521c990ce090fe138` — System-Impact stop/read-back head; hosted `Validate engine source` run `36890478930` SUCCESS.
+LAST_SAFE_SHA: `2da58ae1a6a3489ecd5ab32c214a68c734a62113` — W05.T05-P1 implementation/test checkpoint, worker-verified and published/read back; independent P1 PASS pending.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1219,10 +1219,13 @@ VERSION_IMPACT: `GAME/TOOLS/bootstrap.py` now carries `framework_module_version:
 
 SYSTEM_IMPACT: NONE under the accepted Senior ruling. The implementation is confined to `bootstrap.py` and its RD14 tests; it consumes one combined discovery/publication deployment view, preserves W02 `PublicationOutcome`/`PublicationStatus`, verifies exact repository/principal identity and fails closed when create-if-absent is unavailable. `runtime_host.py`, `publication.py`, `policy_basis.py`, and W02 owners/tests remain unchanged. No ordinary `update_ref`, alternate writer, per-file write, force path, synthetic RuntimeHost, or retry loop was introduced.
 
-CURRENT CHECKPOINT STATE: focused P1 tests and scoped lint/format checks are GREEN locally. The coherent P1 implementation/cursor candidate is on this workspace at the base above; publication/read-back and independent P1 PASS remain pending. `W05_INITIAL_CAMPAIGN_PUBLICATION_READY` is not yet recorded as independently accepted. The held blank-scaffold slice and W05.T06 have not started.
+P1 IMPLEMENTATION CHECKPOINT: `2da58ae1a6a3489ecd5ab32c214a68c734a62113`.
+P1 REMOTE PUBLICATION / READ-BACK: PASS — after `git fetch --prune origin`, `HEAD == origin/v1/engine-rearchitecture == 2da58ae1a6a3489ecd5ab32c214a68c734a62113`; `git diff HEAD origin/v1/engine-rearchitecture` is empty.
 
-NEXT_EXACT_TASK: commit the coherent P1 source/test/cursor slice, publish non-force on `v1/engine-rearchitecture`, obtain remote read-back, then request independent P1 PASS before resuming the held T05 scaffold slice.
+CURRENT CHECKPOINT STATE: focused P1 tests and scoped lint/format checks are GREEN locally. The P1 implementation/test checkpoint is published and independently readable, but independent P1 PASS remains pending. `W05_INITIAL_CAMPAIGN_PUBLICATION_READY` is not yet recorded as independently accepted. The held blank-scaffold slice and W05.T06 have not started.
+
+NEXT_EXACT_TASK: obtain independent P1 review/PASS; only after P1 independent PASS and read-back may the held T05 blank-scaffold slice resume. W05.T06 remains unauthorized.
 
 KNOWN_BLOCKERS: broader workspace suite is non-green/non-acceptance as recorded above; no private-artifact inspection or cleanup is authorized. A concrete deployment adapter must implement the combined bootstrap capability view; unsupported adapters return a typed fail-closed outcome.
 
-UNPUBLISHED_WORK: P1 implementation and task-local evidence are still local pending the coherent checkpoint commit/publication/read-back.
+UNPUBLISHED_WORK: NONE for P1 implementation/tests; the implementation checkpoint is published/read back. Independent P1 PASS remains pending.
