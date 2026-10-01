@@ -688,13 +688,12 @@ read-back PASS. Final audit/progress/cursor closure checks: current-progress,
 product-owner-routing, proof and Step-5.1 frontier, 17 passed; version-policy
 subset 11 passed / one primary-workspace census test excluded; `git diff --check`
 PASS. `DEV/CURRENT_PROGRESS.md` and the final audit report record W05.T05 as next
-eligible. Only the documentation closure checkpoint and its remote read-back
-remain; no implementation/code work is unpublished.
-NEXT_EXACT_TASK: publish the final Senior audit/progress/cursor closure without
-force and obtain fresh read-back; then W05.T05 begins with its exact hard-input/
-owner-table verification.
-UNPUBLISHED_WORK: final audit report, global progress acceptance and cursor
-closure are the docs-only local checkpoint; no code/schema work remains.
+eligible. The final audit report, global progress acceptance and cursor closure
+are included together in the T04 documentation closure checkpoint.
+NEXT_EXACT_TASK: W05.T05 begins with exact hard-input/owner-table verification;
+then proceed only within its bounded campaign discovery, generator and blank-
+scaffold scope.
+UNPUBLISHED_WORK: NONE for W05.T04. W05.T05 implementation has not started.
 
 ## W05.T04 clean exact verification and publication — 2026-10-01
 
