@@ -239,9 +239,59 @@ TDD and verification:
 
 Output checkpoint: `SHARED_SCHEMA_STORAGE_README_PROOF_READY` after both README checkpoints.
 
+## W05.T05-P1 — Initial campaign publication capability
+
+Senior architecture owner:
+`DEV/docs/superpowers/design/2026-10-01-w05-t05-initial-campaign-publication-senior-ruling.md`.
+
+This bounded prerequisite resolves the pre-campaign repository-write seam
+without reopening W02 or moving initial creation into campaign-bound RuntimeHost.
+
+Hard inputs:
+
+- accepted W01 campaign/scaffold identity;
+- accepted W02 publication/durability outcome semantics;
+- accepted T05 bounded discovery output;
+- exact selected storage repository + pinned storage default-branch HEAD;
+- exact generated scaffold identity contract.
+
+Implement a bootstrap-specific capability view over the same authenticated
+RepositoryPort/deployment adapter. It must support exact repository/principal
+identity, exact target-ref absence/presence, one tree built from scratch, one
+single-parent initialization commit, distinct create-ref-if-absent, and bounded
+post-attempt reconciliation.
+
+Required authority sequence:
+
+```text
+freeze bootstrap identity + exact generated files
+-> exact target campaign ref read
+-> if absent: create tree FROM SCRATCH
+-> create one initialization commit
+     parent = pinned storage default-branch HEAD
+-> create_ref_if_absent(target, commit)
+-> reconcile accepted/rejected/conflict/indeterminate from exact ref authority
+```
+
+Do not use ordinary `update_ref` to create an absent ref. Do not compose a
+synthetic campaign-bound RuntimeHost before campaign creation. Do not add an
+alternate repository writer or a T05-private transport authority.
+
+Use `GAME/TOOLS/bootstrap.py` and `DEV/TESTS/test_rd14_bootstrap.py` as the
+direct implementation/test lane. RuntimeHost, publication.py and
+policy_basis.RepositoryPort remain inspect-only unless a fresh test-first
+contradiction returns the task to System Impact.
+
+Output checkpoint:
+`W05_INITIAL_CAMPAIGN_PUBLICATION_READY`.
+
+The already accepted `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` is not reopened.
+The held blank-scaffold slice resumes only after P1 independent PASS and
+publication/read-back.
+
 ## W05.T05 — Bounded campaign discovery, generator and blank scaffold
 
-Hard inputs: `W01_CAMPAIGN_IDENTITY_READY`, `W01_SCAFFOLD_INPUT_CONTRACT_READY`, route/operational/LIVE companion contracts and final schemas/catalogs.
+Hard inputs: `W01_CAMPAIGN_IDENTITY_READY`, `W01_SCAFFOLD_INPUT_CONTRACT_READY`, route/operational/LIVE companion contracts and final schemas/catalogs. Bounded discovery may close independently; the blank-scaffold/initial-publication slice additionally requires `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`.
 
 Implement:
 

@@ -6,11 +6,11 @@ GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACTIVE / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
-LAST_CLOSED_UNIT: W05.T04 -> **PASS / ACCEPTED** at Senior-audited HEAD `31000ae02ec8046c1b9deffadfce6b4297e01375`; outputs `SCENE_SCHEMA_FINAL_INTEGRATION_READY`, `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`, `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`, `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`, `SHARED_STORAGE_README_FINAL_INTEGRATION_READY`, and `SHARED_SCHEMA_STORAGE_README_PROOF_READY`; routine Senior integration audit PASS, report `DEV/docs/superpowers/design/2026-10-01-w05-t04-senior-integration-audit.md`.
-NEXT_AUTHORIZED_UNIT: W05.T05 — Bounded campaign discovery, generator and blank scaffold. T04 schemas/catalogs are accepted/read back; T05 owns the atomic `CURRENT.yaml` v3 blank-scaffold cutover, removal of `world_time.frontier`, and generator/scaffold validation synchronization.
-REQUIRED_GATE: W05.T05 consumes the accepted final schemas/catalogs and performs its own scaffold/generator writer; until that checkpoint, `GAME/CAMPAIGN/STATE/CURRENT.yaml` remains v2 and is not a current_state-v3 instance.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03/T04 accepted; W05.T05 is next eligible.
-KNOWN_BLOCKERS: none for W05.T05 entry. Preserve the explicit T05 obligation to update the blank `CURRENT.yaml` v2 template, remove `world_time.frontier`, and synchronize generator/scaffold validation atomically.
+LAST_CLOSED_UNIT: W05.T05 bounded campaign discovery -> **ACCEPTED / READ BACK** at `4afa066f827cecca690724623afe44e07e10088a`; output `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`. The remaining T05 blank-scaffold slice is held behind the separately authorized initial-publication prerequisite.
+NEXT_AUTHORIZED_UNIT: W05.T05-P1 — initial campaign publication capability, authorized by `DEV/docs/superpowers/design/2026-10-01-w05-t05-initial-campaign-publication-senior-ruling.md`. Implement the bootstrap-specific create-if-absent capability over the same authenticated RepositoryPort/deployment adapter.
+REQUIRED_GATE: W05.T05-P1 -> `W05_INITIAL_CAMPAIGN_PUBLICATION_READY` -> independent PASS/read-back -> resume the held T05 blank-scaffold slice -> `W05_BLANK_SCAFFOLD_READY`. `GAME/CAMPAIGN/STATE/CURRENT.yaml` remains v2 until that resumed scaffold writer closes.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01/T02-P0/T02/T03/T04 accepted; T05 bounded discovery accepted; W05.T05-P1 authorized.
+KNOWN_BLOCKERS: T05 blank-scaffold completion remains held until P1 provides a distinct create-ref-if-absent initial-publication path. Do not repurpose ordinary update_ref, create a synthetic selected campaign, or absorb T07 manifest-v5 scope.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

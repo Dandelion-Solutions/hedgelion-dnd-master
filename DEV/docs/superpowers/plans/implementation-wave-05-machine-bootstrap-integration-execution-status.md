@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SENIOR_REVIEW_REQUIRED — W05.T05 bounded campaign discovery is accepted/read back; the second scaffold/initial-publication slice is held at the System-Impact Gate.
-CURRENT_TASK: W05.T05 — final CURRENT v3 generator/blank scaffold and initial-publication behavior; resume only after the initial-ref transport boundary is resolved.
-LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`; W05.T04 -> all six named schema/README/proof outputs — routine Senior integration audit PASS at `31000ae02ec8046c1b9deffadfce6b4297e01375`.
-LAST_SAFE_SHA: `d1ba4c17277c04a30c7f7a59ad755a0e6b198f35` — freshly fetched public HEAD supplied for the second T05 slice; it preserves the accepted discovery output.
+STATUS: EXECUTING — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 initial-publication capability is authorized; the blank-scaffold completion slice remains held until P1 PASS/read-back.
+CURRENT_TASK: W05.T05-P1 — bootstrap-specific initial campaign publication capability.
+LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
+LAST_SAFE_SHA: `16e647d8775d8218e04c765521c990ce090fe138` — System-Impact stop/read-back head; hosted `Validate engine source` run `36890478930` SUCCESS.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1131,3 +1131,53 @@ SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — unresolved initial-ref transport capab
 NEXT_EXACT_TASK: obtain Senior ruling on whether initial campaign-ref creation is supported by an already-approved callable/transport boundary or needs a separate architecture decision; then resume the reconciled T05 scope. Do not begin W05.T06.
 KNOWN_BLOCKERS: no admitted create-if-absent operation has been identified on the existing T05/W02-callable path; primary-workspace release integration is not clean-exact verification evidence.
 UNPUBLISHED_WORK: NONE — no T05 second-slice source/test changes exist; this checkpoint records only the gate and its T05 consumer-scope synchronization.
+
+
+## W05.T05 initial-ref System-Impact Senior resolution — 2026-10-01
+
+RULING:
+`DEV/docs/superpowers/design/2026-10-01-w05-t05-initial-campaign-publication-senior-ruling.md`
+
+```text
+SYSTEM_IMPACT: RESOLVED
+CLASSIFICATION: MISSING MACHINE-REALIZATION SEAM
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+W02/W04: NOT REOPENED
+W05_BOUNDED_CAMPAIGN_DISCOVERY_READY: PRESERVED / ACCEPTED
+W05.T05-P1: AUTHORIZED
+OUTPUT: W05_INITIAL_CAMPAIGN_PUBLICATION_READY
+T05 blank-scaffold completion: HELD UNTIL P1 PASS/READ-BACK
+W05.T06: NOT AUTHORIZED
+```
+
+Senior selected a bootstrap-specific capability view over the same authenticated
+RepositoryPort/deployment adapter. Initial creation occurs before a
+campaign-bound RuntimeHost can exist and therefore must not be forced through
+`CampaignPublicationService`.
+
+Required initial authority transition:
+
+```text
+freeze exact bootstrap identity + generated scaffold
+-> exact target-ref state
+-> one tree FROM SCRATCH
+-> one initialization commit
+     parent = pinned storage default-branch HEAD
+-> create_ref_if_absent(target, commit)
+-> bounded W02-compatible accepted/rejected/conflict/indeterminate reconciliation
+```
+
+Ordinary `update_ref` may not substitute for absent-ref creation. No force,
+per-file publication, alternate transport, synthetic selected campaign or
+second ref-writing authority is admitted.
+
+Direct P1 implementation lane:
+`GAME/TOOLS/bootstrap.py` + `DEV/TESTS/test_rd14_bootstrap.py` plus task-local
+evidence. RuntimeHost/publication.py/policy_basis.RepositoryPort are inspect-only
+unless a fresh test-first contradiction returns to System Impact.
+
+The T05 Step-5.1 scaffold consumer synchronization remains admitted: after P1
+acceptance, the resumed scaffold slice updates CURRENT.yaml to v3, removes
+world_time.frontier, and synchronizes generator/scaffold validation atomically.
+
+NEXT_EXACT_TASK: implement/review W05.T05-P1 only.
