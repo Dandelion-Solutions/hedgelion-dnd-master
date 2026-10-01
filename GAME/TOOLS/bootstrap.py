@@ -1,7 +1,7 @@
-"""Typed pre-materialization campaign selection and identity contracts.
+"""Typed campaign selection, identity and initial-publication contracts.
 
-This module intentionally prepares no scaffold bytes and performs no repository
-mutation.  Wave 05 owns generator invocation, publication and installation.
+Initial publication remains a bootstrap-specific operation over the same
+authenticated deployment adapter used for bounded campaign discovery.
 """
 
 from __future__ import annotations
@@ -9,12 +9,20 @@ from __future__ import annotations
 import re
 import uuid
 from collections.abc import Mapping
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from datetime import datetime
-from typing import Literal, Protocol, cast
+from types import MappingProxyType
+from typing import Final, Literal, Protocol, cast
+
+from .policy_basis import AuthenticatedPrincipalEvidence
+from .publication import PublicationOutcome, PublicationStatus
+
+# framework_module_version: 1.0.1
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_CAMPAIGN_ID_RE = re.compile(r"^campaign\.[0-9a-f]{32}$")
 _CAMPAIGN_BRANCH_RE = re.compile(r"^campaign/\d{8}(?:-(?:0[2-9]|[1-9]\d+))?$")
 MAX_CAMPAIGN_REFS_PER_PAGE: int = 20
 
@@ -142,6 +150,86 @@ class CampaignDiscoveryProvider(Protocol):
     ) -> Mapping[str, object] | None: ...
 
 
+@dataclass(frozen=True, slots=True)
+class InitialCampaignRefState:
+    """Exact target campaign ref state at one bounded read point."""
+
+    status: Literal["ABSENT", "PRESENT"]
+    head_sha: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.status == "ABSENT":
+            if self.head_sha is not None:
+                raise BootstrapContractError("absent campaign ref cannot carry a HEAD")
+            return
+        if self.status == "PRESENT":
+            if not isinstance(self.head_sha, str) or not _SHA1_RE.fullmatch(
+                self.head_sha
+            ):
+                raise BootstrapContractError(
+                    "present campaign ref requires an exact lowercase HEAD"
+                )
+            return
+        raise BootstrapContractError("initial campaign ref status is not admitted")
+
+    @classmethod
+    def absent(cls) -> InitialCampaignRefState:
+        return cls(status="ABSENT")
+
+    @classmethod
+    def present(cls, head_sha: str) -> InitialCampaignRefState:
+        return cls(status="PRESENT", head_sha=head_sha)
+
+
+class BootstrapPublicationCapability(Protocol):
+    """Narrow pre-campaign publication view on the discovery deployment adapter."""
+
+    def repository_identity(self) -> str:
+        """Return the exact repository identity bound to this adapter."""
+
+    def resolve_authenticated_storage_principal(
+        self, storage_repository: str, pinned_storage_head: str
+    ) -> AuthenticatedPrincipalEvidence:
+        """Resolve the authenticated principal for this exact storage basis."""
+
+    def read_ref_state(self, target_campaign_ref: str) -> InitialCampaignRefState:
+        """Return exact ABSENT/PRESENT evidence for one target ref."""
+
+    def create_tree_from_scratch(
+        self, exact_generated_files: Mapping[str, bytes]
+    ) -> object:
+        """Create one tree from exactly these files, with no base tree."""
+
+    def create_single_parent_commit(
+        self, parent_sha: str, tree_sha: str, target_ref: str
+    ) -> object:
+        """Create one initialization commit with exactly the supplied parent."""
+
+    def create_ref_if_absent(
+        self, target_campaign_ref: str, exact_commit_sha: str
+    ) -> PublicationOutcome:
+        """Atomically create only an absent ref and return a W02 outcome."""
+
+    def read_exact_commit(
+        self, target_campaign_ref: str, exact_commit_sha: str
+    ) -> Mapping[str, object]:
+        """Return exact revision/tree/parents and the complete path-to-bytes map."""
+
+
+class BootstrapDeploymentProvider(
+    CampaignDiscoveryProvider, BootstrapPublicationCapability, Protocol
+):
+    """One authenticated deployment adapter for discovery and initial creation."""
+
+
+@dataclass(frozen=True, slots=True)
+class InitialCampaignPublicationResult:
+    """W02-compatible initial-publication outcome plus its frozen retry identity."""
+
+    attempt: FrozenInitialCampaignPublication
+    outcome: PublicationOutcome
+
+
 class _ExactCampaignRefResolver(Protocol):
     """Optional direct-routing capability for an explicit campaign ID."""
 
@@ -229,6 +317,557 @@ class BootstrapResult:
             "ruleset_set_sha256": self.ruleset_set_sha256,
             "ruleset_set_digest_generation": self.ruleset_set_digest_generation,
         }
+
+
+@dataclass(frozen=True, slots=True)
+class FrozenInitialCampaignPublication:
+    """One immutable bootstrap identity plus its exact generated file map."""
+
+    bootstrap_result: BootstrapResult
+    generated_files: Mapping[str, bytes]
+    generated_files_fingerprint: tuple[tuple[str, bytes], ...] = ()
+    tree_sha: str | None = None
+    initialization_commit_sha: str | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.bootstrap_result, BootstrapResult):
+            raise BootstrapContractError("frozen bootstrap result is required")
+        result = self.bootstrap_result
+        if (
+            not isinstance(result.selection, CampaignSelection)
+            or result.selection.kind != "new"
+        ):
+            raise BootstrapContractError(
+                "initial publication requires the frozen New Game identity"
+            )
+        if not isinstance(result.creator, CreatorIdentity):
+            raise BootstrapContractError("frozen creator identity is required")
+        if not isinstance(result.campaign_id, str) or not _CAMPAIGN_ID_RE.fullmatch(
+            result.campaign_id
+        ):
+            raise BootstrapContractError("frozen campaign ID is not canonical")
+        _validate_creation_input(
+            storage_repository=result.storage_repository,
+            pinned_storage_head=result.pinned_storage_head,
+            mode=result.mode,
+            campaign_branch=result.campaign_branch,
+            created_at=result.created_at,
+            engine_version=result.engine_version,
+            package_id=result.package_id,
+            source_commit_sha=result.source_commit_sha,
+            package_sha256=result.package_sha256,
+            ruleset_set_sha256=result.ruleset_set_sha256,
+            ruleset_set_digest_generation=result.ruleset_set_digest_generation,
+        )
+        if not isinstance(self.generated_files, Mapping) or not self.generated_files:
+            raise BootstrapContractError(
+                "initial publication requires a complete generated file map"
+            )
+
+        files: dict[str, bytes] = {}
+        for raw_path, content in self.generated_files.items():
+            if (
+                not isinstance(raw_path, str)
+                or not raw_path
+                or raw_path.startswith("/")
+                or "\\" in raw_path
+                or "\x00" in raw_path
+                or any(part in {"", ".", ".."} for part in raw_path.split("/"))
+            ):
+                raise BootstrapContractError(
+                    "generated campaign file path must be normalized"
+                )
+            if raw_path in {
+                "README.md",
+                "DND_STORAGE.yaml",
+                "DND_STORAGE",
+            } or raw_path.startswith("DND_STORAGE/"):
+                raise BootstrapContractError(
+                    "generated campaign tree cannot include storage-root files"
+                )
+            if not isinstance(content, bytes):
+                raise BootstrapContractError(
+                    "generated campaign file content must be exact bytes"
+                )
+            files[raw_path] = content
+
+        fingerprint = tuple(sorted(files.items()))
+        if self.generated_files_fingerprint not in ((), fingerprint):
+            raise BootstrapContractError(
+                "generated campaign file fingerprint differs from its exact files"
+            )
+        if self.tree_sha is not None and (
+            not isinstance(self.tree_sha, str) or not _SHA1_RE.fullmatch(self.tree_sha)
+        ):
+            raise BootstrapContractError("prepared campaign tree must be an exact SHA")
+        if self.initialization_commit_sha is not None and (
+            not isinstance(self.initialization_commit_sha, str)
+            or not _SHA1_RE.fullmatch(self.initialization_commit_sha)
+        ):
+            raise BootstrapContractError("initialization commit must be an exact SHA")
+        if (self.tree_sha is None) != (self.initialization_commit_sha is None):
+            raise BootstrapContractError(
+                "prepared tree and initialization commit must be frozen together"
+            )
+        object.__setattr__(self, "generated_files", MappingProxyType(files))
+        object.__setattr__(self, "generated_files_fingerprint", fingerprint)
+
+
+def freeze_initial_campaign_publication(
+    bootstrap_result: BootstrapResult,
+    generated_files: Mapping[str, bytes],
+) -> FrozenInitialCampaignPublication:
+    """Freeze one New Game identity and the exact complete generated file map."""
+
+    return FrozenInitialCampaignPublication(
+        bootstrap_result=bootstrap_result,
+        generated_files=generated_files,
+    )
+
+
+def publish_initial_campaign(
+    deployment: BootstrapDeploymentProvider,
+    attempt: FrozenInitialCampaignPublication,
+) -> InitialCampaignPublicationResult:
+    """Publish one from-scratch initialization through a create-if-absent ref."""
+
+    if not isinstance(attempt, FrozenInitialCampaignPublication):
+        raise BootstrapContractError("frozen initial campaign attempt is required")
+    if not _has_initial_publication_capability(deployment):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="INITIAL_PUBLICATION_CAPABILITY_UNAVAILABLE",
+        )
+
+    identity = attempt.bootstrap_result
+    try:
+        repository_identity = deployment.repository_identity()
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="STORAGE_REPOSITORY_IDENTITY_UNAVAILABLE",
+        )
+    if (
+        not isinstance(repository_identity, str)
+        or repository_identity != identity.storage_repository
+    ):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="STORAGE_REPOSITORY_IDENTITY_MISMATCH",
+        )
+
+    try:
+        principal = deployment.resolve_authenticated_storage_principal(
+            identity.storage_repository, identity.pinned_storage_head
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="AUTHENTICATED_STORAGE_PRINCIPAL_UNAVAILABLE",
+        )
+    if (
+        not isinstance(principal, AuthenticatedPrincipalEvidence)
+        or principal.principal_id != identity.creator.stable_github_user_id
+    ):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="AUTHENTICATED_STORAGE_PRINCIPAL_MISMATCH",
+        )
+
+    try:
+        ref_state = deployment.read_ref_state(identity.campaign_branch)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="INITIAL_TARGET_REF_EVIDENCE_UNAVAILABLE",
+        )
+    if not isinstance(ref_state, InitialCampaignRefState):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="INITIAL_TARGET_REF_EVIDENCE_INVALID",
+        )
+    if ref_state.status == "PRESENT":
+        return _adopt_existing_initial_campaign(deployment, attempt, ref_state)
+
+    resuming_prepared_commit = attempt.initialization_commit_sha is not None
+    tree_sha = attempt.tree_sha
+    if tree_sha is None:
+        try:
+            tree_sha = _initial_revision(
+                deployment.create_tree_from_scratch(attempt.generated_files),
+                "created campaign tree",
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            return _initial_publication_result(
+                attempt,
+                PublicationStatus.REJECTED,
+                cause="INITIAL_TREE_PREPARATION_FAILED",
+            )
+
+    commit_sha = attempt.initialization_commit_sha
+    if commit_sha is None:
+        try:
+            commit_sha = _initial_revision(
+                deployment.create_single_parent_commit(
+                    identity.pinned_storage_head,
+                    tree_sha,
+                    identity.campaign_branch,
+                ),
+                "initialization commit",
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            return _initial_publication_result(
+                attempt,
+                PublicationStatus.REJECTED,
+                cause="INITIAL_COMMIT_PREPARATION_FAILED",
+            )
+    if tree_sha is None or commit_sha is None:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="INITIAL_PREPARATION_IDENTITY_UNAVAILABLE",
+        )
+    prepared = (
+        attempt
+        if resuming_prepared_commit
+        else replace(
+            attempt,
+            tree_sha=tree_sha,
+            initialization_commit_sha=commit_sha,
+        )
+    )
+
+    intended_commit_sha = commit_sha
+    if resuming_prepared_commit:
+        evidence = _read_initial_commit_evidence(
+            deployment, prepared, intended_commit_sha
+        )
+        matches = (
+            None
+            if evidence is None
+            else _initial_commit_match(evidence, prepared, intended_commit_sha)
+        )
+        if matches is not True:
+            return _initial_publication_result(
+                prepared,
+                PublicationStatus.CONFLICT
+                if matches is False
+                else PublicationStatus.REJECTED,
+                cause="PREPARED_INITIALIZATION_NOT_PROVEN",
+                intended_commit_sha=intended_commit_sha,
+            )
+
+    try:
+        outcome = deployment.create_ref_if_absent(
+            identity.campaign_branch, intended_commit_sha
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        outcome = PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended_commit_sha,
+            None,
+            "INITIAL_REF_CREATE_RESULT_UNAVAILABLE",
+            True,
+        )
+
+    classified = _initial_ref_outcome(outcome, intended_commit_sha)
+    if classified.status is PublicationStatus.INDETERMINATE:
+        return _reconcile_initial_publication(deployment, prepared, intended_commit_sha)
+    return InitialCampaignPublicationResult(prepared, classified)
+
+
+def _has_initial_publication_capability(value: object) -> bool:
+    required = (
+        "list_campaign_refs",
+        "read_campaign_file",
+        "repository_identity",
+        "resolve_authenticated_storage_principal",
+        "read_ref_state",
+        "create_tree_from_scratch",
+        "create_single_parent_commit",
+        "create_ref_if_absent",
+        "read_exact_commit",
+    )
+    return all(callable(getattr(value, name, None)) for name in required)
+
+
+def _initial_revision(value: object, label: str) -> str:
+    if isinstance(value, Mapping):
+        value = value.get("sha", value.get("tree_sha", value.get("commit_sha")))
+    if not isinstance(value, str) or not _SHA1_RE.fullmatch(value):
+        raise BootstrapContractError(f"{label} must be an exact lowercase SHA")
+    return value
+
+
+def _initial_publication_result(
+    attempt: FrozenInitialCampaignPublication,
+    status: PublicationStatus,
+    *,
+    cause: str,
+    intended_commit_sha: str | None = None,
+    observed_head_sha: str | None = None,
+    dispatched: bool = False,
+) -> InitialCampaignPublicationResult:
+    return InitialCampaignPublicationResult(
+        attempt,
+        PublicationOutcome(
+            status,
+            intended_commit_sha,
+            observed_head_sha,
+            cause,
+            dispatched,
+        ),
+    )
+
+
+def _initial_ref_outcome(value: object, intended_commit_sha: str) -> PublicationOutcome:
+    if not isinstance(value, PublicationOutcome):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended_commit_sha,
+            None,
+            "INITIAL_REF_CREATE_OUTCOME_INVALID",
+            True,
+        )
+    if (
+        not isinstance(value.status, PublicationStatus)
+        or type(value.dispatched) is not bool
+        or not isinstance(value.cause, str)
+        or not value.cause
+        or type(value.retry_with_force) is not bool
+    ):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended_commit_sha,
+            None,
+            "INITIAL_REF_CREATE_OUTCOME_INVALID",
+            True,
+        )
+    if value.observed_head_sha is not None:
+        try:
+            _initial_revision(value.observed_head_sha, "observed campaign HEAD")
+        except BootstrapContractError:
+            return PublicationOutcome(
+                PublicationStatus.INDETERMINATE,
+                intended_commit_sha,
+                None,
+                "INITIAL_REF_CREATE_OUTCOME_INVALID",
+                value.dispatched,
+            )
+    if value.intended_commit_sha != intended_commit_sha:
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended_commit_sha,
+            value.observed_head_sha,
+            "INITIAL_REF_CREATE_OUTCOME_MISMATCH",
+            value.dispatched,
+        )
+    if value.retry_with_force:
+        return PublicationOutcome(
+            PublicationStatus.CONFLICT,
+            intended_commit_sha,
+            value.observed_head_sha,
+            "FORCE_RETRY_FORBIDDEN",
+            value.dispatched,
+            retry_with_force=False,
+        )
+    if value.status is PublicationStatus.ACCEPTED and (
+        value.dispatched is not True or value.observed_head_sha != intended_commit_sha
+    ):
+        return PublicationOutcome(
+            PublicationStatus.INDETERMINATE,
+            intended_commit_sha,
+            value.observed_head_sha,
+            "INITIAL_REF_ACCEPTANCE_EVIDENCE_INCOMPLETE",
+            value.dispatched,
+        )
+    return value
+
+
+def _read_initial_commit_evidence(
+    deployment: BootstrapPublicationCapability,
+    attempt: FrozenInitialCampaignPublication,
+    commit_sha: str,
+) -> Mapping[str, object] | None:
+    try:
+        evidence = deployment.read_exact_commit(
+            attempt.bootstrap_result.campaign_branch, commit_sha
+        )
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return None
+    return evidence if isinstance(evidence, Mapping) else None
+
+
+def _initial_commit_match(
+    evidence: Mapping[str, object],
+    attempt: FrozenInitialCampaignPublication,
+    commit_sha: str,
+) -> bool | None:
+    """Return exact match, contradiction, or insufficient read evidence."""
+
+    if evidence.get("revision") != commit_sha:
+        return None
+    tree_sha = evidence.get("tree_sha")
+    if not isinstance(tree_sha, str) or not _SHA1_RE.fullmatch(tree_sha):
+        return None
+    if attempt.tree_sha is not None and tree_sha != attempt.tree_sha:
+        return False
+    parents = evidence.get("parents")
+    if not isinstance(parents, (list, tuple)):
+        return None
+    if len(parents) != 1:
+        return False
+    if parents[0] != attempt.bootstrap_result.pinned_storage_head:
+        return False
+    files = evidence.get("files")
+    if not isinstance(files, Mapping):
+        return None
+    if any(
+        not isinstance(path, str) or not isinstance(content, bytes)
+        for path, content in files.items()
+    ):
+        return None
+    return dict(files) == dict(attempt.generated_files)
+
+
+def _adopt_existing_initial_campaign(
+    deployment: BootstrapPublicationCapability,
+    attempt: FrozenInitialCampaignPublication,
+    ref_state: InitialCampaignRefState,
+) -> InitialCampaignPublicationResult:
+    head_sha = ref_state.head_sha
+    if head_sha is None:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="PRESENT_INITIAL_TARGET_HEAD_UNAVAILABLE",
+        )
+    if (
+        attempt.initialization_commit_sha is not None
+        and head_sha != attempt.initialization_commit_sha
+    ):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.CONFLICT,
+            cause="EXISTING_TARGET_IS_DIFFERENT_INITIALIZATION",
+            intended_commit_sha=attempt.initialization_commit_sha,
+            observed_head_sha=head_sha,
+        )
+
+    evidence = _read_initial_commit_evidence(deployment, attempt, head_sha)
+    if evidence is None:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.CONFLICT,
+            cause="EXISTING_TARGET_INITIALIZATION_NOT_PROVEN",
+            intended_commit_sha=attempt.initialization_commit_sha,
+            observed_head_sha=head_sha,
+        )
+    matches = _initial_commit_match(evidence, attempt, head_sha)
+    if matches is not True:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.CONFLICT,
+            cause="EXISTING_TARGET_INITIALIZATION_NOT_PROVEN",
+            intended_commit_sha=attempt.initialization_commit_sha,
+            observed_head_sha=head_sha,
+        )
+
+    tree_sha = evidence["tree_sha"]
+    adopted = replace(
+        attempt,
+        tree_sha=tree_sha,
+        initialization_commit_sha=head_sha,
+    )
+    return _initial_publication_result(
+        adopted,
+        PublicationStatus.ACCEPTED,
+        cause="RECONCILED_CURRENT_CLOSURE",
+        intended_commit_sha=head_sha,
+        observed_head_sha=head_sha,
+        dispatched=False,
+    )
+
+
+def _reconcile_initial_publication(
+    deployment: BootstrapPublicationCapability,
+    attempt: FrozenInitialCampaignPublication,
+    intended_commit_sha: str,
+) -> InitialCampaignPublicationResult:
+    try:
+        ref_state = deployment.read_ref_state(attempt.bootstrap_result.campaign_branch)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="INITIAL_REF_RECONCILIATION_UNAVAILABLE",
+            intended_commit_sha=intended_commit_sha,
+            dispatched=False,
+        )
+    if not isinstance(ref_state, InitialCampaignRefState):
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="INITIAL_REF_RECONCILIATION_INVALID",
+            intended_commit_sha=intended_commit_sha,
+            dispatched=False,
+        )
+    if ref_state.status == "ABSENT":
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.REJECTED,
+            cause="CONFIRMED_NOT_PUBLISHED",
+            intended_commit_sha=intended_commit_sha,
+            dispatched=False,
+        )
+    head_sha = ref_state.head_sha
+    if head_sha != intended_commit_sha:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.CONFLICT,
+            cause="INITIAL_REF_POINTS_ELSEWHERE",
+            intended_commit_sha=intended_commit_sha,
+            observed_head_sha=head_sha,
+            dispatched=False,
+        )
+
+    evidence = _read_initial_commit_evidence(deployment, attempt, head_sha)
+    if evidence is None:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.INDETERMINATE,
+            cause="INITIAL_COMMIT_RECONCILIATION_UNAVAILABLE",
+            intended_commit_sha=intended_commit_sha,
+            observed_head_sha=head_sha,
+            dispatched=False,
+        )
+    matches = _initial_commit_match(evidence, attempt, head_sha)
+    if matches is not True:
+        return _initial_publication_result(
+            attempt,
+            PublicationStatus.CONFLICT
+            if matches is False
+            else PublicationStatus.INDETERMINATE,
+            cause="INITIAL_COMMIT_RECONCILIATION_MISMATCH",
+            intended_commit_sha=intended_commit_sha,
+            observed_head_sha=head_sha,
+            dispatched=False,
+        )
+    return _initial_publication_result(
+        attempt,
+        PublicationStatus.ACCEPTED,
+        cause="RECONCILED_CURRENT_CLOSURE",
+        intended_commit_sha=intended_commit_sha,
+        observed_head_sha=head_sha,
+        dispatched=False,
+    )
 
 
 def require_campaign_selection(

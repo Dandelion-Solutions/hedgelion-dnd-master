@@ -1181,3 +1181,48 @@ acceptance, the resumed scaffold slice updates CURRENT.yaml to v3, removes
 world_time.frontier, and synchronizes generator/scaffold validation atomically.
 
 NEXT_EXACT_TASK: implement/review W05.T05-P1 only.
+
+
+## W05.T05-P1 worker execution evidence — 2026-10-01
+
+CONTROLLING RULING:
+`DEV/docs/superpowers/design/2026-10-01-w05-t05-initial-campaign-publication-senior-ruling.md`
+
+BASE_SHA: `9e09151a99ff2f748d3ad7c0f335df57b656cf59`
+
+TDD BASELINE:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py` — 22 passed before P1 tests/code.
+
+TDD RED / GREEN:
+- Freeze seam RED: `... pytest -q DEV/TESTS/test_rd14_bootstrap.py::InitialCampaignPublicationTests` — 2 failed because the initial-publication freeze and versioned contract were absent.
+- Freeze GREEN: same class — 2 passed after adding the immutable identity/file-map freeze and first module contract version.
+- Initial-publication RED: same class — 14 expected missing-capability failures, 2 passed before publication implementation.
+- Initial-publication GREEN: same class — 16 passed after adding the single-adapter capability, exact absent/present ref preflight, from-scratch tree, parented commit, create-if-absent, and exact reconciliation.
+- Malformed W02 outcome RED/GREEN: `test_malformed_transport_outcome_is_reconciled_not_acknowledged` failed when a raw string status escaped validation; after fail-closed outcome validation and bounded reconciliation it passed.
+- Forged prepared commit RED/GREEN: `test_unproven_prepared_commit_cannot_be_published` failed when a caller-supplied prepared SHA reached create-if-absent; after requiring exact commit/tree/parent/file evidence before retry publication it passed.
+- Existing-target proof RED/GREEN: `test_existing_target_without_exact_initialization_proof_conflicts` failed because incomplete exact evidence returned INDETERMINATE; after enforcing the ruling's conflict law for an unproven pre-existing target it passed.
+- One implementation regression was found while enforcing the frozen tree+commit pair: a transient tree-only frozen value caused 10 focused failures (30 passed). The tree SHA is now kept local until the single-parent commit is prepared, and a retry receives only the jointly frozen tree/commit. The focused suite returned GREEN.
+
+FINAL FOCUSED VERIFICATION:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py` — 41 passed.
+- `.hdm-devtools/venv/bin/ruff check --ignore SIM117 GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS. Unfiltered Ruff reports one pre-existing SIM117 in the unchanged `CreationIdentityTests` block; no unrelated test cleanup was made.
+- `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS.
+- `git diff --check` — PASS.
+
+FULL DEV DIAGNOSTIC (NOT ACCEPTANCE):
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto` — 1489 passed, 7 failed, 24 existing RD09 `RefResolver` warnings in 221.87s.
+- Final candidate rerun: same command — 1490 passed, 7 failed, 24 existing RD09 `RefResolver` warnings in 211.15s. The seven reported failures were `test_game_dev_layout::test_runtime_marker_is_unique`, `test_s6d_11_ruleset_package_closure::test_transitional_identity_keys_are_absent_from_current_carriers`, `test_runtime_package_provenance::test_built_zip_contains_one_generated_root_provenance_member`, `test_runtime_package_provenance::test_clean_checkout_metadata_records_exact_head`, `test_release_game_passthrough::test_new_game_root_file_and_directory_are_automatically_archived`, `test_release_integration::test_canonical_entry_point_builds_reproducible_flat_runtime_and_generator_smoke`, and `test_versioning_namespace_policy::test_census_has_zero_unclassified_hits`.
+- This broader workspace run is non-acceptance evidence; failure causes were not investigated because the task forbids inspecting private ignored artifacts. No private ignored workspace artifacts were inspected or cleaned. Clean-exact full DEV and maintenance evidence are unavailable for P1.
+- Hosted CI is unavailable from this local-machine runtime.
+
+VERSION_IMPACT: `GAME/TOOLS/bootstrap.py` now carries `framework_module_version: 1.0.1`, the first module-local version for this material bootstrap callable-contract addition. There was no prior bootstrap module version to increment. No persistent schema, campaign-contract/storage generation, catalog generation, migration, dual-read, DEV/GAME projection synchronization, or other version-bearing owner changed.
+
+SYSTEM_IMPACT: NONE under the accepted Senior ruling. The implementation is confined to `bootstrap.py` and its RD14 tests; it consumes one combined discovery/publication deployment view, preserves W02 `PublicationOutcome`/`PublicationStatus`, verifies exact repository/principal identity and fails closed when create-if-absent is unavailable. `runtime_host.py`, `publication.py`, `policy_basis.py`, and W02 owners/tests remain unchanged. No ordinary `update_ref`, alternate writer, per-file write, force path, synthetic RuntimeHost, or retry loop was introduced.
+
+CURRENT CHECKPOINT STATE: focused P1 tests and scoped lint/format checks are GREEN locally. The coherent P1 implementation/cursor candidate is on this workspace at the base above; publication/read-back and independent P1 PASS remain pending. `W05_INITIAL_CAMPAIGN_PUBLICATION_READY` is not yet recorded as independently accepted. The held blank-scaffold slice and W05.T06 have not started.
+
+NEXT_EXACT_TASK: commit the coherent P1 source/test/cursor slice, publish non-force on `v1/engine-rearchitecture`, obtain remote read-back, then request independent P1 PASS before resuming the held T05 scaffold slice.
+
+KNOWN_BLOCKERS: broader workspace suite is non-green/non-acceptance as recorded above; no private-artifact inspection or cleanup is authorized. A concrete deployment adapter must implement the combined bootstrap capability view; unsupported adapters return a typed fail-closed outcome.
+
+UNPUBLISHED_WORK: P1 implementation and task-local evidence are still local pending the coherent checkpoint commit/publication/read-back.

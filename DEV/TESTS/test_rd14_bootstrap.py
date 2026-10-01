@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
@@ -17,6 +18,8 @@ from GAME.TOOLS.bootstrap import (
     create_bootstrap_result,
     require_campaign_selection,
 )
+from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence
+from GAME.TOOLS.publication import PublicationOutcome, PublicationStatus
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -55,6 +58,34 @@ def _scaffold_input(campaign_branch: str = "campaign/20260916") -> dict[str, obj
     return build_scaffold_input(creation)
 
 
+def _bootstrap_result() -> bootstrap.BootstrapResult:
+    return create_bootstrap_result(
+        selection=CampaignSelection.new(),
+        storage_repository="github.com/example/campaign-storage",
+        pinned_storage_head="a" * 40,
+        creator=_creator(),
+        mode="multiplayer",
+        campaign_branch="campaign/20260916",
+        created_at="2026-09-16T12:00:00Z",
+        engine_version="1.0-alpha",
+        package_id="dev-v1.0-alpha",
+        source_commit_sha="b" * 40,
+        package_sha256="c" * 64,
+        ruleset_set_sha256="d" * 64,
+        ruleset_set_digest_generation=1,
+    )
+
+
+def _generated_initial_files(
+    result: bootstrap.BootstrapResult,
+) -> dict[str, bytes]:
+    return {
+        "MANIFEST.yaml": f"campaign_id: {result.campaign_id}\n".encode(),
+        "CAMPAIGN_CARD.yaml": f"campaign_id: {result.campaign_id}\n".encode(),
+        "STATE/CURRENT.yaml": b"schema_version: 3\n",
+    }
+
+
 class CampaignSelectionBarrierTests(unittest.TestCase):
     def test_missing_selection_fails_closed_without_inferring_a_sole_candidate(
         self,
@@ -73,6 +104,514 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
             CampaignSelection(kind="new", campaign_id="campaign.frostfall")
         with self.assertRaises(BootstrapContractError):
             CampaignSelection(kind="implicit", campaign_id=None)  # type: ignore[arg-type]
+
+
+class InitialCampaignPublicationTests(unittest.TestCase):
+    def test_bootstrap_module_starts_its_versioned_publication_contract_at_one(
+        self,
+    ) -> None:
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.1")
+
+    def test_freeze_initial_publication_copies_exact_generated_file_identity(
+        self,
+    ) -> None:
+        freeze = getattr(bootstrap, "freeze_initial_campaign_publication", None)
+        self.assertTrue(
+            callable(freeze),
+            "bootstrap must expose its initial campaign publication freeze",
+        )
+        if not callable(freeze):
+            return
+
+        result = _bootstrap_result()
+        generated_files = _generated_initial_files(result)
+        attempt = freeze(result, generated_files)
+        generated_files["STATE/CURRENT.yaml"] = b"changed after freeze"
+
+        self.assertIs(attempt.bootstrap_result, result)
+        self.assertEqual(
+            attempt.generated_files["STATE/CURRENT.yaml"], b"schema_version: 3\n"
+        )
+        self.assertEqual(
+            attempt.generated_files_fingerprint,
+            (
+                ("CAMPAIGN_CARD.yaml", f"campaign_id: {result.campaign_id}\n".encode()),
+                ("MANIFEST.yaml", f"campaign_id: {result.campaign_id}\n".encode()),
+                ("STATE/CURRENT.yaml", b"schema_version: 3\n"),
+            ),
+        )
+
+    def test_absent_ref_creates_one_scratch_tree_one_parented_commit_and_ref(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment()
+
+        bootstrap.discover_campaign_page(deployment)
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(
+            deployment.list_calls, [(None, bootstrap.MAX_CAMPAIGN_REFS_PER_PAGE)]
+        )
+        self.assertEqual(
+            deployment.resolved_storage_basis,
+            (result.storage_repository, result.pinned_storage_head),
+        )
+        self.assertEqual(
+            deployment.principal.principal_id, result.creator.stable_github_user_id
+        )
+        self.assertEqual(
+            deployment.operations,
+            [
+                "repository_identity",
+                "resolve_authenticated_storage_principal",
+                "read_ref_state",
+                "create_tree_from_scratch",
+                "create_single_parent_commit",
+                "create_ref_if_absent",
+            ],
+        )
+        self.assertEqual(len(deployment.tree_calls), 1)
+        self.assertEqual(len(deployment.commit_calls), 1)
+        self.assertEqual(len(deployment.create_ref_calls), 1)
+        self.assertEqual(
+            deployment.create_ref_calls,
+            [(result.campaign_branch, deployment.commit_sha)],
+        )
+
+    def test_initialization_commit_has_only_the_pinned_storage_head_as_parent(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment()
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(
+            publication.attempt.initialization_commit_sha, deployment.commit_sha
+        )
+        self.assertEqual(
+            deployment.commit_calls,
+            [(result.pinned_storage_head, deployment.tree_sha, result.campaign_branch)],
+        )
+        self.assertEqual(
+            deployment.commits[deployment.commit_sha]["parents"],
+            [result.pinned_storage_head],
+        )
+
+    def test_scratch_tree_is_exact_scaffold_without_storage_root_readme_or_marker(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        generated_files = _generated_initial_files(result)
+        attempt = bootstrap.freeze_initial_campaign_publication(result, generated_files)
+        deployment = _InitialPublicationDeployment()
+
+        bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(deployment.tree_files, [generated_files])
+        self.assertNotIn("README.md", deployment.tree_files[0])
+        self.assertNotIn("DND_STORAGE.yaml", deployment.tree_files[0])
+        self.assertFalse(
+            any(
+                path == "DND_STORAGE" or path.startswith("DND_STORAGE/")
+                for path in deployment.tree_files[0]
+            )
+        )
+
+    def test_preexisting_target_conflicts_without_any_write(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(bootstrap.InitialCampaignRefState.present("e" * 40),)
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.CONFLICT)
+        self.assertEqual(deployment.tree_calls, [])
+        self.assertEqual(deployment.commit_calls, [])
+        self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_existing_target_without_exact_initialization_proof_conflicts(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(bootstrap.InitialCampaignRefState.present("f" * 40),),
+            existing_commit_sha="f" * 40,
+            existing_tree_files=attempt.generated_files,
+            existing_parent_sha=result.pinned_storage_head,
+        )
+        deployment.commits["f" * 40] = {
+            "revision": "f" * 40,
+            "tree_sha": deployment.existing_tree_sha,
+        }
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertIs(publication.outcome.status, PublicationStatus.CONFLICT)
+        self.assertEqual(deployment.tree_calls, [])
+        self.assertEqual(deployment.commit_calls, [])
+        self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_exact_existing_initialization_can_be_adopted_without_writes(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(bootstrap.InitialCampaignRefState.present("f" * 40),),
+            existing_commit_sha="f" * 40,
+            existing_tree_files=attempt.generated_files,
+            existing_parent_sha=result.pinned_storage_head,
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(publication.outcome.observed_head_sha, "f" * 40)
+        self.assertEqual(deployment.tree_calls, [])
+        self.assertEqual(deployment.commit_calls, [])
+        self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_existing_initialization_with_different_commit_tree_or_identity_conflicts(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        prepared = bootstrap.publish_initial_campaign(
+            _InitialPublicationDeployment(), attempt
+        ).attempt
+        files = dict(prepared.generated_files)
+        wrong_identity = dict(files)
+        wrong_identity["MANIFEST.yaml"] = b"campaign_id: campaign.other\n"
+        wrong_tree = dict(files)
+        wrong_tree["STATE/CURRENT.yaml"] = b"schema_version: 2\n"
+
+        cases = (
+            (
+                "different commit",
+                _InitialPublicationDeployment(
+                    ref_states=(bootstrap.InitialCampaignRefState.present("9" * 40),),
+                    existing_commit_sha="9" * 40,
+                    existing_tree_files=files,
+                    existing_parent_sha=result.pinned_storage_head,
+                ),
+            ),
+            (
+                "different tree",
+                _InitialPublicationDeployment(
+                    ref_states=(
+                        bootstrap.InitialCampaignRefState.present(
+                            prepared.initialization_commit_sha
+                        ),
+                    ),
+                    existing_commit_sha=prepared.initialization_commit_sha,
+                    existing_tree_files=wrong_tree,
+                    existing_parent_sha=result.pinned_storage_head,
+                    existing_tree_sha="8" * 40,
+                ),
+            ),
+            (
+                "different campaign identity",
+                _InitialPublicationDeployment(
+                    ref_states=(
+                        bootstrap.InitialCampaignRefState.present(
+                            prepared.initialization_commit_sha
+                        ),
+                    ),
+                    existing_commit_sha=prepared.initialization_commit_sha,
+                    existing_tree_files=wrong_identity,
+                    existing_parent_sha=result.pinned_storage_head,
+                ),
+            ),
+        )
+        for label, deployment in cases:
+            with self.subTest(label=label):
+                publication = bootstrap.publish_initial_campaign(deployment, prepared)
+                self.assertEqual(publication.outcome.status, PublicationStatus.CONFLICT)
+                self.assertEqual(deployment.tree_calls, [])
+                self.assertEqual(deployment.commit_calls, [])
+                self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_create_if_absent_race_loss_never_overwrites_or_uses_force(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.CONFLICT,
+                    "2" * 40,
+                    "3" * 40,
+                    "INITIAL_REF_ALREADY_EXISTS",
+                    True,
+                ),
+            )
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.CONFLICT)
+        self.assertEqual(
+            deployment.create_ref_calls,
+            [(result.campaign_branch, deployment.commit_sha)],
+        )
+        self.assertEqual(deployment.update_ref_calls, [])
+
+    def test_indeterminate_result_reconciles_exact_target_to_accepted(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.present("2" * 40),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.INDETERMINATE,
+                    "2" * 40,
+                    None,
+                    "INDETERMINATE",
+                    True,
+                ),
+            ),
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(publication.outcome.observed_head_sha, "2" * 40)
+        self.assertEqual(deployment.ref_read_count, 2)
+        self.assertEqual(
+            deployment.exact_commit_reads, [(result.campaign_branch, "2" * 40)]
+        )
+
+    def test_indeterminate_result_with_authoritative_absence_is_not_acknowledged(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.INDETERMINATE,
+                    "2" * 40,
+                    None,
+                    "INDETERMINATE",
+                    True,
+                ),
+            ),
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(publication.outcome.cause, "CONFIRMED_NOT_PUBLISHED")
+        self.assertFalse(publication.outcome.acknowledged)
+        self.assertEqual(deployment.ref_read_count, 2)
+
+    def test_indeterminate_result_with_different_target_head_is_conflict(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.present("4" * 40),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.INDETERMINATE,
+                    "2" * 40,
+                    None,
+                    "INDETERMINATE",
+                    True,
+                ),
+            ),
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.CONFLICT)
+        self.assertEqual(deployment.exact_commit_reads, [])
+
+    def test_malformed_transport_outcome_is_reconciled_not_acknowledged(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    "accepted",  # type: ignore[arg-type]
+                    "2" * 40,
+                    "2" * 40,
+                    "UNTRUSTED_ACCEPTANCE",
+                    True,
+                ),
+            ),
+        )
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertIs(publication.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(publication.outcome.cause, "CONFIRMED_NOT_PUBLISHED")
+        self.assertEqual(deployment.ref_read_count, 2)
+
+    def test_missing_create_if_absent_capability_fails_closed_without_update_ref(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment()
+        deployment.create_ref_if_absent = None
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(
+            publication.outcome.cause, "INITIAL_PUBLICATION_CAPABILITY_UNAVAILABLE"
+        )
+        self.assertEqual(deployment.operations, [])
+        self.assertEqual(deployment.update_ref_calls, [])
+
+    def test_ordinary_update_ref_is_not_used_as_initial_ref_creation(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment()
+        deployment.create_ref_if_absent = None
+
+        publication = bootstrap.publish_initial_campaign(deployment, attempt)
+
+        self.assertEqual(publication.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(deployment.update_ref_calls, [])
+        self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_repository_or_authenticated_principal_mismatch_rejects_before_write(
+        self,
+    ) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        mismatches = (
+            _InitialPublicationDeployment(repository_id="github.com/example/other"),
+            _InitialPublicationDeployment(
+                principal=AuthenticatedPrincipalEvidence("U_other")
+            ),
+        )
+        for deployment in mismatches:
+            with self.subTest(
+                repository=deployment.repo_id, principal=deployment.principal
+            ):
+                publication = bootstrap.publish_initial_campaign(deployment, attempt)
+                self.assertEqual(publication.outcome.status, PublicationStatus.REJECTED)
+                self.assertEqual(deployment.tree_calls, [])
+                self.assertEqual(deployment.commit_calls, [])
+                self.assertEqual(deployment.create_ref_calls, [])
+
+    def test_retry_reuses_frozen_identity_tree_and_initialization_commit(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        deployment = _InitialPublicationDeployment(
+            ref_states=(
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+                bootstrap.InitialCampaignRefState.absent(),
+            ),
+            create_ref_outcomes=(
+                PublicationOutcome(
+                    PublicationStatus.INDETERMINATE,
+                    "2" * 40,
+                    None,
+                    "INDETERMINATE",
+                    True,
+                ),
+                PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    "2" * 40,
+                    "2" * 40,
+                    "CONFIRMED_ACCEPTED",
+                    True,
+                ),
+            ),
+        )
+
+        first = bootstrap.publish_initial_campaign(deployment, attempt)
+        retry = bootstrap.publish_initial_campaign(deployment, first.attempt)
+
+        self.assertEqual(first.outcome.status, PublicationStatus.REJECTED)
+        self.assertEqual(retry.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertIs(first.attempt.bootstrap_result, result)
+        self.assertIs(retry.attempt.bootstrap_result, result)
+        self.assertEqual(
+            first.attempt.generated_files_fingerprint,
+            attempt.generated_files_fingerprint,
+        )
+        self.assertEqual(
+            retry.attempt.initialization_commit_sha,
+            first.attempt.initialization_commit_sha,
+        )
+        self.assertEqual(len(deployment.tree_calls), 1)
+        self.assertEqual(len(deployment.commit_calls), 1)
+        self.assertEqual(
+            deployment.create_ref_calls,
+            [
+                (result.campaign_branch, first.attempt.initialization_commit_sha),
+                (result.campaign_branch, first.attempt.initialization_commit_sha),
+            ],
+        )
+
+    def test_unproven_prepared_commit_cannot_be_published(self) -> None:
+        result = _bootstrap_result()
+        attempt = bootstrap.freeze_initial_campaign_publication(
+            result, _generated_initial_files(result)
+        )
+        forged = replace(
+            attempt,
+            tree_sha="1" * 40,
+            initialization_commit_sha="2" * 40,
+        )
+        deployment = _InitialPublicationDeployment()
+
+        publication = bootstrap.publish_initial_campaign(deployment, forged)
+
+        self.assertIsNot(publication.outcome.status, PublicationStatus.ACCEPTED)
+        self.assertEqual(deployment.create_ref_calls, [])
 
 
 class CreationIdentityTests(unittest.TestCase):
@@ -270,6 +809,122 @@ class _FakeCampaignDiscoveryProvider:
         branch = ref.branch
         self.file_reads.append((branch, path))
         return self.files.get((branch, path))
+
+
+class _InitialPublicationDeployment(_FakeCampaignDiscoveryProvider):
+    """One fake discovery/storage/publication adapter with exact call evidence."""
+
+    def __init__(
+        self,
+        *,
+        repository_id: str = "github.com/example/campaign-storage",
+        principal: AuthenticatedPrincipalEvidence | None = None,
+        ref_states: tuple[object, ...] = (),
+        create_ref_outcomes: tuple[PublicationOutcome, ...] = (),
+        existing_commit_sha: str | None = None,
+        existing_tree_files: object | None = None,
+        existing_parent_sha: str = "a" * 40,
+        existing_tree_sha: str = "1" * 40,
+    ) -> None:
+        super().__init__(
+            refs=(),
+            more_available=False,
+            continuation=None,
+            files={},
+            exact={},
+            limitation=None,
+        )
+        self.repo_id = repository_id
+        self.principal = principal or AuthenticatedPrincipalEvidence("U_kgDOBootstrap")
+        self.ref_states = list(ref_states)
+        self.create_ref_outcomes = list(create_ref_outcomes)
+        self.existing_commit_sha = existing_commit_sha
+        self.existing_tree_files = existing_tree_files
+        self.existing_parent_sha = existing_parent_sha
+        self.existing_tree_sha = existing_tree_sha
+        self.operations: list[str] = []
+        self.tree_calls: list[dict[str, bytes]] = []
+        self.tree_files: list[dict[str, bytes]] = []
+        self.commit_calls: list[tuple[str, str, str]] = []
+        self.create_ref_calls: list[tuple[str, str]] = []
+        self.update_ref_calls: list[tuple[str, str, bool]] = []
+        self.exact_commit_reads: list[tuple[str, str]] = []
+        self.ref_read_count = 0
+        self.tree_sha = "1" * 40
+        self.commit_sha = "2" * 40
+        self.commits: dict[str, dict[str, object]] = {}
+        if existing_commit_sha is not None:
+            self.commits[existing_commit_sha] = {
+                "revision": existing_commit_sha,
+                "tree_sha": existing_tree_sha,
+                "parents": [existing_parent_sha],
+                "files": dict(existing_tree_files or {}),
+            }
+
+    def repository_identity(self) -> str:
+        self.operations.append("repository_identity")
+        return self.repo_id
+
+    def resolve_authenticated_storage_principal(
+        self, storage_repository: str, pinned_storage_head: str
+    ) -> AuthenticatedPrincipalEvidence:
+        self.operations.append("resolve_authenticated_storage_principal")
+        self.resolved_storage_basis = (storage_repository, pinned_storage_head)
+        return self.principal
+
+    def read_ref_state(self, target_campaign_ref: str) -> object:
+        self.operations.append("read_ref_state")
+        self.ref_read_count += 1
+        if self.ref_states:
+            return self.ref_states.pop(0)
+        return bootstrap.InitialCampaignRefState.absent()
+
+    def create_tree_from_scratch(self, exact_generated_files: object) -> str:
+        self.operations.append("create_tree_from_scratch")
+        copied = dict(exact_generated_files)
+        self.tree_calls.append(copied)
+        self.tree_files.append(copied)
+        return self.tree_sha
+
+    def create_single_parent_commit(
+        self, parent_sha: str, tree_sha: str, target_ref: str
+    ) -> str:
+        self.operations.append("create_single_parent_commit")
+        self.commit_calls.append((parent_sha, tree_sha, target_ref))
+        self.commits[self.commit_sha] = {
+            "revision": self.commit_sha,
+            "tree_sha": tree_sha,
+            "parents": [parent_sha],
+            "files": dict(self.tree_files[-1]),
+        }
+        return self.commit_sha
+
+    def create_ref_if_absent(
+        self, target_campaign_ref: str, exact_commit_sha: str
+    ) -> PublicationOutcome:
+        self.operations.append("create_ref_if_absent")
+        self.create_ref_calls.append((target_campaign_ref, exact_commit_sha))
+        if self.create_ref_outcomes:
+            return self.create_ref_outcomes.pop(0)
+        return PublicationOutcome(
+            PublicationStatus.ACCEPTED,
+            exact_commit_sha,
+            exact_commit_sha,
+            "CONFIRMED_ACCEPTED",
+            True,
+        )
+
+    def read_exact_commit(
+        self, target_campaign_ref: str, exact_commit_sha: str
+    ) -> object:
+        self.exact_commit_reads.append((target_campaign_ref, exact_commit_sha))
+        return self.commits[exact_commit_sha]
+
+    def update_ref(
+        self, target_ref: str, new_commit_sha: str, force: bool = False
+    ) -> object:
+        self.update_ref_calls.append((target_ref, new_commit_sha, force))
+        raise AssertionError("ordinary update_ref must never publish an initial ref")
 
 
 class BoundedCampaignDiscoveryTests(unittest.TestCase):
