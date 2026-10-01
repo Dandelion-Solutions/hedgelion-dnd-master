@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T03 and W05.T04 accepted/read back; W05.T05 authorized as the next eligible unit.
-CURRENT_TASK: W05.T05 — bounded campaign discovery, generator and blank scaffold.
-LAST_COMPLETED_TASK: W05.T04 -> all six named schema/README/proof outputs — routine Senior integration audit PASS at `31000ae02ec8046c1b9deffadfce6b4297e01375`.
-LAST_SAFE_SHA: `31000ae02ec8046c1b9deffadfce6b4297e01375` — T04 Senior-audited/read-back head; full clean exact verification is recorded below.
+STATUS: SENIOR_REVIEW_REQUIRED — W05.T05 bounded campaign discovery is accepted/read back; the second scaffold/initial-publication slice is held at the System-Impact Gate.
+CURRENT_TASK: W05.T05 — final CURRENT v3 generator/blank scaffold and initial-publication behavior; resume only after the initial-ref transport boundary is resolved.
+LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`; W05.T04 -> all six named schema/README/proof outputs — routine Senior integration audit PASS at `31000ae02ec8046c1b9deffadfce6b4297e01375`.
+LAST_SAFE_SHA: `d1ba4c17277c04a30c7f7a59ad755a0e6b198f35` — freshly fetched public HEAD supplied for the second T05 slice; it preserves the accepted discovery output.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -858,6 +858,9 @@ EXPECTED OWNERS TO CHANGE:
 - `DEV/TESTS/test_rd14_bootstrap.py` — retain T01 tests and add/use the named
   T05 witnesses for bounded discovery, initial publication/retry, generated
   schema/catalog projections and blank-scaffold completeness.
+- `DEV/TESTS/test_step_5_1_frontier_contract.py::test_current_state_v3_retires_frontier_and_defers_old_scaffold`
+  — update the existing T03 handoff witness from “template remains v2” to
+  “T05 scaffold is v3/no frontier,” while preserving the v3 chronology law.
 - This execution-status cursor; `DEV/CURRENT_PROGRESS.md` changes only after
   both T05 outputs are independently accepted and published.
 
@@ -897,6 +900,8 @@ ALLOWED INTERFACES / CONTRACTS TO CHANGE:
 - `STATE/CURRENT.yaml` template instance 2 -> 3; add only required blank
   native-root/operational-routing scaffold files and directories.
 - T05 witnesses in `DEV/TESTS/test_rd14_bootstrap.py`.
+- the mechanical Step-5.1 current-state scaffold consumer synchronization listed
+  above.
 - No edits to shared `runtime_host.py`/`policy_basis.RepositoryPort`, existing
   W02 publication/recovery owners, strict DEV schemas, catalog inputs,
   `audit_engine.py`, `PROJECT_MAP.md`, install/CORE docs, or provider adapters.
@@ -941,9 +946,10 @@ EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
   publication failure and indeterminate acknowledgement reconciliation without
   duplicate creation, false success, force, or blind retry;
 - exact named `test_rd14_bootstrap.py` class suite, release generator smoke,
-  runtime identity/schema tests, current owner/route checks, Version Impact Gate,
-  scoped Ruff/format, clean exact full DEV, maintenance audit, release/package
-  validation, independent task review, publication/read-back and Senior audit.
+  the T03 Step-5.1 CURRENT scaffold handoff consumer, runtime identity/schema
+  tests, current owner/route checks, Version Impact Gate, scoped Ruff/format,
+  clean exact full DEV, maintenance audit, release/package validation,
+  independent task review, publication/read-back and Senior audit.
 
 KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
 - `GAME/SCHEMA/campaign_manifest.schema.yaml` v4 -> v5 and
@@ -1075,3 +1081,53 @@ no findings. `W05_BLANK_SCAFFOLD_READY` remains pending. NEXT_EXACT_TASK: T05's
 separate generator/blank-scaffold/initial-publication slice; do not begin
 W05.T06. UNPUBLISHED_WORK: NONE for the bounded discovery slice; the remaining
 T05 scaffold slice has not started.
+
+## W05.T05 second slice — initial-publication System-Impact stop — 2026-10-01
+
+IMPLEMENTATION BASE: `v1/engine-rearchitecture@d1ba4c17277c04a30c7f7a59ad755a0e6b198f35`; fresh `git fetch --prune origin` confirmed the requested public HEAD.
+LAST_SAFE_SHA: `d1ba4c17277c04a30c7f7a59ad755a0e6b198f35` — accepted bounded-discovery output plus cursor read-back; no unpublished source/test changes exist.
+CURRENT_TASK: W05.T05 — complete the generator, blank scaffold and initial-publication behavior after the System-Impact ruling.
+PRESERVED OUTPUT: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` remains accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
+SECOND-SLICE OUTPUT: `W05_BLANK_SCAFFOLD_READY` is **NOT READY**. No source/test RED was started and no production implementation was written after the gate was identified.
+
+BASELINE EVIDENCE:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py` — 22 passed at the requested baseline.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_runtime_identity_schema.py DEV/TESTS/test_release_integration.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_step_5_0_contamination.py DEV/TESTS/test_implementation_package_version_cutovers.py` — 21 passed, 1 failed. The release-integration failure reproduced alone: its repository-wide transitional-identity census encountered an ignored local-workspace artifact in the primary checkout. This is not clean-exact acceptance evidence. No source or product path was changed; the artifact was left untouched.
+
+TRIGGER: W05.T05 initial publication requires an absent-ref create-if-absent operation and bounded ambiguity reconciliation. The current admitted GAME callable/transport surface cannot express that operation without adding a cross-owner transport interface/capability or changing a protected owner.
+
+APPROVED EXPECTATION:
+- WP-19-L07: one complete from-scratch tree, one initialization commit parented to pinned storage default HEAD, and one campaign-ref creation.
+- PCR-3: absent target -> create prepared initialization commit -> create ref; an existing target is a creation conflict, not permission to overwrite.
+- WP-13-L32/L33 and PCR-6: indeterminate acknowledgement requires bounded exact-current-ref, lineage, and current-closure reconciliation; no blind retry or force update.
+- The T05 Impact Envelope at this cursor explicitly excludes `GAME/TOOLS/runtime_host.py`, `GAME/TOOLS/policy_basis.RepositoryPort`, existing W02 publication/recovery owners and provider adapters, and says to stop if a new cross-owner transport API is required.
+
+DISCOVERED IMPLEMENTATION PRESSURE / SOURCE EVIDENCE:
+- `GAME/TOOLS/policy_basis.py::RepositoryPort` supplies `pin_campaign`, exact reads, bounded ancestry and author reads; it has no create-tree/commit/ref mutation capability.
+- The T05-local `CampaignDiscoveryProvider` in `GAME/TOOLS/bootstrap.py` exposes bounded ref listing, exact-file reads, and direct campaign-ref resolution only; no initial-publication capability is present.
+- `GAME/TOOLS/runtime_host.py::CampaignPublicationTransport` supplies repository/principal evidence, `read_ref`, `create_tree`, `create_commit`, and `update_ref`; it declares no create-if-absent/create-ref operation.
+- `CampaignPublicationService.publish_owner_delta()` begins from an already selected campaign-bound host and pinned campaign, so it cannot initialize a campaign before the target branch exists.
+- Step-5.6 separates initial scaffold creation from normal selected-campaign delta publication; the supported-ref amendment requires initial create-if-absent and expressly fails closed if the host cannot provide it.
+- Reusing `update_ref(force=False)` for an absent campaign ref would conflate existing-ref update with PCR-3's distinct creation transition. A new bootstrap-only provider capability or an extension to the existing shared transport/composition would each create a cross-owner contract; neither is admitted by the current T05 write envelope.
+
+AFFECTED OWNERS / CONSUMERS: T05 `GAME/TOOLS/bootstrap.py` initial creation callable and its new `InitialPublicationTests` / `FailureRetryTests`; the existing `CampaignPublicationTransport` / RuntimeHost composition and its external provider adapter; `policy_basis.RepositoryPort`; WP-13/W02 publication acceptance evidence; `DEV/TESTS/test_step_5_1_frontier_contract.py`; the W05 T05 cursor. No shared owner has been changed.
+
+PROTECTED INVARIANTS AT RISK: no alternate transport; one from-scratch tree and one initialization commit parented to pinned storage default HEAD; create-if-absent only; no false success/partial scaffold use; no blind ref retry/force; ambiguity accepted only after bounded exact-ref/lineage/current-closure proof.
+
+WHAT CAN PROCEED WITHOUT THE CHANGE: The T05-local CURRENT v3/template/generator/root-scaffold work is separable, but it cannot be reported as the requested complete `W05_BLANK_SCAFFOLD_READY` output while required initial-creation behavior has no admitted transport path. The Step-5.1 consumer test is now included in the T05 Impact Envelope as a mechanical current-state synchronization: it must assert the T05-owned v3/no-frontier scaffold while preserving the v3 chronology law. This does not change T03 chronology semantics or any persistence authority.
+
+SCOPE RULING: include `DEV/TESTS/test_step_5_1_frontier_contract.py::Step51FrontierContractTests.test_current_state_v3_retires_frontier_and_defers_old_scaffold` in the T05 consumer write/verification set. Its old v2/frontier assertion was an explicit temporary handoff, now superseded by T05's accepted v3 scaffold obligation; updating it is required mechanical test synchronization, not a new interface or architecture change. Cost if wrong: a focused test correction and rerun; no runtime semantic change.
+
+SAFE OPTIONS:
+1. Return to the architecture/design route for an explicit initial-creation boundary. Compare extending the existing trusted publication transport/composition with a bootstrap-specific capability that reuses the W02 publication rules; settle adapter/composition ownership and the T05 Impact Envelope before implementation.
+2. Revise the W05 task sequence/output definition through its controlling planning/design gate so initial publication is owned by an authorized later unit. This delays `W05_BLANK_SCAFFOLD_READY`; it cannot be treated as complete under the current plan.
+
+RECOMMENDATION: Use option 1. The current plan requires a capability the admitted code boundary does not expose, and choosing where that capability belongs changes a cross-owner interface/composition. Do not add a T05-private port, repurpose `update_ref`, alter a shared owner, or claim initial-publication/reconciliation behavior until the architecture route and revised envelope are accepted.
+COST / RISK IF RECOMMENDATION IS WRONG: A narrow design detour delays T05 publication. Skipping it could define a hidden provider contract, create a second ref-writing authority, leave the initialization commit unpublished, overwrite/continue against a conflicting ref, or falsely acknowledge an ambiguous attempt.
+
+CURRENT VERIFICATION STATE: baseline tests above only; no RED/GREEN, implementation, Ruff, release validation or final consumer verification was attempted after the stop. The release-integration failure is primary-workspace contamination and is not acceptance evidence.
+VERSION_IMPACT: NONE — this cursor-only gate record changes no HDM-owned version/revision/schema/generation namespace or projection.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — unresolved initial-ref transport capability. The Step-5.1 consumer synchronization is now in the T05 envelope.
+NEXT_EXACT_TASK: obtain Senior ruling on whether initial campaign-ref creation is supported by an already-approved callable/transport boundary or needs a separate architecture decision; then resume the reconciled T05 scope. Do not begin W05.T06.
+KNOWN_BLOCKERS: no admitted create-if-absent operation has been identified on the existing T05/W02-callable path; primary-workspace release integration is not clean-exact verification evidence.
+UNPUBLISHED_WORK: NONE — no T05 second-slice source/test changes exist; this checkpoint records only the gate and its T05 consumer-scope synchronization.
