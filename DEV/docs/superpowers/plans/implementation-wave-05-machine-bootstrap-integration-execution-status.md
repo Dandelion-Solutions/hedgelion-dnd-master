@@ -679,17 +679,22 @@ their strict native owners. No further substantive findings, envelope drift, or
 System-Impact trigger. Checkpoint acceptance remains subject to clean full DEV
 and maintenance verification.
 
-CURRENT_VERIFICATION_STATE: expanded T04 focused proof/consumer suites PASS
-(526 tests); post-formatting proof/W03 rerun PASS (27 tests); version-policy
-subset PASS (11 tests); Ruff scoped checks PASS as qualified above; clean exact
-full DEV/maintenance/package checks and non-force publication/read-back PASS at
-`ea858dc247510d0019f75d894205f3b3e53cd428`; independent task review/re-review
-PASS. Routine Senior final integration audit remains pending.
-NEXT_EXACT_TASK: Senior review the freshly read-back T04 implementation at
-`ea858dc247510d0019f75d894205f3b3e53cd428`; on PASS, publish T04 checkpoint
-acceptance and update `DEV/CURRENT_PROGRESS.md` before advancing to W05.T05.
-UNPUBLISHED_WORK: NONE for implementation; T04 Senior audit and acceptance/status
-closure remain pending.
+CURRENT_VERIFICATION_STATE: published code `ea858dc247510d0019f75d894205f3b3e53cd428`
+has clean exact full DEV/maintenance/package PASS and remote read-back; independent
+task review/re-review PASS. Senior audit round 1 at `bf24b27a7f06147ad0990f59f7aefc1188f01db1`
+found the nested PLAYER `github_binding.user_id` required-field parity gap. The
+bounded repair is local: proof suite 7 passed, expanded cross-owner suite 526
+passed, version subset 11 passed, scoped Ruff and `git diff --check` PASS.
+Independent task re-review of the repair: PASS. Clean exact full DEV/maintenance/
+package for the repair, non-force publication/read-back, and repeat Senior audit
+remain pending.
+NEXT_EXACT_TASK: commit this reviewed PLAYER nested-required repair, obtain a
+clean exact verification worktree for that commit, run full DEV/maintenance/
+package checks, then publish/read back and repeat the Senior audit before
+updating `DEV/CURRENT_PROGRESS.md` or advancing to W05.T05.
+UNPUBLISHED_WORK: `GAME/SCHEMA/player.schema.yaml` now declares nested
+`github_binding.required: [user_id]`, and the proof test checks parity; these
+two repair paths are local and uncommitted.
 
 ## W05.T04 clean exact verification and publication — 2026-10-01
 
@@ -714,14 +719,14 @@ CLEAN EXACT FULL DEV:
   local artifact. No repository source was changed; the clean exact package
   build above is the acceptance evidence for the same output destination.
 
-T04 OUTPUTS READY FOR SENIOR AUDIT:
+T04 OUTPUTS PENDING SENIOR RE-REVIEW:
 `SCENE_SCHEMA_FINAL_INTEGRATION_READY`,
 `LOCATION_SCHEMA_FINAL_INTEGRATION_READY`,
 `RD16_PLAYER_STRICT_STATE_INTEGRATION_READY`,
 `SHARED_SCHEMA_README_FINAL_INTEGRATION_READY`,
 `SHARED_STORAGE_README_FINAL_INTEGRATION_READY`,
 `SHARED_SCHEMA_STORAGE_README_PROOF_READY`.
-These are implementation-ready outputs, not yet Senior-accepted checkpoints.
+The first Senior audit accepted none pending the required PLAYER repair.
 
 VERSION_IMPACT: `scene.schema_version` 2 -> 3;
 `location.schema_version` 1 -> 2; `player.schema_version` 1 -> 2.
@@ -732,3 +737,26 @@ POST-PUBLICATION CURSOR-SYNC CHECKS: proof ledger + Step-5.1 frontier contract,
 10 passed; version-policy subset, 11 passed / 1 workspace-wide census test
 excluded in the primary workspace; `git diff --check`: PASS. The cursor-only
 status delta has `VERSION_IMPACT: NONE` and changes no runtime/schema owner.
+
+## W05.T04 Senior audit round 1 and bounded repair — 2026-10-01
+
+SENIOR AUDIT: exact published HEAD `bf24b27a7f06147ad0990f59f7aefc1188f01db1`;
+disposition FINDINGS. One HIGH finding: the strict native PLAYER owner requires
+`github_binding.user_id`, while GAME declared its type but not nested required
+presence. No other blocking/significant finding; no new version namespace or
+System-Impact trigger. T04 outputs remain unaccepted pending repair/re-review.
+
+RED: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_implementation_proof_ledger.py -k 'player_v2_uses_strict_collaboration_refs_without_authority_fallback'`
+— 1 expected failure, `None != ['user_id']` against strict native owner.
+GREEN: `github_binding.required: [user_id]` added within PLAYER v2 and proof now
+compares nested required/property keys with the strict owner. Proof suite 7
+passed; expanded cross-owner suite 526 passed with 2 existing RD09 warnings;
+version subset 11 passed; Ruff proof check/format and scoped W03 check pass.
+
+CURRENT REPAIR IMPACT: `VERSION_IMPACT: NONE` beyond existing
+`player.schema_version` 1 -> 2; the required-field repair remains in the same
+authorized PLAYER v2 cutover. `SYSTEM_IMPACT: NONE` — this restores the accepted
+strict owner contract without changing authority or ownership.
+INDEPENDENT REPAIR REVIEW: **PASS** — nested required-field notation matches the
+existing GAME schema idiom; proof checks strict-owner key/required parity; no
+new authority, scope, version impact, or System-Impact trigger.

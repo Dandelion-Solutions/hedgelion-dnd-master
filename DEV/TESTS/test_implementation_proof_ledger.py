@@ -129,6 +129,9 @@ class SharedSchemaStorageReadmeIntegrationProofTests(unittest.TestCase):
     ) -> None:
         schema = _load_yaml("GAME/SCHEMA/player.schema.yaml")
         fields = schema["fields"]
+        native_player = _load_json("DEV/SCHEMAS/world-player-state.schema.json")
+        github_binding = fields["github_binding"]
+        native_github_binding = native_player["$defs"]["githubBinding"]
         delta = _load_json("DEV/TESTS/fixtures/w04_player_collaboration_delta.json")
         expected_ref = delta["player_fragment_schema"]["properties"][
             "collaboration_route_refs"
@@ -157,11 +160,17 @@ class SharedSchemaStorageReadmeIntegrationProofTests(unittest.TestCase):
         self.assertEqual(
             expected_ref["items"]["properties"]["generation"]["minimum"], 1
         )
-        self.assertEqual(fields["github_binding"]["user_id"], "integer|nonempty_string")
-        self.assertEqual(fields["github_binding"]["login"], "nonempty_string|null")
-        github_properties = _load_json("DEV/SCHEMAS/world-player-state.schema.json")[
-            "$defs"
-        ]["githubBinding"]["properties"]
+        self.assertEqual(
+            github_binding.get("required"), native_github_binding["required"]
+        )
+        self.assertEqual(github_binding.get("required"), ["user_id"])
+        self.assertEqual(
+            set(github_binding) - {"required"},
+            set(native_github_binding["properties"]),
+        )
+        self.assertEqual(github_binding["user_id"], "integer|nonempty_string")
+        self.assertEqual(github_binding["login"], "nonempty_string|null")
+        github_properties = native_github_binding["properties"]
         self.assertEqual(github_properties["user_id"]["oneOf"][0]["minLength"], 1)
         self.assertEqual(github_properties["login"]["minLength"], 1)
         self.assertEqual(

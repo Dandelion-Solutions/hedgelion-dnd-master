@@ -8,6 +8,7 @@ fields:
   deactivated_by: enum[self, creator]|null
   display_name: string|null
   github_binding:
+    required: [user_id]
     user_id: integer|nonempty_string
     login: nonempty_string|null
   controlled_pc_ids: unique_array[native_identifier]
