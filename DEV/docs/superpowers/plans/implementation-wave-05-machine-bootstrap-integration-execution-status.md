@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: FINAL_REVIEW — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 implementation/test checkpoint is published/read back; independent P1 PASS remains pending; the blank-scaffold completion slice remains held.
+STATUS: FINAL_REVIEW — W05.T05 bounded campaign discovery is accepted/read back; W05.T05-P1 implementation and README fix are published/read back; independent P1 PASS remains pending; the blank-scaffold completion slice remains held.
 CURRENT_TASK: W05.T05-P1 — bootstrap-specific initial campaign publication capability.
 LAST_COMPLETED_TASK: W05.T05 bounded campaign discovery -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, accepted/read back at `4afa066f827cecca690724623afe44e07e10088a`.
-LAST_SAFE_SHA: `2da58ae1a6a3489ecd5ab32c214a68c734a62113` — W05.T05-P1 implementation/test checkpoint, worker-verified and published/read back; independent P1 PASS pending.
+LAST_SAFE_SHA: `1282019041747c6bb87145d07aa6a680525f6a37` — W05.T05-P1 implementation plus fix-round-1 checkpoint, worker-verified and published/read back; independent P1 PASS pending.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1256,8 +1256,11 @@ SYSTEM_IMPACT: NONE — this is the ruling-authorized campaign template README c
 
 BROAD CHECK LIMITATION: no new broad DEV run was made in this fix round. The latest full DEV diagnostic recorded above remains non-acceptance evidence (1490 passed, 7 failed); no private ignored artifacts were inspected or cleaned.
 
-CURRENT FIX CHECKPOINT: focused P1 tests and scoped Ruff/format checks are GREEN locally. The fix files and this execution record are local at BASE_SHA pending the coherent fix commit and publication/read-back. Independent P1 PASS is still pending; blank scaffold and W05.T06 remain held.
+FIX CHECKPOINT: `1282019041747c6bb87145d07aa6a680525f6a37`.
+FIX REMOTE PUBLICATION / READ-BACK: PASS — after `git fetch --prune origin`, `HEAD == origin/v1/engine-rearchitecture == 1282019041747c6bb87145d07aa6a680525f6a37`; `git diff HEAD origin/v1/engine-rearchitecture` is empty.
 
-NEXT_EXACT_TASK: commit and publish only this P1 README-preservation/version correction, refresh/read back the active ref, then append the final fix read-back report here.
+CURRENT FIX CHECKPOINT: focused `InitialCampaignPublicationTests` (19 passed), full RD14 bootstrap module (41 passed), scoped Ruff and format checks, and diff check are GREEN. The campaign README fix and module version transition are published/read back. Independent P1 PASS is still pending; blank scaffold and W05.T06 remain held.
 
-UNPUBLISHED_WORK: `GAME/TOOLS/bootstrap.py`, `DEV/TESTS/test_rd14_bootstrap.py`, and this P1 execution-cursor fix record are local pending the fix checkpoint commit/publication/read-back.
+NEXT_EXACT_TASK: obtain independent P1 review/PASS; only after P1 independent PASS and read-back may the held T05 blank-scaffold slice resume. W05.T06 remains unauthorized.
+
+UNPUBLISHED_WORK: NONE for W05.T05-P1 fix round 1. Independent P1 PASS remains pending.
