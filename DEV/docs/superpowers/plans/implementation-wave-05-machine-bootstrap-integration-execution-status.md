@@ -791,6 +791,180 @@ POST-REPAIR CURSOR-SYNC CHECKS: proof ledger + Step-5.1 frontier contract,
 excluded; `git diff --check`: PASS. This cursor-only synchronization has
 `VERSION_IMPACT: NONE` and `SYSTEM_IMPACT: NONE`.
 
+## W05.T05 Implementation Impact Envelope — 2026-10-01
+
+SPEC / APPROVED DESIGN:
+- W05.T05 in `implementation-wave-05-machine-bootstrap-integration.md`;
+- exact Next Authorized Unit in `DEV/CURRENT_PROGRESS.md` at T04 closure;
+- canonical WP-19 campaign selection/initial materialization, WP-24 bounded
+  campaign-menu law, WP-11 native roots, WP-13/Step-5.6/PCR-3 publication,
+  and WP-14 exact-current-source recovery owners.
+
+IMPLEMENTATION START HEAD: `5c095b118676e7628da116ca67fe2a4e41d845ca` — fresh
+`git fetch --prune origin` confirmed local `HEAD` and
+`origin/v1/engine-rearchitecture` both equal this SHA.
+
+VERIFIED GREEN INPUT CHECKPOINTS:
+- `W01_CAMPAIGN_IDENTITY_READY` + `W01_SCAFFOLD_INPUT_CONTRACT_READY` — W01.T10
+  final checkpoint `06d46cdd6e9049df81b33dbbcf924641b42a54dd`.
+- `W01_NATIVE_ROUTING_READY` — W01.T04 final checkpoint
+  `769d3deb0725701c045a263ef525794627f2de65`.
+- `W02_OPERATIONAL_ROOT_ENROLLMENT_READY` — `0b68dc873839bae573eceee63b05d46c5977774d`;
+  `W02_DURABILITY_PUBLICATION_READY` — `fdb6888070bd34c128b7fed3703e08005bfb5554`;
+  `W02_RECOVERY_MAINTENANCE_READY` — `f7afbcb3959812c44b1b35cde56426ec80317936`.
+- `W03_LIVE_ROUTING_READY`, `W03_LIVE_NATIVE_PACKING_READY`, and
+  `W03_LIVE_ABSORPTION_READY` — `f214e887c20859c53c83d8d639bd82def28dbc8f`.
+- W05.T02 final schemas/catalog/identifier inputs —
+  `RD16_SHARED_MACHINE_INTEGRATION_READY` at `6740da81c405b7a88b5d4c33e9a708d019bb642f`.
+- W05.T03 retained schema/session outputs — T03 accepted read-back at
+  `88a3488dfe05e85fa6e2e7f5f3d59da1dfab2433`.
+- W05.T04 six schema/README/proof outputs — T04 final Senior PASS at audited
+  HEAD `31000ae02ec8046c1b9deffadfce6b4297e01375` and final public/status
+  closure `5c095b118676e7628da116ca67fe2a4e41d845ca`.
+
+CURRENTNESS / OWNER RE-READ SET:
+- `AGENTS.md`, OpenCode + local-machine overlays, `DEV/CURRENT_PROGRESS.md`,
+  current execution cursor, W05 stable plan and implementation execution contract;
+- W05.T03 and W05.T04 Senior audit reports; WP-19, WP-11, WP-13, WP-14,
+  WP-24, Step-5.6, Step-5.7 and publication-currentness supported-ref owners;
+- current `GAME/TOOLS/bootstrap.py`, `init_campaign.py`, `native_storage.py`,
+  `publication.py`, `recovery_roots.py`, `history.py`, and relevant
+  `runtime_host.py` capability boundaries;
+- actual `GAME/CAMPAIGN/` template bytes, including root MANIFEST/card/config,
+  all existing STATE/INDEX/WORLD/LOG/CHECKPOINTS/SESSIONS/STORY/DRAMATURG
+  companions, and the current `STATE/CURRENT.yaml` v2/frontier handoff;
+- current GAME schemas and current DEV schema/catalog inputs, including
+  `current_state` v3, manifest v4, card/config/storage, id allocator, LIVE
+  routing, operational-root routing, core catalog generation 2, entity
+  structures and identifier policies;
+- current `DEV/TESTS/test_rd14_bootstrap.py`, release-integration generator
+  smoke, runtime-identity schema tests and the named T05 consumers.
+
+EXPECTED OWNERS TO CHANGE:
+- `GAME/TOOLS/bootstrap.py` — existing bounded selection/identity owner; add
+  only the W05.T05 provider-independent campaign page/candidate/hydration/
+  exact-selection and initial-creation/publication behavior required by the
+  approved callable boundary.
+- `GAME/TOOLS/init_campaign.py` — existing standard-library-only generator;
+  populate all campaign identity bindings in the exact copied scaffold and
+  validate only bounded template completeness/identity needed by T05.
+- `GAME/CAMPAIGN/STATE/CURRENT.yaml` — v2 -> v3 instance projection; remove
+  `world_time.frontier`, retain `world_time.display` only, and keep the native
+  current-summary fields aligned to the already-current GAME schema v3.
+- Campaign scaffold owner roots/companions under `GAME/CAMPAIGN/`: provide all
+  current WP-11 `GAME/TOOLS/native_storage.FAMILY_ROOTS` roots, the exceptional
+  `STATE/ID_ALLOCATOR.yaml` route, existing indexes, Story/Dramaturg roots,
+  and the complete `STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml` empty page.
+- `DEV/TESTS/test_rd14_bootstrap.py` — retain T01 tests and add/use the named
+  T05 witnesses for bounded discovery, initial publication/retry, generated
+  schema/catalog projections and blank-scaffold completeness.
+- This execution-status cursor; `DEV/CURRENT_PROGRESS.md` changes only after
+  both T05 outputs are independently accepted and published.
+
+PLAN / CHECKOUT TEST-CLASS PREFLIGHT:
+- At this exact HEAD `test_rd14_bootstrap.py` contains
+  `CampaignSelectionBarrierTests`, `CreationIdentityTests`,
+  `GeneratorScaffoldTests`, and `CreatorAuthorityTests`; the plan/user-named
+  `InitialPublicationTests`, `FailureRetryTests`,
+  `GeneratorConsumerProjectionTests`, `BlankScaffoldCompletenessTests`, and
+  `BoundedCampaignDiscoveryTests` are absent.
+- RULING: add those absent T05 classes to the existing T05-owned test file
+  rather than weakening/skipping the named requirements or creating a second
+  bootstrap suite. This reconciles current checkout evidence with the accepted
+  plan and preserves the one-owner test path. Cost if wrong: test-only rename /
+  reorganization and review rerun; no semantic owner changes.
+
+EXPECTED CONSUMERS TO VERIFY:
+- All 17 `world_record_kinds` and 17 `runtime_record_kinds` in the current
+  `DEV/CATALOG/core-catalog.json` must have their accepted WP-11 native roots
+  represented in the generated blank campaign, using exact GAME route mappings
+  plus the exceptional id-allocator singleton.
+- The complete five-file bootstrap/route companion set is `STATE/CURRENT.yaml`,
+  `STATE/ID_ALLOCATOR.yaml`, `STATE/RUNTIME/LIVE_ROUTING.yaml`,
+  `STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml`, and
+  `STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml`; each generated owner reference
+  binds to the one frozen campaign_id and empty initial collections are complete.
+- `GeneratorScaffoldTests`, `InitialPublicationTests`, `FailureRetryTests`,
+  `GeneratorConsumerProjectionTests`, `BlankScaffoldCompletenessTests`, and
+  `BoundedCampaignDiscoveryTests` in `DEV/TESTS/test_rd14_bootstrap.py`;
+  `test_runtime_identity_schema.py`, `test_release_integration.py`,
+  `test_destination_template_boundary.py`, schema/owner tests and maintenance.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- T05-local contracts in `GAME/TOOLS/bootstrap.py` and the exact generator
+  interface/blank-template fields in `init_campaign.py`, under the existing
+  WP-19 callable boundary.
+- `STATE/CURRENT.yaml` template instance 2 -> 3; add only required blank
+  native-root/operational-routing scaffold files and directories.
+- T05 witnesses in `DEV/TESTS/test_rd14_bootstrap.py`.
+- No edits to shared `runtime_host.py`/`policy_basis.RepositoryPort`, existing
+  W02 publication/recovery owners, strict DEV schemas, catalog inputs,
+  `audit_engine.py`, `PROJECT_MAP.md`, install/CORE docs, or provider adapters.
+  If correctness requires an added cross-owner transport API or broader owner
+  change, stop at System Impact rather than expanding this envelope.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- selection remains explicit; no sole-candidate/recent/ref-order/default guess;
+  campaign discovery reads only bounded refs/cards before choice and never
+  deep-loads STATE/WORLD/SCENE/PC/PLAYER/LOG/recovery or all campaign refs/cards;
+- valid cards are menu projections; missing/invalid card fallback is only the
+  minimum current MANIFEST metadata; authority/currentness/access is revalidated
+  after explicit selection;
+- exact campaign-id selection routes directly and does not enumerate candidate
+  pages; numbering is ephemeral and not persisted;
+- storage baseline is NEW-only; existing campaigns use their own MANIFEST;
+  engine identity, stable authenticated principal, creator login and package /
+  ruleset-set digest remain distinct and frozen before generation;
+- `init_campaign.py` remains standard-library-only, uses the selected exact
+  package's `CAMPAIGN/` contents, writes one fresh output root, and copies no
+  storage marker/README or engine files;
+- initial publication is one complete FROM-SCRATCH campaign tree, one
+  initialization commit parented to pinned storage default HEAD, one
+  create-if-absent/non-force campaign-ref transition; prepared objects are not
+  authority; exact-ref/current-closure reconciliation is bounded and never
+  blind-retries or overwrites a conflicting ref;
+- the empty operational-root routing page is complete with zero roots; indexes,
+  cards, manifests, checkpoints and routing pages do not invent lifecycle,
+  membership, authorization, recovery or currentness authority;
+- `MANIFEST.yaml` stays v4 in this task and `players.player_ids` is preserved;
+  W05.T07 alone owns manifest-v5 and PLAYER membership retirement. Do not touch
+  T06 product flows, T08 cleanup/control-plane writers, or root README.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- RED/GREEN for one-page bounded discovery, continuation/narrowing or typed
+  inability, exact-selector direct route, card-first/minimum-manifest fallback,
+  and no exhaustive traversal;
+- RED/GREEN for full copied scaffold completeness, exact identity substitution
+  across all five companions, current_state v3/frontier retirement, manifest v4
+  and ruleset identity projection, W02 root completeness, and empty-root validity;
+- RED/GREEN for first create, duplicate/conflicting target, generator failure,
+  publication failure and indeterminate acknowledgement reconciliation without
+  duplicate creation, false success, force, or blind retry;
+- exact named `test_rd14_bootstrap.py` class suite, release generator smoke,
+  runtime identity/schema tests, current owner/route checks, Version Impact Gate,
+  scoped Ruff/format, clean exact full DEV, maintenance audit, release/package
+  validation, independent task review, publication/read-back and Senior audit.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- `GAME/SCHEMA/campaign_manifest.schema.yaml` v4 -> v5 and
+  `MANIFEST.players.player_ids` retirement remain W05.T07; T05 must preserve both.
+- W05.T06 onboarding/join/rejoin/retrospective/save-exit flows; W05.T08 legacy
+  PC/NPC/item/retired-faction/audit-engine/PROJECT_MAP retirement; W06 proof;
+  CORE/install/Project Instructions shared final writers.
+- No pre-v1 migration, dual-read, alias, compatibility shim, new schema family,
+  catalog vocabulary, record kind, or persistence/currentness owner.
+
+VERSION IMPACT EXPECTED: `GAME/CAMPAIGN/STATE/CURRENT.yaml` instance
+`schema_version` 2 -> 3, aligned to current `GAME/SCHEMA/current_state.schema.yaml`
+v3. No new bump to the already-current current_state schema. `campaign_manifest`
+remains schema 4; campaign-contract generation 2, storage generation 3, catalog
+generation 2 and ruleset-set digest generation 1 remain unchanged. No released
+campaign migration/dual-read under the accepted pre-v1 clean-slate owner.
+Reclassify every actual final changed owner/path.
+SYSTEM IMPACT EXPECTED: NONE if the implementation stays within these exact
+owners, existing WP-19/WP-13/WP-14 semantics and provider-independent bootstrap
+boundary; re-evaluate actual delta before each checkpoint.
+
 ## W05.T04 final Senior integration audit — 2026-10-01
 
 FINAL_SENIOR_AUDIT: **PASS / OUTPUTS ACCEPTED** at exact published/read-back
@@ -811,3 +985,86 @@ additional namespace change for the nested PLAYER required-field repair.
 FINAL_SYSTEM_IMPACT: NONE. W05.T05 is next eligible after this acceptance and
 global progress/cursor status synchronization; its `CURRENT.yaml` v3 scaffold
 handoff remains mandatory and T05-owned.
+
+## W05.T05 bounded campaign discovery slice — 2026-10-01
+
+SLICE: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` only. This does not close
+`W05_BLANK_SCAFFOLD_READY` or any T05 generator/scaffold/publication work.
+IMPLEMENTATION BASE: `v1/engine-rearchitecture@5c095b118676e7628da116ca67fe2a4e41d845ca`;
+fresh `git fetch --prune origin` confirmed local HEAD and
+`origin/v1/engine-rearchitecture` matched. The previously appended W05.T05
+Impact Envelope above is preserved.
+BASELINE: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py`
+— 11 passed before adding bounded-discovery witnesses.
+
+T05 LOCAL PAGING RULING:
+- `MAX_CAMPAIGN_REFS_PER_PAGE = 20`; each invocation requests and hydrates at
+  most one provider page of 20 campaign refs. A menu operation therefore shows
+  at most 20 candidates from this producer invocation. More candidates require
+  a separate explicit continuation request; the producer never drains pages.
+- A provider that reports more refs without a usable continuation returns typed
+  `continuation_unavailable`. A provider without direct exact-ID resolution
+  returns typed `provider_limited` and is never redirected to list traversal.
+  Exact `CampaignSelection.existing(campaign_id)` uses the provider's direct
+  resolver without enumerating refs.
+- This is a task-local producer cap, not a WP-24-selected layout/transport
+  contract or a campaign registry/index.
+
+T05 RED:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests`
+  — 10 expected failures against the missing baseline discovery API, starting
+  with `AttributeError: bootstrap.CampaignRef`; no production implementation
+  existed before this RED.
+- After adding the negative witness for a provider without exact resolution,
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests::test_provider_without_exact_resolver_returns_inability_without_list_fallback`
+  — 1 expected failure because the provider had no exact resolver and the
+  baseline attempted the absent method instead of returning typed inability.
+
+T05 GREEN / FOCUSED VERIFICATION:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py::BoundedCampaignDiscoveryTests`
+  — 11 passed.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py`
+  — 22 passed, including preserved T01 selection, creation, scaffold-input and
+  creator-authority tests.
+- Witnesses cover continuation across explicit calls, one-page hydration,
+  direct exact-selector routing without list fallback, provider inability,
+  continuation absence, the 20-ref bound, duplicate refs/IDs, card-first reads,
+  missing/invalid-card MANIFEST-only fallback, no sole-candidate selection and
+  no candidate authority fields.
+
+SCOPED PYTHON CHECKS:
+- `.hdm-devtools/venv/bin/ruff check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py`
+  — exit 1 for one pre-existing `SIM117` finding in the T01
+  `CreationIdentityTests` nested context-manager witness; its behavior was not
+  changed (the formatter only rewrapped lines in that block).
+- `.hdm-devtools/venv/bin/ruff check --ignore SIM117 GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py`
+  — PASS; `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py`
+  — PASS; `git diff --check` — PASS.
+
+SELF-REVIEW: PASS — actual change is limited to the typed in-memory discovery
+producer, its `BoundedCampaignDiscoveryTests`, and this T05 cursor evidence.
+Existing T01 tests retain their behavior; no generator/scaffold, schema,
+catalog, CORE, runtime-host, repository or publication owner was changed.
+Candidate projections contain no selection/access/gameplay/currentness result.
+
+VERSION_IMPACT: NONE. The changed producer/candidate/page values are transient
+in-memory projections, not persisted schema/protocol records. `GAME/TOOLS/bootstrap.py`
+has no existing HDM-owned module-version field; no versioned CORE module,
+serialized schema, campaign/storage/catalog generation, engine/package identity,
+or migration namespace changed. `GAME/CORE/BOOTSTRAP_RUNTIME.md` and the
+`CURRENT.yaml` v3 template cutover remain with their assigned later writers.
+
+SYSTEM_IMPACT: NONE for this bounded producer slice. No external repository,
+RuntimeHost or publication interface was edited, no authority/currentness owner
+changed, and no registry/index or exhaustive traversal was introduced. Residual
+integration concern: a concrete provider must supply its bounded page operation
+and may supply the direct exact-ID resolver; if it cannot, this slice returns
+typed inability without list fallback. No external transport expansion is
+included or assumed here.
+
+DISCOVERY OUTPUT STATUS: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` — local code/test
+checkpoint reached. `W05_BLANK_SCAFFOLD_READY` remains pending. The task
+explicitly prohibits remote push; this checkpoint is local and has not been
+published/read back remotely. NEXT_EXACT_TASK: continue only with the separately
+authorized W05.T05 generator/scaffold slice. UNPUBLISHED_WORK: none beyond this
+complete local discovery checkpoint.
