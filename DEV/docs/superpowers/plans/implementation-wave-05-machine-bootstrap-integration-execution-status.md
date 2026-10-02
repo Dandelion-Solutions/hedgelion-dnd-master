@@ -1949,6 +1949,26 @@ provides exact bounded ordinal/origin windows, but not the semantic discovery
 route needed for ordinary player questions. WP-19 explicitly allows the minimum
 derived history-discovery metadata under existing index ownership if required.
 
-NEXT_EXACT_TASK: run the canonical architecture/deep-work process for T06-A1,
-complete the Source Manifest + Task Brief + whole-project critic, and stop at
-mandatory architecture Review Stop 1. Do not resume the held production paths.
+## W05.T06-A1 Step-1 package — Review Stop 1 pending
+
+```text
+STEP1_SOURCE_MANIFEST:
+  DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-source-manifest.md
+STEP1_TASK_BRIEF:
+  DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-architecture-task-brief.md
+STEP1_WHOLE_PROJECT_CRITIC:
+  DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-task-brief-critic.md
+CRITIC_DISPOSITION: BLOCKING 0 / SIGNIFICANT 3 FOUND AND REPAIRED / MINOR 2 FOUND AND REPAIRED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+VERSION_IMPACT: NONE — design/process evidence and this execution cursor only
+SYSTEM_IMPACT: REAL / BOUNDED — design review authorized; architecture not yet closed
+STATUS: SENIOR_REVIEW_REQUIRED
+```
+
+NEXT_EXACT_TASK: complete local Step-1 artifact/status verification, publish the
+coherent Step-1 package without force, obtain remote read-back, then return the
+package for mandatory architecture Review Stop 1. Step 2 must not begin without
+Senior GO. Do not resume the held production paths.
+
+UNPUBLISHED_WORK: the three Step-1 design artifacts and this cursor update are
+local and await the coherent publication/read-back checkpoint.
