@@ -1963,12 +1963,16 @@ PRODUCT_OWNER_DECISION_REQUIRED: NO
 VERSION_IMPACT: NONE — design/process evidence and this execution cursor only
 SYSTEM_IMPACT: REAL / BOUNDED — design review authorized; architecture not yet closed
 STATUS: SENIOR_REVIEW_REQUIRED
+LAST_SAFE_SHA: `386f6725cd3026988a02025753595f8a3b80012d` — Step-1 Source Manifest, Task Brief and repaired whole-project critic are published/read back.
+CURRENT_VERIFICATION_STATE:
+  `git diff --cached --check` — PASS before the Step-1 package commit;
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_current_progress_authority.py` — 2 passed;
+  ordinary non-force publication and fresh `git fetch --prune origin` read-back — PASS, `HEAD == origin/v1/engine-rearchitecture == 386f6725cd3026988a02025753595f8a3b80012d`.
+  No hosted-CI run is claimed for this documentation-only checkpoint.
 ```
 
-NEXT_EXACT_TASK: complete local Step-1 artifact/status verification, publish the
-coherent Step-1 package without force, obtain remote read-back, then return the
-package for mandatory architecture Review Stop 1. Step 2 must not begin without
-Senior GO. Do not resume the held production paths.
+NEXT_EXACT_TASK: return the complete Step-1 package for mandatory architecture
+Review Stop 1. Do not begin Step 2 without Senior GO. Do not resume the held
+production paths.
 
-UNPUBLISHED_WORK: the three Step-1 design artifacts and this cursor update are
-local and await the coherent publication/read-back checkpoint.
+UNPUBLISHED_WORK: NONE.
