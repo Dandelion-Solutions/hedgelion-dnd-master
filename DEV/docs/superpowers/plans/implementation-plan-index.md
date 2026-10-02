@@ -1,8 +1,8 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **SENIOR-APPROVED / PRODUCTION IMPLEMENTATION AUTHORIZED**
+Status: **SENIOR-APPROVED EXISTING WAVES / W05.T06 REPAIRED PLAN REQUIRES SENIOR GO; T06 PRODUCTION HELD**
 
-Production implementation: **AUTHORIZED**, subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`.
+Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. W05.T06 P0–P3 and held product completion are not authorized before Senior GO on the repaired stable W05 plan.
 
 ## 1. Sole current planning route
 
@@ -23,7 +23,7 @@ Files 1–7 form the complete executable plan. File 8 proves where the retired p
 
 Future planning repairs modify the applicable stable wave file and this index in one coherent checkpoint. Do not create a dated addendum, overlay, competing master plan or alternate execution graph.
 
-### W05 T06-A1 architecture acceptance / plan-repair route
+### W05 T06-A1 architecture acceptance / repaired-plan Senior gate
 
 Accepted machine-composition owner:
 `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`.
@@ -35,6 +35,28 @@ coherently; do not create an executable dated overlay. Current-owner/readiness/
 History/retrospective prerequisite production and held T06 paths require the
 complete repaired-plan Senior GO. The prior general production authorization
 does not bypass this task-specific gate.
+
+The accepted stable-plan sequence is:
+
+```text
+accepted T06-S1/S2 (preserve; do not repeat)
+  -> P0 CurrentOwnerView
+       ├─> P1 production readiness ──────────────────────┐
+       └─> P2 native History discovery -> P3 sealed retrospective ─┤
+                                                                  v
+                                                       held T06 product completion
+                                                                  -> Senior integration audit
+                                                                  -> W05_PRODUCT_PATHS_READY
+```
+
+The governing edges are P0 -> P1, P0 -> P2 -> P3, and P1 + P3 -> T06 product
+completion. P1 does not produce an input consumed by P2; the task plan executes
+one production task at a time and does not authorize parallel production.
+The exact task files, carriers, producer/consumer joins, per-task Impact
+Envelopes, focused verification and version-namespace checks are in
+`implementation-wave-05-machine-bootstrap-integration.md`. Execution remains
+blocked until this repaired package receives Senior plan GO. Story remains
+dormant; T07/T08/W06 remain unstarted.
 
 ## 2. Authority and baseline
 

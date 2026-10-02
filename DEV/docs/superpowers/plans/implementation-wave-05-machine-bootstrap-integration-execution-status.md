@@ -1559,6 +1559,12 @@ and closure state are published/read back.
 
 ## W05.T06 Senior entry gate — 2026-10-02
 
+Historical entry authorization for the original T06 envelope. The later
+System-Impact stop and accepted A1 design boundary supersede its broad
+implementation routing for unfinished paths: only accepted T06-S1/S2 remain
+complete, and outstanding P0–P3/product production work awaits repaired-plan
+Senior GO.
+
 REPORT:
 `DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md`
 
@@ -1583,10 +1589,19 @@ T06 owns product composition/use and fail-closed capability checks over the
 accepted RuntimeHost/publication interfaces. It does not own a new repository
 transport protocol. T08 remains the final shipped CORE/install/module writer.
 
-NEXT_EXACT_TASK: implement/review W05.T06 only.
+HISTORICAL_NEXT_EXACT_TASK: implement/review W05.T06 under the original entry
+envelope; superseded for unfinished readiness/retrospective paths by the later
+System-Impact stop, A1 ruling and repaired-plan Senior gate.
 
 
-## W05.T06 Implementation Impact Envelope — 2026-10-02
+## W05.T06 Original Implementation Impact Envelope — 2026-10-02
+
+This is the entry-time envelope under which T06-S1/S2 were executed. The
+remaining readiness/History/retrospective production scope is superseded by the
+accepted A1 decomposition and the P0–P3 plus product-completion envelopes in
+the stable W05 plan below. In particular, the former inspect-only boundaries
+for RuntimeHost, HOT, Context and History do not prohibit their narrowly
+accepted P0–P3 realization; production still waits for repaired-plan Senior GO.
 
 SPEC / APPROVED DESIGN:
 - W05.T06 in `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`.
@@ -2051,3 +2066,88 @@ The earlier pending Review Stop 2/Story-blocker cursor statements are historical
 and superseded by this entry. LAST_SAFE_SHA at the file header remains the
 historical System-Impact-stop evidence; the handoff reports the new published
 review checkpoint. No production capability or final product output is claimed.
+
+
+## W05.T06 repaired implementation plan — publication pending
+
+ACCEPTED_ARCHITECTURE:
+`DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`
+
+SENIOR_PLAN_AUTHORITY:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`
+
+```text
+REVIEW_STOP_2: GO / ARCHITECTURE ACCEPTED
+IMPLEMENTATION_PLAN_REPAIR: AUTHORIZED
+REPAIRED_PLAN_PACKAGE: PREPARED IN THIS LOCAL WORKTREE
+PRODUCTION_IMPLEMENTATION: HELD UNTIL PUBLISHED PACKAGE SENIOR GO
+T06_S1_S2: PRESERVED
+T07_T08_W06: NOT STARTED
+STORY_MASTER_ADAPTER: DORMANT
+```
+
+REPAIRED_SCOPE: existing stable W05 plan now specifies P0 CurrentOwnerView,
+P1 production readiness, P2 native History discovery, P3 same-operation sealed
+retrospective, and held T06 product completion; each task has an Impact Envelope,
+internal carriers/interfaces, producer/consumer joins, negative tests and
+namespace-specific Version Impact instructions. `implementation-plan-index.md`
+and this cursor route to the same sequence. `DEV/CURRENT_PROGRESS.md` is
+synchronized to plan verification/publication/read-back as the current task.
+
+BASE_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — fresh
+`git fetch --prune origin` confirmed local `HEAD == origin/v1/engine-rearchitecture`
+before edits.
+
+IMPLEMENTATION IMPACT ENVELOPE — PLAN REPAIR ONLY:
+- SPEC / APPROVED DESIGN: accepted T06-A1 canonical spec and Senior Review
+  Stop 2 ruling; `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` §3.
+- EXPECTED OWNERS TO CHANGE: stable W05 plan, implementation-plan index, this
+  execution cursor, and the current-progress projection. No GAME/runtime owner.
+- EXPECTED CONSUMERS TO CHANGE: implementation planner and next Senior plan
+  reviewer only; no production consumer changes.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: planning task decomposition,
+  transient implementation-interface descriptions and Impact Envelopes wholly
+  inside accepted T06-A1 architecture.
+- PROTECTED INVARIANTS: T06-S1/S2 remain accepted; P0/P1/P2/P3 producer joins
+  remain explicit; Story dormant; no product code before Senior GO; no parallel
+  production implication; no PO decision, new owner, migration or compatibility
+  decision.
+- EXPECTED VERIFICATION: W05 plan/index/cursor/progress consistency; current
+  progress authority regression; maintenance audit; exact full DEV suite; diff
+  review; Version Impact `NONE` because only planning/status documents change.
+- KNOWN OUT OF SCOPE: every `GAME/**` and other production owner, architecture
+  reopening, dated/parallel plan, T07/T08/W06, and public README.
+- VERSION IMPACT: `NONE` — the actual write set consists of plan/index/
+  execution-status/current-progress documentation; no HDM-owned version,
+  revision, schema, catalog or generation namespace changes.
+
+CURRENT_VERIFICATION_STATE:
+- Focused current-progress/frontier/W05 owner-consumer checks:
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_current_progress_authority.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py`
+  — 30 passed.
+- Canonical in-place full DEV command — 1517 passed, 7 failed, 24 existing
+  `RefResolver` deprecation warnings. Sequential rerun of the same seven
+  failures reproduces them. The failures are workspace contamination: 11 extra
+  `ENGINE_VERSION.yaml` markers under ignored `DEV/tmp`; ignored `.entire`
+  session/log data enters package/version census; and ignored
+  `GAME/TOOLS/__pycache__` enters release passthrough. No ignored artifacts were
+  inspected or removed. These runs are not clean-exact acceptance evidence.
+- Isolated worktree at the same source with the four plan/status edits applied
+  but not committed: full DEV — 1523 passed, 1 failed, 24 existing warnings.
+  The only failure is
+  `RuntimePackageProvenanceTests.test_clean_checkout_metadata_records_exact_head`,
+  which correctly observes `dirty_worktree` for the uncommitted candidate. Rerun
+  against the exact committed candidate before treating this as acceptance.
+- Clean exact-source full DEV, maintenance audit, commit/publication and fresh
+  remote read-back remain pending. No hosted-CI result is claimed.
+SYSTEM_IMPACT: NONE — plan refinement directly implements the accepted A1
+architecture/ruling without reopening its closed boundary.
+NEXT_EXACT_TASK: finish document consistency review and exact Version Impact
+classification, commit the coherent documentation package locally, then run
+maintenance/full DEV against that exact clean committed tree without touching
+ignored main-worktree artifacts. If GREEN, publish/read back and stop for Senior
+plan review; do not begin production code.
+KNOWN_BLOCKERS: Senior plan GO is the required next acceptance gate; no Product
+Owner/design blocker remains.
+UNPUBLISHED_WORK: repaired W05 plan, plan index, execution cursor and current-
+progress status edits are local and awaiting verification/publication.
