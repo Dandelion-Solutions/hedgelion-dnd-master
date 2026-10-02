@@ -23,6 +23,19 @@ Files 1–7 form the complete executable plan. File 8 proves where the retired p
 
 Future planning repairs modify the applicable stable wave file and this index in one coherent checkpoint. Do not create a dated addendum, overlay, competing master plan or alternate execution graph.
 
+### W05 T06-A1 architecture acceptance / plan-repair route
+
+Accepted machine-composition owner:
+`DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`.
+Senior Review Stop 2 GO:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`.
+
+Repair the stable Wave-05 T06 decomposition/Impact Envelopes and this index
+coherently; do not create an executable dated overlay. Current-owner/readiness/
+History/retrospective prerequisite production and held T06 paths require the
+complete repaired-plan Senior GO. The prior general production authorization
+does not bypass this task-specific gate.
+
 ## 2. Authority and baseline
 
 The plan derives from the accepted current architecture/specification owners, especially:

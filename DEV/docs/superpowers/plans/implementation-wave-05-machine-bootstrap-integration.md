@@ -356,9 +356,14 @@ critics and both mandatory architecture Senior review stops.
 Target architecture checkpoint:
 `W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY`.
 
-Production T06 implementation does not resume these held paths until the
-architecture checkpoint has final Senior GO and the T06 implementation
-Impact Envelope/plan is reconciled to it.
+Architecture checkpoint: **ACCEPTED / REVIEW STOP 2 GO**, per
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`.
+
+Next authorized work is implementation-plan/Impact Envelope repair in this
+stable file and implementation-plan-index. The Senior ruling's P0–P3 dependency
+map is decomposition input, not an executable overlay. Production remains held
+until the complete repaired plan receives Senior GO. No prerequisite output or
+W05_PRODUCT_PATHS_READY is yet claimed.
 
 ## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 

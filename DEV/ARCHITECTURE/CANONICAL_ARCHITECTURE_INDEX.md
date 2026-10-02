@@ -875,3 +875,16 @@ Update this index when:
 - later implementation review exposes a real Step-5 or later canonical reopen condition.
 
 Do not copy every schema field/implementation detail here. The index is valuable as a compact **semantic locator + integration map + adversarial router**, not as a parallel specification corpus.
+
+## T06 current readiness / ordinary Master retrospective routing
+
+Implementation-facing owner: `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`.
+Acceptance evidence: `DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`.
+
+Use this route for operation-scoped current campaign/HOT/LIVE observation,
+production READY_PC/local sufficiency, native EVENT_INDEX/HOT/LIVE bounded
+History discovery and the sealed NARRATOR retrospective use case. Story is
+dormant optional orientation; Commentator corpus/control owners are separate.
+This entry is a locator only. Current execution/gates remain exclusively in
+DEV/CURRENT_PROGRESS.md and its routed task cursor; existing machine realization
+must be checked separately from accepted architecture.

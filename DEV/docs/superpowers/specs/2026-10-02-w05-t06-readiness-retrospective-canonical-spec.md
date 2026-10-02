@@ -1,6 +1,9 @@
 # W05.T06 — Current Readiness and Ordinary Master Retrospective Canonical Specification
 
-Status: CANONICAL DESIGN RESULT — REVIEW STOP 2 PENDING
+Status: **CANONICAL — REVIEW STOP 2 GO / ARCHITECTURE ACCEPTED**
+
+Senior acceptance: DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md.
+Production implementation remains subject to the repaired W05 plan/Impact Envelope Senior GO.
 
 This specification is the implementation-facing architecture owner for W05.T06 progressive readiness and ordinary active-player Master retrospective. It composes existing owners; it does not replace them.
 
@@ -324,27 +327,27 @@ Operational effect:
 T06A1-D1
 Context: shared stale-currentness gap.
 Chosen: one RuntimeHost internal CurrentOwnerView.
-Status: ACCEPTED BY DESIGN; REVIEW STOP 2 PENDING.
+Status: ACCEPTED — REVIEW STOP 2 GO.
 
 T06A1-D2
 Context: READY_PC has semantic owner but no production callable.
 Chosen: deterministic production ReadinessService over current owners + admitted catalog.
-Status: ACCEPTED BY DESIGN; REVIEW STOP 2 PENDING.
+Status: ACCEPTED — REVIEW STOP 2 GO.
 
 T06A1-D3
 Context: ordinal EVENT_INDEX cannot satisfy semantic retrospective discovery.
 Chosen: minimum typed discovery refs in existing EVENT_INDEX plus HOT/LIVE companions.
-Status: ACCEPTED BY DESIGN; REVIEW STOP 2 PENDING.
+Status: ACCEPTED — REVIEW STOP 2 GO.
 
 T06A1-D4
 Context: ordinary retrospective spans History + current eligibility + Context.
 Chosen: thin RetrospectiveService and sealed Context evidence, existing Narrator profile.
-Status: ACCEPTED BY DESIGN; REVIEW STOP 2 PENDING.
+Status: ACCEPTED — REVIEW STOP 2 GO.
 
 T06A1-D5
 Context: Story lookup exists.
 Chosen: DORMANT, not baseline implementation.
-Status: ACCEPTED BY DESIGN; REVIEW STOP 2 PENDING.
+Status: ACCEPTED — REVIEW STOP 2 GO.
 
 ## 22. Risk/deferred record
 

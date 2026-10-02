@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T06-A1 architecture/deep-work block is authorized; T06 production implementation remains partially held after two safe published slices; T07/T08/W06 remain unstarted.
-CURRENT_TASK: W05.T06-A1 — current-readiness and ordinary Master retrospective consumer architecture.
+STATUS: SENIOR_REVIEW_REQUIRED — T06-A1 architecture accepted; implementation-plan repair authorized; held production paths await repaired-plan Senior GO.
+CURRENT_TASK: W05.T06 implementation-plan / Impact Envelope repair; production not resumed.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
 LAST_SAFE_SHA: `2cdb0bd0595b0d423788711e0b8a752ff9d886da` — published System-Impact stop/read-back head; exact-head hosted `Validate engine source` run `36947711249` SUCCESS. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
@@ -2018,3 +2018,36 @@ Review Stop 2 is mandatory before implementation-plan repair or production resum
 NEXT_EXACT_TASK: perform W05.T06-A1 mandatory Senior Review Stop 2 against the fresh remote HEAD and published/read-back canonical package. If GO, reconcile the W05 T06 implementation decomposition/Impact Envelope and only then authorize the first production prerequisite.
 
 UNPUBLISHED_WORK: NONE.
+
+
+## W05.T06-A1 Review Stop 2 — Senior GO / plan repair
+
+RULING: `DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`
+REVIEWED_PUBLIC_BASIS: `f08d1bd6ef4502a46dd0ebd66b167709f56708b5`
+
+```text
+REVIEW_STOP_2: GO
+W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY: ACCEPTED
+SYSTEM_IMPACT_DESIGN_BOUNDARY: CLOSED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+IMPLEMENTATION_PLAN_REPAIR: AUTHORIZED
+PRODUCTION_IMPLEMENTATION: HELD UNTIL REPAIRED-PLAN SENIOR GO
+W05_PRODUCT_PATHS_READY: HELD
+T06_S1_S2: PRESERVED
+T07_T08_W06: NOT STARTED
+STORY_MASTER_ADAPTER: DORMANT
+VERSION_IMPACT: NONE
+UNPUBLISHED_WORK: NONE AFTER THIS CHECKPOINT'S PUBLICATION / READ-BACK
+```
+
+NEXT_EXACT_TASK: repair the stable W05 plan and implementation-plan-index, with
+complete P0 current-owner / P1 readiness / P2 History discovery / P3 sealed
+retrospective / T06 product-completion steps and Impact Envelopes. Publish/read
+back the complete plan package and return for Senior plan review before product
+code changes. The ruling supplies decomposition and mandatory acceptance joins;
+it is not an alternative executable plan.
+
+The earlier pending Review Stop 2/Story-blocker cursor statements are historical
+and superseded by this entry. LAST_SAFE_SHA at the file header remains the
+historical System-Impact-stop evidence; the handoff reports the new published
+review checkpoint. No production capability or final product output is claimed.

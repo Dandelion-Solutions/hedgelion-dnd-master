@@ -377,3 +377,16 @@ For substantive repository work:
 12. update this map when a responsibility/primary-entry/dependency/taxonomy change would make future discovery materially misleading.
 
 A file move/addition/deletion inside an already covered homogeneous family does not require a per-file map edit. Do not place a correctness rule only in this map; put it in its owning contract/spec/schema/process and link/summarize here.
+
+## T06 current readiness / ordinary Master retrospective routing
+
+Implementation-facing owner: `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`.
+Acceptance evidence: `DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-2-senior.md`.
+
+Use this route for operation-scoped current campaign/HOT/LIVE observation,
+production READY_PC/local sufficiency, native EVENT_INDEX/HOT/LIVE bounded
+History discovery and the sealed NARRATOR retrospective use case. Story is
+dormant optional orientation; Commentator corpus/control owners are separate.
+This entry is a locator only. Current execution/gates remain exclusively in
+DEV/CURRENT_PROGRESS.md and its routed task cursor; existing machine realization
+must be checked separately from accepted architecture.

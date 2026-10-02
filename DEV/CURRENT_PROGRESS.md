@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: W05.T06-A1 mandatory Senior Review Stop 2 over the completed Steps 2–8 canonical package; T06 production implementation remains held.
-REQUIRED_GATE: W05.T06-A1 Review Stop 2 -> `W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY` -> reconcile T06 implementation plan/envelope -> resume held readiness/ordinary-Master-retrospective implementation -> `W05_PRODUCT_PATHS_READY`.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 accepted; T06 S1/S2 safe slices published; W05.T06-A1 architecture block authorized.
-KNOWN_BLOCKERS: no semantic/Product Owner blocker remains in T06-A1; the completed canonical design still requires mandatory Senior Review Stop 2 before implementation-plan repair. Production work on readiness/ordinary retrospective remains held. Story is non-mandatory/dormant. T07/T08 remain unstarted.
+NEXT_AUTHORIZED_UNIT: W05.T06 implementation-plan / Impact Envelope repair from the Senior-accepted T06-A1 spec; production remains held until repaired-plan Senior GO.
+REQUIRED_GATE: accepted W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY -> repaired stable W05 plan/envelopes + Senior plan GO -> accepted current-view/readiness/History/retrospective prerequisites -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
+KNOWN_BLOCKERS: no remaining PO/design blocker; production readiness/ordinary-retrospective capabilities are not implemented. Repaired implementation plan/envelopes and Senior plan GO are required. Story is dormant; T07/T08/W06 remain unstarted.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
