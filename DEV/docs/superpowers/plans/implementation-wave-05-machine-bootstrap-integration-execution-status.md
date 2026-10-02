@@ -1971,8 +1971,17 @@ CURRENT_VERIFICATION_STATE:
   No hosted-CI run is claimed for this documentation-only checkpoint.
 ```
 
-NEXT_EXACT_TASK: return the complete Step-1 package for mandatory architecture
-Review Stop 1. Do not begin Step 2 without Senior GO. Do not resume the held
-production paths.
+REVIEW_STOP_1: **GO** — Senior review at
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-review-stop-1-senior.md`.
+
+STEP_2_AUTHORIZED: YES.
+PRODUCTION_IMPLEMENTATION: HELD.
+W05_PRODUCT_PATHS_READY: HELD.
+
+NEXT_EXACT_TASK: continue W05.T06-A1 automatically through Steps 2–8 under the
+canonical architecture process. Do not pause again unless a genuine human-owned
+decision emerges. At completed Step 8, publish/read back the canonical package
+and return for mandatory Review Stop 2 before implementation-plan repair or
+production resumption.
 
 UNPUBLISHED_WORK: NONE.
