@@ -535,8 +535,13 @@ not converge to READY_PC.
   already-resolved `BoundCatalogContext`; no ambient/default catalog choice.
 - Modify: `GAME/TOOLS/hot_store.py` / current-owner internal carrier only as
   needed for the owner-specific character establishment join selected in P0.
+- Modify the current native Actor envelope contracts
+  `GAME/SCHEMA/actor.schema.yaml` and `DEV/SCHEMAS/world-record.schema.json`
+  only as needed to represent the already-owned Actor `state_revision`
+  required by Actor Continuity and S6D-07. Do not invent a second revision field
+  inside `world-actor-state`.
 - Create: `DEV/TESTS/test_character_progression.py`; extend RuntimeHost/RD14
-  composition tests.
+  composition and native Actor schema/continuity tests.
 - Inspect/consume only: S6D-07 owner/seed, Character Readiness,
   Actor/Asset/Effect/health/resource owners, catalog_runtime/ruleset_package and
   DEV conformance tool/fixtures.
@@ -627,8 +632,12 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   Activity execution/RNG, readiness verdict (P1B), History/Story, publication,
   migration, new mechanics primitive/selector/accessor.
 - VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: run exact Version
-  Impact Gate on new/changed GAME modules and any machine carrier actually
-  touched. No schema/catalog/generation/migration bump is preselected.
+  Impact Gate on new/changed GAME modules and the Actor envelope schema
+  alignment. Current code/tests already require Actor `state_revision` while
+  installed Actor/world-record envelopes do not represent it; implementation
+  must make those machine contracts agree. Do not preselect the exact schema/
+  campaign-contract transition or migration disposition before rereading the
+  current pre-release/version owner.
 - HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
 - CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; S6D-07,
   DIEGETIC_ONBOARDING/CHARACTER_READINESS; Actor/Asset/Effect/health owners;
@@ -737,7 +746,8 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   is pre-authorized.
 - HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
 - CURRENTNESS RE-READ SET BEFORE WRITE: P0/P1A outputs/cursors; T06-A1;
-  S6D-07/CHARACTER_READINESS; Actor/PLAYER/Asset/Effect; catalog/runtime package;
+  S6D-07/CHARACTER_READINESS; Actor/PLAYER/Asset/Effect; current Actor envelope
+  schemas/continuity tests; catalog/runtime package;
   MechanicalContext/selectors/Activities; relevant tests and version owner.
 
 ### W05.T06-P2 — Bounded native History discovery and enrollment

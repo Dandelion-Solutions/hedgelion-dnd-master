@@ -90,13 +90,27 @@ materialization. P1A implements that already-accepted obligation from typed
 accepted anchors/selections plus deterministic inheritance/defaults. It does
 not infer rules from prose, create new content, publish or declare READY_PC.
 
+### SP06-10 — native Actor state_revision envelope mismatch
+
+Resolved in P1A planning. Current Actor Continuity machine input and S6D-07
+READY_PC evidence require outer native Actor `state_revision`, while the
+installed `GAME/SCHEMA/actor.schema.yaml` and generic world-record envelope do
+not currently represent that field and no RuntimeHost/native-storage adapter
+derives it.
+
+P1A therefore includes the minimum native Actor envelope schema alignment under
+the already-accepted Actor/S6D owners. The implementation Version Impact Gate
+must classify the exact local schema/campaign-contract consequence under the
+current pre-release compatibility policy; the plan does not invent a second
+revision field or silently synthesize one from Git/HOT generation.
+
 ## Gate
 
 ```text
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 T06_A1_ARCHITECTURE: ACCEPTED
-PLAN_FINDINGS_REPAIRED: SP06-01..SP06-09
+PLAN_FINDINGS_REPAIRED: SP06-01..SP06-10
 PRODUCTION_IMPLEMENTATION: HELD
 NEXT: FINAL SENIOR PLAN RE-REVIEW
 ```
