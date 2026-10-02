@@ -540,8 +540,12 @@ not converge to READY_PC.
   only as needed to represent the already-owned Actor `state_revision`
   required by Actor Continuity and S6D-07. Do not invent a second revision field
   inside `world-actor-state`.
-- Create: `DEV/TESTS/test_character_progression.py`; extend RuntimeHost/RD14
-  composition and native Actor schema/continuity tests.
+- Consume: `GAME/TOOLS/id_allocator.py` and the current native allocator/
+  identifier-policy contracts for new campaign-owned starting Assets. Modify
+  only the minimum owner-specific integration needed to stage allocation with
+  the P1A HOT batch; no second allocator or new identity policy.
+- Create: `DEV/TESTS/test_character_progression.py`; extend RuntimeHost/RD14,
+  RD04 allocator/HOT and native Actor schema/continuity tests.
 - Inspect/consume only: S6D-07 owner/seed, Character Readiness,
   Actor/Asset/Effect/health/resource owners, catalog_runtime/ruleset_package and
   DEV conformance tool/fixtures.
@@ -580,9 +584,23 @@ from prose by itself. If materially different legal choices remain unresolved,
 it returns the bounded blocker/question descriptor and performs no mutation.
 
 An established result writes the complete owner after-image batch through P0's
-trusted HOT establishment boundary in one local transaction. It does not SAVE,
-publish, declare READY_PC or create a new lifecycle state. Unsupported content
-is absent/nonselectable.
+trusted HOT establishment boundary in one local transaction. New campaign-owned
+starting Assets use the existing campaign allocator and current identifier
+policy; the exact allocator after-image joins Actor + Asset creation in that
+same transaction. Revalidate the predecessor owner/allocator generations at
+local establishment; movement fails boundedly without a partial grant. Existing
+Assets and already accepted grants retain their native identities.
+
+Repeat/resume of the same accepted initial materialization recognizes the
+already-established native build/grants instead of allocating again, resetting
+current HP/resources/equipment, reopening choices or advancing Actor revision
+solely for a no-op. A material correction or later acquisition follows its
+existing owner transition; this initial resolver does not invent a durable
+receipt, pending-work owner or compatibility path. Failure before establishment
+leaves Actor, Assets and allocator unchanged.
+
+The resolver does not SAVE, publish, declare READY_PC or create a new lifecycle
+state. Unsupported content is absent/nonselectable.
 
 The Host-bound catalog context is an already admitted `BoundCatalogContext`
 from `catalog_runtime.bind_catalog_context`; RuntimeHost never constructs an
@@ -594,13 +612,16 @@ foreign context produces typed rebind/currentness failure.
 delegated deterministic defaults, one unresolved material choice, explicit
 player override, same Actor ID/state-revision advance, exact current PLAYER
 control, unsupported content, forged selection, wrong-host/stale catalog and
-HOT before-SAVE visibility. No questionnaire behavior is implemented in this
-deterministic service.
+HOT before-SAVE visibility. Also prove allocator + Actor + Asset atomicity,
+failure rollback, overlapping allocator movement, repeated/resumed initial
+materialization with no duplicate IDs/grants, and preservation of already
+accepted choices/current resource values. No questionnaire behavior is
+implemented in this deterministic service.
 
 Focused command:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_character_progression.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd14_bootstrap.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_character_progression.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd14_bootstrap.py
 ```
 
 **Output:** `W05_T06_CHARACTER_MATERIALIZATION_READY`.
@@ -611,7 +632,8 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 - BASELINE REF OR SHA: accepted P0 output SHA after fresh remote read-back.
 - EXPECTED OWNERS TO CHANGE: new production character-progression resolver;
   RuntimeHost/catalog composition; bootstrap trusted catalog composition;
-  P1A-specific HOT establishment producer join.
+  P1A-specific HOT establishment/allocator producer join and the explicitly
+  listed native Actor envelope schema alignment.
 - EXPECTED CONSUMERS TO CHANGE: progressive onboarding product path later in
   T06; P1B readiness; RuntimeHost composition tests.
 - ALLOWED INTERFACES / CONTRACTS TO CHANGE: typed materialization request/result,
@@ -621,13 +643,16 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   accepted selection-basis precedence; deterministic grants/defaults only;
   exact current PLAYER control; exact catalog/ruleset context; unsupported
   content absent/nonselectable; one atomic local HOT establishment; no READY_PC,
-  SAVE or PLAY_READY side effect.
+  SAVE or PLAY_READY side effect; native campaign allocation co-established
+  with new Assets; no duplicate grants, resource reset or situational reselection
+  on repeat/resume.
 - ARCHITECTURE-SENSITIVE SURFACES: Actor/Asset native after-images, catalog
   context/current definition frontier, player agency, HOT atomicity, S6D package
   breadth and same-Actor promotion.
 - EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: new character progression
   suite; S6D-07 conformance; RD03 Actor/Asset/Effect; RD15 catalog; RuntimeHost
-  composition; RD14 bootstrap; P0 HOT witnesses.
+  composition; RD14 bootstrap; RD04 allocator/HOT atomicity, retry and
+  predecessor-movement witnesses; P0 HOT witnesses.
 - KNOWN OUT-OF-SCOPE OWNERS / SURFACES: new D&D content, generic concept NLP,
   Activity execution/RNG, readiness verdict (P1B), History/Story, publication,
   migration, new mechanics primitive/selector/accessor.
@@ -641,6 +666,7 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 - HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
 - CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; S6D-07,
   DIEGETIC_ONBOARDING/CHARACTER_READINESS; Actor/Asset/Effect/health owners;
+  id_allocator/native identity policy and current allocator source;
   catalog_runtime/ruleset_package/MechanicalContext; current package seed and
   capability file; RuntimeHost/bootstrap; relevant tests and version owner.
 

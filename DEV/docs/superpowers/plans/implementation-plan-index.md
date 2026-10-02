@@ -62,6 +62,8 @@ Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4` returned **NEED
 SP06-01..SP06-04 plus the repair review's additional current-consumer findings
 SP06-05..SP06-10 are resolved in the stable plan and
 `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`.
+The bounded follow-up Senior ruling at `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md` resolves SP06-11 (allocator/initial materialization repeat-resume) in stable P1A; accepted architecture and P0 authorization are preserved.
+
 Final Senior plan review is GO at `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review-final.md`. P0 is authorized; later T06 tasks remain dependency-gated.
 
 ## 2. Authority and baseline

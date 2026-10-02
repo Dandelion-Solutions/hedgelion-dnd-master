@@ -1,6 +1,8 @@
 # W05.T06 Repaired Plan — Targeted Repair Resolution
 
-Status: **REPAIRED PACKAGE CANDIDATE — FINAL SENIOR PLAN RE-REVIEW REQUIRED**
+Status: **REPAIRED PACKAGE — FINAL SENIOR PLAN GO**
+
+Final disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md`.
 
 Date: 2026-10-02
 Repair basis: `5830fcca01fa4f2bc2231ed50254e4b6f680dad8`
@@ -104,17 +106,31 @@ must classify the exact local schema/campaign-contract consequence under the
 current pre-release compatibility policy; the plan does not invent a second
 revision field or silently synthesize one from Git/HOT generation.
 
+### SP06-11 — initial Asset allocation and repeat/resume establishment join
+
+Final Senior review found that P1A creates starting Assets but did not explicitly
+map their campaign-native allocation or repeated initial materialization.
+Step-5.1 §10, WP12-8 and the current id_allocator producer already settle this:
+new campaign Assets + allocator after-image + Actor update share the same local
+establishment transaction. Existing grants retain identities. Repeat/resume
+cannot reallocate, reset current resources or reopen accepted choices.
+
+Resolved directly in the stable P1A file set, producer join, acceptance witnesses
+and Impact Envelope. This is an executable-plan omission, not new character,
+allocation, persistence or idempotency architecture. No production code changed.
+
 ## Gate
 
 ```text
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 ARCHITECTURE_REOPEN_REQUIRED: NO
 T06_A1_ARCHITECTURE: ACCEPTED
-PLAN_FINDINGS_REPAIRED: SP06-01..SP06-10
-PRODUCTION_IMPLEMENTATION: HELD
-NEXT: FINAL SENIOR PLAN RE-REVIEW
+PLAN_FINDINGS_REPAIRED: SP06-01..SP06-11
+FINAL_SENIOR_PLAN_REVIEW: GO
+PRODUCTION_IMPLEMENTATION: P0 AUTHORIZED; LATER TASKS DEPENDENCY-GATED
+NEXT: W05.T06-P0
 ```
 
-The final Senior review must compare the repaired stable plan against T06-A1,
-S6D-07/DIEGETIC_ONBOARDING, WP12 current establishment, current bootstrap
-composition and the actual event/index contracts before granting P0 RED/GREEN.
+The final Senior review compared those owners and current consumer contracts;
+the linked ruling grants P0 RED/GREEN. This resolution remains provenance,
+not a second executable plan.

@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SENIOR_REVIEW_REQUIRED — repaired T06 plan NEEDS_REPAIR; four significant planning findings remain; production held.
+STATUS: W05.T06 REPAIRED PLAN GO — P0 AUTHORIZED; SP06-01..SP06-11 closed in planning; later tasks dependency-gated.
 CURRENT_TASK: W05.T06-P0 — trusted HOT admission + RuntimeHost CurrentOwnerView.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `2cdb0bd0595b0d423788711e0b8a752ff9d886da` — published System-Impact stop/read-back head; exact-head hosted `Validate engine source` run `36947711249` SUCCESS. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+LAST_SAFE_SHA: `19ad53e1d729d2bef46b88789bb2e2d33117ef6d` — fresh-read final Senior GO publication; follow-up SP06-11 plan ruling below preserves P0 authorization. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2249,3 +2249,24 @@ KNOWN_BLOCKERS: none for entering P0. Any implementation discovery outside the
 P0 envelope is a new System-Impact stop, not permission to widen the task.
 
 UNPUBLISHED_WORK: NONE for architecture/plan review.
+
+
+## W05.T06 bounded Senior system-impact follow-up — SP06-11
+
+RULING: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md`
+FRESH_RECONCILED_PARENT: `19ad53e1d729d2bef46b88789bb2e2d33117ef6d`
+
+SP06-11 is repaired in stable P1A: native allocator after-image + Actor + new
+starting Assets co-establish atomically; failed/repeated/resumed initial
+materialization cannot duplicate grants or reset accepted choices/resources.
+The finding follows accepted Step-5.1/WP12 owners, not new architecture.
+SP06-01..SP06-11: CLOSED IN PLANNING.
+SENIOR_PLAN_REVIEW: GO; P0 AUTHORIZATION PRESERVED.
+PRODUCT_OWNER_DECISION_REQUIRED: NO. VERSION_IMPACT: NONE.
+NEXT_EXACT_TASK: worker fresh-bootstrap W05.T06-P0 and its Impact Envelope before RED.
+Later tasks remain named-output dependency-gated; Story remains dormant.
+Verification: Connector owner/code/contract review, remote delta reconciliation,
+prepared documentation/status checks and publication read-back. No production
+implementation or new runtime test PASS is claimed.
+Historical hold/review-pending entries above have no current scheduling authority.
+UNPUBLISHED_WORK: NONE after verified checkpoint publication.
