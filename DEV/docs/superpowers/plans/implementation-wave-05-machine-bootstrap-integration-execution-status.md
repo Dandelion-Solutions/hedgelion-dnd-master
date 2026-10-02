@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SENIOR_REVIEW_REQUIRED — T06-A1 architecture accepted; implementation-plan repair authorized; held production paths await repaired-plan Senior GO.
-CURRENT_TASK: W05.T06 implementation-plan / Impact Envelope repair; production not resumed.
+STATUS: SENIOR_REVIEW_REQUIRED — repaired T06 plan NEEDS_REPAIR; four significant planning findings remain; production held.
+CURRENT_TASK: bounded stable-plan repair of SP06-01..SP06-04; T06-A1 architecture remains accepted.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
 LAST_SAFE_SHA: `2cdb0bd0595b0d423788711e0b8a752ff9d886da` — published System-Impact stop/read-back head; exact-head hosted `Validate engine source` run `36947711249` SUCCESS. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
@@ -2156,3 +2156,32 @@ acceptance gate before W05.T06 production resumes.
 UNPUBLISHED_WORK: NONE for the repaired stable W05 plan/index package; this
 cursor/current-progress status synchronization records the published plan
 evidence and current Senior plan-review gate. No production code was changed.
+
+
+## W05.T06 Senior plan review — NEEDS REPAIR
+
+REVIEWED_PUBLIC_HEAD: `d825127cb868d0eaa87bda4f5f3852a5aa2575a4`
+RULING: `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review.md`
+
+SENIOR_PLAN_REVIEW: NEEDS_REPAIR
+SIGNIFICANT_OPEN: 4 — SP06-01..SP06-04
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN: NO
+PRODUCTION_IMPLEMENTATION: HELD
+W05_PRODUCT_PATHS_READY: HELD
+T06_S1_S2: PRESERVED
+T07_T08_W06: NOT STARTED
+VERSION_IMPACT: NONE
+
+NEXT_EXACT_TASK: repair only the stable W05 plan/index/envelopes for native
+Master eligibility separation, accepted HOT producer/admission proof, bounded
+expanding-read coherence, and P1 dependency-set/catalog issuer joins. Resolve
+all four findings, verify/publish/read back the complete package and return for
+Senior plan review. Do not restart T06-A1 Steps 1–8 or change production code.
+
+VERIFICATION: Connector source comparison confirmed prior plan repair touched
+four DEV Markdown paths only. Exact-head hosted Validate engine source run
+37034983388 at d825127cb868d0eaa87bda4f5f3852a5aa2575a4 completed/success. Worker local
+1524-test/maintenance evidence is retained as reported, not independently rerun.
+The historical "Senior GO pending" entry is superseded by this disposition.
+UNPUBLISHED_WORK: NONE after review checkpoint publication/read-back.

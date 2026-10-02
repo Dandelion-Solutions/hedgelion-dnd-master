@@ -58,6 +58,12 @@ Envelopes, focused verification and version-namespace checks are in
 blocked until this repaired package receives Senior plan GO. Story remains
 dormant; T07/T08/W06 remain unstarted.
 
+Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4`: **NEEDS_REPAIR**.
+Findings SP06-01..SP06-04 are owned by
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review.md`.
+Repair the existing stable plan/index before another Senior plan review; the
+accepted architecture gate remains closed and production remains held.
+
 ## 2. Authority and baseline
 
 The plan derives from the accepted current architecture/specification owners, especially:
