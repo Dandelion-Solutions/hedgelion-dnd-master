@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: Complete verification/publication/read-back of the repaired stable W05 T06 plan package, then obtain Senior plan GO; production remains held.
+NEXT_AUTHORIZED_UNIT: Senior plan review / GO for the repaired stable W05 T06 plan package, published and read back at `a61b40ff14fb53d24b715734c43449fea94fbeb9`; production remains held.
 REQUIRED_GATE: accepted W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY -> repaired stable W05 plan/envelopes + Senior plan GO -> P0 CurrentOwnerView -> P1 readiness and P2 native History discovery -> P3 sealed retrospective -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: no remaining PO/design blocker; the repaired plan package still requires clean exact-source verification, publication/read-back and Senior plan GO. Production readiness/ordinary-retrospective capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
+KNOWN_BLOCKERS: no remaining PO/design blocker; Senior plan GO is required before T06 production resumes. Production readiness/ordinary-retrospective capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -367,16 +367,17 @@ TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bo
 IMPLEMENTATION_SPEC: `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`
 BASE_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — freshly fetched exact public HEAD at the start of this plan repair.
 
-STATUS: SENIOR_REVIEW_REQUIRED — W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 Review Stop 2 accepted the architecture; the stable T06 plan/envelopes are repaired and await package verification/publication/read-back and Senior plan GO.
-CURRENT_TASK: W05.T06 implementation-plan / Impact Envelope repair only; production has not resumed.
-LAST_PUBLISHED_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — fresh fetch confirmed local `HEAD == origin/v1/engine-rearchitecture` before the plan edits.
+STATUS: SENIOR_REVIEW_REQUIRED — W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 Review Stop 2 accepted the architecture; the stable T06 plan/envelopes are published/read back and await Senior plan GO.
+CURRENT_TASK: Senior plan review / GO for the repaired W05.T06 implementation plan; production has not resumed.
+PLAN_PACKAGE_SHA: `a61b40ff14fb53d24b715734c43449fea94fbeb9`.
+PLAN_PACKAGE_REMOTE_READBACK: PASS — fresh fetch confirmed `HEAD == origin/v1/engine-rearchitecture == a61b40ff14fb53d24b715734c43449fea94fbeb9`; changed-file read-back is empty.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit PASS. T06-S1/S2 remain accepted/read back in the task cursor.
-CURRENT_VERIFICATION_STATE: focused current-progress/frontier/W05 owner-consumer tests 30 passed. In-place canonical full DEV: 1517 passed, 7 failed, 24 existing warnings; sequential rerun reproduced the 7 workspace-contamination failures (ignored DEV/tmp marker copies, ignored .entire census hits and GAME/TOOLS/__pycache__ release passthrough). An isolated worktree with the plan edits uncommitted recorded 1523 passed and one expected `dirty_worktree` provenance assertion failure because the candidate was not yet committed. Neither run is clean-exact acceptance evidence; no ignored artifacts were inspected or removed. Exact committed-tree full DEV, maintenance audit, publication and read-back remain pending. No production behavior PASS is claimed for T06-A1. Hosted CI is unavailable in this local-machine runtime and is not claimed.
-VERSION_IMPACT: NONE expected for stable plan/index/cursor/current-progress synchronization; confirm against the actual documentation-only delta before publication. No runtime/module/schema/catalog/generation owner is changed.
+CURRENT_VERIFICATION_STATE: focused current-progress/frontier/W05 owner-consumer tests 30 passed. Clean exact committed candidate `a61b40ff14fb53d24b715734c43449fea94fbeb9`: canonical full DEV with `-n auto` 1524 passed, 24 existing RD09 `RefResolver` deprecation warnings; canonical maintenance audit PASS; `git diff --check` PASS. Fresh post-push fetch confirmed `HEAD == origin/v1/engine-rearchitecture == a61b40ff14fb53d24b715734c43449fea94fbeb9`; changed-file read-back matches. Earlier in-place failures from ignored workspace artifacts remain recorded as non-acceptance diagnostics; no ignored artifacts were inspected or removed. No production behavior PASS is claimed for T06-A1. Hosted CI is unavailable in this local-machine runtime and is not claimed.
+VERSION_IMPACT: NONE — plan/index/execution-status/current-progress documentation only; no HDM-owned version/revision/schema/catalog/generation namespace changed.
 SYSTEM_IMPACT: NONE — plan decomposition and verification only under accepted T06-A1 architecture; production code remains untouched.
-NEXT_EXACT_TASK: finish stable-plan/index/cursor/progress consistency checks and Version Impact review, commit the documentation-only package, run maintenance and the full DEV suite against that exact clean committed tree without touching ignored main-worktree artifacts, then publish/read back the repaired plan package and stop for Senior plan review. Do not begin production code before GO.
-KNOWN_BLOCKERS: no PO/design blocker; clean exact-source verification is pending because the main worktree contains ignored test-contaminating artifacts; Senior plan GO remains required after publication/read-back. P0–P3 production capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
-UNPUBLISHED_WORK: repaired plan package and its status synchronization are local edits pending verification and publication.
+NEXT_EXACT_TASK: obtain Senior plan review / GO for the complete repaired W05 T06 package at the current public HEAD. Do not begin production code before GO.
+KNOWN_BLOCKERS: no PO/design blocker; the repaired plan awaits the required Senior plan GO. P0–P3 production capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
+UNPUBLISHED_WORK: NONE for the stable plan/index package at `a61b40ff14fb53d24b715734c43449fea94fbeb9`; this current-progress status synchronization is published/read back as part of the current checkpoint.
 
 ## Historical Wave-04 execution cursor snapshot (pre-closure)
 

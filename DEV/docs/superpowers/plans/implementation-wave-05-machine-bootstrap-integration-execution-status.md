@@ -2068,7 +2068,7 @@ historical System-Impact-stop evidence; the handoff reports the new published
 review checkpoint. No production capability or final product output is claimed.
 
 
-## W05.T06 repaired implementation plan — publication pending
+## W05.T06 repaired implementation plan — published/read back; Senior plan GO pending
 
 ACCEPTED_ARCHITECTURE:
 `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`
@@ -2079,7 +2079,8 @@ SENIOR_PLAN_AUTHORITY:
 ```text
 REVIEW_STOP_2: GO / ARCHITECTURE ACCEPTED
 IMPLEMENTATION_PLAN_REPAIR: AUTHORIZED
-REPAIRED_PLAN_PACKAGE: PREPARED IN THIS LOCAL WORKTREE
+REPAIRED_PLAN_PACKAGE: PUBLISHED / REMOTE READ-BACK PASS
+PLAN_PACKAGE_SHA: a61b40ff14fb53d24b715734c43449fea94fbeb9
 PRODUCTION_IMPLEMENTATION: HELD UNTIL PUBLISHED PACKAGE SENIOR GO
 T06_S1_S2: PRESERVED
 T07_T08_W06: NOT STARTED
@@ -2097,6 +2098,9 @@ synchronized to plan verification/publication/read-back as the current task.
 BASE_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — fresh
 `git fetch --prune origin` confirmed local `HEAD == origin/v1/engine-rearchitecture`
 before edits.
+LAST_SAFE_SHA: `a61b40ff14fb53d24b715734c43449fea94fbeb9` — repaired stable plan,
+index and task envelope package published and freshly read back; production is
+still held for Senior plan GO.
 
 IMPLEMENTATION IMPACT ENVELOPE — PLAN REPAIR ONLY:
 - SPEC / APPROVED DESIGN: accepted T06-A1 canonical spec and Senior Review
@@ -2125,29 +2129,30 @@ CURRENT_VERIFICATION_STATE:
 - Focused current-progress/frontier/W05 owner-consumer checks:
   `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_current_progress_authority.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py`
   — 30 passed.
-- Canonical in-place full DEV command — 1517 passed, 7 failed, 24 existing
-  `RefResolver` deprecation warnings. Sequential rerun of the same seven
-  failures reproduces them. The failures are workspace contamination: 11 extra
-  `ENGINE_VERSION.yaml` markers under ignored `DEV/tmp`; ignored `.entire`
-  session/log data enters package/version census; and ignored
-  `GAME/TOOLS/__pycache__` enters release passthrough. No ignored artifacts were
-  inspected or removed. These runs are not clean-exact acceptance evidence.
-- Isolated worktree at the same source with the four plan/status edits applied
-  but not committed: full DEV — 1523 passed, 1 failed, 24 existing warnings.
-  The only failure is
-  `RuntimePackageProvenanceTests.test_clean_checkout_metadata_records_exact_head`,
-  which correctly observes `dirty_worktree` for the uncommitted candidate. Rerun
-  against the exact committed candidate before treating this as acceptance.
-- Clean exact-source full DEV, maintenance audit, commit/publication and fresh
-  remote read-back remain pending. No hosted-CI result is claimed.
+- Clean exact committed source `a61b40ff14fb53d24b715734c43449fea94fbeb9` in
+  detached verification worktree `.hdm-devtools/clean-w05-plan-exact-a61b`:
+  `PYTHONDONTWRITEBYTECODE=1 /home/denis/hdm/repos/hedgelion-dnd-master/.hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto`
+  — 1524 passed, 24 existing RD09 `RefResolver` deprecation warnings.
+- Same exact source/worktree, canonical
+  `PYTHONDONTWRITEBYTECODE=1 /home/denis/hdm/repos/hedgelion-dnd-master/.hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py`
+  — PASS (`OK: engine consistency audit passed`).
+- Documentation delta `git diff --check` — PASS. In-place full DEV attempts
+  remain recorded as non-acceptance diagnostics: ignored workspace artifacts
+  caused their 7 failures; no ignored artifacts were inspected or removed.
+- Fresh post-push `git fetch --prune origin` confirmed
+  `HEAD == origin/v1/engine-rearchitecture == a61b40ff14fb53d24b715734c43449fea94fbeb9`;
+  `git diff HEAD origin/v1/engine-rearchitecture` is empty. The four changed
+  plan/status paths match the intended package. Hosted CI is unavailable and is
+  not claimed.
+VERSION_IMPACT: NONE — only plan/index/execution-status/current-progress
+documentation changed; no HDM-owned version/revision/schema/catalog/generation
+namespace changed.
 SYSTEM_IMPACT: NONE — plan refinement directly implements the accepted A1
 architecture/ruling without reopening its closed boundary.
-NEXT_EXACT_TASK: finish document consistency review and exact Version Impact
-classification, commit the coherent documentation package locally, then run
-maintenance/full DEV against that exact clean committed tree without touching
-ignored main-worktree artifacts. If GREEN, publish/read back and stop for Senior
-plan review; do not begin production code.
-KNOWN_BLOCKERS: Senior plan GO is the required next acceptance gate; no Product
-Owner/design blocker remains.
-UNPUBLISHED_WORK: repaired W05 plan, plan index, execution cursor and current-
-progress status edits are local and awaiting verification/publication.
+NEXT_EXACT_TASK: obtain independent Senior plan review / GO for the complete
+repaired package at the current public HEAD. Do not begin production code.
+KNOWN_BLOCKERS: no Product Owner/design blocker; Senior plan GO is the required
+acceptance gate before W05.T06 production resumes.
+UNPUBLISHED_WORK: NONE for the repaired stable W05 plan/index package; this
+cursor/current-progress status synchronization records the published plan
+evidence and current Senior plan-review gate. No production code was changed.
