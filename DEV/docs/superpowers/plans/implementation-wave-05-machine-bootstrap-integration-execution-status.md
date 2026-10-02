@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: EXECUTING — W05.T05 accepted/read back; W05.T06 authorized; the fresh T06 Impact Envelope is recorded before implementation.
+STATUS: SENIOR_REVIEW_REQUIRED — W05.T06 is paused at a System-Impact Gate after two safe published implementation slices; T07/T08/W06 remain unstarted.
 CURRENT_TASK: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `4a2c8f9bd5780372cabb76762bdead75636c4b29` — current public implementation base. The intervening commit changes only `.opencode/agents/hdm-reviewer.md`; product owners/code remain the validated T06 entry baseline.
+LAST_SAFE_SHA: `880cd0bbb6ecf4ee561198651bed3297cb377bc0` — latest published T06 execution cursor; T06 product code checkpoint is `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1788,12 +1788,12 @@ run `36938015151` SUCCESS, maintenance PASS, DEV unit suite PASS. The intervenin
 public commit `4a2c8f9b` changes only reviewer configuration. Focused local
 consumer baseline: 132 passed, 2 existing warnings.
 
-## W05.T06 execution cursor — checkpoint 2
+## W05.T06 execution cursor — System-Impact Gate
 
 ```text
-STATUS: EXECUTING
+STATUS: SENIOR_REVIEW_REQUIRED
 CURRENT_TASK: W05.T06 — product paths remain in progress
-LAST_SAFE_SHA: 45df53dd344c03e6c16cd04e19d1dddeccc8f340
+LAST_SAFE_SHA: 880cd0bbb6ecf4ee561198651bed3297cb377bc0
 COMPLETED_SLICES:
   T06-S1 -> 0761c7aba6777386ab7485a51779c75bd4525d75
   T06-S2 -> 45df53dd344c03e6c16cd04e19d1dddeccc8f340
@@ -1820,26 +1820,88 @@ CURRENT_VERIFICATION_STATE:
 - `.hdm-devtools/venv/bin/ruff check --ignore SIM117 GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS; the ignored SIM117 is pre-existing at `test_rd14_bootstrap.py:777`, outside this delta.
 - `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS.
 - `git diff --check` — PASS.
-- Local publication read-back: refreshed `origin/v1/engine-rearchitecture` equals `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+- Local publication read-back: refreshed `origin/v1/engine-rearchitecture` equals `880cd0bbb6ecf4ee561198651bed3297cb377bc0`.
 
 VERSION_IMPACT: `BOOTSTRAP_RUNTIME` module `1.0.2 -> 1.0.3` at T06-S1, then
 `1.0.3 -> 1.0.4` at T06-S2 for material callable contract changes. No
 access-control module, campaign/storage/catalog
 generation, persistent schema, ruleset digest generation or manifest version
 change. Reclassify the actual owner set at each later T06 checkpoint.
+Version impact of this DEV execution-cursor/Senior-impact record: NONE.
 
-SYSTEM_IMPACT: NONE for T06-S1/T06-S2; they compose existing durability,
-RuntimeHost, history/access-control and Collaboration contracts without changing
-transport, authority, persistence or session owners. Re-evaluate at each remaining
-T06 slice.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED.
 
-NEXT_EXACT_TASK: T06 RED for `ProgressiveOnboardingTests` and
-`OrdinaryRetrospectiveRoutingTests`, then continue remaining approved paths in the
-authorized product/callable/test lane. Do not start T07, T08 or W06. Stop before
-any required new identity
-lookup, repository operation, authority rule, persistence field or owner-interface
-change.
-KNOWN_BLOCKERS: no blocker for T06-S1/T06-S2. Progressive onboarding and ordinary
-retrospective paths remain unimplemented and unverified.
-UNPUBLISHED_WORK: NONE for T06-S1/T06-S2. W05.T06 is not complete; global
-progress and final Senior audit remain pending.
+```text
+TRIGGER:
+  T06's remaining progressive-onboarding and ordinary-retrospective behavior
+  cannot be realized through the currently exposed accepted runtime owner APIs
+  without adding readiness/story authority or crossing an inspect-only boundary.
+
+APPROVED SPEC / PLAN EXPECTATION:
+  Progressive onboarding remains `initializing` until owner-established
+  READY_PC + PLAY_READY and never invents mechanics/readiness. Ordinary
+  retrospective must use current native History/Story and current Context/
+  eligibility while enforcing PO-012. The T06 envelope makes RuntimeHost,
+  Context Runtime, History, Story and related owner modules inspect-only and
+  forbids new transport operations or authority.
+
+DISCOVERED IMPLEMENTATION PRESSURE:
+  * `ProgressiveOnboardingTests.test_progressive_onboarding_requires_owner_readiness_without_invention`
+    RED: `bootstrap.advance_progressive_onboarding` is absent. A repository
+    search for `READY_PC|PLAY_READY|ready_pc|play_ready` under `GAME/TOOLS/*.py`
+    returned no matches. Supplying booleans or a new local evidence class from
+    bootstrap would create readiness authority rather than consume an existing
+    owner-issued result.
+  * `OrdinaryRetrospectiveRoutingTests.test_ordinary_retrospective_routes_current_history_story_and_context`
+    RED: `bootstrap.route_ordinary_retrospective` is absent. `RuntimeHost`
+    exposes Context and native History services but no Story read service
+    (`runtime_host.py` 1453-1511). `ContextService.assemble` accepts caller
+    candidates; `_assemble_bound_context` returns `UNSATISFIABLE` for
+    `retrospective=True` (context_runtime.py 1194-1217). Story's only exact
+    persisted read helper inspected here is private `_exact_story_read`, which
+    reaches through `host._repository` and an operation basis (story.py
+    1515-1535). Using caller Story IDs/content or this private repository path
+    would violate T06's authority boundary; adding a supported Story read route
+    would require an inspect-only owner change.
+
+AFFECTED OWNERS / CONSUMERS:
+  GAME/TOOLS/bootstrap.py, runtime_host.py, context_runtime.py, history.py,
+  story.py, commentator.py, and RD14 onboarding/retrospective tests.
+
+PROTECTED INVARIANTS AT RISK:
+  no invented readiness/mechanics; one owner-issued currentness/evidence route;
+  no caller Story IDs/visible_to/session metadata as authority; current PO-012
+  PLAYER disclosure plus at most one selected controlled PC's exact known
+  knowledge; no private repository/service-capability injection.
+
+WHAT CAN PROCEED WITHOUT THE CHANGE:
+  T06-S1/T06-S2 are complete and published/read back. No remaining product path
+  is claimed complete; no T07/T08/W06 work has started.
+
+SAFE OPTIONS:
+  Senior may identify already-accepted public readiness and Story read
+  capabilities that this execution failed to locate, or route the missing
+  consumer capabilities through their owning architecture/specification gates.
+  Do not add local readiness or private Story/repository access under this T06
+  authorization.
+
+RECOMMENDATION:
+  Hold the two affected product paths for Senior ruling on their supported
+  owner APIs before further implementation.
+
+COST / RISK IF RECOMMENDATION IS WRONG:
+  Continuing with invented readiness or a direct/private Story reader could
+  silently create a competing authority, violate the explicit no-caller-data
+  boundary, or disclose retrospective material without current eligibility.
+
+UNPUBLISHED_WORK: NONE. The two RED tests were removed after recording their
+failure; all committed work is published and the focused owner-regression
+command is green. W05.T06 is not complete; global progress and final Senior
+integration audit remain pending.
+```
+
+NEXT_EXACT_TASK: obtain Senior ruling on the recorded System-Impact finding
+before implementing `ProgressiveOnboardingTests` or
+`OrdinaryRetrospectiveRoutingTests`. Do not start T07, T08 or W06.
+KNOWN_BLOCKERS: Senior System-Impact ruling for progressive readiness and
+supported current Story retrieval.
