@@ -481,24 +481,39 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 **Implementation Impact Envelope:**
 - SPEC / APPROVED DESIGN: T06-A1 §§2–4, 20; Review Stop 2; Step-5.1;
   WP-12/WP-14/WP-16; R2.3; current native Actor/PLAYER/information owners.
-- BASELINE: fresh public HEAD after final repaired-plan Senior GO.
+- BASELINE REF OR SHA: fresh exact public HEAD after final repaired-plan Senior
+  GO; record implementation-start SHA before RED.
 - EXPECTED OWNERS TO CHANGE: RuntimeHost/current-owner/HOT infrastructure,
-  Context current reads, selected-product bootstrap composition; only the
+  Context current reads and selected-product bootstrap composition; only the
   minimum owner-producer adapter needed for the real P0 establishment witness.
-- ALLOWED CONTRACTS: trusted infrastructure HOT port, process-local admitted
-  establishment bookkeeping, operation-scoped read-session/results. No public
-  gameplay/model mutation capability.
-- PROTECTED INVARIANTS: one semantic owner; LIVE-first exact currentness; no
-  pre-CAS state; local HOT only after owner validation + WP12 establishment;
-  no remote I/O in SQLite transactions; no stale restart resurrection; dynamic
-  closure cannot mix snapshots; Context keeps eligibility.
-- OUT OF SCOPE: character build semantics (P1A), readiness derivation (P1B),
-  History discovery (P2), Story, schema/catalog expansion, migration.
-- VERSION IMPACT: classify actual changed GAME modules; no persistent campaign
-  schema/catalog/generation/migration is pre-authorized.
-- CURRENTNESS RE-READ: plan/cursor, T06-A1, Step-5.1, WP12/14/16, R2.3,
-  RuntimeHost/HOT/Context/bootstrap, actor continuity, RD03/04/07/09/11/14,
-  version owners.
+- EXPECTED CONSUMERS TO CHANGE: RuntimeHost fixed service composition,
+  Context current-family resolution and bootstrap's selected gameplay host.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: trusted infrastructure HOT port,
+  process-local admitted-establishment bookkeeping, operation-scoped
+  read-session/results and the trusted compose-selected-host argument. No
+  public gameplay/model mutation/service-injection capability.
+- PROTECTED ARCHITECTURE INVARIANTS: one semantic owner; LIVE-first exact
+  currentness; no pre-CAS state; HOT only after native-owner validation + WP12
+  establishment/adoption; no remote I/O in SQLite transactions; no stale
+  restart resurrection; dynamic closure cannot mix snapshots; Context retains
+  information/access eligibility.
+- ARCHITECTURE-SENSITIVE SURFACES: RuntimeHost composition; SQLite transaction
+  scope; current-source precedence; selected LIVE routing; cold recovery;
+  Context source eligibility; same-campaign namespace isolation.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD03 owner-produced Actor
+  after-image witness; RD04 HOT snapshot/admission; RuntimeHost composition;
+  RD11 Context; RD14 selected product host; RD07 recovery; RD09 LIVE.
+- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: character build semantics (P1A),
+  readiness derivation (P1B), History discovery (P2), Story, persistent
+  campaign schema/catalog expansion, migration, publication timing.
+- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify actual
+  changed GAME modules. No persistent campaign schema/catalog/generation,
+  checkpoint or migration change is pre-authorized.
+- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
+- CURRENTNESS RE-READ SET BEFORE WRITE: exact current progress/cursor; stable
+  plan/index; T06-A1/Review Stop 2; Step-5.1; WP12/14/16; R2.3;
+  RuntimeHost/HOT/Context/bootstrap/actor-continuity code; RD03/04/07/09/11/14;
+  current versioning policy/owner.
 
 ### W05.T06-P1A — Production character materialization resolver
 
@@ -585,12 +600,40 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 
 **Output:** `W05_T06_CHARACTER_MATERIALIZATION_READY`.
 
-**Impact Envelope:** consumes S6D-07 and existing native/catalog owners only;
-may add the production resolver, RuntimeHost/catalog composition and T06-specific
-HOT producer join. It may not add character content, a second rules engine,
-caller-authored grants, DEV runtime imports, persistent workflow/readiness state,
-new mechanics primitives, migration or publication semantics. Classify actual
-module versions at the checkpoint.
+**Implementation Impact Envelope:**
+- SPEC / APPROVED DESIGN: S6D-07 Character Progression/READY_PC Seed,
+  DIEGETIC_ONBOARDING, T06-A1 current-owner laws, Review Stop 2.
+- BASELINE REF OR SHA: accepted P0 output SHA after fresh remote read-back.
+- EXPECTED OWNERS TO CHANGE: new production character-progression resolver;
+  RuntimeHost/catalog composition; bootstrap trusted catalog composition;
+  P1A-specific HOT establishment producer join.
+- EXPECTED CONSUMERS TO CHANGE: progressive onboarding product path later in
+  T06; P1B readiness; RuntimeHost composition tests.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: typed materialization request/result,
+  fixed RuntimeHost character-progression service and trusted Host-bound
+  BoundCatalogContext. No raw prose/owner-after-image/catalog service injection.
+- PROTECTED ARCHITECTURE INVARIANTS: same PC Actor ID; player-owned choices and
+  accepted selection-basis precedence; deterministic grants/defaults only;
+  exact current PLAYER control; exact catalog/ruleset context; unsupported
+  content absent/nonselectable; one atomic local HOT establishment; no READY_PC,
+  SAVE or PLAY_READY side effect.
+- ARCHITECTURE-SENSITIVE SURFACES: Actor/Asset native after-images, catalog
+  context/current definition frontier, player agency, HOT atomicity, S6D package
+  breadth and same-Actor promotion.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: new character progression
+  suite; S6D-07 conformance; RD03 Actor/Asset/Effect; RD15 catalog; RuntimeHost
+  composition; RD14 bootstrap; P0 HOT witnesses.
+- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: new D&D content, generic concept NLP,
+  Activity execution/RNG, readiness verdict (P1B), History/Story, publication,
+  migration, new mechanics primitive/selector/accessor.
+- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: run exact Version
+  Impact Gate on new/changed GAME modules and any machine carrier actually
+  touched. No schema/catalog/generation/migration bump is preselected.
+- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
+- CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; S6D-07,
+  DIEGETIC_ONBOARDING/CHARACTER_READINESS; Actor/Asset/Effect/health owners;
+  catalog_runtime/ruleset_package/MechanicalContext; current package seed and
+  capability file; RuntimeHost/bootstrap; relevant tests and version owner.
 
 ### W05.T06-P1B — Production deterministic readiness
 
@@ -664,12 +707,38 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 
 **Output:** `W05_T06_PRODUCTION_READINESS_READY`.
 
-**Impact Envelope:** new readiness service + RuntimeHost wiring/tests only.
-Native Actor/PLAYER/Asset/Effect/catalog/mechanics owners are consumed, not
-replaced. No schema/catalog expansion, persisted ready field, bootstrap boolean,
-reverse PLAYER discovery, DEV import, execution/RNG, publication or migration is
-authorized. Re-read P0/P1A output, S6D-07, Character Readiness, catalog/
-MechanicalContext/Activity owners and version policy before RED.
+**Implementation Impact Envelope:**
+- SPEC / APPROVED DESIGN: T06-A1 §§5–7; S6D-07; CHARACTER_READINESS;
+  MechanicalContext/selector/Activity contracts.
+- BASELINE REF OR SHA: accepted P1A output SHA after fresh read-back.
+- EXPECTED OWNERS TO CHANGE: new production readiness module and RuntimeHost
+  readiness service wiring only.
+- EXPECTED CONSUMERS TO CHANGE: held T06 progress_onboarding/product readiness;
+  P1A-produced builds; readiness-focused RuntimeHost tests.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: Host-issued
+  BoundMechanicalDependencySet, LocalMechanicalSufficiency and
+  ReadyPcAssessment; explicit Actor+PLAYER refs. No caller-authored dependency
+  list or reverse PLAYER discovery.
+- PROTECTED ARCHITECTURE INVARIANTS: local sufficiency != READY_PC != PLAY_READY;
+  active current PLAYER controls Actor; exact Actor revision/current basis;
+  exact catalog/ruleset identity; admitted mechanical dependencies only; no
+  execution/RNG/mutation while assessing; transient evidence only.
+- ARCHITECTURE-SENSITIVE SURFACES: mechanical dependency closure, player
+  binding, catalog freshness, current-owner snapshot, unsupported content and
+  resume/rejoin reevaluation.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: new readiness suite; P1A
+  character progression; S6D-07; RD03; RD15; RuntimeHost composition; selector/
+  MechanicalContext/Activity contract suites.
+- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: character semantic choices/content,
+  new selectors/accessors/primitives, persistent ready state, save/publication,
+  lifecycle mutation, History/Story, migration.
+- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: run exact module
+  Version Impact Gate. No persistent schema/catalog/checkpoint/migration change
+  is pre-authorized.
+- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
+- CURRENTNESS RE-READ SET BEFORE WRITE: P0/P1A outputs/cursors; T06-A1;
+  S6D-07/CHARACTER_READINESS; Actor/PLAYER/Asset/Effect; catalog/runtime package;
+  MechanicalContext/selectors/Activities; relevant tests and version owner.
 
 ### W05.T06-P2 — Bounded native History discovery and enrollment
 
@@ -773,11 +842,43 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 
 **Output:** `W05_T06_NATIVE_HISTORY_DISCOVERY_READY`.
 
-**Impact Envelope:** only existing SemanticEvent/History/EVENT_INDEX/HOT/LIVE
-producer/consumer surfaces and event-specific schema/template contracts may
-change. Generic family-index authority, Story, current knowledge/disclosure,
-retention guarantees and generic search remain out of scope. Namespace-specific
-Version Impact is mandatory.
+**Implementation Impact Envelope:**
+- SPEC / APPROVED DESIGN: T06-A1 §§9–13, 18–20; WP19 L29–L38; WP11/WP12/
+  WP13/WP14/WP16; current History/SemanticEvent owners.
+- BASELINE REF OR SHA: accepted P0 output SHA after fresh read-back.
+- EXPECTED OWNERS TO CHANGE: History/SemanticEvent discovery realization,
+  RuntimeHost History service, HOT event helper, exact event producer/publication
+  joins, EVENT_INDEX template/writer and its dedicated event-index schema.
+- EXPECTED CONSUMERS TO CHANGE: P3 retrospective; RuntimeHost History users;
+  collaboration/LIVE absorption/event publication companions where exact event
+  enrollment participates.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: bounded HistoryDiscoveryRequest/
+  Candidate/Result/source-basis carriers; optional typed event discovery_refs;
+  existing EVENT_INDEX event-specific enrollment/discovery shape. Generic
+  native_family_index contract is not changed.
+- PROTECTED ARCHITECTURE INVARIANTS: EVENT_INDEX/helper derived only; exact
+  NativeSemanticEvent/native source terminates material claims; no absence proof,
+  body scan or generic search; accepted HOT participates before SAVE; pre-CAS
+  LIVE excluded; no campaign fallback for LIVE current truth; one existing
+  durability/absorption closure.
+- ARCHITECTURE-SENSITIVE SURFACES: event enrollment completeness, source-local
+  provenance/currentness, HOT atomic companion update, selected LIVE packs/CAS,
+  absorption deduplication and schema/template consistency.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD04, RuntimeHost, RD13,
+  RD09, RD06, RD12 collaboration where absorption participates, RD14 scaffold/
+  generator and dedicated event-index schema tests.
+- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: generic family-index semantics, Story,
+  current knowledge/disclosure authority, retention/exact-quote expansion,
+  chronology authority, generic memory/search, arbitrary migration.
+- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify History/
+  RuntimeHost/HOT/LIVE/publication modules and the dedicated event-index/
+  SemanticEvent schema surfaces. Do not infer a schema bump or migration before
+  the current owner/version law is read.
+- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
+- CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; T06-A1; WP19 L29–38;
+  WP11/12/13/14/16; History/RuntimeHost/HOT/durability/publication/LIVE/
+  collaboration/init_campaign; EVENT_INDEX and both relevant schema contracts;
+  RD04/06/09/12/13/14 and version owners.
 
 ### W05.T06-P3 — Same-operation sealed ordinary-Master retrospective
 
@@ -838,11 +939,39 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 
 **Output:** `W05_T06_SEALED_RETROSPECTIVE_READY`.
 
-**Impact Envelope:** new use-case module, RuntimeHost composition and private
-Context admission only. It may not change Commentator/PO-012 semantics, add a
-MASTER role, generic retrieval, Story dependency, authorization/knowledge/
-disclosure authority, persistent retrospective state, serial LLM phase or
-publication edge. Version Impact is classified from the actual changed modules.
+**Implementation Impact Envelope:**
+- SPEC / APPROVED DESIGN: T06-A1 §§8, 13–19; PO-001/WP19 L20–L23; Step-4/R2.3/
+  R2.4 ordinary NARRATOR; current information/access owners.
+- BASELINE REF OR SHA: accepted P2 output SHA plus accepted P0 output after
+  fresh read-back.
+- EXPECTED OWNERS TO CHANGE: new retrospective use-case module, RuntimeHost
+  service composition and private Context retrospective admission only.
+- EXPECTED CONSUMERS TO CHANGE: held T06 ordinary-Master product route and
+  ordinary NARRATOR context assembly; Commentator remains regression-only.
+- ALLOWED INTERFACES / CONTRACTS TO CHANGE: typed retrospective request/result,
+  Host-issued same-operation RetrospectiveEvidenceSet and private Context
+  admission. Public candidate maps remain non-authoritative.
+- PROTECTED ARCHITECTURE INVARIANTS: ordinary Master != Commentator; current
+  gameplay subject/active PLAYER/control; source/aspect-specific current
+  knowledge/disclosure/access; epistemic stance preserved; exact History/T0
+  source evidence; seal grants no eligibility; no raw private event/index/helper
+  material in model context; Story optional/absent; no MASTER role.
+- ARCHITECTURE-SENSITIVE SURFACES: subject resolution with multiple controlled
+  PCs, current disclosure/knowledge aspect filtering, single-context protected
+  material, T0/T1 divergence, source movement, seal lifetime and NARRATOR output.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD11 Context, RD13
+  History/T0/Story separation, RD09 access/PLAYER/LIVE, RuntimeHost composition,
+  separate existing PO-012 Commentator controls and later RD14 product routing.
+- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: Commentator/PO-012 changes, MASTER role,
+  generic retrieval/search, Story reader, new information/access authority,
+  persistent retrospective state, extra serial LLM phase, save/publication.
+- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify actual
+  new/changed GAME modules; no persistent schema/catalog/checkpoint/migration
+  change is pre-authorized.
+- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
+- CURRENTNESS RE-READ SET BEFORE WRITE: accepted P0/P2 cursors; T06-A1;
+  PO-001/WP19; Step-4/R2.3/R2.4; information/access/PLAYER owners;
+  RuntimeHost/Context/History; RD09/11/13 and version owner.
 
 ### T06-A1 accepted-law coverage and critic propagation
 
