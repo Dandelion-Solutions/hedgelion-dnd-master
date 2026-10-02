@@ -12,14 +12,24 @@ from collections.abc import Mapping
 from dataclasses import asdict, dataclass, replace
 from datetime import datetime
 from types import MappingProxyType
-from typing import Final, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Final, Literal, Protocol, cast
 
 from .durability import DurabilityPromiseResult, RoutedSerializedOperation
 from .policy_basis import AuthenticatedPrincipalEvidence
 from .publication import PublicationOutcome, PublicationStatus
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+if TYPE_CHECKING:
+    from .access_control import PrincipalPlayerRoute, VerifiedPrincipal
+    from .collaboration import CollaborationCatchUp
+    from .policy_basis import RepositoryPort
+    from .runtime_host import (
+        CampaignPublicationTransport,
+        RuntimeHost,
+        SelectedLiveTransport,
+    )
+
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1210,6 +1220,148 @@ def authorize_creator(
     if creator_login is not None and creator_login == current_principal.login:
         return "creator"
     return "read_only"
+
+
+def resolve_current_creator_authority(
+    host: RuntimeHost,
+    principal: Mapping[str, object] | object,
+) -> CreatorAuthority:
+    """Use current owner-issued first-initialization evidence; uncertainty is read-only."""
+
+    from .access_control import authorize_operation, resolve_principal
+    from .history import (
+        FirstInitializationHistoryEvidence,
+        HistoryObservationStatus,
+    )
+
+    current = resolve_principal(principal)
+    try:
+        campaign_id = host.campaign_id
+        observe = host.history.observe_first_initialization_history
+        if not isinstance(campaign_id, str) or not campaign_id or not callable(observe):
+            return "read_only"
+        observation = observe()
+    except (AttributeError, KeyError, OSError, TypeError, ValueError):
+        return "read_only"
+
+    evidence = getattr(observation, "evidence", None)
+    if (
+        getattr(observation, "status", None) is not HistoryObservationStatus.AVAILABLE
+        or not isinstance(evidence, FirstInitializationHistoryEvidence)
+        or evidence.campaign_id != campaign_id
+    ):
+        return "read_only"
+    decision = authorize_operation(
+        current,
+        operation="creator_only",
+        creator_provenance=evidence,
+        campaign_id=campaign_id,
+    )
+    return "creator" if decision.authorized else "read_only"
+
+
+def invitation_login_for_display(login: object) -> str:
+    """Retain the user-supplied invitee login as display text, never identity proof."""
+
+    if (
+        not isinstance(login, str)
+        or not login
+        or login != login.strip()
+        or "@" in login
+    ):
+        raise BootstrapContractError("invitation requires a GitHub login, not an email")
+    return login
+
+
+def prepare_multiplayer_join(
+    host: RuntimeHost,
+    *,
+    principal: VerifiedPrincipal | Mapping[str, object],
+    player_route: PrincipalPlayerRoute | Mapping[str, object],
+    cursor_hint: str | None = None,
+) -> CollaborationCatchUp:
+    """Route join through verified principal and Collaboration's current-owner reload."""
+
+    from .access_control import resolve_principal
+    from .collaboration import join_participant
+
+    current_principal = resolve_principal(principal)
+    return join_participant(
+        host,
+        principal=current_principal,
+        player_route=player_route,
+        cursor_hint=cursor_hint,
+    )
+
+
+def prepare_multiplayer_rejoin(
+    host: RuntimeHost,
+    *,
+    principal: VerifiedPrincipal | Mapping[str, object],
+    player_route: PrincipalPlayerRoute | Mapping[str, object],
+    cursor_hint: str | None = None,
+) -> CollaborationCatchUp:
+    """Route rejoin through the same stable principal and exact current PLAYER owner."""
+
+    from .access_control import resolve_principal
+    from .collaboration import rejoin_participant
+
+    current_principal = resolve_principal(principal)
+    return rejoin_participant(
+        host,
+        principal=current_principal,
+        player_route=player_route,
+        cursor_hint=cursor_hint,
+    )
+
+
+def compose_selected_runtime_host(
+    selection: CampaignSelection,
+    authenticated_repository_port: RepositoryPort,
+    selected_live_transport: SelectedLiveTransport,
+    campaign_publication_transport: CampaignPublicationTransport,
+    *,
+    initial_publication: InitialCampaignPublicationResult | None = None,
+) -> RuntimeHost:
+    """Compose one host only after an explicit existing selection or accepted creation."""
+
+    current_selection = require_campaign_selection(selection)
+    if current_selection.kind == "existing":
+        if current_selection.campaign_id is None or initial_publication is not None:
+            raise BootstrapContractError(
+                "existing selection has inconsistent creation evidence"
+            )
+        campaign_id = current_selection.campaign_id
+    else:
+        if not isinstance(initial_publication, InitialCampaignPublicationResult):
+            raise BootstrapContractError(
+                "New Game requires confirmed initial campaign publication before host composition"
+            )
+        creation = initial_publication.attempt.bootstrap_result
+        outcome = initial_publication.outcome
+        if (
+            creation.selection != current_selection
+            or outcome.status is not PublicationStatus.ACCEPTED
+            or outcome.acknowledged is not True
+            or outcome.observed_head_sha != outcome.intended_commit_sha
+        ):
+            raise BootstrapContractError(
+                "New Game host composition requires confirmed matching publication"
+            )
+        campaign_id = creation.campaign_id
+
+    if campaign_publication_transport is None:
+        raise BootstrapContractError(
+            "selected gameplay RuntimeHost requires campaign publication capability"
+        )
+    from .runtime_host import compose_runtime_host
+
+    return compose_runtime_host(
+        campaign_id,
+        authenticated_repository_port,
+        selected_live_transport,
+        campaign_publication_transport,
+    )
 
 
 def create_bootstrap_result(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import shutil
 import subprocess
@@ -8,6 +9,7 @@ import tempfile
 import unittest
 from dataclasses import replace
 from pathlib import Path
+from unittest.mock import patch
 
 import yaml
 from jsonschema import Draft202012Validator, ValidationError
@@ -31,6 +33,7 @@ from GAME.TOOLS.durability import (
     freeze_save_promise,
     route_serialized_operation,
 )
+from GAME.TOOLS.history import observe_first_initialization_history
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence
 from GAME.TOOLS.publication import PublicationOutcome, PublicationStatus
 
@@ -192,12 +195,108 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
         with self.assertRaises(BootstrapContractError):
             CampaignSelection(kind="implicit", campaign_id=None)  # type: ignore[arg-type]
 
+    def test_selected_campaign_host_is_composed_once_from_trusted_services(
+        self,
+    ) -> None:
+        compose = getattr(bootstrap, "compose_selected_runtime_host", None)
+        self.assertTrue(
+            callable(compose), "T06 selected RuntimeHost composition is required"
+        )
+        if not callable(compose):
+            return
+
+        repository = object()
+        live_transport = object()
+        publication_transport = object()
+        host = object()
+        with patch(
+            "GAME.TOOLS.runtime_host.compose_runtime_host", return_value=host
+        ) as compose_root:
+            result = compose(
+                CampaignSelection.existing("campaign.frostfall"),
+                repository,
+                live_transport,
+                publication_transport,
+            )
+
+        self.assertIs(result, host)
+        compose_root.assert_called_once_with(
+            "campaign.frostfall", repository, live_transport, publication_transport
+        )
+
+    def test_unselected_or_new_game_selection_cannot_compose_gameplay_host(
+        self,
+    ) -> None:
+        compose = getattr(bootstrap, "compose_selected_runtime_host", None)
+        self.assertTrue(
+            callable(compose), "T06 selected RuntimeHost composition is required"
+        )
+        if not callable(compose):
+            return
+
+        with patch("GAME.TOOLS.runtime_host.compose_runtime_host") as compose_root:
+            for selection in (None, CampaignSelection.new()):
+                with self.subTest(selection=selection):
+                    with self.assertRaises(BootstrapContractError):
+                        compose(selection, object(), object(), object())
+            compose_root.assert_not_called()
+
+    def test_new_selection_composes_only_after_confirmed_initial_publication(
+        self,
+    ) -> None:
+        compose = getattr(bootstrap, "compose_selected_runtime_host", None)
+        self.assertTrue(
+            callable(compose), "T06 selected RuntimeHost composition is required"
+        )
+        if not callable(compose):
+            return
+
+        creation = _bootstrap_result()
+        publication = bootstrap.publish_initial_campaign(
+            _InitialPublicationDeployment(),
+            bootstrap.freeze_initial_campaign_publication(
+                creation, _generated_initial_files(creation)
+            ),
+        )
+        repository = object()
+        live_transport = object()
+        publication_transport = object()
+        host = object()
+        with patch(
+            "GAME.TOOLS.runtime_host.compose_runtime_host", return_value=host
+        ) as compose_root:
+            result = compose(
+                creation.selection,
+                repository,
+                live_transport,
+                publication_transport,
+                initial_publication=publication,
+            )
+
+        self.assertIs(result, host)
+        compose_root.assert_called_once_with(
+            creation.campaign_id, repository, live_transport, publication_transport
+        )
+
+    def test_host_composition_is_not_a_gameplay_request_dependency(self) -> None:
+        compose = getattr(bootstrap, "compose_selected_runtime_host", None)
+        self.assertTrue(
+            callable(compose), "T06 selected RuntimeHost composition is required"
+        )
+        if not callable(compose):
+            return
+
+        parameters = inspect.signature(compose).parameters
+        self.assertNotIn("request", parameters)
+        self.assertNotIn("model_input", parameters)
+        self.assertNotIn("runtime_host", parameters)
+
 
 class InitialCampaignPublicationTests(unittest.TestCase):
     def test_bootstrap_module_version_tracks_material_publication_contract(
         self,
     ) -> None:
-        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.3")
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.4")
 
     def test_freeze_initial_publication_copies_exact_generated_file_identity(
         self,
@@ -1685,6 +1784,227 @@ class CreatorAuthorityTests(unittest.TestCase):
         ).validate(result_value)
         self.assertNotIn("email", json.dumps(result_value))
         self.assertEqual(result_value.get("ruleset_set_digest_generation"), 1)
+
+    def test_current_creator_requires_owner_history_and_current_verified_login(
+        self,
+    ) -> None:
+        resolve = getattr(bootstrap, "resolve_current_creator_authority", None)
+        self.assertTrue(callable(resolve), "T06 creator authority routing is required")
+        if not callable(resolve):
+            return
+
+        host = _CreatorHistoryHost(author_login="lina")
+        principal = {
+            "provider": "github",
+            "stable_account_id": "U_kgDOBootstrap",
+            "login": "lina",
+            "verified": True,
+        }
+
+        self.assertEqual(resolve(host, principal), "creator")
+        self.assertEqual(host.history_calls, 1)
+
+    def test_creator_login_rename_is_read_only_even_for_same_stable_account(
+        self,
+    ) -> None:
+        resolve = getattr(bootstrap, "resolve_current_creator_authority", None)
+        self.assertTrue(callable(resolve), "T06 creator authority routing is required")
+        if not callable(resolve):
+            return
+
+        host = _CreatorHistoryHost(author_login="lina")
+        principal = {
+            "provider": "github",
+            "stable_account_id": "U_kgDOBootstrap",
+            "login": "lina-renamed",
+            "verified": True,
+        }
+
+        self.assertEqual(resolve(host, principal), "read_only")
+
+    def test_unavailable_initialization_history_fails_creator_authority_closed(
+        self,
+    ) -> None:
+        resolve = getattr(bootstrap, "resolve_current_creator_authority", None)
+        self.assertTrue(callable(resolve), "T06 creator authority routing is required")
+        if not callable(resolve):
+            return
+
+        host = _CreatorHistoryHost(author_login=None)
+        principal = {
+            "provider": "github",
+            "stable_account_id": "U_kgDOBootstrap",
+            "login": "lina",
+            "verified": True,
+        }
+
+        self.assertEqual(resolve(host, principal), "read_only")
+        self.assertEqual(host.history_calls, 1)
+
+    def test_email_and_login_only_identity_claims_cannot_bind_or_take_over(
+        self,
+    ) -> None:
+        resolve = getattr(bootstrap, "resolve_current_creator_authority", None)
+        self.assertTrue(callable(resolve), "T06 creator authority routing is required")
+        if not callable(resolve):
+            return
+
+        host = _CreatorHistoryHost(author_login="lina")
+        for claim in (
+            {
+                "provider": "github",
+                "login": "lina",
+                "email": "lina@example.test",
+                "verified": True,
+            },
+            {"provider": "github", "login": "lina", "verified": True},
+        ):
+            with self.subTest(claim=claim):
+                with self.assertRaises(ValueError):
+                    resolve(host, claim)
+        self.assertEqual(host.history_calls, 0)
+
+    def test_invitee_login_can_be_presented_without_becoming_identity_authority(
+        self,
+    ) -> None:
+        display = getattr(bootstrap, "invitation_login_for_display", None)
+        self.assertTrue(
+            callable(display), "login display/invitation projection is required"
+        )
+        if not callable(display):
+            return
+
+        self.assertEqual(display("guest-player"), "guest-player")
+        with self.assertRaises(bootstrap.BootstrapContractError):
+            display("guest@example.test")
+
+
+class _CreatorHistoryRepository:
+    def read_exact_campaign_ref(self, campaign_id: str) -> dict[str, object]:
+        return {
+            "campaign_id": campaign_id,
+            "campaign_ref": "refs/heads/campaign/20261002",
+            "campaign_head_revision": "1" * 40,
+            "default_ref": "refs/heads/main",
+            "default_head_revision": "2" * 40,
+            "initialization_revision": "1" * 40,
+        }
+
+    def read_exact_commit(self, campaign_ref: str, revision: str) -> dict[str, object]:
+        return {
+            "campaign_id": "campaign.frostfall",
+            "revision": revision,
+            "parent_revision": "2" * 40,
+            "campaign_specific": True,
+        }
+
+    def compare_ancestry(
+        self, repository_ref: str, ancestor_revision: str, descendant_revision: str
+    ) -> dict[str, str]:
+        return {"relation": "EQUAL"}
+
+    def read_authenticated_commit_author(
+        self, campaign_ref: str, revision: str
+    ) -> dict[str, object]:
+        return {
+            "author": {"login": "lina"},
+            "authenticated": True,
+            "per_user": True,
+        }
+
+
+class _CreatorHistoryHost:
+    campaign_id = "campaign.frostfall"
+
+    def __init__(self, *, author_login: str | None) -> None:
+        self.history_calls = 0
+        self.repository = _CreatorHistoryRepository()
+        self.repository.read_authenticated_commit_author = (
+            lambda _campaign_ref, _revision: {
+                "author": {"login": author_login},
+                "authenticated": True,
+                "per_user": True,
+            }
+        )
+        self.history = self
+
+    def observe_first_initialization_history(self) -> object:
+        self.history_calls += 1
+        return observe_first_initialization_history(self.repository, self.campaign_id)
+
+
+class MultiplayerJoinRejoinTests(unittest.TestCase):
+    def test_join_routes_verified_stable_principal_and_current_route_to_owner(
+        self,
+    ) -> None:
+        prepare_join = getattr(bootstrap, "prepare_multiplayer_join", None)
+        self.assertTrue(
+            callable(prepare_join), "T06 multiplayer join routing is required"
+        )
+        if not callable(prepare_join):
+            return
+
+        host = object()
+        route = object()
+        catch_up = object()
+        principal = {
+            "provider": "github",
+            "stable_account_id": "42",
+            "login": "renamed-login",
+            "verified": True,
+        }
+        with patch(
+            "GAME.TOOLS.collaboration.join_participant", return_value=catch_up
+        ) as join:
+            result = prepare_join(
+                host, principal=principal, player_route=route, cursor_hint="cursor-1"
+            )
+
+        self.assertIs(result, catch_up)
+        join.assert_called_once()
+        self.assertIs(join.call_args.args[0], host)
+        self.assertEqual(join.call_args.kwargs["principal"].stable_account_id, "42")
+        self.assertEqual(join.call_args.kwargs["principal"].login, "renamed-login")
+        self.assertIs(join.call_args.kwargs["player_route"], route)
+        self.assertEqual(join.call_args.kwargs["cursor_hint"], "cursor-1")
+
+    def test_rejoin_reuses_collaboration_owner_without_duplicate_membership_write(
+        self,
+    ) -> None:
+        prepare_rejoin = getattr(bootstrap, "prepare_multiplayer_rejoin", None)
+        self.assertTrue(
+            callable(prepare_rejoin), "T06 multiplayer rejoin routing is required"
+        )
+        if not callable(prepare_rejoin):
+            return
+
+        class Host:
+            def __init__(self) -> None:
+                self.publication_calls = 0
+
+        host = Host()
+        route = object()
+        catch_up = object()
+        principal = {
+            "provider": "github",
+            "stable_account_id": "42",
+            "login": "renamed-login",
+            "verified": True,
+        }
+        with patch(
+            "GAME.TOOLS.collaboration.rejoin_participant", return_value=catch_up
+        ) as rejoin:
+            first = prepare_rejoin(
+                host, principal=principal, player_route=route, cursor_hint="cursor-1"
+            )
+            second = prepare_rejoin(
+                host, principal=principal, player_route=route, cursor_hint="cursor-1"
+            )
+
+        self.assertIs(first, catch_up)
+        self.assertIs(second, catch_up)
+        self.assertEqual(rejoin.call_count, 2)
+        self.assertEqual(host.publication_calls, 0)
 
 
 class SaveExitMenuTests(unittest.TestCase):
