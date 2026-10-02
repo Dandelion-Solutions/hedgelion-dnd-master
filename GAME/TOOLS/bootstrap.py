@@ -14,11 +14,12 @@ from datetime import datetime
 from types import MappingProxyType
 from typing import Final, Literal, Protocol, cast
 
+from .durability import DurabilityPromiseResult, RoutedSerializedOperation
 from .policy_basis import AuthenticatedPrincipalEvidence
 from .publication import PublicationOutcome, PublicationStatus
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1336,3 +1337,154 @@ def _validate_creation_input(
         or ruleset_set_digest_generation != 1
     ):
         raise BootstrapContractError("ruleset-set digest generation must be 1")
+
+
+@dataclass(frozen=True, slots=True)
+class SaveExitResult:
+    """Ephemeral PO-002 result; it changes chat selection, not campaign lifecycle."""
+
+    durability_result: DurabilityPromiseResult
+    selection: CampaignSelection | None
+    session_context: object | None
+    saved: bool
+    return_to_selection: bool
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.durability_result, DurabilityPromiseResult):
+            raise BootstrapContractError("typed durability result is required")
+        if type(self.saved) is not bool or type(self.return_to_selection) is not bool:
+            raise BootstrapContractError("save/exit result flags must be boolean")
+        if self.saved is not self.return_to_selection:
+            raise BootstrapContractError("save/exit selection result is inconsistent")
+        if self.saved:
+            if self.selection is not None or self.session_context is not None:
+                raise BootstrapContractError(
+                    "confirmed save/exit must clear selection and session context"
+                )
+        elif (
+            not isinstance(self.selection, CampaignSelection)
+            or self.session_context is None
+        ):
+            raise BootstrapContractError(
+                "unconfirmed save/exit must retain selection and session context"
+            )
+
+
+def compose_save_exit(
+    selection: CampaignSelection,
+    durability_result: DurabilityPromiseResult,
+    *,
+    session_context: object,
+) -> SaveExitResult:
+    """Return to campaign selection only after the typed required save is accepted."""
+
+    current_selection = require_campaign_selection(selection)
+    if current_selection.kind != "existing" or current_selection.campaign_id is None:
+        raise BootstrapContractError(
+            "save/exit requires an explicitly selected campaign"
+        )
+    if not isinstance(durability_result, DurabilityPromiseResult):
+        raise BootstrapContractError("typed durability result is required")
+    if durability_result.promise.campaign_id != current_selection.campaign_id:
+        raise BootstrapContractError("save result belongs to another selected campaign")
+    if durability_result.promise.scope != "SAVE_ALL_DIRTY":
+        raise BootstrapContractError("save/exit requires the SAVE_ALL_DIRTY boundary")
+    if session_context is None:
+        raise BootstrapContractError(
+            "recovery-safe selected session context is required"
+        )
+
+    saved = (
+        durability_result.status == "CONFIRMED_ACCEPTED"
+        and durability_result.acknowledged is True
+    )
+    return SaveExitResult(
+        durability_result=durability_result,
+        selection=None if saved else current_selection,
+        session_context=None if saved else session_context,
+        saved=saved,
+        return_to_selection=saved,
+    )
+
+
+class _MeasuredCampaignPublication(Protocol):
+    """The existing RuntimeHost publication service used by T06 product paths."""
+
+    def measure_path_operations(
+        self, path_operations: Mapping[str, object | None]
+    ) -> Mapping[str, int]: ...
+
+    def publish_owner_delta(
+        self,
+        *,
+        routed_operation: RoutedSerializedOperation,
+        path_operations: Mapping[str, object | None],
+        owner_generations: Mapping[str, int],
+        publication_reason: str,
+        basis: object | None = None,
+    ) -> PublicationOutcome: ...
+
+
+class _CampaignPublicationHost(Protocol):
+    """One already-composed, immutable campaign-bound RuntimeHost."""
+
+    publication: _MeasuredCampaignPublication
+
+
+def publish_measured_owner_delta(
+    host: _CampaignPublicationHost,
+    *,
+    routed_operation: RoutedSerializedOperation,
+    path_operations: Mapping[str, object | None],
+    owner_generations: Mapping[str, int],
+    publication_reason: str,
+    basis: object | None = None,
+) -> tuple[Mapping[str, int], PublicationOutcome]:
+    """Measure exact adapter bytes before delegating one existing host write.
+
+    The same operation mapping is passed to measurement and publication. This
+    wrapper neither serializes campaign data nor owns publication authority.
+    """
+
+    if not isinstance(routed_operation, RoutedSerializedOperation):
+        raise BootstrapContractError("owner-routed serialized operation is required")
+    if not isinstance(path_operations, Mapping) or not path_operations:
+        raise BootstrapContractError("size-governed path operations are required")
+    if any(not isinstance(path, str) or not path for path in path_operations):
+        raise BootstrapContractError("size-governed paths must be nonempty strings")
+    if not isinstance(owner_generations, Mapping):
+        raise BootstrapContractError("owner generations must be an object")
+    if not isinstance(publication_reason, str) or not publication_reason:
+        raise BootstrapContractError("publication reason is required")
+
+    publication = host.publication
+    measure = getattr(publication, "measure_path_operations", None)
+    writer = getattr(publication, "publish_owner_delta", None)
+    if not callable(measure) or not callable(writer):
+        raise BootstrapContractError(
+            "exact measured publication capability is required"
+        )
+    try:
+        measured = measure(path_operations)
+    except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+        raise BootstrapContractError("exact path measurement failed closed") from exc
+    if not isinstance(measured, Mapping) or set(measured) != set(path_operations):
+        raise BootstrapContractError("exact measurement must cover every write path")
+    sizes: dict[str, int] = {}
+    for path, size in measured.items():
+        if not isinstance(path, str) or type(size) is not int or size < 0:
+            raise BootstrapContractError("exact path measurements must be byte counts")
+        if path_operations[path] is None and size != 0:
+            raise BootstrapContractError("deleted path measurement must be zero")
+        sizes[path] = size
+
+    outcome = writer(
+        routed_operation=routed_operation,
+        path_operations=path_operations,
+        owner_generations=owner_generations,
+        publication_reason=publication_reason,
+        basis=basis,
+    )
+    if not isinstance(outcome, PublicationOutcome):
+        raise BootstrapContractError("host publication outcome is not typed")
+    return MappingProxyType(sizes), outcome

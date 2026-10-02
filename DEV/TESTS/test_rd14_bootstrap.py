@@ -23,6 +23,14 @@ from GAME.TOOLS.bootstrap import (
     create_bootstrap_result,
     require_campaign_selection,
 )
+from GAME.TOOLS.durability import (
+    DurabilityPromiseResult,
+    NativeDurabilityResult,
+    complete_save_promise,
+    evaluate_durability,
+    freeze_save_promise,
+    route_serialized_operation,
+)
 from GAME.TOOLS.policy_basis import AuthenticatedPrincipalEvidence
 from GAME.TOOLS.publication import PublicationOutcome, PublicationStatus
 
@@ -189,7 +197,7 @@ class InitialCampaignPublicationTests(unittest.TestCase):
     def test_bootstrap_module_version_tracks_material_publication_contract(
         self,
     ) -> None:
-        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.2")
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.3")
 
     def test_freeze_initial_publication_copies_exact_generated_file_identity(
         self,
@@ -1677,6 +1685,196 @@ class CreatorAuthorityTests(unittest.TestCase):
         ).validate(result_value)
         self.assertNotIn("email", json.dumps(result_value))
         self.assertEqual(result_value.get("ruleset_set_digest_generation"), 1)
+
+
+class SaveExitMenuTests(unittest.TestCase):
+    @staticmethod
+    def _durability_result(
+        status: str, *, scope: str = "SAVE_ALL_DIRTY"
+    ) -> DurabilityPromiseResult:
+        evaluation = evaluate_durability(
+            campaign_id="campaign.frostfall",
+            scope=scope,
+            dirty_roots=("CAMPAIGN_TREE",),
+            currentness_evidence={"campaign_revision": "a" * 40},
+        )
+        promise = freeze_save_promise(evaluation, owner_generations={"campaign": 1})
+        return complete_save_promise(
+            promise,
+            (NativeDurabilityResult("campaign", status),),
+            currentness_evidence={"campaign_revision": "b" * 40},
+        )
+
+    def test_only_confirmed_required_save_clears_selection_and_returns_to_menu(
+        self,
+    ) -> None:
+        compose_exit = getattr(bootstrap, "compose_save_exit", None)
+        self.assertTrue(callable(compose_exit), "T06 save/exit composition is required")
+        if not callable(compose_exit):
+            return
+
+        current = CampaignSelection.existing("campaign.frostfall")
+        session_context = object()
+        result = compose_exit(
+            current,
+            self._durability_result("CONFIRMED_ACCEPTED"),
+            session_context=session_context,
+        )
+
+        self.assertTrue(result.saved)
+        self.assertTrue(result.return_to_selection)
+        self.assertIsNone(result.selection)
+        self.assertIsNone(result.session_context)
+
+    def test_rejected_conflict_and_indeterminate_save_retain_selected_context(
+        self,
+    ) -> None:
+        compose_exit = getattr(bootstrap, "compose_save_exit", None)
+        self.assertTrue(callable(compose_exit), "T06 save/exit composition is required")
+        if not callable(compose_exit):
+            return
+
+        current = CampaignSelection.existing("campaign.frostfall")
+        for native_status in (
+            "CONFIRMED_REJECTED",
+            "CONFLICT",
+            "INDETERMINATE",
+        ):
+            with self.subTest(native_status=native_status):
+                outcome = self._durability_result(native_status)
+                session_context = object()
+                result = compose_exit(current, outcome, session_context=session_context)
+
+                self.assertFalse(result.saved)
+                self.assertFalse(result.return_to_selection)
+                self.assertIs(result.selection, current)
+                self.assertIs(result.session_context, session_context)
+
+    def test_save_scope_must_cover_save_all_dirty_before_exit(self) -> None:
+        compose_exit = getattr(bootstrap, "compose_save_exit", None)
+        self.assertTrue(callable(compose_exit), "T06 save/exit composition is required")
+        if not callable(compose_exit):
+            return
+
+        with self.assertRaises(bootstrap.BootstrapContractError):
+            compose_exit(
+                CampaignSelection.existing("campaign.frostfall"),
+                self._durability_result(
+                    "CONFIRMED_ACCEPTED", scope="CAMPAIGN_TREE_ONLY"
+                ),
+                session_context=object(),
+            )
+
+    def test_untyped_or_inconsistent_save_result_fails_closed(self) -> None:
+        compose_exit = getattr(bootstrap, "compose_save_exit", None)
+        self.assertTrue(callable(compose_exit), "T06 save/exit composition is required")
+        if not callable(compose_exit):
+            return
+
+        current = CampaignSelection.existing("campaign.frostfall")
+        with self.assertRaises(bootstrap.BootstrapContractError):
+            compose_exit(current, object(), session_context=object())
+
+
+class ShippedBootstrapProjectionTests(unittest.TestCase):
+    def test_size_governed_publication_measures_exact_path_operations_first(
+        self,
+    ) -> None:
+        publish = getattr(bootstrap, "publish_measured_owner_delta", None)
+        self.assertTrue(callable(publish), "T06 exact-measurement gate is required")
+        if not callable(publish):
+            return
+
+        class Publication:
+            def __init__(self) -> None:
+                self.calls: list[str] = []
+                self.measured_operations: object | None = None
+                self.published_operations: object | None = None
+
+            def measure_path_operations(self, operations: object) -> dict[str, int]:
+                self.calls.append("measure")
+                self.measured_operations = operations
+                return {"STATE/CURRENT.yaml": 12}
+
+            def publish_owner_delta(self, **_kwargs: object) -> PublicationOutcome:
+                self.calls.append("publish")
+                self.published_operations = _kwargs["path_operations"]
+                return PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    "a" * 40,
+                    "a" * 40,
+                    "CONFIRMED_ACCEPTED",
+                    True,
+                )
+
+        publication = Publication()
+        host = type("BoundHost", (), {"publication": publication})()
+        operations = {"STATE/CURRENT.yaml": {"state": "current"}}
+
+        measured, result = publish(
+            host,
+            routed_operation=route_serialized_operation(
+                "world.actor",
+                "actor-1",
+                {"kind": "world.actor", "id": "actor-1", "state": "current"},
+            ),
+            path_operations=operations,
+            owner_generations={"campaign": 1},
+            publication_reason="test.size_governed_write",
+        )
+
+        self.assertEqual(publication.calls, ["measure", "publish"])
+        self.assertIs(publication.measured_operations, operations)
+        self.assertIs(publication.published_operations, operations)
+        self.assertEqual(dict(measured), {"STATE/CURRENT.yaml": 12})
+        self.assertIs(result.status, PublicationStatus.ACCEPTED)
+
+    def test_missing_or_inexact_measurement_fails_before_publication(self) -> None:
+        publish = getattr(bootstrap, "publish_measured_owner_delta", None)
+        self.assertTrue(callable(publish), "T06 exact-measurement gate is required")
+        if not callable(publish):
+            return
+
+        class Publication:
+            def __init__(self, measurement: object) -> None:
+                self.measurement = measurement
+                self.publish_calls = 0
+
+            def publish_owner_delta(self, **_kwargs: object) -> PublicationOutcome:
+                self.publish_calls += 1
+                return PublicationOutcome(
+                    PublicationStatus.ACCEPTED,
+                    "a" * 40,
+                    "a" * 40,
+                    "CONFIRMED_ACCEPTED",
+                    True,
+                )
+
+        for measurement in (None, {}, {"other.yaml": 12}, {"STATE/CURRENT.yaml": True}):
+            with self.subTest(measurement=measurement):
+                publication = Publication(measurement)
+                if measurement is not None:
+                    publication.measure_path_operations = (
+                        lambda _ops, exact_result=measurement: exact_result
+                    )
+                host = type("BoundHost", (), {"publication": publication})()
+                with self.assertRaises(bootstrap.BootstrapContractError):
+                    publish(
+                        host,
+                        routed_operation=route_serialized_operation(
+                            "world.actor",
+                            "actor-1",
+                            {
+                                "kind": "world.actor",
+                                "id": "actor-1",
+                                "state": "current",
+                            },
+                        ),
+                        path_operations={"STATE/CURRENT.yaml": {"state": "current"}},
+                        owner_generations={"campaign": 1},
+                        publication_reason="test.size_governed_write",
+                    )
+                self.assertEqual(publication.publish_calls, 0)
 
 
 if __name__ == "__main__":
