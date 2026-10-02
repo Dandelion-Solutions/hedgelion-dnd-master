@@ -380,7 +380,7 @@ TDD and verification:
 
 - complete `CampaignSelectionBarrierTests`, `CreationIdentityTests`, `ProgressiveOnboardingTests`, `MultiplayerJoinRejoinTests`, `OrdinaryRetrospectiveRoutingTests`, `SaveExitMenuTests`, `CreatorAuthorityTests`, `ShippedBootstrapProjectionTests` and remaining bootstrap cases;
 - include login display/invitation success, email rejection, login-only takeover rejection and legitimate stable-ID rejoin;
-- prove PO-012 retrospective filtering is public-only without PLAYER, uses exact current PLAYER disclosure when present, uses at most one selected controlled PC, rejects multi-PC knowledge union and does not infer access from caller Story IDs/legacy `visible_to`;
+- prove ordinary Master retrospective follows PO-001/WP-19 current-player eligibility and exact native/current evidence without treating Story/caller IDs as authority; separately preserve PO-012's PUBLIC + current PLAYER disclosure + at-most-one selected controlled-PC `epistemic.known` rule for Commentator-facing control/retrospective paths, including no multi-PC union and no legacy `visible_to` authority;
 - prove the shipped campaign-publication adapter exposes exact `measure_path_operations(...)` with create-tree serializer parity and that missing measurement capability fails closed before a size-governed publication.
 
 The earlier umbrella `ProductExitCreatorTests` is not recreated: its save/exit and creator fail-closed duties are discharged by the task-local `SaveExitMenuTests` and `CreatorAuthorityTests` at their coherent checkpoints.
