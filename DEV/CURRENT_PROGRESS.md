@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: bounded W05.T06 stable-plan repair of SP06-01..SP06-04 from `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review.md`; T06 production remains held.
-REQUIRED_GATE: accepted W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY -> repaired stable W05 plan/envelopes + Senior plan GO -> P0 CurrentOwnerView -> P1 readiness and P2 native History discovery -> P3 sealed retrospective -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
+NEXT_AUTHORIZED_UNIT: final Senior plan re-review of the targeted repaired W05.T06 package; T06 production remains held.
+REQUIRED_GATE: accepted W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY -> final repaired-plan Senior GO -> P0 HOT admission/CurrentOwnerView -> P1A character materialization -> P1B readiness and P2 native History discovery -> P3 sealed retrospective -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: four significant plan findings remain: Master/Commentator eligibility separation, HOT acceptance producer join, expanding-read coherence, dependency-set/catalog issuer path. No new PO decision; architecture remains accepted. Production requires repaired-plan Senior GO.
+KNOWN_BLOCKERS: no unresolved Product Owner/architecture decision; repaired SP06-01..SP06-09 require final Senior plan re-review/GO before P0 production.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

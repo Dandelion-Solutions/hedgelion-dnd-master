@@ -1,6 +1,6 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **SENIOR-APPROVED EXISTING WAVES / W05.T06 REPAIRED PLAN REQUIRES SENIOR GO; T06 PRODUCTION HELD**
+Status: **SENIOR-APPROVED EXISTING WAVES / W05.T06 TARGETED PLAN REPAIR PUBLISHED; FINAL SENIOR GO REQUIRED; T06 PRODUCTION HELD**
 
 Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. W05.T06 P0–P3 and held product completion are not authorized before Senior GO on the repaired stable W05 plan.
 
@@ -40,8 +40,8 @@ The accepted stable-plan sequence is:
 
 ```text
 accepted T06-S1/S2 (preserve; do not repeat)
-  -> P0 CurrentOwnerView
-       ├─> P1 production readiness ──────────────────────┐
+  -> P0 trusted HOT admission + CurrentOwnerView
+       ├─> P1A character materialization -> P1B readiness ─────────┐
        └─> P2 native History discovery -> P3 sealed retrospective ─┤
                                                                   v
                                                        held T06 product completion
@@ -49,8 +49,8 @@ accepted T06-S1/S2 (preserve; do not repeat)
                                                                   -> W05_PRODUCT_PATHS_READY
 ```
 
-The governing edges are P0 -> P1, P0 -> P2 -> P3, and P1 + P3 -> T06 product
-completion. P1 does not produce an input consumed by P2; the task plan executes
+The governing edges are P0 -> P1A -> P1B, P0 -> P2 -> P3, and P1B + P3 -> T06 product
+completion. P1A/P1B do not produce an input consumed by P2; the task plan executes
 one production task at a time and does not authorize parallel production.
 The exact task files, carriers, producer/consumer joins, per-task Impact
 Envelopes, focused verification and version-namespace checks are in
@@ -58,11 +58,12 @@ Envelopes, focused verification and version-namespace checks are in
 blocked until this repaired package receives Senior plan GO. Story remains
 dormant; T07/T08/W06 remain unstarted.
 
-Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4`: **NEEDS_REPAIR**.
-Findings SP06-01..SP06-04 are owned by
-`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review.md`.
-Repair the existing stable plan/index before another Senior plan review; the
-accepted architecture gate remains closed and production remains held.
+Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4` returned **NEEDS_REPAIR**.
+SP06-01..SP06-04 plus the repair review's additional current-consumer findings
+SP06-05..SP06-09 are resolved in the stable plan and
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`.
+The repaired package still requires final Senior plan re-review/GO; accepted
+architecture remains closed and production remains held.
 
 ## 2. Authority and baseline
 

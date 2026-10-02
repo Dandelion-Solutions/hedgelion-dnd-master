@@ -352,659 +352,543 @@ applicable clean exact DEV and maintenance verification, publish non-force,
 freshly read back the ref/changed paths, and update the cursor. A task does not
 publish failing tests for a later task.
 
-### W05.T06-P0 — RuntimeHost CurrentOwnerView
+### W05.T06-P0 — Trusted HOT admission + RuntimeHost CurrentOwnerView
 
-**Goal:** route authority-sensitive reads through one read-only operation view
-that selects the exact native source for one owner and can include accepted
-unpublished HOT/SOFT state without turning HOT into another authority.
+**Goal:** bind the real selected gameplay RuntimeHost to one trusted local HOT
+capability and route authority-sensitive current reads through an operation-
+scoped view without turning SQLite into another semantic authority.
 
 **Files:**
-- Modify: `GAME/TOOLS/runtime_host.py` — infrastructure-bound HOT composition,
-  internal `CurrentOwnerView`, operation-bound result carrier, and current-owner
-  service wiring.
-- Modify: `GAME/TOOLS/hot_store.py` — a requested-key HOT read snapshot that
-  returns detached validated copies and closes its SQLite read transaction
-  before any repository/LIVE read or validation requiring external evidence.
-- Modify: `GAME/TOOLS/context_runtime.py` — resolve registered current families
-  through the RuntimeHost-provided view rather than bypassing it with a pinned-
-  campaign-only read.
-- Modify: `DEV/TESTS/test_rd04_native_routing_index_hot.py`,
-  `DEV/TESTS/test_runtime_host_composition.py`, and
-  `DEV/TESTS/test_rd11_context_runtime.py` — HOT establishment/currentness,
-  composition, and Context current-family witnesses.
+- Create only if cohesion requires it: `GAME/TOOLS/current_owner.py` — transient
+  establishment/read-session carriers shared by RuntimeHost and native owners.
+- Modify: `GAME/TOOLS/runtime_host.py` — infrastructure-only HOT port,
+  CurrentOwnerView/read-session, admitted-HOT registry, operation binding and
+  current-owner service wiring.
+- Modify: `GAME/TOOLS/hot_store.py` — detached requested-key snapshots,
+  process-local admission bookkeeping, and trusted local/LIVE-adoption
+  establishment entry points.
+- Modify: `GAME/TOOLS/context_runtime.py` — current PLAYER/knowledge/
+  disclosure/world reads use CurrentOwnerView rather than pinned Git directly.
+- Modify: `GAME/TOOLS/bootstrap.py` — thread the infrastructure HOT capability
+  through the existing selected-campaign `compose_selected_runtime_host(...)`
+  path. Gameplay/model input cannot supply or replace it.
+- Inspect/consume: native owner producers such as
+  `GAME/TOOLS/actor_continuity.py`; do not move their semantic validation into
+  HOT. A P0 acceptance witness uses a real owner-validated Actor after-image,
+  not a fabricated raw OwnerDocument.
+- Modify tests: RD04 HOT/index, RuntimeHost composition, RD11 Context, RD14
+  selected-host composition, RD07 recovery and applicable owner-producer tests.
 
-**Internal interface and carrier:**
+**Trusted interfaces and carriers:**
 
 ```text
-NativeHotStore.read_owner_snapshot(
-    campaign_id: str,
-    owner_keys: tuple[tuple[str, tuple[str, ...]], ...],
+HotOwnerStorePort.read_admitted_snapshot(
+    campaign_id,
+    owner_keys,
 ) -> HotOwnerReadSnapshot
 
 HotOwnerReadSnapshot:
     campaign_id
-    requested owner documents copied from one closed SQLite read snapshot
-    ephemeral local snapshot token, nonsemantic
+    exact requested rows + explicit absent keys from one closed SQLite read
+    admitted local generation/fingerprint for each present row
+    ephemeral snapshot fingerprint/token; operational only
 
-CurrentOwnerView.read_owner(
-    family_key: str,
-    identity: tuple[str, ...],
-    *,
-    basis: _OperationBasis,
-) -> CurrentOwnerRead
+CurrentOwnerView.begin(basis: _OperationBasis) -> CurrentOwnerReadSession
+
+CurrentOwnerReadSession.require(
+    owner_keys: finite tuple[NativeOwnerRef, ...],
+) -> CurrentOwnerObservation
+
+CurrentOwnerObservation:
+    operation_token
+    complete bounded key union observed so far
+    owner reads / explicit absences
+    exact campaign/HOT/LIVE source bases per owner
+    observation_fingerprint
 
 CurrentOwnerRead:
-    campaign_id
-    family_key
-    identity
-    status: RESOLVED | ABSENT | INCOMPATIBLE | UNAVAILABLE
+    family_key, identity
+    status: RESOLVED | ABSENT | INCOMPATIBLE | UNAVAILABLE | REVALIDATION_REQUIRED
     source: SELECTED_LIVE | ACCEPTED_HOT | PINNED_CAMPAIGN
-    source_basis: exact owner-issued currentness/establishment evidence
-    payload: validated immutable owner mapping, or a typed non-success outcome
-    operation_token: RuntimeHost-issued token for this exact operation
+    exact source/currentness basis
+    immutable validated payload when resolved
 ```
 
-`RuntimeHost`/`compose_runtime_host` bind the HOT reader only at the trusted
-infrastructure composition root alongside the authenticated RepositoryPort and
-selected-LIVE transport. It is not a gameplay/model/request argument. If the
-current HOT reader is unavailable, the view returns typed bounded inability; it
-does not assume HOT is empty and silently read a potentially stale campaign
-owner.
+HOT mutation APIs are infrastructure-only. An `OwnerDocument` is not authority
+and cannot be supplied to CurrentOwnerView. The store marks a row admitted for
+ordinary current reads only when trusted native-owner code reaches an accepted
+WP12 establishment/adoption edge through the internal establishment API:
 
-`CurrentOwnerRead` is issued by RuntimeHost and cannot be minted by gameplay,
-model/request data, a raw `OwnerDocument`, or a caller-supplied store payload.
-`NativeHotStore` returns a detached, campaign-scoped snapshot for requested
-owner keys only. The view validates each row against the accepted native
-establishment/source-currentness contract; row presence, `source_basis` text,
-generation, mtime, or local recency alone never proves currentness.
+- **LOCAL_ESTABLISHED:** an owner-specific producer has already validated the
+  native after-image and the exact predecessor/current-source basis; the local
+  SQLite transaction is the WP12 establishment edge;
+- **LIVE_ADOPTED:** an owner-specific consumer supplies exact accepted
+  post-CAS LIVE evidence and after-image; pre-CAS prospective state is rejected;
+- source-derived clean cache rows may be retained operationally but do not
+  outrank the exact pinned source and need no separate semantic authority.
 
-Resolution order for each identity is selected LIVE when its native route owns
-the scope, otherwise compatible accepted HOT/SOFT state, otherwise the exact
-pinned campaign source. A missing/incompatible selected LIVE owner is typed
-bounded inability/currentness failure, never a campaign fallback. HOT is used
-only after exact owner identity, campaign isolation, owner structure, accepted
-establishment and source compatibility validate. The operation snapshot/token
-is ephemeral and nonsemantic; it is not a campaign frontier, generation,
-lease, chronology or recovery authority.
+The admission marker is process-local operational evidence. After cold restart,
+surviving dirty rows are not admitted merely by existence; recovery/revalidation
+must re-establish a compatible current basis. Raw `source_basis` text,
+generation, mtime or row presence never admits a row.
+
+P0 proves the establishment plumbing with an existing real native producer:
+apply one accepted NPC Actor continuity delta through
+`actor_continuity.apply_actor_delta`, establish that validated after-image in
+HOT through the trusted infrastructure path, and read it through Context before
+SAVE. A structurally equivalent row inserted only through an untrusted/test raw
+path is not an admitted CurrentOwnerView source. P1A and P2 later add the
+T06-specific PC-character and SemanticEvent producer joins to the same
+establishment boundary; P0 does not invent their semantics.
+
+**Bounded expanding-read coherence:**
+
+A CurrentOwnerReadSession may discover more owner keys while closing a request.
+Every expansion reacquires the **full accumulated key union** from one closed
+SQLite snapshot; previously derived results are invalidated/recomputed against
+that union. The final observation revalidates the full union, including explicit
+absences and admitted generation/fingerprints. If any retained row/absence or
+relevant selected source/routing basis changed, return
+`REVALIDATION_REQUIRED`; do not mix snapshots. No remote/LIVE/repository I/O
+occurs while a SQLite transaction is open. The dependency closure is finite
+under its consuming owner; no retry loop or campaign-global generation/frontier
+is introduced.
 
 **Steps and checks:**
-1. Add `CurrentOwnerViewTests` to `test_runtime_host_composition.py` for LIVE-
-   first selection, compatible HOT use, pinned-campaign fallback, cross-campaign
-   rejection, and rejection of an arbitrary `OwnerDocument` as current evidence.
-2. Add `NativeHotOwnerSnapshotTests` to `test_rd04_native_routing_index_hot.py`
-   proving requested HOT rows come from one local SQLite read basis and no
-   repository/LIVE operation runs while its transaction is open.
-3. Implement the Host-bound read path and detached HOT snapshot; return typed
-   bounded failure when currentness/compatibility cannot be proven.
-4. Cut Context's registered current PLAYER/knowledge/disclosure/world-family
-   resolutions over to the same RuntimeHost operation basis; retain exact
-   selected-LIVE revalidation and existing Context eligibility/allocation.
-5. Run the focused RED/GREEN modules, then the P0 cross-owner and recovery
-   checks named below before accepting the output.
+1. RED: selected product host lacks the trusted HOT capability; Context after a
+   real accepted local Actor change still sees pinned Git; forged/surviving raw
+   rows and cross-campaign rows must fail.
+2. RED: dependency closure expands between Actor and a second owner while the
+   first HOT row changes; mixed observation must be rejected.
+3. Implement trusted HOT composition/admission and operation read sessions;
+   thread the capability through `compose_selected_runtime_host`.
+4. Cut Context current-family resolution to the view while preserving existing
+   eligibility and selected-LIVE revalidation.
+5. GREEN: real owner-produced local after-image is visible before SAVE; forged
+   raw row is not; cold recovery does not resurrect stale dirty state; expansion
+   either returns one compatible union or typed revalidation failure.
+6. Run the focused and cross-owner checks below, then Version Impact Gate,
+   task review, full clean DEV/maintenance verification and remote read-back.
 
-Focused command (run sequentially from the repository root):
+Focused command:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py
 ```
 
-Expected: exit 0; all selected tests pass.
-
-**Output:** `W05_T06_CURRENT_OWNER_VIEW_READY` — RuntimeHost, HOT and Context
-use the same owner-correct operation view; no canonical state owner changes.
-The `W05_T06_*_READY` labels in this section are task-local implementation
-checkpoints only; they create no GAME/runtime state or serialized family.
+**Output:** `W05_T06_CURRENT_OWNER_VIEW_READY`.
 
 **Implementation Impact Envelope:**
-- SPEC / APPROVED DESIGN: T06-A1 canonical spec §§2–4, 20; Review Stop 2 §§3,
-  6; Step-5.1 §§4–8; WP-12 §§2–4; WP-14 §§3–4; WP-16 §§4–5; accepted R2.3
-  Context Runtime.
-- BASELINE REF OR SHA: fresh exact public HEAD read after repaired-plan Senior
-  GO; record the implementation-start SHA in the execution cursor before RED.
-- EXPECTED OWNERS TO CHANGE: `runtime_host.py`, `hot_store.py`,
-  `context_runtime.py`; only add a new module if a concrete cohesion need is
-  demonstrated and remains within this accepted view boundary.
-- EXPECTED CONSUMERS TO CHANGE: RuntimeHost composition/current-read paths and
-  Context current-family reads; no gameplay/model-provided capability path.
-- ALLOWED INTERFACES / CONTRACTS TO CHANGE: the internal Host-bound read
-  service/result and bounded HOT read-snapshot API described above.
-- PROTECTED ARCHITECTURE INVARIANTS: one semantic owner; selected LIVE first;
-  no pre-CAS currentness; HOT only with accepted establishment and exact source
-  compatibility; coherent operation observation; no remote I/O in SQLite
-  transactions; cold recovery excludes stale surviving HOT bytes; no source
-  selection by local generation/order/mtime; Context retains eligibility.
-- ARCHITECTURE-SENSITIVE SURFACES: Host composition inputs, currentness
-  selection, campaign/LIVE/HOT source compatibility, SQLite read scope, Context
-  current-family resolver, cold recovery.
-- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD04 `NativeHotStoreTests`
-  plus new CurrentOwnerView witnesses; RuntimeHost composition/current-read
-  tests; RD11 current Context/readiness regressions; RD07 recovery stale-SQLite
-  regressions; exact LIVE-currentness tests in RD09. Focused checks and the
-  owning task's broader verification are required.
-- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: semantic state ownership, LIVE CAS or
-  transport semantics, publication/recovery protocols, History discovery,
-  readiness derivation, Story, schemas/catalogs, GAME CORE/install, W05.T07/T08,
-  W06, and README files.
-- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: re-read each
-  changed module and namespace owner at implementation start; bump a material
-  module contract once if required. No schema, catalog, checkpoint, campaign,
-  storage, migration or dual-read change is pre-authorized.
-- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
-- CURRENTNESS RE-READ SET BEFORE WRITE: exact current progress/cursor; this
-  plan; T06-A1 spec/ruling; Step-5.1; WP-12/WP-14/WP-16; R2.3 Context;
-  `runtime_host.py`, `hot_store.py`, `context_runtime.py`; RD04/RD07/RD09/RD11
-  owner tests; current versioning policy and detailed owner.
+- SPEC / APPROVED DESIGN: T06-A1 §§2–4, 20; Review Stop 2; Step-5.1;
+  WP-12/WP-14/WP-16; R2.3; current native Actor/PLAYER/information owners.
+- BASELINE: fresh public HEAD after final repaired-plan Senior GO.
+- EXPECTED OWNERS TO CHANGE: RuntimeHost/current-owner/HOT infrastructure,
+  Context current reads, selected-product bootstrap composition; only the
+  minimum owner-producer adapter needed for the real P0 establishment witness.
+- ALLOWED CONTRACTS: trusted infrastructure HOT port, process-local admitted
+  establishment bookkeeping, operation-scoped read-session/results. No public
+  gameplay/model mutation capability.
+- PROTECTED INVARIANTS: one semantic owner; LIVE-first exact currentness; no
+  pre-CAS state; local HOT only after owner validation + WP12 establishment;
+  no remote I/O in SQLite transactions; no stale restart resurrection; dynamic
+  closure cannot mix snapshots; Context keeps eligibility.
+- OUT OF SCOPE: character build semantics (P1A), readiness derivation (P1B),
+  History discovery (P2), Story, schema/catalog expansion, migration.
+- VERSION IMPACT: classify actual changed GAME modules; no persistent campaign
+  schema/catalog/generation/migration is pre-authorized.
+- CURRENTNESS RE-READ: plan/cursor, T06-A1, Step-5.1, WP12/14/16, R2.3,
+  RuntimeHost/HOT/Context/bootstrap, actor continuity, RD03/04/07/09/11/14,
+  version owners.
 
-### W05.T06-P1 — Production deterministic readiness
+### W05.T06-P1A — Production character materialization resolver
 
 **Dependency:** `W05_T06_CURRENT_OWNER_VIEW_READY`.
 
-**Goal:** expose local mechanical sufficiency and canonical READY_PC as distinct
-deterministic RuntimeHost services over exact current Actor/build/dependency
-owners and one admitted catalog/ruleset context.
+**Goal:** realize the already-accepted S6D-07/DIEGETIC_ONBOARDING production
+resolver that turns accepted typed character anchors/selections into validated
+native PC Actor/Asset state and establishes those after-images in HOT. Without
+this producer, progressive onboarding could only report “not ready” and could
+not converge to READY_PC.
 
 **Files:**
-- Create: `GAME/TOOLS/character_readiness.py` — GAME-only readiness carriers
-  and deterministic service.
-- Modify: `GAME/TOOLS/runtime_host.py` — fixed readiness-service composition
-  using `CurrentOwnerView` and the existing admitted `BoundCatalogContext`.
-- Create: `DEV/TESTS/test_character_readiness.py` — production-runtime
-  behavior and negative-boundary tests.
-- Inspect only: `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md`,
-  `GAME/CORE/CHARACTER_READINESS.md`,
-  `DEV/TOOLS/validate_character_mvp_seed.py`,
-  `DEV/TESTS/test_s6d_07_character_mvp_seed.py`, and the accepted catalog,
-  Actor, Asset, Effect and mechanics owners.
+- Create: `GAME/TOOLS/character_progression.py` — typed initial materialization
+  request/result and deterministic S6D-07 resolver.
+- Modify: `GAME/TOOLS/runtime_host.py` — bind one admitted
+  `BoundCatalogContext` at trusted infrastructure composition and expose the
+  fixed character-materialization service.
+- Modify: `GAME/TOOLS/bootstrap.py` — selected product host receives the
+  already-resolved `BoundCatalogContext`; no ambient/default catalog choice.
+- Modify: `GAME/TOOLS/hot_store.py` / current-owner internal carrier only as
+  needed for the owner-specific character establishment join selected in P0.
+- Create: `DEV/TESTS/test_character_progression.py`; extend RuntimeHost/RD14
+  composition tests.
+- Inspect/consume only: S6D-07 owner/seed, Character Readiness,
+  Actor/Asset/Effect/health/resource owners, catalog_runtime/ruleset_package and
+  DEV conformance tool/fixtures.
 
-**Internal interface and carriers:**
+**Interfaces:**
 
 ```text
-NativeOwnerRef:
-    family_key: registered native family
-    identity: complete exact native identity tuple
+CharacterMaterializationRequest:
+    actor_ref: exact current PC Actor
+    player_ref: exact current active PLAYER expected to control actor_ref
+    accepted build anchors / explicit selections already interpreted by the
+      existing semantic boundary
+    selection_basis per accepted S6D-07 vocabulary
+    no raw prose authority, no arbitrary owner after-images
 
-BoundMechanicalDependencySet (transient, RuntimeHost-issued):
-    actor_ref, actor_state_revision, catalog_context_fingerprint
-    exact proposed mechanic/use-case identity
-    finite required owner references and their validated dependency roles
+CharacterProgressionService.materialize_initial(
+    request: CharacterMaterializationRequest,
+) -> CharacterMaterializationResult
+
+CharacterMaterializationResult:
+    status: ESTABLISHED | UNRESOLVED_MATERIAL_CHOICE | UNSUPPORTED | REVALIDATION_REQUIRED
+    actor_id, player_id
+    exact before/after Actor revision when established
+    established native owner refs/generations
+    deterministic blocker/question descriptors
+    exact catalog/ruleset context identity
+```
+
+The service validates current Actor + active PLAYER/control through P0, validates
+all selected definitions/options against the Host-bound `BoundCatalogContext`,
+applies deterministic inheritance/defaults permitted by S6D-07, and creates the
+minimum supported Actor/Asset after-images. Concept inference/semantic player
+choice remains upstream LLM/Interpreter work; the deterministic resolver only
+validates the proposed rules-valid anchor/selection and never infers mechanics
+from prose by itself. If materially different legal choices remain unresolved,
+it returns the bounded blocker/question descriptor and performs no mutation.
+
+An established result writes the complete owner after-image batch through P0's
+trusted HOT establishment boundary in one local transaction. It does not SAVE,
+publish, declare READY_PC or create a new lifecycle state. Unsupported content
+is absent/nonselectable.
+
+The Host-bound catalog context is an already admitted `BoundCatalogContext`
+from `catalog_runtime.bind_catalog_context`; RuntimeHost never constructs an
+ambient default. Its catalog generation/ruleset digest/fingerprint and relevant
+campaign definition frontier are revalidated for each operation. Stale or
+foreign context produces typed rebind/currentness failure.
+
+**Acceptance:** positive Human/Criminal Fighter and Sorcerer initial paths,
+delegated deterministic defaults, one unresolved material choice, explicit
+player override, same Actor ID/state-revision advance, exact current PLAYER
+control, unsupported content, forged selection, wrong-host/stale catalog and
+HOT before-SAVE visibility. No questionnaire behavior is implemented in this
+deterministic service.
+
+Focused command:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_character_progression.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd14_bootstrap.py
+```
+
+**Output:** `W05_T06_CHARACTER_MATERIALIZATION_READY`.
+
+**Impact Envelope:** consumes S6D-07 and existing native/catalog owners only;
+may add the production resolver, RuntimeHost/catalog composition and T06-specific
+HOT producer join. It may not add character content, a second rules engine,
+caller-authored grants, DEV runtime imports, persistent workflow/readiness state,
+new mechanics primitives, migration or publication semantics. Classify actual
+module versions at the checkpoint.
+
+### W05.T06-P1B — Production deterministic readiness
+
+**Dependencies:** `W05_T06_CURRENT_OWNER_VIEW_READY`,
+`W05_T06_CHARACTER_MATERIALIZATION_READY`.
+
+**Goal:** expose local mechanical sufficiency and canonical READY_PC as distinct
+deterministic RuntimeHost assessments over the same current Actor/PLAYER/native
+owners and Host-bound catalog context.
+
+**Files:**
+- Create: `GAME/TOOLS/character_readiness.py`.
+- Modify: `GAME/TOOLS/runtime_host.py` — fixed readiness service over P0 and
+  the P1A Host-bound catalog context.
+- Create: `DEV/TESTS/test_character_readiness.py`.
+- Inspect/consume: P1A result, S6D-07, Character Readiness, MechanicalContext,
+  selector/activity/catalog/native owners and conformance fixtures.
+
+**Interfaces:**
+
+```text
+ReadinessService.bind_local_dependency_set(
+    actor_ref: NativeOwnerRef,
+    player_ref: NativeOwnerRef,
+    executable_binding: exact admitted catalog/activity binding,
+    invocation_binding: accepted typed invocation/mechanic binding,
+) -> BoundMechanicalDependencySet
+
+BoundMechanicalDependencySet:
+    RuntimeHost-issued; same operation token
+    actor_ref + current actor_state_revision
+    player_ref + proven current control of actor_ref
+    catalog_context_fingerprint + ruleset identity
+    exact mechanic/use-case identity
+    finite owner/accessor/selector/activity dependencies derived from admitted
+      definitions/bindings; never caller-authored arbitrary lists
 
 ReadinessService.assess_local_sufficiency(
-    actor_ref: NativeOwnerRef,
     dependency_basis: BoundMechanicalDependencySet,
 ) -> LocalMechanicalSufficiency
 
 ReadinessService.assess_ready_pc(
     actor_ref: NativeOwnerRef,
+    player_ref: NativeOwnerRef,
 ) -> ReadyPcAssessment
-
-LocalMechanicalSufficiency:
-    actor_id, actor_state_revision, status, deterministic_blocker_codes,
-    typed_dependency_basis
-
-ReadyPcAssessment:
-    actor_id, actor_state_revision, ready, deterministic_blocker_codes,
-    catalog_generation, ruleset_set_digest_generation, ruleset_set_sha256,
-    reconstructive_derivation_basis, required_production_conformance_evidence
 ```
 
-Both operations resolve their data through the Host's CurrentOwnerView and one
-admitted BoundCatalogContext produced by the existing catalog-runtime owner.
-`NativeOwnerRef` is a route key, not authority. `BoundMechanicalDependencySet`
-is internally issued for one exact mechanic/use case and bound to the same Actor
-revision, Host operation and catalog context; callers cannot construct an
-unbound dependency/evidence list to establish sufficiency. The assessment is
-transient, contains enough owner references/derivation evidence to explain its
-result, and creates no persisted ready field or duplicate authority. Derivation
-follows admitted definitions, grants/choices, current Actor/Asset/Effect owners
-and deterministic mechanics owners; the DEV evaluator is a conformance reference
-only, never a runtime import or second rules engine.
+`bind_local_dependency_set` is the only issuer. It validates the executable
+binding with the existing catalog owner, derives finite required engine-state
+dependencies from admitted Activity/definition/MechanicalContext metadata and
+P0 current owners, and does not execute the mechanic, mutate state or draw RNG.
+A forged/wrong-host/stale dependency carrier is rejected.
 
-**Steps and checks:**
-1. Add `ReadinessServiceTests` to `test_character_readiness.py`, distinguishing
-   sufficient dependencies for one proposed mechanic from whole-build READY_PC.
-2. Add positive Fighter and Sorcerer supported-seed cases plus blocker cases for
-   unresolved material choices, stale Actor revision, mismatched catalog or
-   ruleset digest, missing transitive dependency, forged evidence and unsupported
-   content.
-3. Implement the GAME-only deterministic service over current owner results and
-   exact admitted catalog evidence; do not import DEV validation tooling or
-   recreate a second D&D rules engine.
-4. Expose the fixed service through RuntimeHost and verify the same actor,
-   current PLAYER/control relation, catalog generation and ruleset-set digest
-   remain bound through the returned carrier.
-5. Run `test_character_readiness.py`, S6D-07 conformance, RD03 actor/asset/effect,
-   RD15 catalog-currentness, and the P1 cross-owner checks before accepting the
-   output.
+`assess_ready_pc` explicitly resolves both Actor and PLAYER through P0 and
+requires the active PLAYER to control the Actor; no reverse PLAYER scan/index
+inference is allowed. The result binds actor/player current bases plus
+catalog_generation, ruleset_set_digest_generation, ruleset_set_sha256 and
+reconstructive derivation evidence. READY_PC remains transient and does not
+publish, SAVE or establish PLAY_READY.
 
-Focused command (run sequentially from the repository root):
+Tests cover P1A-produced Fighter/Sorcerer builds, local-sufficiency vs READY_PC,
+wrong PLAYER/control, unresolved initial choices, future acquisition choices,
+stale Actor revision/catalog, forged dependency set, missing transitive owner,
+unsupported content and wrong-host carrier.
+
+Focused command:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_character_readiness.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_runtime_host_composition.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_character_readiness.py DEV/TESTS/test_character_progression.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_runtime_host_composition.py
 ```
 
-Expected: exit 0; all selected tests pass.
+**Output:** `W05_T06_PRODUCTION_READINESS_READY`.
 
-**Output:** `W05_T06_PRODUCTION_READINESS_READY` — local sufficiency and READY_PC
-are distinct, transient, exact-basis assessments; neither mutates, publishes,
-saves or declares PLAY_READY.
-
-**Implementation Impact Envelope:**
-- SPEC / APPROVED DESIGN: T06-A1 §§5–7, 20; Review Stop 2 §6; S6D-07
-  `CHARACTER_PROGRESSION_READY_PC_SEED.md`; `GAME/CORE/CHARACTER_READINESS.md`;
-  accepted Actor/Asset/Effect, catalog/ruleset and durability owners.
-- BASELINE REF OR SHA: fresh exact public HEAD after P0 publication/read-back;
-  record exact start SHA before RED.
-- EXPECTED OWNERS TO CHANGE: new `character_readiness.py`; RuntimeHost service
-  composition; new runtime test module. Existing native Actor/Asset/Effect,
-  catalog, access and durability owners are consumed, not replaced.
-- EXPECTED CONSUMERS TO CHANGE: progressive onboarding and bounded mechanic
-  precondition checks in the later held T06 product-completion task.
-- ALLOWED INTERFACES / CONTRACTS TO CHANGE: transient local-sufficiency and
-  READY_PC carriers and RuntimeHost service entry points only.
-- PROTECTED ARCHITECTURE INVARIANTS: provisional play may precede READY_PC;
-  mechanically insufficient outcomes do not guess; deterministic derivation
-  binds exact Actor revision and admitted catalog/ruleset identity; open material
-  initial choices block READY_PC; genuine future choices do not; no questionnaire,
-  persisted ready flag, bootstrap boolean, caller evidence list or DEV runtime
-  import; READY_PC alone does not perform durability or PLAY_READY transition.
-- ARCHITECTURE-SENSITIVE SURFACES: build dependency closure, definition/grant/
-  choice admission, Actor binding, catalog/ruleset pin, result-carrier provenance,
-  existing durability/PLAY_READY boundary.
-- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: new runtime tests; existing
-  S6D-07 conformance fixture/evaluator as reference only; RD03 actor/asset/effect;
-  RD15 exact catalog context; RuntimeHost current-view; onboarding consumer
-  tests when P1 joins T06 product completion.
-- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: Actor/build schema changes, mechanics
-  primitives/catalog expansion, package content expansion, progression write or
-  advancement publication, bootstrap product orchestration, persistent readiness
-  fields, broad D&D corpus, T07/T08/W06 and Story.
-- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify the new
-  module under the current module-version owner and re-read RuntimeHost metadata;
-  do not pre-authorize an existing schema/catalog/ruleset/campaign/storage bump,
-  migration or dual-read by service name.
-- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
-- CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; T06-A1 spec/ruling;
-  S6D-07 owner and current character readiness CORE; Actor/Asset/Effect/native
-  mechanics; catalog runtime and exact ruleset identity; DEV evaluator/fixture as
-  conformance evidence; RuntimeHost; RD03/RD15/RD14 tests; version owners.
+**Impact Envelope:** new readiness service + RuntimeHost wiring/tests only.
+Native Actor/PLAYER/Asset/Effect/catalog/mechanics owners are consumed, not
+replaced. No schema/catalog expansion, persisted ready field, bootstrap boolean,
+reverse PLAYER discovery, DEV import, execution/RNG, publication or migration is
+authorized. Re-read P0/P1A output, S6D-07, Character Readiness, catalog/
+MechanicalContext/Activity owners and version policy before RED.
 
 ### W05.T06-P2 — Bounded native History discovery and enrollment
 
-**Dependency:** `W05_T06_CURRENT_OWNER_VIEW_READY`. P2 does not depend on P1;
-the execution plan remains sequential and does not authorize parallel production.
+**Dependency:** `W05_T06_CURRENT_OWNER_VIEW_READY`. P2 is independent of P1A/
+P1B semantically; execution remains one production task at a time.
 
-**Goal:** add only the WP19-L36 structured discovery needed for bounded ordinary
-Master questions under the existing EVENT_INDEX/History owners, including
-accepted unpublished HOT and currently selected LIVE events.
+**Goal:** realize only WP19-L36 bounded SemanticEvent discovery using the
+existing EVENT_INDEX artifact plus accepted unpublished HOT and selected LIVE
+event evidence.
 
 **Files:**
-- Modify: `GAME/TOOLS/history.py` — typed bounded request/result and exact native
-  candidate loading through the RuntimeHost source adapter.
-- Modify: `GAME/TOOLS/runtime_host.py` — same-basis local/HOT/selected-LIVE
-  discovery sources and durable EVENT_INDEX publication closure.
-- Modify: `GAME/TOOLS/hot_store.py` — rebuildable event-discovery helper updated
-  atomically with accepted local `runtime.semantic_event` establishment.
-- Modify: `GAME/TOOLS/durability.py` / the existing accepted
-  `ExecutionDurabilityJoin` and routed-event input path only as required to carry
-  validated refs from accepted event input; no second event owner.
-- Modify: `GAME/TOOLS/publication.py` and
-  `CampaignPublicationService.publish_owner_delta` in `runtime_host.py` only as
-  required to include event plus EVENT_INDEX in one existing W02 campaign
-  publication closure.
-- Modify: `GAME/TOOLS/live_state.py` and its existing source-pack/absorption
-  producer so selected LIVE metadata is validated and exact absorbed event IDs
-  plus index-safe refs join the existing campaign absorption path operations.
+- Modify: `GAME/TOOLS/history.py`, `runtime_host.py`, `hot_store.py`.
+- Modify named accepted event producers/joins only as required:
+  `durability.py`, `publication.py`, `live_state.py`, `collaboration.py`.
 - Modify: `GAME/TOOLS/init_campaign.py` and
-  `GAME/CAMPAIGN/INDEX/EVENT_INDEX.yaml` so a new campaign begins with the
-  already-required complete/upper-ordinal enrollment shape.
-- Modify: existing `GAME/SCHEMA/index.schema.yaml` and
-  `DEV/SCHEMAS/runtime-semantic-event-state.schema.json` only for the accepted
-  EVENT_INDEX and `semantic_delta.discovery_refs` contracts they own; do not add
-  a second durable index or a new serialized owner family.
-- Modify tests in `DEV/TESTS/test_rd04_native_routing_index_hot.py`,
-  `test_runtime_host_composition.py`, `test_rd13_story_t0_commentator.py`,
-  `test_rd09_access_live.py`, `test_rd06_durability_publication.py`, and
-  `test_rd14_bootstrap.py` as the named producers/consumers require.
+  `GAME/CAMPAIGN/INDEX/EVENT_INDEX.yaml`.
+- Create: `GAME/SCHEMA/event_index.schema.yaml` — strict contract for the
+  already-existing EVENT_INDEX/event-enrollment artifact.
+- Modify: `GAME/SCHEMA/README.md` to route EVENT_INDEX to that contract.
+- Modify: `DEV/SCHEMAS/runtime-semantic-event-state.schema.json` only for
+  accepted optional `semantic_delta.discovery_refs`.
+- **Do not repurpose `GAME/SCHEMA/index.schema.yaml`**: it remains the generic
+  `native_family_index` contract unless fresh owner evidence independently
+  proves a shared shape.
+- Modify RD04/RuntimeHost/RD13/RD09/RD06/RD14 and schema/template tests.
 
-**Internal interface and carriers:**
+**Event-index contract:**
 
 ```text
-HistoryService.discover(
-    request: HistoryDiscoveryRequest,
-) -> HistoryDiscoveryResult
+EVENT_INDEX:
+    schema_version
+    entity_type: EVENT
+    complete: true
+    upper_ordinal: integer | null
+    entries[]:
+        ordinal
+        event_id
+        exact path/route as applicable
+        discovery_refs[]: index-safe typed native owner refs only
+```
 
-HistoryService._discover_from_basis(
-    request: HistoryDiscoveryRequest,
-    *,
-    basis: _OperationBasis,
-) -> HistoryDiscoveryResult
+Version Impact determines the exact schema-version transition/start; the plan
+does not pre-authorize a bump or migration. The blank scaffold represents a
+complete empty enrollment with `upper_ordinal: null`.
+
+**Interfaces:**
+
+```text
+HistoryService.discover(request) -> HistoryDiscoveryResult
 
 HistoryDiscoveryRequest:
-    selector: one admitted exact event/source, typed current-owner, session,
-             recent-tail, or eligible provenance/source reference
+    selector: exact event/source | typed current-owner | accepted session |
+              recent-tail | eligible provenance/source ref
     max_candidates: positive finite bound
 
 NativeHistoryCandidate:
-    event_id, source origin/ref/revision, source-local admission ordinal
-    exact known-ID route and index-safe nomination refs only
+    event_id
+    source origin/ref/revision
+    source-local admission ordinal
+    exact known-ID route
+    index-safe nomination refs
+
+HistoryDiscoverySourceBasis:
+    origin/ref/revision + exact campaign/HOT/LIVE currentness evidence
 
 HistoryDiscoveryResult:
-    candidates: tuple[NativeHistoryCandidate, ...]
-    source_basis: exact campaign / selected-LIVE / accepted-HOT basis
+    operation_token
+    candidates: bounded tuple[NativeHistoryCandidate, ...]
+    contributing_source_bases: bounded tuple[HistoryDiscoverySourceBasis, ...]
     status: MATCHED_BOUNDED_INTERVAL | NO_INDEXED_CANDIDATE |
-            TYPED_INCOMPLETE | UNAVAILABLE
-    limit_applied: bool
+            TYPED_INCOMPLETE | UNAVAILABLE | REVALIDATION_REQUIRED
+    limit_applied
 ```
 
-RuntimeHost internally reuses one `_OperationBasis` for this query and exact
-loads. The consumer sees nominations and exact owner-issued NativeSemanticEvent
-evidence, not raw index/HOT/LIVE helper rows.
-`NO_INDEXED_CANDIDATE` means only that this bounded projection nominated none;
-it is not proof that an event never existed or does not exist.
+There is no singular source basis for a result that may combine campaign, HOT
+and selected LIVE candidates. Each candidate retains its own exact source and
+exact shortlisted reads revalidate that source.
 
-Accepted SemanticEvent producer joins are mandatory: (1) local accepted event
-establishment updates its narrow HOT helper in the same local atomic mutation;
-(2) campaign durable event publication reads the pinned EVENT_INDEX and submits
-event plus index after-image through the same existing publication closure; and
-(3) selected LIVE event packs carry validated event refs while existing LIVE
-absorption builds the exact campaign EVENT_INDEX after-image in the same
-absorption closure. A test-only helper/index mutation is not producer coverage.
+Producer joins:
+1. accepted local runtime.semantic_event establishment validates
+   `discovery_refs` and atomically updates the P0-admitted HOT event helper;
+2. campaign durable event publication submits event + EVENT_INDEX after-image in
+   the existing W02 closure;
+3. selected LIVE pack/CAS keeps prospective data non-current; accepted source
+   metadata participates only from the exact selected source;
+4. absorption constructs the campaign EVENT_INDEX after-image in the same
+   absorption closure and deduplicates by exact native event evidence, never ID
+   magnitude/order.
 
-`semantic_delta.discovery_refs` contains only deterministic typed native owner
-family + complete identity references already admitted by accepted event input
-and provenance. The EVENT_INDEX copies only the index-safe subset. No prose,
-motive, T0 value, knowledge/disclosure state, raw event body or current authority
-is copied. Absorption deduplicates by exact native event identity/evidence;
-per-source enrollment order and event IDs do not establish global fictional
-chronology.
+EVENT_INDEX/HOT helper contains routing IDs only—no prose, motive, T0 value,
+knowledge/disclosure state or raw event body. Missing/invalid coarse metadata is
+not absence proof; independently known exact event IDs may bypass it. No
+campaign-wide body scan, raw-text/regex/embedding search, arbitrary predicate,
+global relevance graph or unbounded pagination exists.
 
-**Steps and checks:**
-1. Add `SemanticEventDiscoveryTests` to `test_rd13_story_t0_commentator.py` and
-   schema/validator witnesses for one exact nominated event, finite
-   multi-candidate selectors, direct-ID bypass of an invalid coarse index, and
-   typed incomplete results.
-2. Add `NativeHotEventDiscoveryAtomicityTests` to
-   `test_rd04_native_routing_index_hot.py`,
-   `CampaignEventIndexPublicationTests` to `test_runtime_host_composition.py`,
-   and `LiveEventIndexAbsorptionTests` to `test_rd09_access_live.py`. Prove
-   EVENT_INDEX/HOT-helper after-images are in the exact event
-   establishment/publication closure; fail if only a test/helper updates.
-3. Add bounded discovery composition tests for pinned campaign + accepted HOT +
-   selected LIVE, and prove absent LIVE discovery produces typed inability with
-   no campaign fallback.
-4. Validate every ref against already accepted event input/provenance; add
-   negative cases for model/prose-nominated refs, owner mismatch, duplicate IDs,
-   order gaps, ID-magnitude chronology, oversized candidates and raw body/index
-   leakage.
-5. Align blank EVENT_INDEX template, its current schema and current source
-   readers/writers; extend `BlankScaffoldCompletenessTests` in
-   `test_rd14_bootstrap.py` to assert complete empty enrollment and
-   upper-ordinal alignment. Classify each actual version namespace before
-   deciding any bump. Do not pre-authorize a schema/generation transition or
-   migration.
-6. Run RD04, RuntimeHost, RD13, RD09, RD06 and RD14 focused suites plus the exact
-   event-publication/absorption joins before accepting the output.
-
-Focused command (run sequentially from the repository root):
+Focused command:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd13_story_t0_commentator.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd06_durability_publication.py DEV/TESTS/test_rd14_bootstrap.py
 ```
 
-Expected: exit 0; all selected tests pass.
+**Output:** `W05_T06_NATIVE_HISTORY_DISCOVERY_READY`.
 
-**Output:** `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` — producers atomically
-maintain the one derived index/helper and History returns finite exact candidates
-or typed inability; no scan or absence guarantee is introduced.
+**Impact Envelope:** only existing SemanticEvent/History/EVENT_INDEX/HOT/LIVE
+producer/consumer surfaces and event-specific schema/template contracts may
+change. Generic family-index authority, Story, current knowledge/disclosure,
+retention guarantees and generic search remain out of scope. Namespace-specific
+Version Impact is mandatory.
 
-**Implementation Impact Envelope:**
-- SPEC / APPROVED DESIGN: T06-A1 §§8–12, 17–20; Review Stop 2 §§5–6; WP19
-  L29–L38; WP-11 index law; WP-12 local establishment; WP-13 publication;
-  WP-14 rebuild/recovery; WP-16 selected LIVE/CAS/absorption; existing History,
-  NativeSemanticEvent, current index and owner routes.
-- BASELINE REF OR SHA: fresh exact public HEAD after P0 acceptance/read-back;
-  record exact implementation-start SHA before RED.
-- EXPECTED OWNERS TO CHANGE: History discovery; RuntimeHost source adapter and
-  existing campaign publication closure; local HOT event helper producer;
-  accepted SemanticEvent validation/routed producer; LIVE pack/absorption
-  after-image producer; blank EVENT_INDEX template and its existing schemas;
-  only their exact producer/consumer tests.
-- EXPECTED CONSUMERS TO CHANGE: ordinary Master History nominations and later
-  RetrospectiveService exact-evidence path; selected-LIVE and campaign
-  absorption consumers.
-- ALLOWED INTERFACES / CONTRACTS TO CHANGE: optional deterministic typed
-  `semantic_delta.discovery_refs`; index-safe EVENT_INDEX ref projection;
-  bounded History discovery carriers; atomic derived helper/index maintenance
-  at accepted native event establishment/publication boundaries.
-- PROTECTED ARCHITECTURE INVARIANTS: one durable EVENT_INDEX only; it remains
-  derived and cannot prove truth/currentness/eligibility/absence; no event-body
-  scan; direct exact evidence may bypass invalid coarse metadata; candidates are
-  exact-loaded before use; no pre-CAS LIVE state; LIVE source movement or missing
-  metadata fails boundedly; no global chronology, ID-magnitude order, duplicated
-  History store, raw private data or secret-bearing index.
-- ARCHITECTURE-SENSITIVE SURFACES: native event admission, event + index
-  publication closure, local HOT atomicity, selected LIVE source packing/CAS,
-  campaign absorption, schema/template completeness and History exact-read
-  proof.
-- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD04 HOT/index; RuntimeHost
-  bounded LOCAL/LIVE reader; RD13 NativeHistory/T0; RD09 live-source and
-  absorption; RD06 publication; RD14 blank scaffold; schema and producer
-  validators. Include recovery rebuild/stale-helper checks.
-- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: any second index/store; Story adapter;
-  generic query language, raw-text/regex/embedding search, arbitrary predicate,
-  global relevance graph or unbounded pagination; current Actor truth, access or
-  disclosure; generic History retention/compaction guarantees; T07/T08/W06;
-  package-wide event authority rewrite.
-- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: current observed
-  event schema is `schema_version: 1`, EVENT_INDEX is `schema_version: 1`, and
-  `GAME/SCHEMA/index.schema.yaml` is schema 2. Re-read all owning rules and
-  classify `runtime.semantic_event`, EVENT_INDEX, index schema, module revisions,
-  campaign contract, storage, catalog and digest namespaces against the actual
-  accepted delta. No bump, migration, generation or dual-read is pre-authorized
-  by a service or field name.
-- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
-- CURRENTNESS RE-READ SET BEFORE WRITE: P0 output/cursor; T06-A1 spec/ruling;
-  WP19 L29–L38; WP-11/WP-12/WP-13/WP-14/WP-16; current `history.py`,
-  `runtime_host.py`, `hot_store.py`, `durability.py`, `publication.py`,
-  `live_state.py`, `collaboration.py`, `init_campaign.py`, EVENT_INDEX template,
-  event/index schemas; RD04/RD06/RD09/RD13/RD14 and versioning owners.
+### W05.T06-P3 — Same-operation sealed ordinary-Master retrospective
 
-### W05.T06-P3 — Same-operation sealed retrospective admission
-
-**Dependency:** `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` and
+**Dependencies:** `W05_T06_NATIVE_HISTORY_DISCOVERY_READY`,
 `W05_T06_CURRENT_OWNER_VIEW_READY`.
 
-**Goal:** implement the thin RuntimeHost RetrospectiveService that joins current
-orientation, bounded History, exact evidence and current recipient eligibility,
-then asks the existing Context Runtime to assemble the existing NARRATOR profile.
+**Goal:** join current orientation, bounded native History, exact historical
+evidence and the ordinary gameplay recipient/subject eligibility contract, then
+assemble the existing NARRATOR profile.
 
 **Files:**
-- Create: `GAME/TOOLS/retrospective.py` — typed request/result, use-case service,
-  and RuntimeHost-issued sealed evidence carrier.
-- Modify: `GAME/TOOLS/runtime_host.py` — fixed RetrospectiveService composition
-  and one-operation basis binding.
-- Modify: `GAME/TOOLS/context_runtime.py` — private sealed retrospective route
-  that accepts only the Host-issued same-operation carrier; keep the public
-  `ContextService.assemble(request, candidates)` route terminal for an unsealed
-  retrospective request.
-- Modify tests in `DEV/TESTS/test_rd11_context_runtime.py`,
-  `DEV/TESTS/test_rd13_story_t0_commentator.py`,
-  `DEV/TESTS/test_runtime_host_composition.py`, and
-  `DEV/TESTS/test_rd09_access_live.py`.
+- Create: `GAME/TOOLS/retrospective.py`.
+- Modify: RuntimeHost and private Context retrospective admission.
+- Modify RD11/RD13/RuntimeHost/RD09 tests. Keep PO-012 tests on their existing
+  separately named Commentator regression surface.
 
-**Internal interface and carrier:**
+**Interfaces:** retain the accepted `RetrospectiveService.execute`,
+Host-issued same-operation `RetrospectiveEvidenceSet` and private
+`ContextService._assemble_retrospective` shape. Request data cannot carry raw
+events, Story authority, service capabilities, eligibility lists or a seal.
 
-```text
-RetrospectiveService.execute(
-    request: RetrospectiveRequest,
-) -> RetrospectiveResult
+The service resolves the **current ordinary gameplay subject** from the current
+turn/product binding and proves that the current active PLAYER controls that PC.
+Multiple controlled PCs are not automatically an error and are never unioned:
+the already selected/current gameplay subject is used; if the subject is
+materially ambiguous, return the existing bounded clarification/typed inability
+rather than importing Commentator selected-PC semantics.
 
-ContextService._assemble_retrospective(
-    request: RetrospectiveRequest,
-    evidence: RetrospectiveEvidenceSet,
-    *,
-    basis: _OperationBasis,
-) -> ContextResult
+Eligibility is source/aspect-specific under PO-001 + Step-4 + R2.3:
 
-RetrospectiveEvidenceSet (RuntimeHost-issued; no public constructor):
-    campaign_id, recipient_player_id, selected_controlled_pc_id | None
-    operation_token, exact source/currentness basis
-    eligible field projections bound to exact NativeSemanticEvent/native sources
+- current human-player disclosure may support what that human has been told;
+- current subject-PC `world.knowledge` stance is preserved as
+  aware/known/believed/suspected/rejected and may support only the matching
+  qualified statement;
+- a belief/suspicion never becomes an established objective fact;
+- current access/control and exact source eligibility remain mandatory;
+- physically readable hidden objective/history material without applicable
+  current eligibility is excluded before Narrator context.
 
-RetrospectiveRequest:
-    one typed nomination from the accepted Interpreter/owner path
-    finite max_candidates; fixed ordinary Master / Narrator purpose
+PO-012's `PUBLIC + PLAYER disclosure + at-most-one selected PC known` formula
+remains Commentator-only. P3 adds ordinary-Master tests for an eligible
+qualified belief/suspicion, denial of hidden objective truth, current disclosure,
+revoked control, current subject among multiple controlled PCs, ambiguous
+subject, hidden field, T0/T1 divergence, stale/cross-host seal and source
+movement. Separately rerun existing PO-012 Commentator positive/negative tests
+unchanged.
 
-RetrospectiveResult:
-    typed Context outcome and the existing bounded Narrator projection only
-```
+The seal proves same-operation acquisition/source binding only; it grants no
+permission. Story is absent from the baseline route. Direct public
+`ContextService.assemble(... retrospective=True ...)` stays terminal without
+the Host-issued private evidence path.
 
-`RetrospectiveRequest` carries only the bounded typed nomination/purpose needed
-for this request; it cannot carry raw event bodies, caller-selected services,
-currentness claims, Story IDs as authority, a seal, or caller-authored eligibility
-lists. The service resolves current active PLAYER and selected PC control from
-the current owners, calls `CurrentOwnerView` and P2 History on the same
-`_OperationBasis`, exact-loads shortlisted native evidence, obtains current
-knowledge/disclosure/access, and issues an unforgeable evidence set. The private
-Context route revalidates recipient/control, eligibility and exact source binding
-before projecting only eligible fields into `role=NARRATOR`,
-`profile=profile.narration`, `purpose=narrate`, `retrospective=true`.
-
-The seal proves acquisition/binding only; it never grants permission. An exact
-historical field without current eligibility is omitted/fails closed. Missing
-T0 remains insufficient or inference, never T1 reconstruction as established
-history. Opaque EVENT_INDEX/HOT helper/private event data never enters a public
-tool or model payload. Story is absent from this baseline route.
-
-**Steps and checks:**
-1. Add `SealedRetrospectiveContextTests` to `test_rd11_context_runtime.py` and
-   `RetrospectiveEvidenceBindingTests` to
-   `test_rd13_story_t0_commentator.py`. Prove direct `ContextService.assemble` with
-   `retrospective=True`, caller candidates, raw event payload, forged seal,
-   cross-host seal or stale operation basis remains terminal and performs no
-   unauthorized History read.
-2. Add positive use-case tests for active PLAYER with PUBLIC-only eligibility,
-   exact current PLAYER disclosure, and at most one selected currently
-   controlled PC's exact-current `epistemic.known`; add negative multiple-PC,
-   no-PLAYER, revoked-control, hidden-field, source-movement and unsupported
-   content cases.
-3. Implement `RetrospectiveService.execute` using P0/P2 under one basis and issue
-   only a Host-bound sealed evidence carrier after exact history and current
-   eligibility validate.
-4. Implement the private Context route and field-level eligible projection;
-   retain ordinary Context policy/allocation, existing Narrator, and the direct
-   unsealed failure behavior.
-5. Prove Story absent/stale succeeds for supported native cases; direct known
-   IDs can work when coarse discovery metadata is invalid; invalid metadata never
-   triggers a body scan or an absence claim; bounds do not promise arbitrary
-   complete history or exact quotes after lawful compaction.
-6. Run RD11/RD13/RD09/RuntimeHost focused suites, including T0-vs-T1 and same-
-   operation/source-binding witnesses, before accepting the output.
-
-Focused command (run sequentially from the repository root):
+Focused command:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd13_story_t0_commentator.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_runtime_host_composition.py
 ```
 
-Expected: exit 0; all selected tests pass.
+**Output:** `W05_T06_SEALED_RETROSPECTIVE_READY`.
 
-**Output:** `W05_T06_SEALED_RETROSPECTIVE_READY` — ordinary Master retrospective
-is a bounded gameplay use case with same-operation evidence acquisition and
-current recipient-safe Context admission.
-
-**Implementation Impact Envelope:**
-- SPEC / APPROVED DESIGN: T06-A1 §§9–18, 20; Review Stop 2 §§5–6; WP19
-  L20–L23 and L29–L38; accepted R2.3 Context, Step-4 information/role and
-  access/knowledge/disclosure owners; PO-012 only for its separately preserved
-  Commentator boundary.
-- BASELINE REF OR SHA: fresh exact public HEAD after P2 acceptance/read-back;
-  record exact implementation-start SHA before RED.
-- EXPECTED OWNERS TO CHANGE: new `retrospective.py`; RuntimeHost service; private
-  Context sealed admission route; bounded T06-specific tests. Existing PLAYER,
-  control, knowledge/disclosure, History and NativeSemanticEvent owners remain
-  semantic authorities.
-- EXPECTED CONSUMERS TO CHANGE: ordinary active-player Master retrospective
-  routing and NARRATOR context assembly; no Commentator role transition.
-- ALLOWED INTERFACES / CONTRACTS TO CHANGE: typed bounded RetrospectiveRequest /
-  Result; non-public Host-issued same-operation `RetrospectiveEvidenceSet`; the
-  internal Context entry point that consumes it.
-- PROTECTED ARCHITECTURE INVARIANTS: current view for NOW questions; exact native
-  evidence for material historical claims; current active PLAYER/control and
-  field-level eligibility; same-operation seal; no raw caller candidate
-  authority; no Story/current truth authority; no T0-to-T1 substitution; no
-  hidden/private routing bytes in public output; no additional serial LLM phase
-  or publication edge.
-- ARCHITECTURE-SENSITIVE SURFACES: active principal/PLAYER reload; selected PC
-  control; disclosure and knowledge validation; exact event/source currentness;
-  Host token/seal issuance; Context role/purpose/profile binding.
-- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD11 Context and direct
-  unsealed terminal tests; RD13 exact History/T0 and Story-separation tests;
-  RD09 principal/access/control tests; RuntimeHost same-basis/currentness tests;
-  end-to-end P2 History + P0 owner-view joins.
-- KNOWN OUT-OF-SCOPE OWNERS / SURFACES: Commentator/CLS, Story adapter or Story
-  dependency, new LLM role/model call, generic retrieval/search, new
-  authorization/knowledge/disclosure authority, persistent retrospective
-  records, T07/T08/W06, and any unrelated Context profiles.
-- VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify actual
-  changed `runtime_host.py`, `context_runtime.py`, and new module version status
-  at fresh start; no persistent schema, catalog, checkpoint, campaign/storage
-  generation, migration or dual-read is pre-authorized.
-- HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
-- CURRENTNESS RE-READ SET BEFORE WRITE: P0/P2 outputs/cursor; T06-A1
-  spec/ruling; WP19/Context/Step-4/access/information/knowledge/disclosure
-  owners; current `runtime_host.py`, `history.py`, `context_runtime.py`,
-  `access_control.py`, `collaboration.py`, `story.py` only for separation,
-  and existing RD09/RD11/RD13/Host tests; versioning owners.
+**Impact Envelope:** new use-case module, RuntimeHost composition and private
+Context admission only. It may not change Commentator/PO-012 semantics, add a
+MASTER role, generic retrieval, Story dependency, authorization/knowledge/
+disclosure authority, persistent retrospective state, serial LLM phase or
+publication edge. Version Impact is classified from the actual changed modules.
 
 ### T06-A1 accepted-law coverage and critic propagation
-
-This table routes each accepted law to its implementation task; the canonical
-spec and Senior ruling remain semantic authorities.
 
 | Canonical law | Planned discharge |
 |---|---|
 | T06A1-1 operation-scoped CurrentOwnerView | P0 |
-| T06A1-2 coherent ephemeral HOT observation; no global frontier | P0 |
+| T06A1-2 coherent expanding HOT observation; no global frontier | P0 |
 | T06A1-3 Context current-family cutover | P0 |
-| T06A1-4 deterministic readiness; local sufficiency / READY_PC / PLAY_READY distinct | P1 and held T06 product completion |
-| T06A1-5 exact Actor/control/dependency/catalog/ruleset basis and reconstructive READY_PC assessment | P1 |
-| T06A1-6 readiness re-evaluated after accepted change and correctness-relevant resume/rejoin | P1 and held T06 product completion |
-| T06A1-7 ordinary Master gameplay with existing Interpreter/Narrator; no MASTER role | P3 and held T06 product completion |
-| T06A1-8 minimum typed discovery refs under the one EVENT_INDEX owner | P2 |
-| T06A1-9 derived index, exact evidence, complete/upper-ordinal enrollment alignment | P2 |
-| T06A1-10 finite registered selectors; no generic query or campaign scan | P2 |
-| T06A1-11 accepted unpublished HOT and selected LIVE discovery; typed inability on missing LIVE route | P2 |
-| T06A1-12 NOW questions resolve through current owners; no T0 restoration | P0 and P3 |
-| T06A1-13 thin use-case orchestration only | P3 |
-| T06A1-14 same-operation sealed acquisition plus independent current eligibility; private bytes stay internal | P3 |
-| T06A1-15 retained T0 motive evidence only; no T1 reconstruction as history | P3 |
-| T06A1-16 Story Master adapter remains dormant until one of the two accepted measured-cost/product-navigation triggers | No baseline task; held out of scope |
-| T06A1-17 typed bounded failure/recovery for missing readiness, invalid index, LIVE movement, stale sources, lost HOT, inactive PLAYER/control, missing T0 or unavailable Story | P0–P3 and held T06 product completion |
-| T06A1-18 no extra serial LLM call or publication boundary | P3 and held T06 product completion |
+| T06A1-4 deterministic readiness; local sufficiency / READY_PC / PLAY_READY distinct | P1B + product completion |
+| T06A1-5 exact Actor/PLAYER/dependency/catalog/ruleset basis | P1A/P1B |
+| T06A1-6 re-evaluation after accepted change/resume/rejoin | P1B + product completion |
+| T06A1-7 ordinary Master existing Interpreter/Narrator; no MASTER role | P3 + product completion |
+| T06A1-8 minimum typed discovery refs under one EVENT_INDEX | P2 |
+| T06A1-9 derived event index + exact evidence + empty enrollment alignment | P2 |
+| T06A1-10 finite selectors; no generic search/body scan | P2 |
+| T06A1-11 accepted HOT + selected LIVE discovery | P2 |
+| T06A1-12 NOW resolves through current owners | P0/P3 |
+| T06A1-13 thin retrospective orchestration | P3 |
+| T06A1-14 sealed acquisition + independent ordinary-Master eligibility | P3 |
+| T06A1-15 retained T0 only; no T1 reconstruction | P3 |
+| T06A1-16 Story adapter dormant | no baseline task |
+| T06A1-17 typed failures/recovery | P0–P3 + product completion |
+| T06A1-18 no extra serial LLM/publication boundary | P1A/P1B/P3 + product completion |
 
-Senior critic propagation is also discharged item-by-item: H06-01 by P2's
-atomic HOT helper and query composition; H06-02 by P2's selected-LIVE source or
-typed inability; H06-03 by P0's coherent detached HOT observation; H06-04 by
-P2/P3's index-safe metadata and recipient-safe field projection; H06-05 by P3's
-unforgeable same-operation seal; H06-06 by P2's blank-template/writer/schema
-alignment; H06-07 by the explicit dormant Story disposition above.
+S6D-07 deferred production resolver is discharged by P1A; P1B provides its
+runtime readiness consumer. Senior plan findings SP06-01..SP06-04 and repair
+additions SP06-05..SP06-09 are mapped in the repair-resolution artifact and must
+remain closed at final plan re-review.
 
-## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
+## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 
-This is the held product-completion task after P1 and P3 are accepted (P0/P2
+This is the held product-completion task after P1A/P1B and P3 are accepted (P0/P2
 are transitive prerequisites). T06-S1/S2 below in the execution cursor remain
 accepted; do not replay or reopen their implementation. The T06 product task
 adds only the progressive-readiness and ordinary Master retrospective
 composition, then proves the whole T06 product output.
 
 Hard inputs: accepted `W05_T06_CURRENT_OWNER_VIEW_READY`,
+`W05_T06_CHARACTER_MATERIALIZATION_READY`,
 `W05_T06_PRODUCTION_READINESS_READY`,
 `W05_T06_NATIVE_HISTORY_DISCOVERY_READY`, and
 `W05_T06_SEALED_RETROSPECTIVE_READY`; accepted
 `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`,
-T07E exact-serialized-byte measurement, PO-012, and the exact completed owner
-checkpoints consumed by each product path. T06-S1/S2 remain accepted without
+T07E exact-serialized-byte measurement, and the exact completed owner
+checkpoints consumed by each product path. PO-012 is a separate Commentator
+regression owner only; it is not an ordinary-Master eligibility input. T06-S1/S2 remain accepted without
 waiting for or replaying this held task.
 
 Implement the product-facing flows over the completed owners:
@@ -1020,10 +904,11 @@ Implement the product-facing flows over the completed owners:
 - the bound `CampaignPublicationTransport` supplies T07E's exact `measure_path_operations(...)` capability using the same serializer as `create_tree`; an adapter without that capability fails closed before any writer that requires accepted size-band review and must never substitute an estimate, hard cap or second serialization.
 
 The product adapters retain the accepted callable names from the baseline
-manifest: `progress_onboarding(...)` obtains local-sufficiency/READY_PC results
-from `RuntimeHost.readiness`; `route_active_player_retrospective(...)` delegates
-to `RuntimeHost.retrospective.execute(...)`. The adapters do not accept a
-readiness boolean, owner service, raw History payload or evidence seal from
+manifest: `progress_onboarding(...)` routes accepted typed onboarding intent
+through `RuntimeHost.character_progression`, then obtains local-sufficiency/
+READY_PC results from `RuntimeHost.readiness`; `route_active_player_retrospective(...)` delegates
+to `RuntimeHost.retrospective.execute(...)`. The adapters do not accept a readiness boolean, raw native owner after-image,
+owner service, raw History payload, catalog capability or evidence seal from
 gameplay/model input.
 
 Remaining progressive onboarding consumes `RuntimeHost.readiness` and

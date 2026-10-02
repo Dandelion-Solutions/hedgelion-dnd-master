@@ -2185,3 +2185,34 @@ four DEV Markdown paths only. Exact-head hosted Validate engine source run
 1524-test/maintenance evidence is retained as reported, not independently rerun.
 The historical "Senior GO pending" entry is superseded by this disposition.
 UNPUBLISHED_WORK: NONE after review checkpoint publication/read-back.
+
+
+## W05.T06 targeted repaired-plan candidate — SP06-01..SP06-09 resolved
+
+REPAIR_RESOLUTION:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`
+
+```text
+T06_A1_ARCHITECTURE: ACCEPTED / NOT REOPENED
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+SP06_01_04: REPAIRED
+SP06_05_09_ADDITIONAL_REVIEW_FINDINGS: REPAIRED
+PRODUCTION_IMPLEMENTATION: HELD
+FINAL_SENIOR_PLAN_GO: PENDING
+```
+
+Stable-plan repair now:
+- separates ordinary Master eligibility from PO-012 Commentator semantics;
+- binds the actual selected product RuntimeHost to trusted HOT;
+- defines WP12 establishment/adoption and expanding-read coherence;
+- adds the deferred S6D-07 production character materialization resolver;
+- makes READY_PC explicitly Actor+PLAYER bound and gives local sufficiency a
+  real RuntimeHost-issued dependency-set path;
+- formalizes the existing EVENT_INDEX with an event-specific schema rather than
+  repurposing generic family-index schema;
+- binds multi-source History discovery to per-candidate/per-source provenance.
+
+NEXT_EXACT_TASK: final independent Senior plan re-review of the stable W05
+plan/index and this repair resolution at the fresh public HEAD. Do not begin P0
+production code before Senior GO.
+UNPUBLISHED_WORK: NONE after this checkpoint publication/read-back.
