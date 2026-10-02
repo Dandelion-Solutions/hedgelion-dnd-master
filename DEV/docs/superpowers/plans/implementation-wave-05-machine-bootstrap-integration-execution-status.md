@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: W05.T06 REPAIRED PLAN GO — P0 AUTHORIZED; SP06-01..SP06-11 closed in planning; later tasks dependency-gated.
-CURRENT_TASK: W05.T06-P0 — trusted HOT admission + RuntimeHost CurrentOwnerView.
+STATUS: SYSTEM_IMPACT_REVIEW_REQUIRED — P0 Actor-continuity producer witness unresolved; prior repaired-plan GO is preserved as historical review evidence, and P0 execution is held.
+CURRENT_TASK: bounded Senior ruling for `2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`; no production code.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `19ad53e1d729d2bef46b88789bb2e2d33117ef6d` — fresh-read final Senior GO publication; follow-up SP06-11 plan ruling below preserves P0 authorization. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+LAST_SAFE_SHA: `4df0484790bbe54bbcf417483b871e0e8345380b` — freshly fetched current remote HEAD before the bounded P0 producer-capability documentation. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2270,3 +2270,39 @@ prepared documentation/status checks and publication read-back. No production
 implementation or new runtime test PASS is claimed.
 Historical hold/review-pending entries above have no current scheduling authority.
 UNPUBLISHED_WORK: NONE after verified checkpoint publication.
+
+
+## W05.T06-P0 source-evidence capability stop — 2026-10-02
+
+SYSTEM_IMPACT_BRIEF:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`
+SOURCE_AUDIT_BASE: `4df0484790bbe54bbcf417483b871e0e8345380b`
+CURRENT_VERIFICATION_STATE: focused progress/routing/frontier/version-policy checks `21 passed, 1 deselected`; repository-wide version census exceeded 180 seconds during checkout-wide traversal. `git diff --check` PASS. Maintenance audit exit 1 due existing `DEV/tmp/` and `.hdm-devtools/clean*/` copies containing duplicate `GAME/ENGINE_VERSION.yaml`, plus an `.entire/tmp/` transitional identity carrier; ignored workspace artifacts were not inspected or removed. Hosted CI unavailable here.
+
+Exact local commands:
+
+```text
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_current_progress_authority.py DEV/TESTS/test_product_owner_routing_consistency.py DEV/TESTS/test_step_5_1_frontier_contract.py DEV/TESTS/test_versioning_namespace_policy.py -k 'not census_has_zero_unclassified_hits' -> 21 passed, 1 deselected
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -vv DEV/TESTS/test_versioning_namespace_policy.py -> timed out at 180s in test_census_has_zero_unclassified_hits
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py -> exit 1, duplicate ENGINE_VERSION workspace copies and unreconstructable .entire/tmp/ carrier
+git diff --check -> PASS
+```
+
+```text
+TRIGGER: P0's named Actor witness is not an existing connected accepted producer.
+EVIDENCE: apply_actor_delta is a pure transformation with caller-supplied evidence claims; GAME has no production caller; RD03 evidence is a synthetic unit-test fixture.
+SP06_02: SENIOR_SYSTEM_IMPACT_REVIEW_REQUIRED
+T06_A1_ARCHITECTURE: PRESERVED / NOT REOPENED
+PRIOR_FINAL_PLAN_GO: HISTORICAL; P0 EXECUTION HELD PENDING THIS RULING
+PRODUCTION_CODE_CHANGED: NO
+VERSION_IMPACT: NONE
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED
+NEXT_EXACT_TASK: Senior review the bounded brief and rule whether an already-accepted native source/producer path exists or whether the capability requires a separately authorized owner/design decision.
+KNOWN_BLOCKERS: no trusted Actor accepted-evidence producer/call path is present in current GAME source; no adapter/authority may be inferred.
+UNPUBLISHED_WORK: NONE after this coherent documentation checkpoint is published and read back.
+```
+
+This is a bounded execution/system-impact stop, not a restart of T06-A1
+architecture. P0 must not begin production RED/GREEN work or claim
+`W05_T06_CURRENT_OWNER_VIEW_READY` until the ruling is recorded in the stable
+plan and current cursor.

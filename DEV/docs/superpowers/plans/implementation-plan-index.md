@@ -1,8 +1,8 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **SENIOR-APPROVED / W05.T06 REPAIRED PLAN GO; P0 AUTHORIZED / LATER T06 TASKS DEPENDENCY-GATED**
+Status: **SENIOR-APPROVED ARCHITECTURE / W05.T06-P0 SYSTEM-IMPACT REVIEW REQUIRED; P0 HELD**
 
-Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. Final Senior plan GO authorizes W05.T06-P0 only; P1A/P1B/P2/P3 and held product completion remain dependency-gated.
+Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. The final repaired-plan Senior GO authorized W05.T06-P0 only, but P0 is now held at the bounded Actor-producer System-Impact gate below. P1A/P1B/P2/P3 and held product completion remain dependency-gated.
 
 ## 1. Sole current planning route
 
@@ -54,17 +54,20 @@ completion. P1A/P1B do not produce an input consumed by P2; the task plan execut
 one production task at a time and does not authorize parallel production.
 The exact task files, carriers, producer/consumer joins, per-task Impact
 Envelopes, focused verification and version-namespace checks are in
-`implementation-wave-05-machine-bootstrap-integration.md`. Execution remains
-blocked until this repaired package receives Senior plan GO. Story remains
-dormant; T07/T08/W06 remain unstarted.
+`implementation-wave-05-machine-bootstrap-integration.md`. The package received
+final Senior plan GO; however, a subsequent source audit found that P0's claimed
+existing accepted Actor producer is not connected to a trusted source-evidence
+path. P0 remains held until the bounded System-Impact brief receives Senior
+ruling. Story remains dormant; T07/T08/W06 remain unstarted.
 
 Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4` returned **NEEDS_REPAIR**.
-SP06-01..SP06-04 plus the repair review's additional current-consumer findings
-SP06-05..SP06-10 are resolved in the stable plan and
-`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`.
-The bounded follow-up Senior ruling at `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md` resolves SP06-11 (allocator/initial materialization repeat-resume) in stable P1A; accepted architecture and P0 authorization are preserved.
+SP06-01, SP06-03..SP06-04 and the additional current-consumer findings
+SP06-05..SP06-11 remain resolved in the stable plan and repair provenance.
+SP06-02's P0 producer witness is now subject to the bounded source-capability
+review at `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`.
+The bounded follow-up Senior ruling at `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md` resolves SP06-11 (allocator/initial materialization repeat-resume) in stable P1A; accepted architecture remains preserved.
 
-Final Senior plan review is GO at `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review-final.md`. P0 is authorized; later T06 tasks remain dependency-gated.
+Final Senior plan review is GO at `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review-final.md`; its P0 authorization is recorded historically. The bounded source audit in `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md` now holds P0 pending a ruling on the missing accepted producer/source join. No T06 production work has started under this follow-up.
 
 ## 2. Authority and baseline
 

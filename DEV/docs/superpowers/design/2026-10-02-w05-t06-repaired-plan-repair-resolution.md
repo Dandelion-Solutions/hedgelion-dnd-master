@@ -1,8 +1,9 @@
 # W05.T06 Repaired Plan — Targeted Repair Resolution
 
-Status: **REPAIRED PACKAGE — FINAL SENIOR PLAN GO**
+Status: **HISTORICAL REPAIR RESOLUTION — FINAL SENIOR GO; P0 PRODUCER WITNESS NOW UNDER SYSTEM-IMPACT REVIEW**
 
-Final disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md`.
+Historical final plan disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md`.
+Current P0 disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`.
 
 Date: 2026-10-02
 Repair basis: `5830fcca01fa4f2bc2231ed50254e4b6f680dad8`
@@ -35,6 +36,14 @@ supply the T06-specific PC-character and SemanticEvent producers later.
 This does not make HOT a semantic acceptance authority: native owner code
 validates meaning first; WP12's local transaction establishes the already
 accepted after-image.
+
+Historical/currentness note: the source audit recorded in
+`2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md` later found that
+the cited `actor_continuity.apply_actor_delta` is not connected to a production
+caller and receives accepted/current evidence claims as ordinary input. The
+earlier disposition above is retained as review provenance; SP06-02 is currently
+open only for confirmation of the accepted producer/source-evidence join. P0 is
+held until the bounded Senior ruling.
 
 ### SP06-03 — expanding read coherence
 
@@ -134,3 +143,21 @@ NEXT: W05.T06-P0
 The final Senior review compared those owners and current consumer contracts;
 the linked ruling grants P0 RED/GREEN. This resolution remains provenance,
 not a second executable plan.
+
+## Current P0 producer-capability follow-up
+
+The final GO above is a historical plan-review disposition. Direct source
+inspection at `4df0484790bbe54bbcf417483b871e0e8345380b` found no production GAME
+call to `assess_actor` / `apply_actor_delta`; RD03 supplies a test-only evidence
+fixture, while WP12 specifies local establishment only for an already-permitted
+native owner edge. The bounded System-Impact brief links the exact owner/code
+evidence and holds P0 without reopening T06-A1.
+
+```text
+SP06_02: SENIOR_SYSTEM_IMPACT_REVIEW_REQUIRED
+FINAL_PLAN_GO: HISTORICAL / P0 EXECUTION HELD
+T06_A1_ARCHITECTURE: ACCEPTED / NOT REOPENED
+PRODUCT_OWNER_DECISION_REQUIRED: NO UNLESS THE SENIOR FINDS SEMANTICS OR AUTHORITY MUST CHANGE
+VERSION_IMPACT: NONE
+NEXT: Senior ruling on the exact accepted Actor producer/source join
+```

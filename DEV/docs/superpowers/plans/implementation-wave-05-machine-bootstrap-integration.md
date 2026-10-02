@@ -374,8 +374,10 @@ scoped view without turning SQLite into another semantic authority.
   path. Gameplay/model input cannot supply or replace it.
 - Inspect/consume: native owner producers such as
   `GAME/TOOLS/actor_continuity.py`; do not move their semantic validation into
-  HOT. A P0 acceptance witness uses a real owner-validated Actor after-image,
-  not a fabricated raw OwnerDocument.
+  HOT. The present source audit found no production callsite or trusted
+  accepted-evidence producer join for `apply_actor_delta`; its unit-test
+  evidence fixture is not an accepted production witness. See the bounded
+  System-Impact brief linked from the plan index and cursor.
 - Modify tests: RD04 HOT/index, RuntimeHost composition, RD11 Context, RD14
   selected-host composition, RD07 recovery and applicable owner-producer tests.
 
@@ -432,13 +434,21 @@ surviving dirty rows are not admitted merely by existence; recovery/revalidation
 must re-establish a compatible current basis. Raw `source_basis` text,
 generation, mtime or row presence never admits a row.
 
-P0 proves the establishment plumbing with an existing real native producer:
-apply one accepted NPC Actor continuity delta through
-`actor_continuity.apply_actor_delta`, establish that validated after-image in
-HOT through the trusted infrastructure path, and read it through Context before
-SAVE. A structurally equivalent row inserted only through an untrusted/test raw
-path is not an admitted CurrentOwnerView source. P1A and P2 later add the
-T06-specific PC-character and SemanticEvent producer joins to the same
+**System-Impact execution gate:** do not begin P0 production RED/GREEN work or
+claim `W05_T06_CURRENT_OWNER_VIEW_READY` until Senior resolves
+`2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`. Current
+`actor_continuity.apply_actor_delta` is an owner-local validator/transformation,
+not a connected accepted producer: it receives evidence claims as ordinary
+input, and GAME has no production caller. Its synthetic RD03 fixture cannot
+prove a current accepted evidence path or a WP12 establishment join. Do not
+invent an evidence issuer or producer authority to satisfy the witness.
+
+After the gate is resolved, P0 must prove admitted establishment plumbing with
+the exact Senior-approved native producer/source path and establish its
+validated after-image through the trusted infrastructure path before Context
+reads it and SAVE. A structurally equivalent row inserted only through an
+untrusted/test raw path is not an admitted CurrentOwnerView source. P1A and P2
+later add the T06-specific PC-character and SemanticEvent producers to the same
 establishment boundary; P0 does not invent their semantics.
 
 **Bounded expanding-read coherence:**
@@ -455,6 +465,9 @@ under its consuming owner; no retry loop or campaign-global generation/frontier
 is introduced.
 
 **Steps and checks:**
+0. SYSTEM-IMPACT GATE: resolve the accepted Actor producer/source path before
+   any P0 production RED or cross-owner producer adapter. The current P0
+   authorization is held at this gate.
 1. RED: selected product host lacks the trusted HOT capability; Context after a
    real accepted local Actor change still sees pinned Git; forged/surviving raw
    rows and cross-campaign rows must fail.
@@ -464,9 +477,11 @@ is introduced.
    thread the capability through `compose_selected_runtime_host`.
 4. Cut Context current-family resolution to the view while preserving existing
    eligibility and selected-LIVE revalidation.
-5. GREEN: real owner-produced local after-image is visible before SAVE; forged
-   raw row is not; cold recovery does not resurrect stale dirty state; expansion
-   either returns one compatible union or typed revalidation failure.
+5. GREEN: the Senior-approved accepted native producer yields a real local
+   after-image visible before SAVE; forged raw rows and synthetic evidence-only
+   witnesses do not qualify; cold recovery does not resurrect stale dirty
+   state; expansion either returns one compatible union or typed revalidation
+   failure.
 6. Run the focused and cross-owner checks below, then Version Impact Gate,
    task review, full clean DEV/maintenance verification and remote read-back.
 
@@ -484,8 +499,9 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 - BASELINE REF OR SHA: fresh exact public HEAD after final repaired-plan Senior
   GO; record implementation-start SHA before RED.
 - EXPECTED OWNERS TO CHANGE: RuntimeHost/current-owner/HOT infrastructure,
-  Context current reads and selected-product bootstrap composition; only the
-  minimum owner-producer adapter needed for the real P0 establishment witness.
+  Context current reads and selected-product bootstrap composition. An
+  Actor-continuity producer/evidence adapter is not authorized by this envelope;
+  it requires the linked System-Impact ruling first.
 - EXPECTED CONSUMERS TO CHANGE: RuntimeHost fixed service composition,
   Context current-family resolution and bootstrap's selected gameplay host.
 - ALLOWED INTERFACES / CONTRACTS TO CHANGE: trusted infrastructure HOT port,
@@ -494,18 +510,22 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   public gameplay/model mutation/service-injection capability.
 - PROTECTED ARCHITECTURE INVARIANTS: one semantic owner; LIVE-first exact
   currentness; no pre-CAS state; HOT only after native-owner validation + WP12
-  establishment/adoption; no remote I/O in SQLite transactions; no stale
-  restart resurrection; dynamic closure cannot mix snapshots; Context retains
-  information/access eligibility.
+  establishment/adoption; no caller-asserted evidence as acceptance; no remote
+  I/O in SQLite transactions; no stale restart resurrection; dynamic closure
+  cannot mix snapshots; Context retains information/access eligibility.
 - ARCHITECTURE-SENSITIVE SURFACES: RuntimeHost composition; SQLite transaction
   scope; current-source precedence; selected LIVE routing; cold recovery;
   Context source eligibility; same-campaign namespace isolation.
-- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: RD03 owner-produced Actor
-  after-image witness; RD04 HOT snapshot/admission; RuntimeHost composition;
-  RD11 Context; RD14 selected product host; RD07 recovery; RD09 LIVE.
+- EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: a focused Actor producer
+  test that traverses the Senior-approved accepted-source path and WP12
+  establishment join (RD03 alone is transformation evidence, not producer
+  acceptance); RD04 HOT snapshot/admission; RuntimeHost composition; RD11
+  Context; RD14 selected product host; RD07 recovery; RD09 LIVE.
 - KNOWN OUT-OF-SCOPE OWNERS / SURFACES: character build semantics (P1A),
   readiness derivation (P1B), History discovery (P2), Story, persistent
-  campaign schema/catalog expansion, migration, publication timing.
+  campaign schema/catalog expansion, migration, publication timing, and any
+  new Actor acceptance authority or producer interface before the linked
+  System-Impact ruling.
 - VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify actual
   changed GAME modules. No persistent campaign schema/catalog/generation,
   checkpoint or migration change is pre-authorized.

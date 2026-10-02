@@ -7,11 +7,11 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: W05.T06-P0 — trusted HOT admission + RuntimeHost CurrentOwnerView; AUTHORIZED by final repaired-plan Senior GO.
-REQUIRED_GATE: P0 `W05_T06_CURRENT_OWNER_VIEW_READY` -> P1A `W05_T06_CHARACTER_MATERIALIZATION_READY` -> P1B `W05_T06_PRODUCTION_READINESS_READY`; independently P0 -> P2 `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` -> P3 `W05_T06_SEALED_RETROSPECTIVE_READY`; then P1B + P3 -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
-SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md` — SP06-11 repaired within accepted architecture; P0 authorization preserved.
+NEXT_AUTHORIZED_UNIT: bounded Senior review of `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`; W05.T06-P0 production is held pending the accepted Actor producer/source ruling.
+REQUIRED_GATE: resolve the P0 accepted Actor producer/source-evidence capability under existing owners -> re-confirm or revise P0 Impact Envelope and obtain any required Senior plan/System-Impact GO -> P0 `W05_T06_CURRENT_OWNER_VIEW_READY` -> P1A `W05_T06_CHARACTER_MATERIALIZATION_READY` -> P1B `W05_T06_PRODUCTION_READINESS_READY`; independently P0 -> P2 `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` -> P3 `W05_T06_SEALED_RETROSPECTIVE_READY`; then P1B + P3 -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
+SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md` — current P0 producer witness is not connected to trusted accepted native evidence; prior plan GO remains historical, P0 held.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: none for entering W05.T06-P0. P1A/P1B/P2/P3/product completion remain dependency-gated; Story adapter remains dormant.
+KNOWN_BLOCKERS: current GAME has no production Actor continuity producer/call path that sources and validates accepted evidence for P0's claimed witness. No evidence issuer/producer adapter is authorized by inference. P1A/P1B/P2/P3/product completion remain dependency-gated; Story adapter remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -368,17 +368,16 @@ TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bo
 IMPLEMENTATION_SPEC: `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`
 BASE_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — freshly fetched exact public HEAD at the start of this plan repair.
 
-STATUS: SENIOR_REVIEW_REQUIRED — W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 Review Stop 2 accepted the architecture; the stable T06 plan/envelopes are published/read back and await Senior plan GO.
-CURRENT_TASK: Senior plan review / GO for the repaired W05.T06 implementation plan; production has not resumed.
-PLAN_PACKAGE_SHA: `a61b40ff14fb53d24b715734c43449fea94fbeb9`.
-PLAN_PACKAGE_REMOTE_READBACK: PASS — fresh fetch confirmed `HEAD == origin/v1/engine-rearchitecture == a61b40ff14fb53d24b715734c43449fea94fbeb9`; changed-file read-back is empty.
+STATUS: SYSTEM_IMPACT_REVIEW_REQUIRED — W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 Review Stop 2 and repaired-plan review remain recorded; P0 is held at the newly documented Actor producer/source-evidence gap.
+CURRENT_TASK: bounded Senior review of the P0 Actor-producer System-Impact brief; no P0 production work has started under this follow-up.
+SYSTEM_IMPACT_BASE_SHA: `4df0484790bbe54bbcf417483b871e0e8345380b` — fresh public HEAD containing the prior plan GO and SP06-11 follow-up before this source-audit checkpoint.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit PASS. T06-S1/S2 remain accepted/read back in the task cursor.
-CURRENT_VERIFICATION_STATE: focused current-progress/frontier/W05 owner-consumer tests 30 passed. Clean exact committed candidate `a61b40ff14fb53d24b715734c43449fea94fbeb9`: canonical full DEV with `-n auto` 1524 passed, 24 existing RD09 `RefResolver` deprecation warnings; canonical maintenance audit PASS; `git diff --check` PASS. Fresh post-push fetch confirmed `HEAD == origin/v1/engine-rearchitecture == a61b40ff14fb53d24b715734c43449fea94fbeb9`; changed-file read-back matches. Earlier in-place failures from ignored workspace artifacts remain recorded as non-acceptance diagnostics; no ignored artifacts were inspected or removed. No production behavior PASS is claimed for T06-A1. Hosted CI is unavailable in this local-machine runtime and is not claimed.
-VERSION_IMPACT: NONE — plan/index/execution-status/current-progress documentation only; no HDM-owned version/revision/schema/catalog/generation namespace changed.
-SYSTEM_IMPACT: NONE — plan decomposition and verification only under accepted T06-A1 architecture; production code remains untouched.
-NEXT_EXACT_TASK: obtain Senior plan review / GO for the complete repaired W05 T06 package at the current public HEAD. Do not begin production code before GO.
-KNOWN_BLOCKERS: no PO/design blocker; the repaired plan awaits the required Senior plan GO. P0–P3 production capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
-UNPUBLISHED_WORK: NONE for the stable plan/index package at `a61b40ff14fb53d24b715734c43449fea94fbeb9`; this current-progress status synchronization is published/read back as part of the current checkpoint.
+CURRENT_VERIFICATION_STATE: source audit at SYSTEM_IMPACT_BASE_SHA confirmed no GAME production call to `assess_actor` / `apply_actor_delta`; RD03 evidence is a synthetic unit-test fixture. Focused progress/routing/frontier/version-policy checks: 21 passed, 1 repository-wide census test deselected after its standalone run exceeded 180 seconds during checkout-wide traversal. `git diff --check`: PASS. Maintenance audit exit 1 due existing `DEV/tmp/` and `.hdm-devtools/clean*/` copies containing duplicate `GAME/ENGINE_VERSION.yaml`, plus an `.entire/tmp/` transitional identity carrier; no ignored workspace artifacts were inspected or removed. Earlier 1524-test/maintenance evidence applies to `a61b40ff14fb53d24b715734c43449fea94fbeb9`, not this current checkpoint. No production behavior PASS is claimed for T06-A1. Hosted CI is unavailable in this local-machine runtime and is not claimed.
+VERSION_IMPACT: NONE — plan/index/cursor/current-progress/design-provenance documentation only; no HDM-owned version/revision/schema/catalog/generation namespace changed.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — P0's asserted existing Actor producer is absent as a trusted connected path; the bounded brief makes no new authority claim.
+NEXT_EXACT_TASK: Senior ruling on whether an existing accepted native Actor source/producer path supports the P0 witness or whether a separately bounded owner/design decision is required. Do not begin P0 production code before that ruling and synchronized plan/cursor update.
+KNOWN_BLOCKERS: no trusted accepted-evidence producer/call path for the P0 Actor witness is present in current GAME source. P0 is held; P1A/P1B/P2/P3 production capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
+UNPUBLISHED_WORK: NONE after this coherent brief/plan/status checkpoint is published and remotely read back; source-audit base is `4df0484790bbe54bbcf417483b871e0e8345380b`.
 
 ## Historical Wave-04 execution cursor snapshot (pre-closure)
 
