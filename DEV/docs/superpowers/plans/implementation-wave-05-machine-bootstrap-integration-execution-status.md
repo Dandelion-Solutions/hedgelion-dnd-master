@@ -1985,3 +1985,36 @@ and return for mandatory Review Stop 2 before implementation-plan repair or
 production resumption.
 
 UNPUBLISHED_WORK: NONE.
+
+
+## W05.T06-A1 Steps 2–8 canonical package — 2026-10-02
+
+Published architecture artifacts:
+
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-2-source-manifest-expansion.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-2-research-architecture-draft.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-3-decision-brief.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-4-collaborative-review.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-5-candidate-spec.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-6-whole-project-adversarial-review.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-7-resolution-gate.md
+- DEV/docs/superpowers/design/2026-10-02-w05-t06-a1-step-8-canonicalization.md
+- DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md
+
+Architecture result:
+
+    PRODUCT_OWNER_DECISION_REQUIRED: NO
+    STORY_MASTER_BASELINE: DORMANT / NOT REQUIRED
+    CURRENT_OWNER_VIEW: REQUIRED
+    PRODUCTION_READINESS_SERVICE: REQUIRED
+    NATIVE_HISTORY_DISCOVERY: REQUIRED
+    RETROSPECTIVE_SERVICE: REQUIRED
+    CONTEXT_RETROSPECTIVE_SEALED_ROUTE: REQUIRED
+    PRODUCTION_IMPLEMENTATION: HELD
+    W05_PRODUCT_PATHS_READY: HELD
+
+Review Stop 2 is mandatory before implementation-plan repair or production resumption.
+
+NEXT_EXACT_TASK: perform W05.T06-A1 mandatory Senior Review Stop 2 against the fresh remote HEAD and published/read-back canonical package. If GO, reconcile the W05 T06 implementation decomposition/Impact Envelope and only then authorize the first production prerequisite.
+
+UNPUBLISHED_WORK: NONE.
