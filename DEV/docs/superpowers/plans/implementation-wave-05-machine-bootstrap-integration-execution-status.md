@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: SENIOR_REVIEW_REQUIRED — repaired T06 plan NEEDS_REPAIR; four significant planning findings remain; production held.
-CURRENT_TASK: bounded stable-plan repair of SP06-01..SP06-04; T06-A1 architecture remains accepted.
+CURRENT_TASK: W05.T06-P0 — trusted HOT admission + RuntimeHost CurrentOwnerView.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
 LAST_SAFE_SHA: `2cdb0bd0595b0d423788711e0b8a752ff9d886da` — published System-Impact stop/read-back head; exact-head hosted `Validate engine source` run `36947711249` SUCCESS. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
@@ -2187,7 +2187,7 @@ The historical "Senior GO pending" entry is superseded by this disposition.
 UNPUBLISHED_WORK: NONE after review checkpoint publication/read-back.
 
 
-## W05.T06 targeted repaired-plan candidate — SP06-01..SP06-09 resolved
+## W05.T06 targeted repaired-plan candidate — SP06-01..SP06-10 resolved
 
 REPAIR_RESOLUTION:
 `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`
@@ -2196,7 +2196,7 @@ REPAIR_RESOLUTION:
 T06_A1_ARCHITECTURE: ACCEPTED / NOT REOPENED
 PRODUCT_OWNER_DECISION_REQUIRED: NO
 SP06_01_04: REPAIRED
-SP06_05_09_ADDITIONAL_REVIEW_FINDINGS: REPAIRED
+SP06_05_10_ADDITIONAL_REVIEW_FINDINGS: REPAIRED
 PRODUCTION_IMPLEMENTATION: HELD
 FINAL_SENIOR_PLAN_GO: PENDING
 ```
@@ -2212,7 +2212,40 @@ Stable-plan repair now:
   repurposing generic family-index schema;
 - binds multi-source History discovery to per-candidate/per-source provenance.
 
-NEXT_EXACT_TASK: final independent Senior plan re-review of the stable W05
-plan/index and this repair resolution at the fresh public HEAD. Do not begin P0
-production code before Senior GO.
+NEXT_EXACT_TASK: superseded by final Senior plan GO recorded below.
 UNPUBLISHED_WORK: NONE after this checkpoint publication/read-back.
+
+
+## W05.T06 repaired-plan final Senior GO — 2026-10-02
+
+RULING:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review-final.md`
+
+```text
+REVIEWED_HEAD: bc421af524b7c1ecb19f3d9177b33f8e4f555319
+SENIOR_PLAN_REVIEW: GO
+BLOCKING_OPEN: 0
+SIGNIFICANT_OPEN: 0
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+W05.T06-P0: AUTHORIZED
+P1A/P1B/P2/P3: DEPENDENCY-GATED
+T06_PRODUCT_COMPLETION: HELD
+W05_PRODUCT_PATHS_READY: HELD
+T06_S1_S2: PRESERVED
+STORY_MASTER_ADAPTER: DORMANT
+```
+
+Exact-head hosted verification:
+- Validate engine source run 37056456209 — SUCCESS.
+- Run full maintenance audit — SUCCESS.
+- Run DEV unit tests — SUCCESS.
+
+NEXT_EXACT_TASK: implement/review W05.T06-P0 only, from a fresh exact remote
+HEAD and the P0 Impact Envelope. Use TDD. Do not start P1A, P1B, P2 or P3 until
+P0 is independently accepted/read back and the task cursor explicitly advances.
+
+KNOWN_BLOCKERS: none for entering P0. Any implementation discovery outside the
+P0 envelope is a new System-Impact stop, not permission to widen the task.
+
+UNPUBLISHED_WORK: NONE for architecture/plan review.

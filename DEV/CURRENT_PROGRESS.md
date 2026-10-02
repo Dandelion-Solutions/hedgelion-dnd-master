@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: final Senior plan re-review of the targeted repaired W05.T06 package; T06 production remains held.
-REQUIRED_GATE: accepted W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY -> final repaired-plan Senior GO -> P0 HOT admission/CurrentOwnerView -> P1A character materialization -> P1B readiness and P2 native History discovery -> P3 sealed retrospective -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
+NEXT_AUTHORIZED_UNIT: W05.T06-P0 — trusted HOT admission + RuntimeHost CurrentOwnerView; AUTHORIZED by final repaired-plan Senior GO.
+REQUIRED_GATE: P0 `W05_T06_CURRENT_OWNER_VIEW_READY` -> P1A `W05_T06_CHARACTER_MATERIALIZATION_READY` -> P1B `W05_T06_PRODUCTION_READINESS_READY`; independently P0 -> P2 `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` -> P3 `W05_T06_SEALED_RETROSPECTIVE_READY`; then P1B + P3 -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: no unresolved Product Owner/architecture decision; repaired SP06-01..SP06-09 require final Senior plan re-review/GO before P0 production.
+KNOWN_BLOCKERS: none for entering W05.T06-P0. P1A/P1B/P2/P3/product completion remain dependency-gated; Story adapter remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

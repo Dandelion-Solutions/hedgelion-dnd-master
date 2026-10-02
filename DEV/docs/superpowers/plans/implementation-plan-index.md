@@ -1,8 +1,8 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **SENIOR-APPROVED EXISTING WAVES / W05.T06 TARGETED PLAN REPAIR PUBLISHED; FINAL SENIOR GO REQUIRED; T06 PRODUCTION HELD**
+Status: **SENIOR-APPROVED / W05.T06 REPAIRED PLAN GO; P0 AUTHORIZED / LATER T06 TASKS DEPENDENCY-GATED**
 
-Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. W05.T06 P0–P3 and held product completion are not authorized before Senior GO on the repaired stable W05 plan.
+Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. Final Senior plan GO authorizes W05.T06-P0 only; P1A/P1B/P2/P3 and held product completion remain dependency-gated.
 
 ## 1. Sole current planning route
 
@@ -60,10 +60,9 @@ dormant; T07/T08/W06 remain unstarted.
 
 Senior plan review at `d825127cb868d0eaa87bda4f5f3852a5aa2575a4` returned **NEEDS_REPAIR**.
 SP06-01..SP06-04 plus the repair review's additional current-consumer findings
-SP06-05..SP06-09 are resolved in the stable plan and
+SP06-05..SP06-10 are resolved in the stable plan and
 `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-repair-resolution.md`.
-The repaired package still requires final Senior plan re-review/GO; accepted
-architecture remains closed and production remains held.
+Final Senior plan review is GO at `DEV/docs/superpowers/design/2026-10-02-w05-t06-repaired-plan-senior-review-final.md`. P0 is authorized; later T06 tasks remain dependency-gated.
 
 ## 2. Authority and baseline
 

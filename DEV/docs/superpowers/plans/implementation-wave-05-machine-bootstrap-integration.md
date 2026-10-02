@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06 REPAIRED-PLAN SENIOR GO REQUIRED; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
+Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06 REPAIRED PLAN GO / P0 AUTHORIZED; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, complete bootstrap and product paths, and perform every shared physical write exactly once with the approved version cutovers.
 
