@@ -1788,14 +1788,15 @@ run `36938015151` SUCCESS, maintenance PASS, DEV unit suite PASS. The intervenin
 public commit `4a2c8f9b` changes only reviewer configuration. Focused local
 consumer baseline: 132 passed, 2 existing warnings.
 
-## W05.T06 execution cursor — checkpoint 1
+## W05.T06 execution cursor — checkpoint 2
 
 ```text
 STATUS: EXECUTING
 CURRENT_TASK: W05.T06 — product paths remain in progress
-LAST_SAFE_SHA: 0761c7aba6777386ab7485a51779c75bd4525d75
+LAST_SAFE_SHA: 45df53dd344c03e6c16cd04e19d1dddeccc8f340
 COMPLETED_SLICES:
   T06-S1 -> 0761c7aba6777386ab7485a51779c75bd4525d75
+  T06-S2 -> 45df53dd344c03e6c16cd04e19d1dddeccc8f340
 ```
 
 T06-S1 composes typed `SAVE_ALL_DIRTY` outcomes into PO-002 selection/context
@@ -1805,29 +1806,40 @@ results cannot clear selection/context. The wrapper passes the same path-operati
 mapping to the existing RuntimeHost measurement and publication services and
 fails before publication for absent/inexact/invalid measurements.
 
+T06-S2 composes an explicit existing/new-after-confirmed-publication campaign
+selection into one RuntimeHost using the existing deployment services; it adds
+no request/model-service injection path. Creator authority reads the current
+owner-issued first-initialization history and requires current verified login
+equality. Login rename/uncertainty remains read-only; invitee login display is
+not identity evidence. Join/rejoin first normalizes verified stable principal
+evidence and delegates to the existing Collaboration current PLAYER reload and
+catch-up routes without membership publication.
+
 CURRENT_VERIFICATION_STATE:
-- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_runtime_host_composition.py::RuntimeHostCompositionTests DEV/TESTS/test_rd12_collaboration.py::CollaborationJoinCatchUpTests DEV/TESTS/test_rd11_context_runtime.py::RetrospectiveContextTests DEV/TESTS/test_rd13_story_t0_commentator.py::CommentatorControlEvidenceTests DEV/TESTS/test_rd06_durability_publication.py::PublicationOutcomeTests DEV/TESTS/test_rd09_access_live.py::PrincipalAuthorizationTests` — 138 passed, 2 existing `RefResolver` deprecation warnings.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_runtime_host_composition.py::RuntimeHostCompositionTests DEV/TESTS/test_rd12_collaboration.py::CollaborationJoinCatchUpTests DEV/TESTS/test_rd11_context_runtime.py::RetrospectiveContextTests DEV/TESTS/test_rd13_story_t0_commentator.py::CommentatorControlEvidenceTests DEV/TESTS/test_rd06_durability_publication.py::PublicationOutcomeTests DEV/TESTS/test_rd09_access_live.py::PrincipalAuthorizationTests` — 149 passed, 2 existing `RefResolver` deprecation warnings.
 - `.hdm-devtools/venv/bin/ruff check --ignore SIM117 GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS; the ignored SIM117 is pre-existing at `test_rd14_bootstrap.py:777`, outside this delta.
 - `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/bootstrap.py DEV/TESTS/test_rd14_bootstrap.py` — PASS.
 - `git diff --check` — PASS.
-- Local publication read-back: refreshed `origin/v1/engine-rearchitecture` equals `0761c7aba6777386ab7485a51779c75bd4525d75`.
+- Local publication read-back: refreshed `origin/v1/engine-rearchitecture` equals `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
-VERSION_IMPACT: `BOOTSTRAP_RUNTIME` module `1.0.2 -> 1.0.3` for the material
-T06 callable contract change. No access-control module, campaign/storage/catalog
+VERSION_IMPACT: `BOOTSTRAP_RUNTIME` module `1.0.2 -> 1.0.3` at T06-S1, then
+`1.0.3 -> 1.0.4` at T06-S2 for material callable contract changes. No
+access-control module, campaign/storage/catalog
 generation, persistent schema, ruleset digest generation or manifest version
 change. Reclassify the actual owner set at each later T06 checkpoint.
 
-SYSTEM_IMPACT: NONE for T06-S1; it composes existing durability and RuntimeHost
-publication/measurement contracts without changing transport, authority,
-persistence or session owners. Re-evaluate at each remaining T06 slice.
+SYSTEM_IMPACT: NONE for T06-S1/T06-S2; they compose existing durability,
+RuntimeHost, history/access-control and Collaboration contracts without changing
+transport, authority, persistence or session owners. Re-evaluate at each remaining
+T06 slice.
 
-NEXT_EXACT_TASK: continue T06 RED in the authorized product/callable/test lane;
-complete campaign-selection/runtime binding, creator identity, progressive
-onboarding, join/rejoin and ordinary retrospective paths and their named test
-classes. Do not start T07, T08 or W06. Stop before any required new identity
+NEXT_EXACT_TASK: T06 RED for `ProgressiveOnboardingTests` and
+`OrdinaryRetrospectiveRoutingTests`, then continue remaining approved paths in the
+authorized product/callable/test lane. Do not start T07, T08 or W06. Stop before
+any required new identity
 lookup, repository operation, authority rule, persistence field or owner-interface
 change.
-KNOWN_BLOCKERS: none for the published T06-S1 slice; remaining T06 paths have not
-yet been implemented or verified.
-UNPUBLISHED_WORK: NONE for T06-S1. W05.T06 is not complete; global progress and
-final Senior audit remain pending.
+KNOWN_BLOCKERS: no blocker for T06-S1/T06-S2. Progressive onboarding and ordinary
+retrospective paths remain unimplemented and unverified.
+UNPUBLISHED_WORK: NONE for T06-S1/T06-S2. W05.T06 is not complete; global
+progress and final Senior audit remain pending.
