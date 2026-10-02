@@ -1001,7 +1001,7 @@ runtime readiness consumer. Senior plan findings SP06-01..SP06-04 and repair
 additions SP06-05..SP06-09 are mapped in the repair-resolution artifact and must
 remain closed at final plan re-review.
 
-## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
+## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 
 This is the held product-completion task after P1A/P1B and P3 are accepted (P0/P2
 are transitive prerequisites). T06-S1/S2 below in the execution cursor remain
