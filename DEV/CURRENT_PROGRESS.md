@@ -7,10 +7,10 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths; AUTHORIZED by `DEV/docs/superpowers/design/2026-10-02-w05-t06-senior-entry-gate.md`.
-REQUIRED_GATE: W05.T06 -> `W05_PRODUCT_PATHS_READY` with TDD, Version/System Impact, independent review, clean verification, publication and read-back. Preserve T07 manifest-v5 ownership and T08 final shipped-integration ownership.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 accepted; W05.T06 authorized.
-KNOWN_BLOCKERS: none for W05.T06 entry. If product composition requires a new transport semantic/interface beyond accepted CampaignPublicationTransport or admits gameplay-supplied capability replacement, stop at System Impact. T07 manifest v5 remains later-owned.
+NEXT_AUTHORIZED_UNIT: W05.T06-A1 — current-readiness and ordinary Master retrospective architecture; AUTHORIZED by `DEV/docs/superpowers/design/2026-10-02-w05-t06-readiness-retrospective-system-impact-senior-ruling.md`. T06 implementation is partially held; already-safe S1/S2 work remains accepted.
+REQUIRED_GATE: W05.T06-A1 -> `W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY` through the canonical architecture process and both mandatory Senior review stops -> reconcile T06 implementation plan/envelope -> resume held readiness/ordinary-Master-retrospective implementation -> `W05_PRODUCT_PATHS_READY`.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 accepted; T06 S1/S2 safe slices published; W05.T06-A1 architecture block authorized.
+KNOWN_BLOCKERS: T06 progressive readiness and ordinary Master retrospective lack admitted machine consumer boundaries. Story is explicitly non-mandatory and non-authoritative for Master gameplay; readiness must use the accepted current native-owner/HOT semantics. Production work on those two paths remains held pending T06-A1 architecture closure. T07/T08 remain unstarted.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`

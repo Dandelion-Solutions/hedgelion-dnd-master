@@ -311,9 +311,58 @@ TDD and verification:
 
 Output checkpoints: `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY` and `W05_BLANK_SCAFFOLD_READY`.
 
+## W05.T06-A1 — Current-readiness and ordinary Master retrospective architecture
+
+Senior System-Impact owner:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-readiness-retrospective-system-impact-senior-ruling.md`.
+
+This is an architecture/deep-work prerequisite, not a production implementation
+task. It is activated by the T06 implementation stop at
+`2cdb0bd0595b0d423788711e0b8a752ff9d886da`.
+
+Preserve the accepted T06 S1/S2 slices. Hold only the progressive-readiness and
+ordinary-retrospective paths until this architecture block closes.
+
+Architecture scope:
+
+- deterministic READY_PC / local-mechanical-sufficiency assessment over the
+  accepted current native-owner view, including valid unpublished HOT/SOFT
+  where current;
+- ordinary Master retrospective as a bounded gameplay consumer over current
+  native owners, native History and current eligibility;
+- minimum bounded historical discovery/index realization required by WP-19;
+- optional Story lookup/navigation as a non-authoritative hint source only if
+  it materially improves bounded discovery.
+
+Protected decisions:
+
+- Story is not Master/gameplay truth authority and is not mandatory for
+  retrospective correctness;
+- current native owners remain authoritative for current game state;
+- material historical claims terminate in exact native/SemanticEvent evidence;
+- no seventh MASTER logical role;
+- no bootstrap-supplied readiness boolean or persisted duplicate readiness
+  owner;
+- no repository-only readiness view that ignores accepted current HOT/SOFT;
+- no campaign-wide history scan, duplicate history store or generic search
+  authority.
+
+Process:
+
+Use the current `DEV/DESIGN_PROCESS.md` and
+`DEV/ARCHITECTURE/DESIGN_PROCESS.md`, including Source Manifest, whole-project
+critics and both mandatory architecture Senior review stops.
+
+Target architecture checkpoint:
+`W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY`.
+
+Production T06 implementation does not resume these held paths until the
+architecture checkpoint has final Senior GO and the T06 implementation
+Impact Envelope/plan is reconciled to it.
+
 ## W05.T06 — Onboarding, join/rejoin, retrospective and save/exit product paths
 
-Hard inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, accepted T07E RuntimeHost/W02 exact-size measurement contract, PO-012, plus the completed owner checkpoints consumed by each product path.
+Hard inputs: `W04_RUNTIME_HOST_COMPOSITION_READY`, `W04_RUNTIME_HOST_IO_EXTENSIONS_READY`, accepted T07E RuntimeHost/W02 exact-size measurement contract, PO-012, plus the completed owner checkpoints consumed by each product path. The progressive-readiness and ordinary-retrospective subpaths additionally require `W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY`; already-safe T06 S1/S2 work is preserved and does not wait on this prerequisite.
 
 Implement the product-facing flows over the completed owners:
 
@@ -321,7 +370,7 @@ Implement the product-facing flows over the completed owners:
 - creator binding uses verified stable account ID; login remains visible for selection and invitations;
 - creator uncertainty or login rename does not transfer ownership and yields read-only/fail-closed behavior;
 - multiplayer join/rejoin uses the principal route and exact PLAYER reload;
-- ordinary retrospective routes to native history/Story/current permissions and applies PO-012 exactly: PUBLIC is available to an admitted Commentator reader; current PLAYER disclosure may widen protected eligibility; at most one selected currently controlled PC's exact `epistemic.known` may widen it; multiple controlled PCs are never unioned and no PLAYER means public-only;
+- ordinary Master retrospective follows PO-001/WP-19 and the T06-A1 architecture: current/native owners and native History are authoritative; Story, if used, is orientation/navigation only; current PLAYER/knowledge/disclosure eligibility controls visible material. Commentator-specific PO-012 behavior remains separately preserved for Commentator-facing retrospective/control paths and never promotes Story to Master truth authority;
 - save/exit uses the accepted durability promise and reports typed publication outcomes;
 - failures/retries do not duplicate campaign, PLAYER, LIVE source or accepted mechanics;
 - after campaign selection, product/runtime flow creates or reuses one campaign-bound RuntimeHost composition root; gameplay callers never supply/replace RepositoryPort, LIVE transport, native-ordering, Context or History services;

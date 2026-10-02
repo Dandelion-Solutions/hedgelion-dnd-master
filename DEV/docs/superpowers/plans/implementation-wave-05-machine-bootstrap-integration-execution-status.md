@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SENIOR_REVIEW_REQUIRED — W05.T06 is paused at a System-Impact Gate after two safe published implementation slices; T07/T08/W06 remain unstarted.
-CURRENT_TASK: W05.T06 — onboarding, join/rejoin, retrospective and save/exit product paths.
+STATUS: EXECUTING — W05.T06-A1 architecture/deep-work block is authorized; T06 production implementation remains partially held after two safe published slices; T07/T08/W06 remain unstarted.
+CURRENT_TASK: W05.T06-A1 — current-readiness and ordinary Master retrospective consumer architecture.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `880cd0bbb6ecf4ee561198651bed3297cb377bc0` — latest published T06 execution cursor; T06 product code checkpoint is `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+LAST_SAFE_SHA: `2cdb0bd0595b0d423788711e0b8a752ff9d886da` — published System-Impact stop/read-back head; exact-head hosted `Validate engine source` run `36947711249` SUCCESS. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -1905,3 +1905,50 @@ before implementing `ProgressiveOnboardingTests` or
 `OrdinaryRetrospectiveRoutingTests`. Do not start T07, T08 or W06.
 KNOWN_BLOCKERS: Senior System-Impact ruling for progressive readiness and
 supported current Story retrieval.
+
+
+## W05.T06 readiness / ordinary Master retrospective Senior ruling — 2026-10-02
+
+RULING:
+`DEV/docs/superpowers/design/2026-10-02-w05-t06-readiness-retrospective-system-impact-senior-ruling.md`
+
+```text
+SENIOR_DISPOSITION: AUTHORIZE DESIGN REVIEW
+SYSTEM_IMPACT: REAL / BOUNDED
+PRODUCT_OWNER_DECISION_REQUIRED_AT_ENTRY: NO
+T06 S1/S2: PRESERVED
+W05.T06-A1: AUTHORIZED
+TARGET: W05_T06_READINESS_RETROSPECTIVE_ARCHITECTURE_READY
+W05_PRODUCT_PATHS_READY: HELD
+T07/T08/W06: NOT STARTED
+```
+
+Senior evidence confirms that this is an HDM/Master concern, not CLS.
+
+Ordinary Master retrospective is already owned by the PO retrospective decision
+and WP-19. Its correctness path is current/native owner evidence + native
+History + current eligibility. Story remains a durable noncanonical projection
+for gameplay and is optional orientation/navigation only.
+
+Story projection state already contains useful lookup metadata
+(`entity_refs/source_refs/story_refs` + source-domain coverage), but no public
+Master-safe Story read route exists. T06-A1 must not create Story dependency
+merely because that lookup exists. A narrow read-only Story hint adapter is
+permitted only if the architecture shows material bounded-discovery value;
+native evidence remains the proof path.
+
+READY_PC is already specified as a deterministic cross-owner predicate over
+current Actor/PLAYER/Asset/Effect/definition/rules dependencies. The missing
+machine realization must honor Step-5.1 current-view semantics, including
+accepted unpublished HOT/SOFT where current; bootstrap cannot become readiness
+authority and repository-only readiness is insufficient.
+
+The current Context Runtime intentionally keeps retrospective projection
+UNSATISFIABLE until a native route is admitted. The current History service
+provides exact bounded ordinal/origin windows, but not the semantic discovery
+route needed for ordinary player questions. WP-19 explicitly allows the minimum
+derived history-discovery metadata under existing index ownership if required.
+
+NEXT_EXACT_TASK: run the canonical architecture/deep-work process for T06-A1,
+complete the Source Manifest + Task Brief + whole-project critic, and stop at
+mandatory architecture Review Stop 1. Do not resume the held production paths.
