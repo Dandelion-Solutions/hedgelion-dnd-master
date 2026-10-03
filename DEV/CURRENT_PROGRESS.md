@@ -7,11 +7,11 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: bounded Senior review of `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`; W05.T06-P0 production is held pending the accepted Actor producer/source ruling.
-REQUIRED_GATE: resolve the P0 accepted Actor producer/source-evidence capability under existing owners -> re-confirm or revise P0 Impact Envelope and obtain any required Senior plan/System-Impact GO -> P0 `W05_T06_CURRENT_OWNER_VIEW_READY` -> P1A `W05_T06_CHARACTER_MATERIALIZATION_READY` -> P1B `W05_T06_PRODUCTION_READINESS_READY`; independently P0 -> P2 `W05_T06_NATIVE_HISTORY_DISCOVERY_READY` -> P3 `W05_T06_SEALED_RETROSPECTIVE_READY`; then P1B + P3 -> T06 product completion + Senior integration audit -> W05_PRODUCT_PATHS_READY.
-SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md` — current P0 producer witness is not connected to trusted accepted native evidence; prior plan GO remains historical, P0 held.
+NEXT_AUTHORIZED_UNIT: W05.T06-P0 — trusted HOT admission + CurrentOwnerView with bounded native NPC self-state producer; GO under revised stable Envelope.
+REQUIRED_GATE: P0 trusted phase/native-source validation + Actor revision alignment -> W05_T06_CURRENT_OWNER_VIEW_READY -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion + Senior integration audit.
+SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: current GAME has no production Actor continuity producer/call path that sources and validates accepted evidence for P0's claimed witness. No evidence issuer/producer adapter is authorized by inference. P1A/P1B/P2/P3/product completion remain dependency-gated; Story adapter remains dormant.
+KNOWN_BLOCKERS: none for starting revised P0. Producer/current-owner proof is pending implementation; later tasks remain dependency-gated; Story remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -429,3 +429,15 @@ blob: cf90a9a3abb2c5ca2183892ee154aa118c7541a2
 ```
 
 The task-local cursor additionally retains exact historical ledger pointers for the complete earlier rulings, restores, version chains and author verification. Those snapshots are provenance, not alternate current scheduling authority. The current state is the header and durable cursor above. Wave 04 is not complete; Wave 05 is not authorized.
+
+## Current P0 producer ruling — 2026-10-03
+
+REPORT: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md`
+REVIEWED_HEAD: `29ee6bcb5fa7180ba5c1d940b17c19dc9e685253`
+STATUS: P0 AUTHORIZED / REVISED ENVELOPE GO; source-capability hold resolved in planning.
+NEXT_EXACT_TASK: implementation worker W05.T06-P0; read the revised stable plan before RED.
+KNOWN_BLOCKERS: none for P0 entry; output and all later task gates remain unproduced.
+VERSION_IMPACT: NONE — review/implementation allocation/status only.
+PRODUCTION_CODE_CHANGED: NO
+UNPUBLISHED_WORK: NONE after this checkpoint publication/read-back.
+Earlier P0 held/status snapshots above are historical and do not schedule current work.

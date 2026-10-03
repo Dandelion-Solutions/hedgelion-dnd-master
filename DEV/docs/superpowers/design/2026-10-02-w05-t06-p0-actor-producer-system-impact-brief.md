@@ -1,6 +1,6 @@
 # W05.T06-P0 Actor-Continuity Producer — System-Impact Brief
 
-Status: **SENIOR_REVIEW_REQUIRED — P0 HELD AT PRODUCER WITNESS**
+Status: **RESOLVED BY BOUNDED SENIOR RULING — SOURCE GAP CONFIRMED; P0 REVISED GO**
 Date: 2026-10-02
 Source-audit base: `4df0484790bbe54bbcf417483b871e0e8345380b`
 
@@ -90,7 +90,7 @@ decision. The review should distinguish the accepted conceptual Actor phase
 from the absent implementation call path; it should not treat WP19 historical
 decision-basis evidence as current Actor mutation authority.
 
-Until that ruling, do not add an Actor acceptance authority, evidence issuer,
+Historical hold before the 2026-10-03 ruling: do not add an Actor acceptance authority, evidence issuer,
 producer interface, or mutation path by inference. No Product Owner decision
 about gameplay semantics is presumed; escalate to the Product Owner only if the
 Senior finds that closing the gap requires such a decision.
@@ -126,3 +126,7 @@ VERSION_IMPACT: NONE — development planning/provenance only.
 PRODUCTION_CODE_CHANGED: NO
 UNPUBLISHED_WORK: NONE after this brief and synchronized cursor are published.
 ```
+
+## Senior disposition — 2026-10-03
+
+`DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` confirms the missing trusted caller and resolves the execution hold as bounded realization of accepted R2.2/R2.3/R2.4/WP12 laws. The stable Wave-05 plan now owns the concrete self-state NPC reconsideration join and P0-first Actor revision alignment. No universal evidence issuer or new semantic owner is authorized. SP06-02 is resolved in planning; P0 production proof remains pending. Earlier hold wording is preserved as provenance, not current scheduling. P0 GO; later tasks dependency-gated; PO decision not required.

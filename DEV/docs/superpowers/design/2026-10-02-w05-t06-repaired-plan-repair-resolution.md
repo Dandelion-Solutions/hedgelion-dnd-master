@@ -1,9 +1,9 @@
 # W05.T06 Repaired Plan — Targeted Repair Resolution
 
-Status: **HISTORICAL REPAIR RESOLUTION — FINAL SENIOR GO; P0 PRODUCER WITNESS NOW UNDER SYSTEM-IMPACT REVIEW**
+Status: **HISTORICAL REPAIR RESOLUTION — CURRENT P0 BOUNDED PRODUCER GO**
 
 Historical final plan disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-final-plan-senior-rereview.md`.
-Current P0 disposition: `DEV/docs/superpowers/design/2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`.
+Current P0 disposition: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md`.
 
 Date: 2026-10-02
 Repair basis: `5830fcca01fa4f2bc2231ed50254e4b6f680dad8`
@@ -161,3 +161,7 @@ PRODUCT_OWNER_DECISION_REQUIRED: NO UNLESS THE SENIOR FINDS SEMANTICS OR AUTHORI
 VERSION_IMPACT: NONE
 NEXT: Senior ruling on the exact accepted Actor producer/source join
 ```
+
+## Senior disposition — 2026-10-03
+
+`DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` confirms the missing trusted caller and resolves the execution hold as bounded realization of accepted R2.2/R2.3/R2.4/WP12 laws. The stable Wave-05 plan now owns the concrete self-state NPC reconsideration join and P0-first Actor revision alignment. No universal evidence issuer or new semantic owner is authorized. SP06-02 is resolved in planning; P0 production proof remains pending. Earlier hold wording is preserved as provenance, not current scheduling. P0 GO; later tasks dependency-gated; PO decision not required.

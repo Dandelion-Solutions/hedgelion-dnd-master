@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SYSTEM_IMPACT_REVIEW_REQUIRED — P0 Actor-continuity producer witness unresolved; prior repaired-plan GO is preserved as historical review evidence, and P0 execution is held.
-CURRENT_TASK: bounded Senior ruling for `2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`; no production code.
+STATUS: P0 AUTHORIZED — bounded Actor self-state producer join and Actor-envelope revision alignment under revised Senior GO.
+CURRENT_TASK: implementation worker W05.T06-P0 — revised stable Envelope; no production acceptance yet.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `4df0484790bbe54bbcf417483b871e0e8345380b` — freshly fetched current remote HEAD before the bounded P0 producer-capability documentation. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+LAST_SAFE_SHA: `29ee6bcb5fa7180ba5c1d940b17c19dc9e685253` — exact source-reviewed checkpoint before this Senior ruling; T06 product code remains unchanged.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2306,3 +2306,20 @@ This is a bounded execution/system-impact stop, not a restart of T06-A1
 architecture. P0 must not begin production RED/GREEN work or claim
 `W05_T06_CURRENT_OWNER_VIEW_READY` until the ruling is recorded in the stable
 plan and current cursor.
+
+## Current bounded P0 Senior ruling — 2026-10-03
+
+REPORT: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md`
+SOURCE_REVIEW_HEAD: `29ee6bcb5fa7180ba5c1d940b17c19dc9e685253`
+SENIOR_SYSTEM_IMPACT_RULING: GO — implement existing accepted Actor laws through the stable P0 minimum self-state producer path.
+SP06_02: RESOLVED IN PLANNING; connected production proof remains P0 acceptance work.
+SP06_10: Actor-envelope revision alignment moved from P1A to its first consumer P0; P1A consumes GREEN.
+PRODUCT_OWNER_DECISION_REQUIRED: NO
+ARCHITECTURE_REOPEN_REQUIRED: NO
+CURRENT_VERIFICATION_STATE: fresh Connector owner/source/callsite/envelope review; prepared documentation consistency checks; no new production test/maintenance/hosted-CI PASS claimed.
+VERSION_IMPACT: NONE — review and execution allocation/status only; implementation owns actual schema/projection classification.
+NEXT_EXACT_TASK: worker P0 RED/GREEN under revised stable Envelope, including issued ACTOR phase, exact NPC current reconsideration cue, native validation, atomic HOT admission and fresh Context before SAVE.
+KNOWN_BLOCKERS: none for entering P0; output not yet produced. Later tasks remain dependency-gated.
+PRODUCTION_CODE_CHANGED: NO
+UNPUBLISHED_WORK: NONE after coherent checkpoint publication/read-back.
+Earlier source-capability holds and plan-review snapshots remain historical; this entry and the header own current scheduling.

@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06 REPAIRED PLAN GO / P0 AUTHORIZED; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
+Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06-P0 GO WITH BOUNDED ACTOR PRODUCER JOIN; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, complete bootstrap and product paths, and perform every shared physical write exactly once with the approved version cutovers.
 
@@ -372,12 +372,13 @@ scoped view without turning SQLite into another semantic authority.
 - Modify: `GAME/TOOLS/bootstrap.py` — thread the infrastructure HOT capability
   through the existing selected-campaign `compose_selected_runtime_host(...)`
   path. Gameplay/model input cannot supply or replace it.
-- Inspect/consume: native owner producers such as
-  `GAME/TOOLS/actor_continuity.py`; do not move their semantic validation into
-  HOT. The present source audit found no production callsite or trusted
-  accepted-evidence producer join for `apply_actor_delta`; its unit-test
-  evidence fixture is not an accepted production witness. See the bounded
-  System-Impact brief linked from the plan index and cursor.
+- Modify: `GAME/TOOLS/actor_continuity.py` — minimum trusted self-state
+  reconsideration producer join, retaining owner-local validation.
+- Modify: `GAME/TOOLS/turn_runtime.py` only for existing issued phase/basis
+  provenance and exact current-phase consumption checks needed by that join.
+- Modify: `GAME/SCHEMA/actor.schema.yaml` and
+  `DEV/SCHEMAS/world-record.schema.json` — already-approved Actor revision
+  envelope alignment moved here from P1A.
 - Modify tests: RD04 HOT/index, RuntimeHost composition, RD11 Context, RD14
   selected-host composition, RD07 recovery and applicable owner-producer tests.
 
@@ -434,22 +435,86 @@ surviving dirty rows are not admitted merely by existence; recovery/revalidation
 must re-establish a compatible current basis. Raw `source_basis` text,
 generation, mtime or row presence never admits a row.
 
-**System-Impact execution gate:** do not begin P0 production RED/GREEN work or
-claim `W05_T06_CURRENT_OWNER_VIEW_READY` until Senior resolves
-`2026-10-02-w05-t06-p0-actor-producer-system-impact-brief.md`. Current
-`actor_continuity.apply_actor_delta` is an owner-local validator/transformation,
-not a connected accepted producer: it receives evidence claims as ordinary
-input, and GAME has no production caller. Its synthetic RD03 fixture cannot
-prove a current accepted evidence path or a WP12 establishment join. Do not
-invent an evidence issuer or producer authority to satisfy the witness.
+**Senior source/producer ruling — P0 GO:**
 
-After the gate is resolved, P0 must prove admitted establishment plumbing with
-the exact Senior-approved native producer/source path and establish its
-validated after-image through the trusted infrastructure path before Context
-reads it and SAVE. A structurally equivalent row inserted only through an
-untrusted/test raw path is not an admitted CurrentOwnerView source. P1A and P2
-later add the T06-specific PC-character and SemanticEvent producers to the same
-establishment boundary; P0 does not invent their semantics.
+The bounded producer gap is confirmed and resolved as implementation allocation
+under R2.2-13/16/17/20, R2.3-11/12, R2.4-14/17/20 and WP12-7/8.
+Review provenance: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md`.
+`apply_actor_delta` remains a pure owner-local transformation. P0 now implements
+its missing trusted caller; a phase-result seal proves phase provenance, not
+semantic acceptance.
+
+**Minimum producer/source path (no universal evidence issuer):**
+
+- Add a fixed internal `ActorContinuityService.establish_from_phase(envelope,
+  phase_result: AcceptedPhaseResult) -> ActorContinuityEstablishmentResult`
+  through RuntimeHost. Native validation/application stays in
+  `actor_continuity.py`; RuntimeHost composes currentness, access and HOT.
+  Result statuses: ESTABLISHED | NO_CHANGE | UNSUPPORTED |
+  REVALIDATION_REQUIRED. Return exact Actor before/after revision and established
+  owner ref when applicable, never a writable after-image capability.
+- Consume the existing TurnRuntime-issued `AcceptedContextBasis` and
+  `AcceptedPhaseResult` for ACTOR/profile.actor/assess, bound to this Host,
+  campaign, subject, turn and exact current phase assembly. The delta carries
+  an explicit R2.2 assessment purpose. Reject raw dictionaries, another Host's
+  ContextService, substituted bundles, old/rebound phases and caller evidence
+  claims. Extend existing provenance checks only as needed for this join.
+- P0's positive source is the same NPC's exact accepted current
+  `world.actor` record containing a material
+  `continuity.evolving.reconsideration_cues` entry. Bind
+  `assessment.reconsider` and a bounded evolving-continuity proposal to that
+  already-established cue. Own current state is eligible Actor evidence under
+  R2.2; it does not prove external truth. Use the actual Actor native ID as the
+  source ref, with its exact predecessor revision/fingerprint retained internally.
+  No fabricated event or durable cue identity is allocated.
+- Obtain the predecessor through CurrentOwnerView, require its inclusion in the
+  accepted Actor Context basis, and revalidate exact owner payload/revision,
+  source/routing, current phase and applicable access/subject authority before
+  establishment. Deterministic native code constructs the legacy transformation's
+  `source_evidence` mapping only after those checks; gameplay/model/tests cannot
+  supply `accepted/current/authorized_actor_ids` as authority.
+- P0 admits only this self-state reconsideration path. External facts/events,
+  other Actors' private state, knowledge changes, foundation transitions and
+  relationship updates are unsupported by this adapter. The pure validator's
+  existing capabilities are not removed. Further source classes require their
+  owning evidence/eligibility joins and envelope review, not a generic shortcut.
+- Reject player-controlled/PC continuity authorship under the current Actor/
+  control owner law. Preserve the full native envelope (including schema and
+  definition anchor) when replacing only validated state/revision; do not stage
+  the transformation's reduced Actor mapping as the complete stored record.
+- For campaign-local SOFT state, revalidate the exact predecessor and admitted
+  generations atomically with Actor after-image establishment; advance native
+  `state_revision` once. Repeated consumption of the same phase result returns
+  the established result/NO_CHANGE without another revision/write, using
+  process-local consumption bookkeeping in the same establishment critical
+  section. NO_CHANGE performs no semantic write. Failures roll back admission
+  and bookkeeping with the row. No persistent receipt or generic pending owner.
+- This local producer cannot mutate a LIVE-selected Actor. Return typed
+  UNSUPPORTED/revalidation without staging prospective state. Existing P0
+  post-CAS adoption plumbing remains separate and requires real accepted LIVE
+  evidence. No new LIVE mutation/CAS workflow is created.
+- Close external source/access revalidation before the SQLite transaction, then
+  compare the retained operation basis and predecessor under the local critical
+  section. No model, player or repository exchange occurs inside it.
+
+Move the already-approved SP06-10 Actor-envelope `state_revision` alignment
+from P1A into P0: `GAME/SCHEMA/actor.schema.yaml` and
+`DEV/SCHEMAS/world-record.schema.json`, plus exact validation/projection tests
+and mandatory Version Impact synchronization. Require an explicit compatible
+native revision; do not fabricate zero from missing legacy state. This is the
+existing Actor revision, not a new generic world-family revision. P1A consumes
+this GREEN contract and does not repeat its version bump.
+
+**Producer acceptance cases:** real selected Host -> native current NPC cue ->
+Context ACTOR rebind -> issued proposal -> deterministic native validation ->
+atomic HOT establishment -> fresh Context read sees the successor before SAVE.
+Test changed/missing cue, revision/source movement, stale/rebound/foreign phase,
+forged evidence flags, raw after-image, PC agency, external-source proposal,
+LIVE-selected owner, NO_CHANGE, repeat consumption, rollback, preserved envelope
+and cold restart. Source fixtures may represent native repository bytes; they
+must traverse production admission and may not pre-issue an acceptance carrier
+or monkeypatch semantic acceptance. RD03's synthetic evidence remains unit
+transformation coverage only.
 
 **Bounded expanding-read coherence:**
 
@@ -465,15 +530,15 @@ under its consuming owner; no retry loop or campaign-global generation/frontier
 is introduced.
 
 **Steps and checks:**
-0. SYSTEM-IMPACT GATE: resolve the accepted Actor producer/source path before
-   any P0 production RED or cross-owner producer adapter. The current P0
-   authorization is held at this gate.
+0. Fresh-read this Senior-approved producer/source path and revised Envelope;
+   P0 is authorized. Record the exact implementation-start HEAD.
 1. RED: selected product host lacks the trusted HOT capability; Context after a
    real accepted local Actor change still sees pinned Git; forged/surviving raw
    rows and cross-campaign rows must fail.
 2. RED: dependency closure expands between Actor and a second owner while the
    first HOT row changes; mixed observation must be rejected.
-3. Implement trusted HOT composition/admission and operation read sessions;
+3. Implement the bounded Actor producer/revision alignment above with trusted
+   HOT composition/admission and operation read sessions;
    thread the capability through `compose_selected_runtime_host`.
 4. Cut Context current-family resolution to the view while preserving existing
    eligibility and selected-LIVE revalidation.
@@ -488,7 +553,7 @@ is introduced.
 Focused command:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd10_role_emission.py
 ```
 
 **Output:** `W05_T06_CURRENT_OWNER_VIEW_READY`.
@@ -499,15 +564,16 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 - BASELINE REF OR SHA: fresh exact public HEAD after final repaired-plan Senior
   GO; record implementation-start SHA before RED.
 - EXPECTED OWNERS TO CHANGE: RuntimeHost/current-owner/HOT infrastructure,
-  Context current reads and selected-product bootstrap composition. An
-  Actor-continuity producer/evidence adapter is not authorized by this envelope;
-  it requires the linked System-Impact ruling first.
+  Context current reads and selected-product bootstrap composition; bounded
+  Actor self-state producer/phase join and Actor-envelope revision alignment
+  specified above. No universal evidence issuer.
 - EXPECTED CONSUMERS TO CHANGE: RuntimeHost fixed service composition,
   Context current-family resolution and bootstrap's selected gameplay host.
 - ALLOWED INTERFACES / CONTRACTS TO CHANGE: trusted infrastructure HOT port,
   process-local admitted-establishment bookkeeping, operation-scoped
-  read-session/results and the trusted compose-selected-host argument. No
-  public gameplay/model mutation/service-injection capability.
+  read-session/results, fixed internal Actor phase-consumption service and the
+  trusted compose-selected-host argument; Actor-specific revision envelopes.
+  No public gameplay/model raw mutation/service-injection capability.
 - PROTECTED ARCHITECTURE INVARIANTS: one semantic owner; LIVE-first exact
   currentness; no pre-CAS state; HOT only after native-owner validation + WP12
   establishment/adoption; no caller-asserted evidence as acceptance; no remote
@@ -523,16 +589,18 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   Context; RD14 selected product host; RD07 recovery; RD09 LIVE.
 - KNOWN OUT-OF-SCOPE OWNERS / SURFACES: character build semantics (P1A),
   readiness derivation (P1B), History discovery (P2), Story, persistent
-  campaign schema/catalog expansion, migration, publication timing, and any
-  new Actor acceptance authority or producer interface before the linked
-  System-Impact ruling.
+  campaign schema/catalog expansion beyond the listed Actor revision alignment,
+  migration, publication timing, general cognition evidence issuance, new Actor
+  semantic authority, and LIVE mutation production.
 - VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: classify actual
-  changed GAME modules. No persistent campaign schema/catalog/generation,
-  checkpoint or migration change is pre-authorized.
+  changed GAME modules and Actor-envelope schema alignment under current owning
+  bump rules. Synchronize affected projections in this checkpoint; no automatic
+  campaign/catalog-generation bump or migration is inferred.
 - HG-01 CONSTRAINTS AFFECTED: none expected; record the check.
 - CURRENTNESS RE-READ SET BEFORE WRITE: exact current progress/cursor; stable
   plan/index; T06-A1/Review Stop 2; Step-5.1; WP12/14/16; R2.3;
-  RuntimeHost/HOT/Context/bootstrap/actor-continuity code; RD03/04/07/09/11/14;
+  RuntimeHost/HOT/Context/bootstrap/actor-continuity/TurnRuntime code; issued
+  phase carriers; Actor envelope contracts; RD03/04/07/09/11/14 and TurnRuntime;
   current versioning policy/owner.
 
 ### W05.T06-P1A — Production character materialization resolver
@@ -555,11 +623,8 @@ not converge to READY_PC.
   already-resolved `BoundCatalogContext`; no ambient/default catalog choice.
 - Modify: `GAME/TOOLS/hot_store.py` / current-owner internal carrier only as
   needed for the owner-specific character establishment join selected in P0.
-- Modify the current native Actor envelope contracts
-  `GAME/SCHEMA/actor.schema.yaml` and `DEV/SCHEMAS/world-record.schema.json`
-  only as needed to represent the already-owned Actor `state_revision`
-  required by Actor Continuity and S6D-07. Do not invent a second revision field
-  inside `world-actor-state`.
+- Consume the GREEN P0 native Actor envelope/revision contract. SP06-10 schema
+  alignment is owned by P0; P1A does not repeat it or its version bump.
 - Consume: `GAME/TOOLS/id_allocator.py` and the current native allocator/
   identifier-policy contracts for new campaign-owned starting Assets. Modify
   only the minimum owner-specific integration needed to stage allocation with
@@ -652,8 +717,8 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 - BASELINE REF OR SHA: accepted P0 output SHA after fresh remote read-back.
 - EXPECTED OWNERS TO CHANGE: new production character-progression resolver;
   RuntimeHost/catalog composition; bootstrap trusted catalog composition;
-  P1A-specific HOT establishment/allocator producer join and the explicitly
-  listed native Actor envelope schema alignment.
+  P1A-specific HOT establishment/allocator producer join; consume P0's
+  accepted Actor-envelope revision contract.
 - EXPECTED CONSUMERS TO CHANGE: progressive onboarding product path later in
   T06; P1B readiness; RuntimeHost composition tests.
 - ALLOWED INTERFACES / CONTRACTS TO CHANGE: typed materialization request/result,
@@ -677,9 +742,8 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
   Activity execution/RNG, readiness verdict (P1B), History/Story, publication,
   migration, new mechanics primitive/selector/accessor.
 - VERSION / SCHEMA / CATALOG / CHECKPOINT / MIGRATION IMPACT: run exact Version
-  Impact Gate on new/changed GAME modules and the Actor envelope schema
-  alignment. Current code/tests already require Actor `state_revision` while
-  installed Actor/world-record envelopes do not represent it; implementation
+  Impact Gate on new/changed GAME modules. Actor `state_revision` envelope
+  alignment and its version synchronization are P0-owned; implementation
   must make those machine contracts agree. Do not preselect the exact schema/
   campaign-contract transition or migration disposition before rereading the
   current pre-release/version owner.
