@@ -2323,3 +2323,31 @@ KNOWN_BLOCKERS: none for entering P0; output not yet produced. Later tasks remai
 PRODUCTION_CODE_CHANGED: NO
 UNPUBLISHED_WORK: NONE after coherent checkpoint publication/read-back.
 Earlier source-capability holds and plan-review snapshots remain historical; this entry and the header own current scheduling.
+
+
+## W05.T06-P0 local implementation checkpoint — 2026-10-03
+
+BASE_SHA: `0c595f23a5482c5c3115f28dffd677dbca6401d9`
+IMPLEMENTATION_COMMIT: `8ba60e849b87d9ac46a4c6e7f1bd5daba1bd21a2` — local only on `v1/engine-rearchitecture`; no publication or push per the task instruction.
+STATUS: IMPLEMENTATION LOCALLY VERIFIED; P0 OUTPUT NOT YET ACCEPTED OR READ BACK.
+
+IMPLEMENTED: trusted selected-host HOT capability and operation-scoped CurrentOwnerView; LIVE-first, admitted-HOT, then exact-pinned current-owner reads; bounded expanding-union revalidation; same-host/current ACTOR phase join for one NPC's own exact current reconsideration cue; deterministic owner-local validation/application; full Actor-envelope preservation; atomic local HOT establishment and process-local idempotency; Actor schema-v2 revision alignment.
+
+VERIFICATION:
+
+- P0 exact focused command from the stable plan: 509 passed, 2 pre-existing `jsonschema.RefResolver` deprecation warnings.
+- P0/schema/owner cross-suite: 233 passed, 1 deselected (`test_versioning_namespace_policy.py::VersionNamespacePolicyTests::test_census_has_zero_unclassified_hits`, which scans contaminated checkout-local files).
+- Canonical full DEV command `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto`: 1535 passed, 7 failed, 24 existing RD09 deprecation warnings. The failures are checkout-local verification contamination: duplicate `GAME/ENGINE_VERSION.yaml` markers under existing `DEV/tmp/` and `.hdm-devtools/clean*/` copies; release/version/identity scans encounter an existing `.entire/` transitional identity carrier; release passthrough detects an existing `GAME/TOOLS/__pycache__` copied into its temporary fixture. No failed test is in the W05.T06-P0, Actor-envelope, Context, HOT, selected-host, or synchronized Actor-schema-consumer suites. These workspace artifacts were not inspected or removed.
+- Maintenance audit `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_maintenance_audit.py`: FAIL for the same duplicate marker and `.entire/tmp/` findings; no P0 path was named.
+- Local release build `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python DEV/TOOLS/run_release_build.py --output /tmp/opencode/w05t06p0-release-build`: FAIL before package construction because the existing `.entire/tmp/` transitional identity carrier is found by the closure census.
+- Scoped Ruff check/format for new `current_owner.py` and `test_w05_t06_p0_actor_producer.py`: PASS. Scoped Ruff `S` check on changed production Python / DEV validator files: PASS.
+- Hosted CI is unavailable in this local-machine session and is not claimed.
+
+VERSION_IMPACT: `runtime_host.py 1.0.11 -> 1.0.12`; `context_runtime.py 1.0.9 -> 1.0.10`; `bootstrap.py 1.0.4 -> 1.0.5`; `GAME/SCHEMA/actor.schema.yaml 1 -> 2`. `DEV/SCHEMAS/world-record.schema.json` has no local schema-version namespace. Actor `state_revision` remains its existing owner-local ordinal; no engine release, campaign-contract generation, catalog/storage generation, migration, or dual-read change. The Actor schema transition is pre-release clean-slate work; no migration edge is required for released data.
+
+SYSTEM_IMPACT: NONE — implementation remained within revised P0. No universal evidence issuer, caller-asserted evidence authority, added evidence classes, PC authorship, or new LIVE mutation/CAS path was introduced. The additional DEV-only Actor-envelope validator/fixture synchronizations are mechanical consumers of the explicitly authorized schema alignment.
+
+SELF_REVIEW: completed against the revised P0 Envelope and current Actor/Context/HOT/LIVE/phase/version owners. Independent task review was not dispatched because the task explicitly prohibited further agents; independent review and exact-head publication/read-back remain pending.
+
+NEXT_EXACT_TASK: coordinator-directed independent review and publication/read-back of this local checkpoint. Do not start P1A, P1B, P2, P3, or product completion. `DEV/CURRENT_PROGRESS.md` remains unadvanced; the P0 output is not accepted/read back.
+UNPUBLISHED_WORK: P0 implementation commit `8ba60e849b87d9ac46a4c6e7f1bd5daba1bd21a2` and this execution-status synchronization are local and unpushed; no other task-local source edits remain.
