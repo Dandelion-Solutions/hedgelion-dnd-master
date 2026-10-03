@@ -2385,3 +2385,81 @@ SYSTEM_IMPACT: NONE — changes stay within the revised P0 read-session, Runtime
 
 NEXT_EXACT_TASK: coordinator-directed independent review and decision on the local repair checkpoint. Do not start P1A, P1B, P2, P3 or product completion. No push was authorized or performed.
 UNPUBLISHED_WORK: coherent repair checkpoint to be committed locally on `v1/engine-rearchitecture`; no publication/read-back claim.
+
+
+## W05.T06-P0 bounded current-source revalidation repair — 2026-10-03
+
+BASE_SHA: `1b0e2b8b5b0573580df8f2c7fe65ff6489d1c021` — local P0 scoped-review
+repair checkpoint. Fresh `git fetch --prune origin` confirmed public HEAD
+`0c595f23a5482c5c3115f28dffd677dbca6401d9`; this work remains local-only.
+
+STATUS: BOUNDED SOURCE-REVALIDATION REPAIR IMPLEMENTED AND FOCUSED-VERIFIED;
+P0 output remains pending independent re-review and acceptance/publication.
+LOCAL_IMPLEMENTATION_COMMIT: `e0aa7227c34e040e7ebdf1ce760c18e4089c98c9` — committed on
+`v1/engine-rearchitecture`, unpublished; no push or remote read-back.
+
+FINDING ADDRESSED:
+- RuntimeHost previously reread LIVE routing against the session's stale
+  `PinnedCampaign`, and CurrentOwnerReadSession did not recheck source basis
+  after exact owner reads. Immutable bytes from an old revision could therefore
+  revalidate after HEAD advanced, including movement during the last Actor read.
+- RuntimeHost now refreshes the pinned campaign and selected LIVE route via its
+  existing `_begin_operation()` boundary. Session revalidation checks owner
+  reads against that fresh basis and performs one final bounded source-basis
+  confirmation; any pin or selected-route movement during owner I/O returns
+  false. Repository/LIVE reads remain outside SQLite transactions.
+- Regression fixtures preserve exact bytes by revision and exercise both HEAD
+  movement before revalidation and revision/route movement during the last
+  exact owner read. The RD11 repository fixture now holds its current revision
+  stable across repeated pins unless a test explicitly moves it; its prior
+  ordinal-per-pin behavior modeled movement without any repository state change.
+
+TDD / BASELINE:
+- Before this repair, `test_w05_t06_p0_actor_producer.py`: 23 passed; exact P0
+  focused command from the stable plan: 509 passed, 2 existing RD09
+  `jsonschema.RefResolver` deprecation warnings.
+- RED: both new immutable-revision regression tests failed because
+  `session.revalidate(...)` returned true after the stale pinned bytes matched.
+- GREEN: both regressions pass with fresh pre-read and post-read source bases.
+
+VERIFICATION:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_w05_t06_p0_actor_producer.py` — 25 passed.
+- Exact P0 focused command from the stable plan:
+  `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd10_role_emission.py` — 509 passed, 2 existing RD09 `jsonschema.RefResolver` deprecation warnings.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd11_context_runtime.py` — 61 passed.
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_versioning_namespace_policy.py -k 'not census_has_zero_unclassified_hits'` — 11 passed, 1 checkout-wide census test deselected.
+- An initial focused run after the implementation returned 28 Context failures
+  because its test RepositoryPort generated a new HEAD/tree for every pin
+  despite no source movement. The fixture was corrected to model a stable
+  current revision; the complete exact P0 focused command then passed.
+- `.hdm-devtools/venv/bin/ruff check --ignore I001,B017 GAME/TOOLS/current_owner.py GAME/TOOLS/runtime_host.py GAME/TOOLS/context_runtime.py DEV/TESTS/test_w05_t06_p0_actor_producer.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_runtime_host_composition.py` — PASS.
+- `.hdm-devtools/venv/bin/ruff format --check GAME/TOOLS/current_owner.py GAME/TOOLS/context_runtime.py DEV/TESTS/test_w05_t06_p0_actor_producer.py DEV/TESTS/test_rd11_context_runtime.py DEV/TESTS/test_runtime_host_composition.py` — PASS. Formatting diagnostics on the legacy `runtime_host.py` report unchanged pre-existing sections; no broad auto-format was applied. `git diff --check` — PASS.
+- Full DEV, maintenance audit and release build were not rerun in this bounded
+  repair round; prior P0 evidence records the checkout-local census/artifact
+  contamination affecting those surfaces. Hosted CI remains unavailable in
+  this local-machine session.
+
+VERSION_IMPACT: `runtime_host.py framework_module_version 1.0.13 -> 1.0.14` and
+`context_runtime.py framework_module_version 1.0.11 -> 1.0.12`. Both are
+materially affected consumers of the shared, unversioned `current_owner.py`
+revalidation behavior; headers/constants and exact version assertions are
+synchronized. No Actor/persistent schema, owner-local state revision,
+campaign-contract/storage/catalog generation, engine release, migration or
+dual-read namespace changed.
+
+SYSTEM_IMPACT: NONE under the bounded W05.T06-P0 repair request. The second
+source-basis confirmation is one finite pin/selected-route check through the
+existing RuntimeHost operations, required to detect overlap during the final
+owner read; it adds no interface, state authority, retry loop or broad scan, and
+all repository/LIVE I/O remains outside SQLite transactions.
+
+SELF_REVIEW: scoped diff conforms to the revised P0 Envelope; no new authority,
+serialized shape, LIVE mutation/CAS path or downstream task was added. No
+independent reviewer was dispatched under the task-local no-further-agents
+constraint.
+
+NEXT_EXACT_TASK: coordinator-directed independent re-review and publication
+decision for this local P0 repair. Do not start P1A, P1B, P2, P3 or product
+completion. No push or remote publication/read-back is claimed.
+UNPUBLISHED_WORK: local implementation checkpoint `e0aa7227c34e040e7ebdf1ce760c18e4089c98c9`
+and this cursor update; no remote publication/read-back is claimed or authorized.
