@@ -75,8 +75,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
 
 
 class ContextContractError(ValueError):

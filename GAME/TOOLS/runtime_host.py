@@ -59,8 +59,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.13
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
+# framework_module_version: 1.0.14
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -2217,15 +2217,10 @@ class RuntimeHost:
     def _read_current_owner_basis(
         self, pinned_campaign: PinnedCampaign
     ) -> tuple[PinnedCampaign, LiveRouting | None]:
-        try:
-            selected_live = self._live_transport.read_selected_live(
-                self._campaign_id, pinned_campaign
-            )
-        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
-            raise RuntimeHostError("selected-LIVE currentness read failed") from exc
-        return pinned_campaign, _validate_selected_live(
-            selected_live, self._campaign_id
-        )
+        if pinned_campaign.campaign_id != self._campaign_id:
+            raise RuntimeHostError("current-owner basis belongs to another campaign")
+        operation = self._begin_operation()
+        return operation.pinned_campaign, operation.selected_live
 
     def _read_current_owner_live(
         self, routing: LiveRouting, source: LiveEnvelope

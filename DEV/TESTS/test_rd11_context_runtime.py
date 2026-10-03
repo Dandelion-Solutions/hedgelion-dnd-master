@@ -131,14 +131,15 @@ class RuntimeRepository:
         self.records = {}
         self.read_paths = []
         self.pin_calls = []
+        self.current_revision = f"{1:040x}"
+        self.current_tree = f"{101:040x}"
 
     def pin_campaign(self, campaign_id):
         self.pin_calls.append(campaign_id)
-        ordinal = len(self.pin_calls)
         return PinnedCampaign(
             campaign_id=self.campaign_id,
-            revision=f"{ordinal:040x}",
-            tree_sha=f"{ordinal + 100:040x}",
+            revision=self.current_revision,
+            tree_sha=self.current_tree,
         )
 
     def read_exact_path(self, pinned, path):
@@ -652,7 +653,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.11")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.12")
 
 
 class CommentatorControlProfileTests(unittest.TestCase):

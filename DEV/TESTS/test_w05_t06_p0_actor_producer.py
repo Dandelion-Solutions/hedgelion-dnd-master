@@ -113,6 +113,7 @@ class ActorRepository:
         self.revision = CAMPAIGN_REVISION
         self.pin_count = 0
         self.path_reads: list[tuple[str, str]] = []
+        self.revision_records: dict[str, dict[str, object]] = {}
         self.read_hook: Callable[[PinnedCampaign, str], None] | None = None
         self.scene: dict[str, object] | None = None
 
@@ -131,6 +132,11 @@ class ActorRepository:
         self.path_reads.append((pinned.revision, path))
         if self.read_hook is not None:
             self.read_hook(pinned, path)
+        if pinned.revision in self.revision_records:
+            try:
+                return deepcopy(self.revision_records[pinned.revision][path])
+            except KeyError as exc:
+                raise KeyError(path) from exc
         if path == route_native_record("world.actor", (ACTOR_ID,)).relative_path:
             return deepcopy(self.actor)
         if path == route_native_record("world.scene", ("scene.spring",)).relative_path:
@@ -166,10 +172,12 @@ class SelectedLive:
         self.route = route or LiveRouting(campaign_id=CAMPAIGN_ID, entries=())
         self.pack = pack
         self.source_reads = 0
+        self.route_pin_reads: list[str] = []
 
     def read_selected_live(
         self, campaign_id: str, pinned_campaign: PinnedCampaign
     ) -> LiveRouting:
+        self.route_pin_reads.append(pinned_campaign.revision)
         return self.route
 
     def read_selected_live_source(
@@ -610,7 +618,8 @@ def test_read_session_revalidation_rereads_the_current_campaign_owner_source() -
         observation = session.require((owner_ref,))
         initial_source_read_count = len(repository.path_reads)
 
-        repository.revision = "d" * 40
+        successor_revision = "d" * 40
+        repository.revision = successor_revision
         repository.actor["state"]["continuity"]["evolving"]["current_objective"] = {
             "statement": "A current-source change after observation"
         }
@@ -618,7 +627,76 @@ def test_read_session_revalidation_rereads_the_current_campaign_owner_source() -
         assert not store._connection.in_transaction
         assert not session.revalidate(observation)
         assert len(repository.path_reads) == initial_source_read_count + 1
-        assert repository.path_reads[-1][0] == operation.pinned_campaign.revision
+        assert repository.path_reads[-1][0] == successor_revision
+
+
+def test_read_session_revalidation_refreshes_immutable_campaign_revision() -> None:
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        live = SelectedLive()
+        host, _repository = _selected_host(store, repository=repository, live=live)
+        actor_path = route_native_record("world.actor", (ACTOR_ID,)).relative_path
+        owner_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
+        operation = host._begin_operation()
+        session = host._current_owner.begin(operation)
+        observation = session.require((owner_ref,))
+
+        moved_actor = deepcopy(repository.actor)
+        moved_actor["state"]["continuity"]["evolving"]["current_objective"] = {
+            "statement": "The immutable successor revision"
+        }
+        successor_revision = "d" * 40
+        repository.revision_records = {
+            operation.pinned_campaign.revision: {
+                actor_path: deepcopy(repository.actor)
+            },
+            successor_revision: {actor_path: moved_actor},
+        }
+        repository.revision = successor_revision
+
+        assert not session.revalidate(observation)
+        assert repository.path_reads[-1] == (successor_revision, actor_path)
+        assert live.route_pin_reads[-1] == successor_revision
+
+
+def test_read_session_revalidation_rejects_revision_movement_during_last_owner_read() -> (
+    None
+):
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        live = SelectedLive()
+        host, _repository = _selected_host(store, repository=repository, live=live)
+        actor_path = route_native_record("world.actor", (ACTOR_ID,)).relative_path
+        owner_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
+        operation = host._begin_operation()
+        session = host._current_owner.begin(operation)
+        observation = session.require((owner_ref,))
+        successor_revision = "d" * 40
+        repository.revision_records = {
+            operation.pinned_campaign.revision: {
+                actor_path: deepcopy(repository.actor)
+            },
+            successor_revision: {actor_path: deepcopy(repository.actor)},
+        }
+        moved = False
+
+        def advance_head_during_owner_read(_pinned: PinnedCampaign, path: str) -> None:
+            nonlocal moved
+            if path == actor_path and not moved:
+                moved = True
+                assert not store._connection.in_transaction
+                repository.revision = successor_revision
+                live.route = _live_claiming_actor()
+
+        repository.read_hook = advance_head_during_owner_read
+
+        assert not session.revalidate(observation)
+        assert moved
+        assert repository.path_reads[-1] == (
+            operation.pinned_campaign.revision,
+            actor_path,
+        )
+        assert live.route_pin_reads[-1] == successor_revision
 
 
 def test_actor_source_movement_after_operation_revalidation_blocks_establishment(

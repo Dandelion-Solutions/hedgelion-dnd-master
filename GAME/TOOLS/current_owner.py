@@ -313,6 +313,18 @@ class CurrentOwnerReadSession:
             if _read_basis(current_read) != _read_basis(prior_read):
                 return False
 
+        try:
+            confirmed_pinned_campaign, confirmed_selected_live = (
+                self._source_basis_reader(fresh_pinned_campaign)
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            return False
+        if (
+            confirmed_pinned_campaign != fresh_pinned_campaign
+            or confirmed_selected_live != fresh_selected_live
+        ):
+            return False
+
         return (
             _observation_fingerprint(fresh_reads, fresh_snapshot.snapshot_fingerprint)
             == candidate.observation_fingerprint
