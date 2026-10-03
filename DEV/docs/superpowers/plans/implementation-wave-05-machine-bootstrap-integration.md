@@ -863,7 +863,7 @@ PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/t
 ### W05.T06-P2 — Bounded native History discovery and enrollment
 
 **Dependency:** `W05_T06_CURRENT_OWNER_VIEW_READY`. P2 is independent of P1A/
-P1B semantically; execution remains one production task at a time.
+P1B semantically. Eligible lanes may prepare in parallel only with isolated/disjoint physical writers; shared-file integration and publication remain serialized under the execution contract.
 
 **Goal:** realize only WP19-L36 bounded SemanticEvent discovery using the
 existing EVENT_INDEX artifact plus accepted unpublished HOT and selected LIVE
@@ -1278,7 +1278,11 @@ Output checkpoint: `W05_CAMPAIGN_MANIFEST_V5_READY`.
 
 ## W05.T08 — Install, shipped CORE and exact module versions
 
-Fresh-read and integrate owner deltas into each material module exactly once:
+Fresh-read and integrate owner deltas into each material module exactly once.
+
+The separately authorized 2026-10-03 instruction checkpoint projects accepted single-chat role/cache laws early: AI_REASONING is now 1.0.4, PLAY_POLICY 1.0.5 and RUNTIME 1.0.3. It does not close T08 or claim its remaining RuntimeHost/PO-011/adjudication/access joins. The two targets below advance once for those remaining material inputs; preserve the early role/control text. RUNTIME's bounded invocation projection is already realized outside the sixteen-module final-writer table; inspect/preserve it and bump further only for another material change. Concern revisions are already ai_reasoning_revision 4 / runtime_scope_revision 4; apply the version law to any later material concern change, not a stale baseline reset.
+
+Fresh final-writer targets:
 
 | Module | Target | Required semantic inputs |
 |---|---:|---|
@@ -1290,12 +1294,12 @@ Fresh-read and integrate owner deltas into each material module exactly once:
 | PERSISTENCE | 1.0.4 | publication/recovery/currentness + CampaignPublicationService/W02 plan execution wiring + exact `measure_path_operations(...)` transport capability from T07E |
 | CHRONOLOGY | 1.0.2 | temporal/thread/current-state |
 | PROCESSES | 1.0.3 | procedure/continuation/operational roots + owner-native ordered-response evidence route |
-| AI_REASONING | 1.0.4 | typed role/context/protected result + campaign-bound RuntimeHost Context composition + PO-011 `ResolvedResponseLanguage` / internal-vs-visible presentation law |
+| AI_REASONING | 1.0.5 | typed role/context/protected result + campaign-bound RuntimeHost Context composition + PO-011 `ResolvedResponseLanguage` / internal-vs-visible presentation law |
 | LIVE_SCENE | 1.0.4 | source-native LIVE/currentness/state + selected-LIVE evt source-domain reader wiring |
 | MULTIPLAYER | 1.0.8 | principal route + LIVE + collaboration/access reconciliation |
 | CAMPAIGN_SETUP | 1.0.4 | identity/scaffold/onboarding + PO-011 current player-language Master/setup presentation |
 | SESSION | 1.0.2 | exact session/campaign/LIVE/PLAYER handoff + PO-011 human-visible session/status language projection |
-| PLAY_POLICY | 1.0.5 | exact accepted adjudication/access policy + PO-011 rule that optional language-policy absence never licenses another visible response language |
+| PLAY_POLICY | 1.0.6 | exact accepted adjudication/access policy + PO-011 rule that optional language-policy absence never licenses another visible response language |
 | CORE_INDEX | 1.0.2 | current module routing/versions |
 | ADJUDICATION | 1.0.3 | bound catalog and accepted policy basis |
 
@@ -1328,10 +1332,21 @@ The Product Owner directs continued execution until a real product-semantics, ma
 
 P0's `W05_T06_CURRENT_OWNER_VIEW_READY` is accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; published status HEAD `37872ca98c425b7b194e48aaed2a543b2058e7f8` has successful hosted CI run `37153339822`. This continuation uses the already accepted stable T06 plan and Senior rulings; it does not claim a new full P0 implementation audit.
 
-NEXT_AUTHORIZED_BLOCK: W05.T06-P1A, then P1B, then P2, then P3, then held T06 product completion, one production task at a time. Each successor activates automatically only after all its named inputs are independently reviewed, published and read back. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
+NEXT_AUTHORIZED_BLOCK: dependency-driven T06 continuation: P0 -> P1A -> P1B and independently P0 -> P2 -> P3; P1B + P3 join before held T06 product completion. Each successor activates only after all named inputs are independently reviewed, published and read back. Isolated/disjoint preparation may run in parallel; overlapping physical writers, integration and publication remain serialized. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
 
 Apply the execution contract to every task: fresh currentness/owners, bounded Impact Envelope, TDD, integration and version checks, independent spec/quality review and repair, applicable clean exact verification, publication/read-back and durable cursor/checkpoint update. Technical failures and bounded implementation choices are handled autonomously. A genuine System-Impact change goes to the authorized Senior role, not automatically to the Product Owner; a worker must not self-approve a required Senior ruling.
 
 After T06 completion, route the exact published checkpoint to the mandatory independent Senior integration audit. That is a technical review gate, not a request for PO permission. Only its accepted result produces `W05_PRODUCT_PATHS_READY` and releases consumers whose other inputs are GREEN. T07/T08 and W06 are not activated by this T06 continuation checkpoint. Story and all trigger-gated work remain dormant.
 
 VERSION_IMPACT: NONE — scheduling/control documentation only.
+
+## 2026-10-03 instruction-efficiency checkpoint and scheduling reconciliation
+
+Source basis: `be1c9b919bba65bcb1a9e5d5eb7b19e7c72fd82f`. The Product Owner separately stopped the worker at a safe boundary and authorized the Architect to amend instructions. Evidence/impact/review owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
+
+This amendment supersedes earlier one-production-task sequencing and blanket P2/P3 holds only as scheduling authority. Preserve their historical evidence. Accepted dependencies are P0 -> P1A -> P1B, independently P0 -> P2 -> P3, then P1B + P3 -> held T06 completion. The actual P1A NEEDS_PO decision is unchanged. P2 can continue only after its own exact fresh input/envelope checks; P3 remains blocked until P2 is accepted. No production task or Story/T07/T08/W06 activation is claimed here.
+
+DEV uses bounded subagents and isolated/disjoint preparation, with one integrator/publisher. GAME remains logical phases in one chat, without new model calls/roles/authority. The early shipped instruction projection is not T08 completion; preserve all remaining RuntimeHost/PO-011 and other joins. T08 AI_REASONING/PLAY_POLICY targets are reconciled to 1.0.5/1.0.6 after current 1.0.4/1.0.5; RUNTIME is now 1.0.3.
+
+VERSION_IMPACT: AI_REASONING 0.1.3 -> 1.0.4; PLAY_POLICY 0.8.4 -> 1.0.5; RUNTIME 1.0.2 -> 1.0.3; DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. Other control/process/profile edits NONE under the version owner; no schema/catalog/storage/campaign generation, migration or engine release change.
+NEXT_EXACT_TASK: existing authorized W05.T06-P2 entry/envelope, not a new task assignment. P1A waits for the recorded product judgment; completed P0/S1/S2 remain accepted.

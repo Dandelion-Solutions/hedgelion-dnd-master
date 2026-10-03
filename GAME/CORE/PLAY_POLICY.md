@@ -1,6 +1,6 @@
 # Gameplay Context and Research Policy
 
-framework_module_version: 0.8.4
+framework_module_version: 1.0.5
 load_policy: ALWAYS_DURING_GAMEPLAY
 precedence: resolves CORE caching, module activation, runtime-scope/tool boundaries, natural-language intent and external-research behavior
 
@@ -31,6 +31,10 @@ Rebuild the full CORE context cache only when:
 - the runtime can positively determine that required engine instructions are no longer available because of context loss/compaction.
 
 Do not rehydrate CORE merely because a module becomes relevant; it is already present.
+
+The immutable instruction cache is separate from the eligible campaign packet of a logical role. A role switch activates relevant cached instructions and rebinds the packet under `AI_REASONING.md`; it neither reloads CORE nor admits unrelated campaign evidence. Keep stable instructions reusable and current-turn data bounded; never sacrifice required evidence or eligibility merely to preserve a cache/prefix.
+
+After actual context loss, recover the exact installed instructions and the minimum authoritative state needed now. Retained summaries can guide that recovery, but cannot establish missing canon, eligibility or an accepted deterministic frontier. Compaction/host pressure alone is not a save boundary; the existing durability and lost-dirty-state owners remain authoritative.
 
 ## Loaded is not active
 

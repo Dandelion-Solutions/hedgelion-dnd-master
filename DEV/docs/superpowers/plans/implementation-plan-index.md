@@ -51,7 +51,7 @@ accepted T06-S1/S2 (preserve; do not repeat)
 
 The governing edges are P0 -> P1A -> P1B, P0 -> P2 -> P3, and P1B + P3 -> T06 product
 completion. P1A/P1B do not produce an input consumed by P2; the task plan executes
-one production task at a time and does not authorize parallel production.
+dependency-driven execution with isolated/disjoint physical writers; overlapping shared-file integration and publication remain serialized. A hold blocks dependent work, not an independent eligible lane.
 The exact task files, carriers, producer/consumer joins, per-task Impact
 Envelopes, focused verification and version-namespace checks are in
 `implementation-wave-05-machine-bootstrap-integration.md`. The package received
@@ -217,12 +217,12 @@ SAVE_CONTRACT     0.2.1 -> 1.0.2
 PERSISTENCE       1.0.3 -> 1.0.4
 CHRONOLOGY        0.1.1 -> 1.0.2
 PROCESSES         0.1.2 -> 1.0.3
-AI_REASONING      0.1.3 -> 1.0.4
+AI_REASONING      0.1.3 -> 1.0.4 (early instruction checkpoint) -> 1.0.5 (remaining T08 inputs)
 LIVE_SCENE        1.0.3 -> 1.0.4
 MULTIPLAYER       0.1.7 -> 1.0.8
 CAMPAIGN_SETUP    1.0.3 -> 1.0.4
 SESSION           1.0.1 -> 1.0.2
-PLAY_POLICY       0.8.4 -> 1.0.5
+PLAY_POLICY       0.8.4 -> 1.0.5 (early instruction checkpoint) -> 1.0.6 (remaining T08 inputs)
 CORE_INDEX        0.3.1 -> 1.0.2
 ADJUDICATION      1.0.2 -> 1.0.3
 ```
@@ -247,10 +247,21 @@ The Product Owner directs continued execution until a real product-semantics, ma
 
 P0's `W05_T06_CURRENT_OWNER_VIEW_READY` is accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; published status HEAD `37872ca98c425b7b194e48aaed2a543b2058e7f8` has successful hosted CI run `37153339822`. This continuation uses the already accepted stable T06 plan and Senior rulings; it does not claim a new full P0 implementation audit.
 
-NEXT_AUTHORIZED_BLOCK: W05.T06-P1A, then P1B, then P2, then P3, then held T06 product completion, one production task at a time. Each successor activates automatically only after all its named inputs are independently reviewed, published and read back. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
+NEXT_AUTHORIZED_BLOCK: dependency-driven T06 continuation: P0 -> P1A -> P1B and independently P0 -> P2 -> P3; P1B + P3 join before held T06 product completion. Each successor activates only after all named inputs are independently reviewed, published and read back. Isolated/disjoint preparation may run in parallel; overlapping physical writers, integration and publication remain serialized. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
 
 Apply the execution contract to every task: fresh currentness/owners, bounded Impact Envelope, TDD, integration and version checks, independent spec/quality review and repair, applicable clean exact verification, publication/read-back and durable cursor/checkpoint update. Technical failures and bounded implementation choices are handled autonomously. A genuine System-Impact change goes to the authorized Senior role, not automatically to the Product Owner; a worker must not self-approve a required Senior ruling.
 
 After T06 completion, route the exact published checkpoint to the mandatory independent Senior integration audit. That is a technical review gate, not a request for PO permission. Only its accepted result produces `W05_PRODUCT_PATHS_READY` and releases consumers whose other inputs are GREEN. T07/T08 and W06 are not activated by this T06 continuation checkpoint. Story and all trigger-gated work remain dormant.
 
 VERSION_IMPACT: NONE — scheduling/control documentation only.
+
+## 2026-10-03 instruction-efficiency checkpoint and scheduling reconciliation
+
+Source basis: `be1c9b919bba65bcb1a9e5d5eb7b19e7c72fd82f`. The Product Owner separately stopped the worker at a safe boundary and authorized the Architect to amend instructions. Evidence/impact/review owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
+
+This amendment supersedes earlier one-production-task sequencing and blanket P2/P3 holds only as scheduling authority. Preserve their historical evidence. Accepted dependencies are P0 -> P1A -> P1B, independently P0 -> P2 -> P3, then P1B + P3 -> held T06 completion. The actual P1A NEEDS_PO decision is unchanged. P2 can continue only after its own exact fresh input/envelope checks; P3 remains blocked until P2 is accepted. No production task or Story/T07/T08/W06 activation is claimed here.
+
+DEV uses bounded subagents and isolated/disjoint preparation, with one integrator/publisher. GAME remains logical phases in one chat, without new model calls/roles/authority. The early shipped instruction projection is not T08 completion; preserve all remaining RuntimeHost/PO-011 and other joins. T08 AI_REASONING/PLAY_POLICY targets are reconciled to 1.0.5/1.0.6 after current 1.0.4/1.0.5; RUNTIME is now 1.0.3.
+
+VERSION_IMPACT: AI_REASONING 0.1.3 -> 1.0.4; PLAY_POLICY 0.8.4 -> 1.0.5; RUNTIME 1.0.2 -> 1.0.3; DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. Other control/process/profile edits NONE under the version owner; no schema/catalog/storage/campaign generation, migration or engine release change.
+NEXT_EXACT_TASK: existing authorized W05.T06-P2 entry/envelope, not a new task assignment. P1A waits for the recorded product judgment; completed P0/S1/S2 remain accepted.

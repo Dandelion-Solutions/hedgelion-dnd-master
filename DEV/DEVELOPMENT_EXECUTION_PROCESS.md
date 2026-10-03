@@ -260,7 +260,7 @@ When a system-impact trigger occurs:
 3. publish that safe checkpoint and obtain remote read-back;
 4. update the plan execution-status file to `SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED`;
 5. record a concise **Implementation Impact Brief**;
-6. stop for Senior review.
+6. route the bounded issue to an independent authorized Senior reviewer; stop the affected change pending its ruling, and continue any independently eligible work within the current authorized scope.
 
 The brief should contain evidence, not private reasoning narration:
 
@@ -292,7 +292,7 @@ If a real architecture change is required, return to the applicable design/archi
 
 ## 8. Automated review layer
 
-Human/Senior review is not the per-task code-review mechanism.
+Human judgment is reserved for product semantics, material trade-offs/priorities and explicit risk acceptance. A Senior gate is a qualified technical role, not automatically a human-interaction gate. Required independence and authority remain mandatory; the implementer cannot self-approve a Senior ruling. Routine task review remains separate.
 
 When subagents are available, prefer the Superpowers subagent-driven pattern:
 
@@ -431,3 +431,11 @@ ROUTINE STOP 2:
 Do not turn recoverability checkpoints into approval checkpoints. A worker publishes coherent progress so another agent can continue safely; publication does not require the human to acknowledge every commit.
 
 The goal is **high implementation autonomy with explicit system-risk interception**, not either continuous supervision or unsupervised architecture-by-implementation.
+
+## 13. Efficient autonomous coordination
+
+The coordinator continues dependency-eligible work inside the authorized scope without asking at ordinary task, commit or read-back boundaries. A held task blocks only dependent/shared-invariant work; establish independence before continuing another lane. Missing role/tool capability is an evidence-backed blocker, never an invented PASS or a product decision.
+
+Delegate bounded roles with a pinned source manifest and explicit read/write ownership. Reuse verified unchanged sources, but refresh affected owners after source changes or scope/currentness discontinuity. Prefer parallel read-only extraction and independent reviews; parallel production requires isolated/disjoint writers. Shared-file final writers, shared Git state, durable cursors and publication remain serialized.
+
+Use proportionate reasoning and the runtime's capability-aware model policy. Escalate effort for an identified unresolved risk; stop research after required coverage is sound and further work no longer changes the decision. Local focused checks support iteration; exact owner-required suites, integrated final-byte proof and independent final Senior review remain acceptance gates. Reverify only what a change invalidates, plus the required integration/final surfaces.

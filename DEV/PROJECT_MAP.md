@@ -154,7 +154,7 @@ The table is a discovery aid. Correctness-sensitive work follows actual owners a
 - `DEV/ARCHITECTURE/PRODUCT_OWNER_INPUT_PROCESS.md` — HDM process addendum for durable Product Owner input capture, multi-stage routing, trigger/defer handling and hard `NEEDS_PO` semantics.
 - `DEV/PRODUCT_OWNER_INPUT.md` — durable Product Owner intent/routing ledger; authoritative for preserved Product Owner input, not accepted architecture.
 - `DEV/DEVELOPMENT_EXECUTION_PROCESS.md` — canonical implementation-execution process after approved design.
-- `DEV/AGENT_RUNTIMES/` — environment-specific transport and verification overlays; read the applicable one with `AGENTS.md`.
+- `DEV/AGENT_RUNTIMES/` — environment-specific transport/verification overlays; OpenCode coordination/model/parallelism policy is in `OPENCODE.md`, detailed skill ownership/overrides in `SKILL_SCOPE.md`. Read the applicable route with `AGENTS.md`; `.opencode/agents/` contains bounded worker, reviewer, researcher and Senior profiles, while `opencode.json` owns native loading/permissions.
 - `DEV/ENGINE_DEVELOPMENT.yaml` — development/release metadata.
 - `DEV/PROJECT_MAP.md` — this navigation/dependency map.
 - `DEV/CURRENT_PROGRESS.md` — sole global current-progress authority and first recovery surface for current state/gates.
@@ -390,3 +390,7 @@ dormant optional orientation; Commentator corpus/control owners are separate.
 This entry is a locator only. Current execution/gates remain exclusively in
 DEV/CURRENT_PROGRESS.md and its routed task cursor; existing machine realization
 must be checked separately from accepted architecture.
+
+## Current bounded instruction-efficiency amendment
+
+`DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md` owns the source manifest, diagnosed instruction gaps, accepted-scope impact/version reconciliation and validation limits. This is a bounded early projection and process correction, not a new architecture roadmap or T08 closure. Current scheduling remains under CURRENT_PROGRESS and the Wave-05 cursor.

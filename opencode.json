@@ -5,6 +5,22 @@
     "DEV/AGENT_RUNTIMES/OPENCODE.md"
   ],
   "permission": {
-    "external_directory": "deny"
+    "external_directory": {
+      "*": "deny",
+      "/tmp/hdm-dev": "allow",
+      "/tmp/hdm-dev/*": "allow"
+    },
+    "edit": "allow",
+    "task": "allow",
+    "skill": "allow",
+    "bash": {
+      "*": "allow",
+      "git push *--force*": "deny",
+      "git push *-f*": "deny",
+      "git push *--delete*": "deny",
+      "git branch *-d*": "deny",
+      "git branch *-D*": "deny",
+      "git update-ref *-d*": "deny"
+    }
   }
 }

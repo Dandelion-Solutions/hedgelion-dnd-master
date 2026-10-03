@@ -246,6 +246,12 @@ Human review is a decision gate, not a substitute for agent research completenes
 
 ---
 
+### 4.6 Technical review and product judgment
+
+Senior review of compliance with accepted architecture, local repair, source reconciliation and implementation applicability is technical evidence work. An independent qualified AI reviewer may perform it when the current role/process authorizes that review. Its exact scope, source basis, findings and ruling must be durable. A model/profile label or implementer self-review is not approval.
+
+Do not route ordinary technical choices to the human or reopen settled decisions. A newly required fundamental architecture/product choice, material trade-off/priority or explicit risk acceptance remains under sections 4.1/4.2 and the applicable design process. Hold the affected scope, provide alternatives and a recommendation, and continue only independently authorized work whose invariants do not depend on that choice.
+
 ## 5. Information layers
 
 Keep these categories explicit during deep work:

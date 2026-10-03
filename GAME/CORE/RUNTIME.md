@@ -1,6 +1,6 @@
 # DM Runtime Invariants
 
-framework_module_version: 1.0.2
+framework_module_version: 1.0.3
 load_policy: ALWAYS_DURING_GAMEPLAY
 
 `AI_REASONING.md`, `PLAY_POLICY.md`, `DURABILITY_GUARD.md`, `MECHANICS_INTEGRITY.md` and `CHARACTER_READINESS.md` are also always active during gameplay. RUNTIME defines the turn loop; those guard modules own their narrow correctness domains.
@@ -30,6 +30,8 @@ STATE -> INTENT -> RULES -> RANDOMNESS -> CONSEQUENCES -> PERSISTENCE -> NARRATI
 7. NARRATION: present the resulting situation through the PC's legitimate information channel.
 
 Narration is last. It may not rewrite earlier layers for dramatic convenience.
+
+Invoke material logical phases under the binding, eligibility, typed-handoff and accepted-frontier discipline in `AI_REASONING.md`. Roles share this assistant turn; they do not require subagents or separate model calls. Before visible output, bind Narrator freshly for the current recipient and accepted results, including after any authorized Chronicler service. Only its validated result reaches the existing emission boundary; debug, progress, tools and maintenance are not alternative disclosure channels.
 
 ## Out-of-character Master channel
 

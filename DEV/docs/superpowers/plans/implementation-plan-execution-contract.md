@@ -6,11 +6,11 @@ This contract applies to every task in Waves 01–06. It consolidates the former
 
 ## 1. Worker bootstrap and authority
 
-Before work on any task:
+Before work on any task (bounded inherited subagents use the pinned coordinator manifest under `AGENTS.md`, not duplicate global discovery):
 
 1. fresh-read the current remote ref through the applicable runtime transport;
 2. read `AGENTS.md`, the runtime overlay, `DEV/CURRENT_PROGRESS.md`, `DEV/PROJECT_MAP.md`, this contract, the wave task and every canonical owner named by that task;
-3. confirm that independent Senior GO for this consolidated package is recorded at the current exact HEAD;
+3. confirm the recorded independent Senior GO still applies to the current accepted plan/Impact Envelope: verify its provenance and subsequent amendments, and that no superseding hold or reopen trigger affects this task. A later implementation/status commit does not require a new GO merely because HEAD changed;
 4. fresh-read every existing path in the task's write set and its current version owner;
 5. stop only for an actual System-Impact Gate, unresolved owner conflict, missing authorization or currentness discontinuity.
 
@@ -204,3 +204,13 @@ newly eligible dependent tasks:
 ```
 
 Wave closure does not authorize the next unrelated task by number; it publishes the named outputs consumed by downstream tasks.
+
+## 13. Autonomous dependency scheduling and proportionate proof
+
+Within an authorized continuation scope, select tasks by satisfied named inputs, not numerical order. A product or technical hold blocks its dependent consumers; unaffected eligible tasks may continue. This does not activate another wave, dormant capability or missing join.
+
+Read-only work and physically isolated/disjoint implementation preparation may run in parallel. A shared physical file, Git index, cursor or remote ref has one coordinator/final writer. Independent spec and quality reviews may inspect the same frozen candidate concurrently; neither reviews its own implementation. Integrate and publish serially after currentness/required proof, preserving all accepted inputs.
+
+Feature/bug/behavior code uses the mandatory RED/GREEN loop. Pure process/document routing changes use proportionate source, reference, configuration and semantic review rather than ceremonial tests that mirror prose. Never substitute a static wording check for model behavioral containment evidence. Exact task/final acceptance commands and the final independent Senior audit remain required.
+
+Technical review is agent work when the owning role/process permits it. Product semantics, material priorities/trade-offs and explicit risk acceptance remain human judgment. No completion, checkpoint or ordinary technical repair introduces a fresh PO permission request.
