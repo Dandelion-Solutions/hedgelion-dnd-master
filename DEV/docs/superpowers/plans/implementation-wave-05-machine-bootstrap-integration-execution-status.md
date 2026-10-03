@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: P0 AUTHORIZED — bounded Actor self-state producer join and Actor-envelope revision alignment under revised Senior GO.
-CURRENT_TASK: implementation worker W05.T06-P0 — revised stable Envelope; no production acceptance yet.
+STATUS: W05.T06-P0 LOCALLY VERIFIED / INDEPENDENT TASK REVIEW PASS; P0 output awaits publication and remote read-back.
+CURRENT_TASK: publish/read back the reviewed P0 checkpoint, then synchronize global progress; downstream tasks remain dependency-gated and unstarted.
 LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
 LAST_SAFE_SHA: `29ee6bcb5fa7180ba5c1d940b17c19dc9e685253` — exact source-reviewed checkpoint before this Senior ruling; T06 product code remains unchanged.
 
@@ -2455,11 +2455,43 @@ all repository/LIVE I/O remains outside SQLite transactions.
 
 SELF_REVIEW: scoped diff conforms to the revised P0 Envelope; no new authority,
 serialized shape, LIVE mutation/CAS path or downstream task was added. No
-independent reviewer was dispatched under the task-local no-further-agents
-constraint.
+independent reviewer had yet reviewed at this local checkpoint.
 
 NEXT_EXACT_TASK: coordinator-directed independent re-review and publication
 decision for this local P0 repair. Do not start P1A, P1B, P2, P3 or product
 completion. No push or remote publication/read-back is claimed.
 UNPUBLISHED_WORK: local implementation checkpoint `e0aa7227c34e040e7ebdf1ce760c18e4089c98c9`
 and this cursor update; no remote publication/read-back is claimed or authorized.
+
+
+## W05.T06-P0 final task review and clean verification — 2026-10-03
+
+P0_IMPLEMENTATION_HEAD: `8f7098c23521237363bca84879485a18f5b7aa25`
+P0_BASE_SHA: `0c595f23a5482c5c3115f28dffd677dbca6401d9`
+TASK_REVIEW: PASS — spec compliance PASS and task quality PASS at the final
+scoped review; all four prior findings were addressed, including immutable
+campaign-source/routing revalidation during the final owner read. Review range
+for the final repair: `1b0e2b8b5b0573580df8f2c7fe65ff6489d1c021..8f7098c23521237363bca84879485a18f5b7aa25`.
+
+VERIFICATION — exact P0 focused command: 509 passed, 2 existing RD09
+`jsonschema.RefResolver` deprecation warnings. P0 producer + S6D-09: 49 passed;
+restored movement regression: 1 passed. In a clean detached checkout at the
+exact P0 implementation HEAD, canonical full DEV: 1551 passed, 24 existing
+deprecation warnings; maintenance audit PASS; release build PASS, producing
+`hedgelion-dnd-master-runtime-v1.0-alpha.zip`. Hosted CI unavailable here.
+The initial contaminated working checkout's seven unrelated artifact-scan
+failures and maintenance failure remain historical diagnostics; the clean
+detached verification surface is the acceptance evidence.
+
+VERSION_IMPACT: `runtime_host.py 1.0.11 -> 1.0.14`; `context_runtime.py 1.0.9 -> 1.0.12`; `bootstrap.py 1.0.4 -> 1.0.5`; `GAME/SCHEMA/actor.schema.yaml 1 -> 2`. `DEV/SCHEMAS/world-record.schema.json` has no local schema namespace. No engine release, campaign-contract/storage/catalog generation, migration, or dual-read. The schema replacement is pre-release clean-slate work; no released campaign migration obligation exists.
+
+SYSTEM_IMPACT: NONE under the revised P0 ruling. One bounded pre-read/post-read
+current-source confirmation is within the approved operation/source revalidation
+boundary; no extra owner, authority, broad scan, retry loop, LIVE write or
+downstream task was added.
+
+NEXT_EXACT_TASK: publish this coherent P0 implementation/review/verification
+checkpoint without force, fresh-read it back, then synchronize
+`DEV/CURRENT_PROGRESS.md` to the published P0 output. P1A/P1B/P2/P3 and product
+completion remain dependency-gated and are not started by this task.
+UNPUBLISHED_WORK: implementation commits `8ba60e849b87d9ac46a4c6e7f1bd5daba1bd21a2` through `8f7098c23521237363bca84879485a18f5b7aa25` plus this status synchronization; remote publication/read-back pending.
