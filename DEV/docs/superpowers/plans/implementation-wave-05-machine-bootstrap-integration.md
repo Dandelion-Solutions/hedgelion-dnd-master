@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06-P0 GO WITH BOUNDED ACTOR PRODUCER JOIN; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
+Status: **SENIOR-APPROVED / DEPENDENCY-GATED; W05.T06 CONTINUATION AUTHORIZED AFTER ACCEPTED P0; GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, complete bootstrap and product paths, and perform every shared physical write exactly once with the approved version cutovers.
 
@@ -1320,3 +1320,18 @@ Output checkpoints: `W05_SHIPPED_INTEGRATION_READY`, `PROJECT_MAP_FINAL_INTEGRAT
 ## Wave 05 completion evidence
 
 Record the exact 17+17 census, actual shared-file bytes, every schema/module version, manifest field absence, blank-scaffold completeness, bounded discovery behavior and shipped consumer routing at the published HEAD. No owner-local delta may remain waiting outside the final physical writers when this wave closes.
+
+## 2026-10-03 autonomous T06 continuation authorization
+
+AUTHORIZATION_BASE_SHA: `37872ca98c425b7b194e48aaed2a543b2058e7f8`.
+The Product Owner directs continued execution until a real product-semantics, material trade-off or explicit risk-acceptance question. This removes the request-local scheduling pause; it does not waive technical verification or change accepted architecture.
+
+P0's `W05_T06_CURRENT_OWNER_VIEW_READY` is accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; published status HEAD `37872ca98c425b7b194e48aaed2a543b2058e7f8` has successful hosted CI run `37153339822`. This continuation uses the already accepted stable T06 plan and Senior rulings; it does not claim a new full P0 implementation audit.
+
+NEXT_AUTHORIZED_BLOCK: W05.T06-P1A, then P1B, then P2, then P3, then held T06 product completion, one production task at a time. Each successor activates automatically only after all its named inputs are independently reviewed, published and read back. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
+
+Apply the execution contract to every task: fresh currentness/owners, bounded Impact Envelope, TDD, integration and version checks, independent spec/quality review and repair, applicable clean exact verification, publication/read-back and durable cursor/checkpoint update. Technical failures and bounded implementation choices are handled autonomously. A genuine System-Impact change goes to the authorized Senior role, not automatically to the Product Owner; a worker must not self-approve a required Senior ruling.
+
+After T06 completion, route the exact published checkpoint to the mandatory independent Senior integration audit. That is a technical review gate, not a request for PO permission. Only its accepted result produces `W05_PRODUCT_PATHS_READY` and releases consumers whose other inputs are GREEN. T07/T08 and W06 are not activated by this T06 continuation checkpoint. Story and all trigger-gated work remain dormant.
+
+VERSION_IMPACT: NONE — scheduling/control documentation only.

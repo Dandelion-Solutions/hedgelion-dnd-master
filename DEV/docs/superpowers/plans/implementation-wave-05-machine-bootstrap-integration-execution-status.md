@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: W05.T06-P0 COMPLETE — `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back; later T06 tasks remain dependency-gated.
-CURRENT_TASK: none in this checkpoint; no P1A/P1B/P2/P3 or product-completion work started.
+STATUS: W05.T06-P0 COMPLETE / ACCEPTED; T06 CONTINUATION AUTHORIZED, dependency-driven.
+CURRENT_TASK: W05.T06-P1A — next authorized task; implementation not claimed started by this scheduling checkpoint.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `99deea8d8c1f0ad5cd5bee01f14a656383b1f84b` — fresh remote read-back confirms the reviewed P0 code and task-review evidence are published; this status synchronization is the next coherent metadata checkpoint. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
@@ -2501,3 +2501,18 @@ no downstream implementation was started under this instruction. Wait for the
 next authorized task/cursor advancement.
 UNPUBLISHED_WORK: NONE after this status synchronization is published and
 remotely read back. P0 implementation and its independent review are durable.
+
+## 2026-10-03 autonomous T06 continuation authorization
+
+AUTHORIZATION_BASE_SHA: `37872ca98c425b7b194e48aaed2a543b2058e7f8`.
+The Product Owner directs continued execution until a real product-semantics, material trade-off or explicit risk-acceptance question. This removes the request-local scheduling pause; it does not waive technical verification or change accepted architecture.
+
+P0's `W05_T06_CURRENT_OWNER_VIEW_READY` is accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; published status HEAD `37872ca98c425b7b194e48aaed2a543b2058e7f8` has successful hosted CI run `37153339822`. This continuation uses the already accepted stable T06 plan and Senior rulings; it does not claim a new full P0 implementation audit.
+
+NEXT_AUTHORIZED_BLOCK: W05.T06-P1A, then P1B, then P2, then P3, then held T06 product completion, one production task at a time. Each successor activates automatically only after all its named inputs are independently reviewed, published and read back. No new human permission is required at ordinary task boundaries. Preserve accepted S1/S2 and P0; do not repeat them without an owner-defined reopen trigger.
+
+Apply the execution contract to every task: fresh currentness/owners, bounded Impact Envelope, TDD, integration and version checks, independent spec/quality review and repair, applicable clean exact verification, publication/read-back and durable cursor/checkpoint update. Technical failures and bounded implementation choices are handled autonomously. A genuine System-Impact change goes to the authorized Senior role, not automatically to the Product Owner; a worker must not self-approve a required Senior ruling.
+
+After T06 completion, route the exact published checkpoint to the mandatory independent Senior integration audit. That is a technical review gate, not a request for PO permission. Only its accepted result produces `W05_PRODUCT_PATHS_READY` and releases consumers whose other inputs are GREEN. T07/T08 and W06 are not activated by this T06 continuation checkpoint. Story and all trigger-gated work remain dormant.
+
+VERSION_IMPACT: NONE — scheduling/control documentation only.
