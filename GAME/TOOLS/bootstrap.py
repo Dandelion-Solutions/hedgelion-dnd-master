@@ -21,6 +21,7 @@ from .publication import PublicationOutcome, PublicationStatus
 if TYPE_CHECKING:
     from .access_control import PrincipalPlayerRoute, VerifiedPrincipal
     from .collaboration import CollaborationCatchUp
+    from .hot_store import HotOwnerStorePort
     from .policy_basis import RepositoryPort
     from .runtime_host import (
         CampaignPublicationTransport,
@@ -28,8 +29,8 @@ if TYPE_CHECKING:
         SelectedLiveTransport,
     )
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1321,6 +1322,7 @@ def compose_selected_runtime_host(
     selected_live_transport: SelectedLiveTransport,
     campaign_publication_transport: CampaignPublicationTransport,
     *,
+    hot_owner_store: HotOwnerStorePort,
     initial_publication: InitialCampaignPublicationResult | None = None,
 ) -> RuntimeHost:
     """Compose one host only after an explicit existing selection or accepted creation."""
@@ -1354,6 +1356,10 @@ def compose_selected_runtime_host(
         raise BootstrapContractError(
             "selected gameplay RuntimeHost requires campaign publication capability"
         )
+    if hot_owner_store is None:
+        raise BootstrapContractError(
+            "selected gameplay RuntimeHost requires infrastructure HOT capability"
+        )
     from .runtime_host import compose_runtime_host
 
     return compose_runtime_host(
@@ -1361,6 +1367,7 @@ def compose_selected_runtime_host(
         authenticated_repository_port,
         selected_live_transport,
         campaign_publication_transport,
+        hot_owner_store=hot_owner_store,
     )
 
 

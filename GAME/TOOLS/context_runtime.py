@@ -19,6 +19,11 @@ from typing import Any, Final, TypeAlias
 try:
     from .access_control import AccessControlContractError, PlayerRecord
     from .context_budget import ContextBudgetError, allocate, estimate_size
+    from .current_owner import (
+        CurrentOwnerReadSession,
+        CurrentOwnerStatus,
+        NativeOwnerRef,
+    )
     from .live_state import (
         LiveContractError,
         LiveEnvelope,
@@ -43,6 +48,11 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         allocate,
         estimate_size,
     )
+    from GAME.TOOLS.current_owner import (
+        CurrentOwnerReadSession,
+        CurrentOwnerStatus,
+        NativeOwnerRef,
+    )
     from GAME.TOOLS.live_state import (  # type: ignore[no-redef]
         LiveContractError,
         LiveEnvelope,
@@ -61,8 +71,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
 
 
 class ContextContractError(ValueError):
@@ -401,7 +411,18 @@ def _read_campaign_record(
     pinned: _PinnedCampaign,
     family: str,
     identity: tuple[str, ...],
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
+    if current_owner_session is not None:
+        owner_read = current_owner_session.read(NativeOwnerRef(family, identity))
+        if (
+            owner_read.status is not CurrentOwnerStatus.RESOLVED
+            or owner_read.payload is None
+        ):
+            raise ContextContractError(
+                f"exact {family} owner is {owner_read.status.value.lower()}"
+            )
+        return deepcopy(dict(owner_read.payload))
     try:
         route = route_native_record(family, identity)
         raw = repository.read_exact_path(pinned, route.relative_path)  # type: ignore[attr-defined]
@@ -467,7 +488,14 @@ def _reject_protected_role_material(value: object) -> None:
 
 
 _CampaignResolver: TypeAlias = Callable[
-    [object, _PinnedCampaign, _RequestScope, Mapping[str, object], str],
+    [
+        object,
+        _PinnedCampaign,
+        _RequestScope,
+        Mapping[str, object],
+        str,
+        CurrentOwnerReadSession | None,
+    ],
     tuple[list[str], dict[str, object]],
 ]
 _CandidateResolver: TypeAlias = Callable[[Mapping[str, object]], dict[str, object]]
@@ -479,12 +507,15 @@ def _resolve_registered_campaign_family(
     scope: _RequestScope,
     candidate: Mapping[str, object],
     family: str,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> tuple[list[str], dict[str, object]]:
     """Resolve one explicitly registered family under the request binding."""
 
     _candidate_scope(candidate, scope)
     identity = _identity(candidate.get("owner_identity"), f"{family} owner_identity")
-    return list(identity), _read_campaign_record(repository, pinned, family, identity)
+    return list(identity), _read_campaign_record(
+        repository, pinned, family, identity, current_owner_session
+    )
 
 
 _CAMPAIGN_RESOLVER_TABLE: Final[Mapping[str, _CampaignResolver]] = MappingProxyType(
@@ -514,8 +545,11 @@ def _resolve_player(
     identity: tuple[str, ...],
     recipient_id: str,
     selected_pc_id: str | None = None,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
-    record = _read_campaign_record(repository, pinned, "world.player", identity)
+    record = _read_campaign_record(
+        repository, pinned, "world.player", identity, current_owner_session
+    )
     try:
         player = PlayerRecord.from_mapping(record)
     except (AccessControlContractError, AttributeError, TypeError, ValueError) as error:
@@ -534,8 +568,11 @@ def _resolve_information(
     pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
-    record = _read_campaign_record(repository, pinned, "world.lore_fact", identity)
+    record = _read_campaign_record(
+        repository, pinned, "world.lore_fact", identity, current_owner_session
+    )
     for field_name in ("recipient_player_id", "player_id"):
         if field_name in record and record[field_name] != recipient_id:
             raise ContextContractError(
@@ -558,8 +595,11 @@ def _resolve_knowledge(
     pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     subject_id: str,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
-    record = _read_campaign_record(repository, pinned, "world.knowledge", identity)
+    record = _read_campaign_record(
+        repository, pinned, "world.knowledge", identity, current_owner_session
+    )
     if record.get("knower_id") != subject_id:
         raise ContextContractError(
             "native knowledge is outside the requested subject scope"
@@ -581,8 +621,11 @@ def _resolve_disclosure(
     pinned: _PinnedCampaign,
     identity: tuple[str, ...],
     recipient_id: str,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
-    record = _read_campaign_record(repository, pinned, "runtime.disclosure", identity)
+    record = _read_campaign_record(
+        repository, pinned, "runtime.disclosure", identity, current_owner_session
+    )
     if record.get("player_id") != recipient_id:
         raise ContextContractError(
             "native disclosure is outside the requested recipient scope"
@@ -595,6 +638,7 @@ def _resolve_collaboration_obligation(
     pinned: _PinnedCampaign,
     scope: _RequestScope,
     candidate: Mapping[str, object],
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> tuple[list[str], dict[str, object]]:
     """Project only the exact current obligation view for one recipient."""
 
@@ -640,10 +684,26 @@ def _resolve_collaboration_obligation(
         pinned,
         (scope.recipient_id,),
         scope.recipient_id,
+        current_owner_session=current_owner_session,
     )
     try:
         route = route_native_record("runtime.collaboration_obligation", identity)
-        raw_obligation = repository.read_exact_path(pinned, route.relative_path)  # type: ignore[attr-defined]
+        if current_owner_session is None:
+            raw_obligation = repository.read_exact_path(  # type: ignore[attr-defined]
+                pinned, route.relative_path
+            )
+        else:
+            obligation_read = current_owner_session.read(
+                NativeOwnerRef("runtime.collaboration_obligation", identity)
+            )
+            if (
+                obligation_read.status is not CurrentOwnerStatus.RESOLVED
+                or obligation_read.payload is None
+            ):
+                raise ContextContractError(
+                    "exact collaboration obligation owner is not current"
+                )
+            raw_obligation = obligation_read.payload
     except (AttributeError, KeyError, OSError, TypeError, ValueError) as error:
         raise ContextContractError(
             "exact collaboration obligation owner is unavailable"
@@ -953,6 +1013,7 @@ def _resolve_candidate(
     selected_live_reader: object | None,
     scope: _RequestScope,
     candidate: Mapping[str, object],
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, object]:
     if not isinstance(candidate, dict):
         raise ContextContractError(
@@ -995,13 +1056,18 @@ def _resolve_candidate(
             tuple(owner_identity),
             scope.recipient_id,
             selected_pc_id,
+            current_owner_session,
         )
     elif family in _INFORMATION_FAMILIES:
         owner_identity = list(
             _identity(raw_identity, "information owner_identity", length=1)
         )
         payload = _resolve_information(
-            repository, pinned, tuple(owner_identity), scope.recipient_id
+            repository,
+            pinned,
+            tuple(owner_identity),
+            scope.recipient_id,
+            current_owner_session,
         )
     elif family in _KNOWLEDGE_FAMILIES:
         owner_identity = list(
@@ -1018,7 +1084,11 @@ def _resolve_candidate(
                 )
             knowledge_subject_id = scope.selected_pc_id
         payload = _resolve_knowledge(
-            repository, pinned, tuple(owner_identity), knowledge_subject_id
+            repository,
+            pinned,
+            tuple(owner_identity),
+            knowledge_subject_id,
+            current_owner_session,
         )
     elif family in _DISCLOSURE_FAMILIES:
         owner_identity = list(
@@ -1032,14 +1102,20 @@ def _resolve_candidate(
                 "Commentator disclosure nomination does not match the recipient"
             )
         payload = _resolve_disclosure(
-            repository, pinned, tuple(owner_identity), scope.recipient_id
+            repository,
+            pinned,
+            tuple(owner_identity),
+            scope.recipient_id,
+            current_owner_session,
         )
     elif family in _COLLABORATION_FAMILIES:
         owner_identity, payload = _resolve_collaboration_obligation(
-            repository, pinned, scope, candidate
+            repository, pinned, scope, candidate, current_owner_session
         )
     elif (resolver := _CAMPAIGN_RESOLVER_TABLE.get(family)) is not None:
-        owner_identity, payload = resolver(repository, pinned, scope, candidate, family)
+        owner_identity, payload = resolver(
+            repository, pinned, scope, candidate, family, current_owner_session
+        )
     else:
         raise ContextContractError("candidate family is not a registered native owner")
 
@@ -1127,6 +1203,40 @@ def _assemble_bound_context(
     pinned_campaign: object,
     selected_live: LiveRouting | None,
     selected_live_reader: object | None,
+    current_owner_session: CurrentOwnerReadSession | None = None,
+) -> dict[str, Any]:
+    """Assemble against one owner union and reject any changed retained basis."""
+
+    result = _assemble_bound_context_unverified(
+        request,
+        candidates,
+        repository=repository,
+        pinned_campaign=pinned_campaign,
+        selected_live=selected_live,
+        selected_live_reader=selected_live_reader,
+        current_owner_session=current_owner_session,
+    )
+    if current_owner_session is None:
+        return result
+    observation = current_owner_session.observation
+    if observation is None or current_owner_session.revalidate(observation):
+        return result
+    return {
+        "outcome": "REVALIDATION_REQUIRED",
+        "bundle": None,
+        "trace": result.get("trace"),
+    }
+
+
+def _assemble_bound_context_unverified(
+    request: dict[str, Any],
+    candidates: list[dict[str, Any]],
+    *,
+    repository: object,
+    pinned_campaign: object,
+    selected_live: LiveRouting | None,
+    selected_live_reader: object | None,
+    current_owner_session: CurrentOwnerReadSession | None = None,
 ) -> dict[str, Any]:
     """Internal RuntimeHost route; callers cannot supply this operation basis."""
 
@@ -1189,6 +1299,7 @@ def _assemble_bound_context(
             selected_live_reader,
             scope,
             item,
+            current_owner_session,
         )
 
     if request.get("retrospective") is True:

@@ -145,21 +145,21 @@ class CoverageTests(unittest.TestCase):
   start={"profile_id":"procedure.start_turn","idempotency_key":"start","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":1,"actor_id":"a"};_,after=execute_combat_procedure_transition(start,procedure,{});procedure=after["procedure"]
   spend["procedure_revision"]=procedure["revision"];spend["amount"]=2;wire,_=execute_combat_procedure_transition(spend,procedure,{});self.assertEqual(wire["failure_code"],"failure.action_economy_scope_invalid")
   receipts={};spend["amount"]=1;first=execute_combat_procedure_transition(spend,procedure,receipts);conflict=copy.deepcopy(spend);conflict["amount"]=2;wire,_=execute_combat_procedure_transition(conflict,procedure,receipts);self.assertEqual(wire["failure_code"],"failure.idempotency_conflict");self.assertEqual(first[0]["status"],"COMPLETED")
- def test_movement_commits_two_owners_in_one_segment_and_retries(self):
-  procedure={"id":"procedure-1","revision":4,"state":initialize_combat_procedure(["actor-1"],["actor-1"])};procedure["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"]=5
-  actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7}
-  destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3}
-  request={"transition_kind":"transition.location_change","profile_id":"location_change.procedure_movement","idempotency_key":"move-1","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":4,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":10}
-  receipts={};first=execute_procedure_movement(request,procedure,actor,destination,receipts);retry=execute_procedure_movement(request,procedure,actor,destination,receipts)
-  self.assertIs(first,retry);wire,after=first;self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:move-1:segment:1");self.assertEqual(len(wire["prospective_mutations"]),2);self.assertEqual(len(wire["execution_segment"]["affected_revision_refs"]),2)
-  self.assertEqual(after["procedure"]["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"],15);self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b")
-  schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
-  validator.validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
-  self.validate_transition(wire)
-  missing_segment=copy.deepcopy(wire);missing_segment["execution_segment"].pop("segment_id")
-  with self.assertRaises(Exception):self.validate_transition(missing_segment)
+  def test_movement_commits_two_owners_in_one_segment_and_retries(self):
+   procedure={"id":"procedure-1","revision":4,"state":initialize_combat_procedure(["actor-1"],["actor-1"])};procedure["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"]=5
+   actor={"record":{"schema_version":2,"id":"actor-1","kind":"world.actor","state_revision":7,"state":{"location_id":"location-a"}},"revision":7}
+   destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3}
+   request={"transition_kind":"transition.location_change","profile_id":"location_change.procedure_movement","idempotency_key":"move-1","catalog_generation":2,"procedure_id":"procedure-1","procedure_revision":4,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":10}
+   receipts={};first=execute_procedure_movement(request,procedure,actor,destination,receipts);retry=execute_procedure_movement(request,procedure,actor,destination,receipts)
+   self.assertIs(first,retry);wire,after=first;self.assertEqual(wire["status"],"COMPLETED");self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:move-1:segment:1");self.assertEqual(len(wire["prospective_mutations"]),2);self.assertEqual(len(wire["execution_segment"]["affected_revision_refs"]),2)
+   self.assertEqual(after["procedure"]["state"]["participant_resources"]["actor-1"]["resource.movement_budget"]["spent"],15);self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b")
+   schemas=ROOT/"DEV/SCHEMAS";validator=CanonicalSchemaValidator(schemas)
+   validator.validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
+   self.validate_transition(wire)
+   missing_segment=copy.deepcopy(wire);missing_segment["execution_segment"].pop("segment_id")
+   with self.assertRaises(Exception):self.validate_transition(missing_segment)
  def test_movement_conflict_or_budget_failure_has_no_partial_commit(self):
-  p={"id":"p","revision":2,"state":initialize_combat_procedure(["a"],["a"],movement_capacity=5)};a={"record":{"id":"a","kind":"world.actor","state":{"location_id":"x"}},"revision":3}
+  p={"id":"p","revision":2,"state":initialize_combat_procedure(["a"],["a"],movement_capacity=5)};a={"record":{"schema_version":2,"id":"a","kind":"world.actor","state_revision":3,"state":{"location_id":"x"}},"revision":3}
   destination={"record":{"id":"y","kind":"world.location","state":{"name":"Corridor"}},"revision":1};req={"profile_id":"location_change.procedure_movement","idempotency_key":"k","procedure_id":"p","procedure_revision":1,"actor_revision":3,"actor_id":"a","destination_location_id":"y","destination_location_revision":1,"movement_cost":1}
   out,_=execute_procedure_movement(req,p,a,destination,{});self.assertEqual(out["failure_code"],"failure.state_revision_conflict");self.assertEqual(out["prospective_mutations"],[]);self.assertEqual(a["record"]["state"]["location_id"],"x");self.validate_transition(out)
   req.update({"procedure_revision":2,"movement_cost":6});out,_=execute_procedure_movement(req,p,a,destination,{});self.assertEqual(out["failure_code"],"failure.action_economy_scope_invalid");self.assertEqual(out["prospective_mutations"],[]);self.validate_transition(out)
@@ -167,7 +167,7 @@ class CoverageTests(unittest.TestCase):
   fake={"record":{"id":"y","kind":"world.actor","state":{"location_id":"x"}},"revision":2}
   out,_=execute_procedure_movement(req,p,a,fake,{});self.assertEqual(out["failure_code"],"failure.missing_reference")
  def test_outside_procedure_movement_changes_only_canonical_actor(self):
-  actor={"record":{"id":"actor-1","kind":"world.actor","state":{"location_id":"location-a"}},"revision":7};destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3};request={"transition_kind":"transition.location_change","profile_id":"location_change.outside_procedure","idempotency_key":"move-out-1","catalog_generation":2,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":"NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
+  actor={"record":{"schema_version":2,"id":"actor-1","kind":"world.actor","state_revision":7,"state":{"location_id":"location-a"}},"revision":7};destination={"record":{"id":"location-b","kind":"world.location","state":{"name":"Corridor"}},"revision":3};request={"transition_kind":"transition.location_change","profile_id":"location_change.outside_procedure","idempotency_key":"move-out-1","catalog_generation":2,"actor_id":"actor-1","actor_revision":7,"destination_location_id":"location-b","destination_location_revision":3,"movement_cost":"NOT_APPLICABLE_OUTSIDE_PROCEDURE"}
   schemas=ROOT/"DEV/SCHEMAS";CanonicalSchemaValidator(schemas).validate(request,json.loads((schemas/"gameplay-spine-transition-request.schema.json").read_text()))
   wire,after=execute_outside_procedure_movement(request,actor,destination,{});self.assertEqual(wire["execution_segment"]["segment_id"],"resolution:move-out-1:segment:1");self.assertEqual(after["actor"]["record"]["state"]["location_id"],"location-b");self.assertEqual({x["owner_kind"] for x in wire["prospective_mutations"]},{"world.actor"});self.validate_transition(wire)
   invalid=copy.deepcopy(destination);invalid["record"]["state"]={"environment_ids":[]}

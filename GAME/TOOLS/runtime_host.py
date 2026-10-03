@@ -20,12 +20,25 @@ from enum import StrEnum
 from types import MappingProxyType
 from typing import Final, NoReturn, Protocol
 
+from .current_owner import (
+    CurrentOwnerReadSession,
+    CurrentOwnerStatus,
+    NativeOwnerRef,
+)
 from .durability import RoutedSerializedOperation
+from .hot_store import (
+    HotOwnerStorePort,
+    NativeHotStore,
+    OwnerDocument,
+    StaleOwnerGeneration,
+)
 from .live_state import (
     LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION,
     LiveEnvelope,
     LiveNativeStatePack,
     LiveRouting,
+    WriteAuthority,
+    lookup_write_authority,
     select_live_source,
     validate_live_route_completeness,
 )
@@ -46,8 +59,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -1472,7 +1485,467 @@ class ContextService(_BoundService):
             pinned_campaign=basis.pinned_campaign,
             selected_live=basis.selected_live,
             selected_live_reader=self._host._live_transport,
+            current_owner_session=self._host._current_owner.begin(basis),
         )
+
+
+class ActorContinuityEstablishmentStatus(StrEnum):
+    ESTABLISHED = "ESTABLISHED"
+    NO_CHANGE = "NO_CHANGE"
+    UNSUPPORTED = "UNSUPPORTED"
+    REVALIDATION_REQUIRED = "REVALIDATION_REQUIRED"
+
+
+@dataclass(frozen=True, slots=True)
+class ActorContinuityEstablishmentResult:
+    status: ActorContinuityEstablishmentStatus
+    owner_ref: NativeOwnerRef | None = None
+    before_state_revision: int | None = None
+    after_state_revision: int | None = None
+
+
+class CurrentOwnerView(_BoundService):
+    """Fixed operation-scoped read route over exact source and admitted HOT."""
+
+    __slots__ = ()
+
+    def begin(self, basis: _OperationBasis) -> CurrentOwnerReadSession:
+        operation = self._host._operation_basis(basis)
+        return CurrentOwnerReadSession(
+            campaign_id=self._host._campaign_id,
+            operation_token=operation,
+            pinned_campaign=operation.pinned_campaign,
+            selected_live=operation.selected_live,
+            hot_store=self._host._hot_store,
+            reader=self._host._read_current_owner_path,
+            live_reader=self._host._read_current_owner_live,
+        )
+
+
+class ActorContinuityService(_BoundService):
+    """One trusted ACTOR-phase join for native NPC self-state reconsideration."""
+
+    __slots__ = ()
+
+    def establish_from_phase(
+        self, envelope: object, phase_result: object
+    ) -> ActorContinuityEstablishmentResult:
+        from . import actor_continuity, turn_runtime
+
+        actor_id = (
+            phase_result.subject_id
+            if type(phase_result) is turn_runtime.AcceptedPhaseResult
+            else None
+        )
+        try:
+            owner_ref = (
+                NativeOwnerRef("world.actor", (actor_id,))
+                if isinstance(actor_id, str) and actor_id
+                else None
+            )
+        except ValueError:
+            owner_ref = None
+        try:
+            basis, accepted_payload = turn_runtime.require_current_actor_phase_result(
+                envelope,
+                phase_result,
+                context_service=self._host._context,
+            )
+        except (TypeError, ValueError, KeyError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+            )
+        if (
+            owner_ref is None
+            or basis.subject_id != actor_id
+            or basis.role != "ACTOR"
+            or basis.purpose != "assess"
+            or basis.profile_id != "profile.actor"
+            or basis.source_frontier != envelope.get("accepted_frontier")
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+
+        try:
+            operation = self._host._begin_operation()
+        except RuntimeHostError:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+        if (
+            operation.pinned_campaign.campaign_id != self._host._campaign_id
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+        try:
+            live_authority = lookup_write_authority(
+                "world.actor", actor_id, operation.selected_live
+            )
+        except (TypeError, ValueError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+        if live_authority is WriteAuthority.LIVE:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED, owner_ref
+            )
+        if live_authority is WriteAuthority.INTEGRITY_CONFLICT:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+
+        session = self._host._current_owner.begin(operation)
+        try:
+            observation = session.require((owner_ref,))
+            current_read = observation.require(owner_ref)
+        except (TypeError, ValueError, RuntimeHostError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+        if (
+            current_read.status is not CurrentOwnerStatus.RESOLVED
+            or current_read.payload is None
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+
+        actor_record = deepcopy(dict(current_read.payload))
+        try:
+            native_actor = actor_continuity.validate_actor_source(actor_record)
+        except (TypeError, ValueError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED, owner_ref
+            )
+        before_revision = native_actor["state_revision"]
+        if (
+            actor_record.get("schema_version") != 2
+            or actor_record.get("id") != actor_id
+            or current_read.generation != before_revision
+            or current_read.source_basis is None
+            or current_read.predecessor_fingerprint is None
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+
+        basis_actor = _actor_from_context_basis(basis.bundle, actor_id)
+        if basis_actor is None or basis_actor != actor_record:
+            consumed = self._host._hot_store._lookup_actor_phase_consumption(
+                self._host._campaign_id,
+                "world.actor",
+                (actor_id,),
+                phase_result,
+                self._host._basis_token,
+            )
+            if consumed is not None:
+                prior_result, prior_fingerprint = consumed
+                if (
+                    current_read.fingerprint == prior_fingerprint
+                    and session.revalidate(observation)
+                ):
+                    return prior_result  # type: ignore[return-value]
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+
+        consumed = self._host._hot_store._lookup_actor_phase_consumption(
+            self._host._campaign_id,
+            "world.actor",
+            (actor_id,),
+            phase_result,
+            self._host._basis_token,
+        )
+        if consumed is not None:
+            prior_result, prior_fingerprint = consumed
+            if (
+                current_read.fingerprint == prior_fingerprint
+                and session.revalidate(observation)
+            ):
+                return prior_result  # type: ignore[return-value]
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+
+        roles = native_actor["state"].get("roles", [])
+        if (
+            not isinstance(roles, Sequence)
+            or isinstance(roles, (str, bytes))
+            or "actor.nonplayer_character" not in roles
+            or "actor.player_character" in roles
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+
+        proposal = _parse_actor_reconsideration(accepted_payload.get("proposal"))
+        if proposal is None:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+        evolving = native_actor["state"].get("continuity", {}).get("evolving", {})
+        cues = (
+            evolving.get("reconsideration_cues")
+            if isinstance(evolving, Mapping)
+            else None
+        )
+        if (
+            not isinstance(cues, Sequence)
+            or isinstance(cues, (str, bytes))
+            or not any(proposal["reconsideration_cue"] == cue for cue in cues)
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+
+        delta = proposal["delta"]
+        if delta is not None and not _bounded_actor_reconsideration_delta(
+            delta, actor_id, before_revision
+        ):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+        if not session.revalidate(observation):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+
+        # This legacy evidence mapping is deterministic and private to the native
+        # owner join; phase sealing alone never sets its acceptance flags.
+        source_evidence = [
+            {
+                "ref": actor_id,
+                "accepted": True,
+                "current": True,
+                "authorized_actor_ids": [actor_id],
+            }
+        ]
+        try:
+            assessment = actor_continuity.assess_actor(
+                {
+                    "actor": actor_record,
+                    "purpose": "assessment.reconsider",
+                    "source_evidence": source_evidence,
+                    "delta": delta,
+                }
+            )
+            if assessment["disposition"] == "assessment.no_change":
+                result = _actor_establishment_result(
+                    ActorContinuityEstablishmentStatus.NO_CHANGE,
+                    owner_ref,
+                    before_revision,
+                    before_revision,
+                )
+                try:
+                    self._host._hot_store._consume_actor_no_change(
+                        campaign_id=self._host._campaign_id,
+                        identity=(actor_id,),
+                        expected_snapshot=observation._hot_snapshot,
+                        phase_result=phase_result,
+                        host_token=self._host._basis_token,
+                        result=result,
+                        source_fingerprint=current_read.fingerprint,
+                    )
+                except StaleOwnerGeneration:
+                    return _actor_establishment_result(
+                        ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                        owner_ref,
+                        before_revision,
+                    )
+                return result
+            after_image = actor_continuity.apply_actor_delta(
+                actor_record, delta, source_evidence
+            )
+        except (TypeError, ValueError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+
+        if after_image["state"] == native_actor["state"]:
+            result = _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.NO_CHANGE,
+                owner_ref,
+                before_revision,
+                before_revision,
+            )
+            try:
+                self._host._hot_store._consume_actor_no_change(
+                    campaign_id=self._host._campaign_id,
+                    identity=(actor_id,),
+                    expected_snapshot=observation._hot_snapshot,
+                    phase_result=phase_result,
+                    host_token=self._host._basis_token,
+                    result=result,
+                    source_fingerprint=current_read.fingerprint,
+                )
+            except StaleOwnerGeneration:
+                return _actor_establishment_result(
+                    ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                    owner_ref,
+                    before_revision,
+                )
+            return result
+
+        after_revision = after_image["state_revision"]
+        result = _actor_establishment_result(
+            ActorContinuityEstablishmentStatus.ESTABLISHED,
+            owner_ref,
+            before_revision,
+            after_revision,
+        )
+        document = OwnerDocument(
+            campaign_id=self._host._campaign_id,
+            family_key="world.actor",
+            identity=(actor_id,),
+            payload=after_image,
+            source_basis=current_read.source_basis,
+            generation=after_revision,
+        )
+        try:
+            self._host._hot_store._establish_actor_owner(
+                document,
+                observation._hot_snapshot,
+                phase_result=phase_result,
+                host_token=self._host._basis_token,
+                establishment_result=result,
+                source_fingerprint=current_read.predecessor_fingerprint,
+            )
+        except StaleOwnerGeneration:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+        return result
+
+
+def _actor_establishment_result(
+    status: ActorContinuityEstablishmentStatus,
+    owner_ref: NativeOwnerRef | None,
+    before_revision: int | None = None,
+    after_revision: int | None = None,
+) -> ActorContinuityEstablishmentResult:
+    return ActorContinuityEstablishmentResult(
+        status=status,
+        owner_ref=owner_ref,
+        before_state_revision=before_revision,
+        after_state_revision=after_revision,
+    )
+
+
+def _actor_from_context_basis(
+    bundle: Mapping[str, object], actor_id: str
+) -> dict[str, object] | None:
+    if any(
+        bundle.get(field) != expected
+        for field, expected in (
+            ("role", "ACTOR"),
+            ("purpose", "assess"),
+            ("profile_id", "profile.actor"),
+            ("subject_id", actor_id),
+        )
+    ):
+        return None
+    candidates: list[Mapping[str, object]] = []
+    for section in ("required", "optional"):
+        rows = bundle.get(section)
+        if rows is None:
+            continue
+        if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+            return None
+        candidates.extend(row for row in rows if isinstance(row, Mapping))
+    matches = [
+        candidate
+        for candidate in candidates
+        if candidate.get("owner_family") == "world.actor"
+        and candidate.get("owner_identity") == [actor_id]
+    ]
+    if len(matches) != 1 or not isinstance(matches[0].get("payload"), Mapping):
+        return None
+    return deepcopy(dict(matches[0]["payload"]))
+
+
+def _parse_actor_reconsideration(value: object) -> dict[str, object] | None:
+    if not isinstance(value, str):
+        return None
+
+    def unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, item in pairs:
+            if key in result:
+                raise ValueError("Actor reconsideration proposal contains duplicate keys")
+            result[key] = item
+        return result
+
+    try:
+        proposal = json.loads(value, object_pairs_hook=unique_object)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return None
+    if (
+        not isinstance(proposal, dict)
+        or set(proposal) != {"assessment_purpose", "reconsideration_cue", "delta"}
+        or proposal.get("assessment_purpose") != "assessment.reconsider"
+        or not isinstance(proposal.get("reconsideration_cue"), Mapping)
+    ):
+        return None
+    delta = proposal.get("delta")
+    if delta is not None and not isinstance(delta, Mapping):
+        return None
+    return {
+        "assessment_purpose": "assessment.reconsider",
+        "reconsideration_cue": deepcopy(dict(proposal["reconsideration_cue"])),
+        "delta": deepcopy(dict(delta)) if isinstance(delta, Mapping) else None,
+    }
+
+
+def _bounded_actor_reconsideration_delta(
+    value: Mapping[str, object], actor_id: str, state_revision: int
+) -> bool:
+    if set(value) != {
+        "actor_id",
+        "expected_state_revision",
+        "purpose",
+        "source_refs",
+        "changes",
+    }:
+        return False
+    if (
+        value.get("actor_id") != actor_id
+        or type(value.get("expected_state_revision")) is not int
+        or value.get("expected_state_revision") != state_revision
+        or value.get("purpose") != "assessment.reconsider"
+        or value.get("source_refs") != [actor_id]
+    ):
+        return False
+    changes = value.get("changes")
+    if not isinstance(changes, Mapping) or set(changes) != {"continuity"}:
+        return False
+    continuity = changes.get("continuity")
+    if not isinstance(continuity, Mapping) or set(continuity) != {"evolving"}:
+        return False
+    evolving = continuity.get("evolving")
+    return isinstance(evolving, Mapping) and bool(evolving)
 
 
 class HistoryService(_BoundService):
@@ -1546,10 +2019,13 @@ class RuntimeHost:
     """
 
     __slots__ = (
+        "_actor_continuity",
         "_basis_token",
         "_campaign_id",
         "_context",
+        "_current_owner",
         "_history",
+        "_hot_store",
         "_live_transport",
         "_native_ordering",
         "_publication",
@@ -1564,6 +2040,7 @@ class RuntimeHost:
         authenticated_repository_port: RepositoryPort,
         selected_live_transport: SelectedLiveTransport,
         campaign_publication_transport: CampaignPublicationTransport | None = None,
+        hot_owner_store: HotOwnerStorePort | None = None,
     ) -> None:
         campaign_id = _require_nonempty_campaign_id(selected_campaign_id)
         _require_operations(
@@ -1583,14 +2060,28 @@ class RuntimeHost:
             _validate_transport_repository_identity(
                 authenticated_repository_port, campaign_publication_transport
             )
+        hot_store = NativeHotStore(":memory:") if hot_owner_store is None else hot_owner_store
+        _require_operations(
+            hot_store,
+            (
+                "read_admitted_snapshot",
+                "_lookup_actor_phase_consumption",
+                "_establish_actor_owner",
+                "_consume_actor_no_change",
+            ),
+            "infrastructure HOT owner store",
+        )
         object.__setattr__(self, "_campaign_id", campaign_id)
         object.__setattr__(self, "_basis_token", object())
         object.__setattr__(self, "_repository", authenticated_repository_port)
         object.__setattr__(self, "_live_transport", selected_live_transport)
+        object.__setattr__(self, "_hot_store", hot_store)
         object.__setattr__(
             self, "_publication_transport", campaign_publication_transport
         )
         object.__setattr__(self, "_context", ContextService(self))
+        object.__setattr__(self, "_current_owner", CurrentOwnerView(self))
+        object.__setattr__(self, "_actor_continuity", ActorContinuityService(self))
         object.__setattr__(self, "_history", HistoryService(self))
         object.__setattr__(self, "_native_ordering", NativeOrderingService(self))
         object.__setattr__(self, "_publication", CampaignPublicationService(self))
@@ -1615,6 +2106,10 @@ class RuntimeHost:
     @property
     def context(self) -> ContextService:
         return self._context
+
+    @property
+    def actor_continuity(self) -> ActorContinuityService:
+        return self._actor_continuity
 
     @property
     def history(self) -> HistoryService:
@@ -1650,12 +2145,45 @@ class RuntimeHost:
             host_token=self._basis_token,
         )
 
+    def _operation_basis(self, value: _OperationBasis | None) -> _OperationBasis:
+        if value is None:
+            return self._begin_operation()
+        if (
+            not isinstance(value, _OperationBasis)
+            or value.host_token is not self._basis_token
+            or value.pinned_campaign.campaign_id != self._campaign_id
+        ):
+            raise RuntimeHostError("operation basis belongs to another runtime host")
+        return value
+
+    def _read_current_owner_path(
+        self, pinned: PinnedCampaign, path: str
+    ) -> object:
+        try:
+            return self._repository.read_exact_path(pinned, path)
+        except KeyError:
+            raise
+        except (AttributeError, OSError, TypeError, ValueError) as exc:
+            raise RuntimeHostError(f"exact current-owner read failed for {path}") from exc
+
+    def _read_current_owner_live(
+        self, routing: LiveRouting, source: LiveEnvelope
+    ) -> object:
+        reader = getattr(self._live_transport, "read_selected_live_source", None)
+        if not callable(reader):
+            raise RuntimeHostError("selected LIVE native-owner read capability is unavailable")
+        try:
+            return reader(routing, source)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise RuntimeHostError("selected LIVE native-owner read failed") from exc
+
 
 def compose_runtime_host(
     selected_campaign_id: str,
     authenticated_repository_port: RepositoryPort,
     selected_live_transport: SelectedLiveTransport,
     campaign_publication_transport: CampaignPublicationTransport | None = None,
+    hot_owner_store: HotOwnerStorePort | None = None,
 ) -> RuntimeHost:
     """Compose one immutable, campaign-bound ephemeral runtime root."""
 
@@ -1664,6 +2192,7 @@ def compose_runtime_host(
         authenticated_repository_port,
         selected_live_transport,
         campaign_publication_transport,
+        hot_owner_store,
     )
 
 

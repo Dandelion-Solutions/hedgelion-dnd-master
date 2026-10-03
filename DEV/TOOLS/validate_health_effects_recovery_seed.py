@@ -68,6 +68,27 @@ def _receipt(actor, key, kind, world_effect_changes=None):
     return result
 
 
+def _advance_actor_revision(before, after):
+    if "schema_version" not in before and "state_revision" not in before:
+        return
+    if (
+        before.get("schema_version") != 2
+        or isinstance(before.get("state_revision"), bool)
+        or not isinstance(before.get("state_revision"), int)
+        or before["state_revision"] < 0
+    ):
+        raise ValueError("native Actor requires schema v2 and explicit revision")
+    after["schema_version"] = before["schema_version"]
+    metadata = {"schema_version", "id", "definition_id", "state_revision"}
+    before_state = {key: value for key, value in before.items() if key not in metadata}
+    after_state = {key: value for key, value in after.items() if key not in metadata}
+    after["state_revision"] = before["state_revision"] + (
+        before_state != after_state
+    )
+    if "definition_id" in before:
+        after["definition_id"] = before["definition_id"]
+
+
 def _dedupe(key, receipts, producer):
     if key in receipts:
         return receipts[key]
@@ -137,6 +158,7 @@ def apply_damage(actor, amount, key, receipts, critical=False):
                     result["life_state_id"] = "life.dying"
                     result["life_state_progress"] = {"death_saves": {"successes": 0, "failures": 0}}
                     world_effect_changes = _unconscious_changes(result, True)
+        _advance_actor_revision(actor, result)
         validate_actor_health(result)
         return _receipt(result, key, "event.health.damage_applied", world_effect_changes)
     return _dedupe(key, receipts, produce)
@@ -153,6 +175,7 @@ def apply_healing(actor, amount, key, receipts):
             result["life_state_id"] = "life.active"
             result.pop("life_state_progress", None)
             world_effect_changes = _unconscious_changes(result, False)
+        _advance_actor_revision(actor, result)
         validate_actor_health(result)
         return _receipt(result, key, "event.health.healing_applied", world_effect_changes)
     return _dedupe(key, receipts, produce)
@@ -170,6 +193,7 @@ def apply_maximum_change(actor, adjustment_delta, key, receipts):
             result["life_state_id"] = "life.dead"
             result.pop("life_state_progress", None)
             world_effect_changes = _unconscious_changes(result, False)
+        _advance_actor_revision(actor, result)
         validate_actor_health(result)
         return _receipt(result, key, "event.health.maximum_changed", world_effect_changes)
     return _dedupe(key, receipts, produce)
@@ -204,6 +228,7 @@ def apply_death_save(actor, natural_roll, key, receipts, fixed_recovery_roll=1, 
                     result["life_state_progress"] = {"recovery_binding": {"basis_id": "temporal.metric_deadline", "context_id": chronology_id, "anchor_value": anchor, "deadline_value": anchor + fixed_recovery_roll, "unit_id": "unit.hour"}}
             else:
                 saves[name] = total
+        _advance_actor_revision(actor, result)
         validate_actor_health(result)
         receipt = _receipt(result, key, "event.life_state.death_save_resolved", world_effect_changes)
         if result["life_state_id"] == "life.stable":
@@ -221,6 +246,7 @@ def recover_stable_actor(actor, key, receipts):
         result["life_state_id"] = "life.active"
         result.pop("life_state_progress", None)
         world_effect_changes = _unconscious_changes(result, False)
+        _advance_actor_revision(actor, result)
         validate_actor_health(result)
         return _receipt(result, key, "event.life_state.stable_recovered", world_effect_changes)
     return _dedupe(key, receipts, produce)
@@ -294,7 +320,21 @@ def validate_actor_and_effect_outputs(output, schema_dir):
     actor = output["actor"]
     if "id" not in actor:
         raise ValueError("Actor identity missing")
-    actor_record = {"id": actor["id"], "kind": "world.actor", "state": {key: value for key, value in actor.items() if key != "id"}}
+    if actor.get("schema_version") != 2 or "state_revision" not in actor:
+        raise ValueError("Actor schema v2 and explicit state_revision are required")
+    actor_record = {
+        "schema_version": actor["schema_version"],
+        "id": actor["id"],
+        "kind": "world.actor",
+        "state_revision": actor["state_revision"],
+        "state": {
+            key: value
+            for key, value in actor.items()
+            if key not in {"schema_version", "id", "definition_id", "state_revision"}
+        },
+    }
+    if "definition_id" in actor:
+        actor_record["definition_id"] = actor["definition_id"]
     try:
         validator.validate(actor_record, world_schema)
         for record in output.get("world_effect_changes", {}).get("create", []):
@@ -408,4 +448,3 @@ def validate_world_effect_records(effects, schema_dir=None):
     except SchemaViolation as error:
         raise ValueError("canonical world.effect record validation failed") from error
     return True
-

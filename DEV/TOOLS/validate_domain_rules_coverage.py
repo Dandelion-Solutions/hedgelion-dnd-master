@@ -192,6 +192,7 @@ def _world_record(snapshot,kind,schemas):
  if set(snapshot)!={"record","revision"} or not isinstance(snapshot["revision"],int) or snapshot["revision"]<0:raise ValueError("owner snapshot is not exact")
  record=snapshot["record"]
  if record.get("kind")!=kind:raise ValueError("owner record kind mismatch")
+ if kind=="world.actor" and (record.get("schema_version")!=2 or record.get("state_revision")!=snapshot["revision"]):raise ValueError("Actor envelope schema/revision differs from its exact owner snapshot")
  CanonicalSchemaValidator(schemas).validate(record,load(Path(schemas)/"world-record.schema.json"))
  return record
 def validate_combat_procedure_state(state):
@@ -284,7 +285,7 @@ def execute_procedure_movement(req,procedure,actor,destination,receipts=None):
  if req["procedure_id"]!=procedure["id"] or aid!=actor_record["id"] or aid not in procedure["state"]["participant_resources"] or req["destination_location_id"]!=destination_record["id"]:return (_failure(req,"failure.missing_reference"),{})
  budget=procedure["state"]["participant_resources"][aid]["resource.movement_budget"]
  if budget["spent"]+req["movement_cost"]>budget["capacity"]:return (_failure(req,"failure.action_economy_scope_invalid"),{})
- p=deepcopy(procedure);a=deepcopy(actor);p["state"]["participant_resources"][aid]["resource.movement_budget"]["spent"]+=req["movement_cost"];a["record"]["state"]["location_id"]=req["destination_location_id"];p["revision"]+=1;a["revision"]+=1;event=f"{key}:event:entity-moved"
+ p=deepcopy(procedure);a=deepcopy(actor);p["state"]["participant_resources"][aid]["resource.movement_budget"]["spent"]+=req["movement_cost"];a["record"]["state"]["location_id"]=req["destination_location_id"];p["revision"]+=1;a["revision"]+=1;a["record"]["state_revision"]+=1;event=f"{key}:event:entity-moved"
  mutations=[{"owner_kind":"runtime.procedure","owner_id":p["id"],"field_path":f"state.participant_resources[{aid}].resource.movement_budget.spent","before_revision":procedure["revision"],"after_revision":p["revision"],"new_value":p["state"]["participant_resources"][aid]["resource.movement_budget"]["spent"]},{"owner_kind":"world.actor","owner_id":a["record"]["id"],"field_path":"state.location_id","before_revision":actor["revision"],"after_revision":a["revision"],"new_value":req["destination_location_id"]}]
  transaction=(_committed("location_change.procedure_movement",key,mutations,[event]),{"procedure":p,"actor":a});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
 
@@ -296,7 +297,7 @@ def execute_outside_procedure_movement(req,actor,destination,receipts=None):
  except (ValueError,KeyError):return (_failure(req,"failure.missing_reference"),{})
  if req["actor_id"]!=record["id"] or req["destination_location_id"]!=destination_record["id"]:return (_failure(req,"failure.missing_reference"),{})
  if req["actor_revision"]!=actor["revision"] or req["destination_location_revision"]!=destination["revision"]:return (_failure(req,"failure.state_revision_conflict"),{})
- after=deepcopy(actor);after["record"]["state"]["location_id"]=req["destination_location_id"];after["revision"]+=1;event=f"{key}:event:entity-moved"
+ after=deepcopy(actor);after["record"]["state"]["location_id"]=req["destination_location_id"];after["revision"]+=1;after["record"]["state_revision"]+=1;event=f"{key}:event:entity-moved"
  mutation={"owner_kind":"world.actor","owner_id":record["id"],"field_path":"state.location_id","before_revision":actor["revision"],"after_revision":after["revision"],"new_value":req["destination_location_id"]}
  transaction=(_committed("location_change.outside_procedure",key,[mutation],[event]),{"actor":after});receipts[key]={"fingerprint":fp,"transaction":transaction};return transaction
 

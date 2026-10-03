@@ -180,16 +180,25 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
                 validate_actor_health(invalid)
 
     def test_damage_and_healing_reference_transitions_are_atomic_and_idempotent(self):
-        actor = {"id": "actor.a", "hp": {"current": 8, "maximum_base": 8, "temporary": 3}, "life_state_id": "life.active", "life_state_policy_id": "life_policy.dnd2024.character_like"}
+        actor = {
+            "schema_version": 2,
+            "id": "actor.a",
+            "state_revision": 4,
+            "hp": {"current": 8, "maximum_base": 8, "temporary": 3},
+            "life_state_id": "life.active",
+            "life_state_policy_id": "life_policy.dnd2024.character_like",
+        }
         receipts = {}
         first = apply_damage(actor, 5, "damage.1", receipts)
         retry = apply_damage(actor, 5, "damage.1", receipts)
         self.assertIs(first, retry)
         self.assertEqual(first["actor"]["hp"], {"current": 6, "maximum_base": 8, "temporary": 0})
+        self.assertEqual(first["actor"]["state_revision"], 5)
         dying = apply_damage(first["actor"], 6, "damage.2", receipts)["actor"]
         self.assertEqual(dying["life_state_id"], "life.dying")
         dying_result = apply_damage(first["actor"], 6, "damage.2b", {})
         dying = dying_result["actor"]
+        self.assertEqual(dying["state_revision"], 6)
         self.assertNotIn("effect_changes", dying)
         self.assertEqual(dying_result["world_effect_changes"]["create"][0]["definition_id"], "condition.unconscious")
         healed_result = apply_healing(dying, 2, "heal.1", receipts)

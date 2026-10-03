@@ -188,6 +188,31 @@ class NativeIndexTests(unittest.TestCase):
 
 
 class NativeHotStoreTests(unittest.TestCase):
+    def test_raw_rows_and_cross_campaign_rows_are_explicit_snapshot_absences(self) -> None:
+        with NativeHotStore(":memory:") as store:
+            store.stage_owner_document(
+                OwnerDocument(
+                    campaign_id="campaign-a",
+                    family_key="world.actor",
+                    identity=("actor-0001",),
+                    payload={"id": "actor-0001", "kind": "world.actor", "state": {}},
+                    source_basis="commit-a",
+                    generation=1,
+                )
+            )
+
+            same_campaign = store.read_admitted_snapshot(
+                "campaign-a", (("world.actor", ("actor-0001",)),)
+            )
+            other_campaign = store.read_admitted_snapshot(
+                "campaign-b", (("world.actor", ("actor-0001",)),)
+            )
+
+        self.assertEqual(same_campaign.rows, {})
+        self.assertEqual(same_campaign.absent_keys, (("world.actor", ("actor-0001",)),))
+        self.assertEqual(other_campaign.rows, {})
+        self.assertEqual(other_campaign.absent_keys, (("world.actor", ("actor-0001",)),))
+
     def test_current_owner_is_unique_by_campaign_family_and_complete_identity(self) -> None:
         with NativeHotStore(":memory:") as store:
             store.stage_owner_document(

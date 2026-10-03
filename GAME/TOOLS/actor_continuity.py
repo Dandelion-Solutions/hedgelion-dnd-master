@@ -3,10 +3,9 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
-import re
-
 
 NATIVE_ID_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 ASSESSMENT_PURPOSES = frozenset(
@@ -362,20 +361,46 @@ def validate_actor_source(value: object) -> dict[str, object]:
     actor = _mapping(value, "actor")
     if actor.get("kind") != "world.actor":
         raise ActorContinuityError("continuity requires a world.actor native source")
-    if set(actor) - {"id", "kind", "state_revision", "state", "provisional"}:
+    if set(actor) - {
+        "schema_version",
+        "id",
+        "kind",
+        "definition_id",
+        "state_revision",
+        "state",
+        "provisional",
+    }:
         raise ActorContinuityError("actor contains an unsupported field")
     if actor.get("provisional") is True:
         raise ActorContinuityError("provisional actor cannot become native continuity authority")
 
     actor_id = _id(actor.get("id"), "actor id")
     state_revision = _revision(actor.get("state_revision"), "actor state_revision")
+    schema_version = actor.get("schema_version")
+    if schema_version is not None and (
+        isinstance(schema_version, bool)
+        or not isinstance(schema_version, int)
+        or schema_version < 1
+    ):
+        raise ActorContinuityError("actor schema_version must be a positive integer")
+    has_definition_id = "definition_id" in actor
+    definition_id = actor.get("definition_id")
+    if definition_id is not None:
+        definition_id = _id(definition_id, "actor definition_id")
     state = _validated_actor_state(actor.get("state"))
-    return {
+    result: dict[str, object] = {
         "id": actor_id,
         "kind": "world.actor",
         "state_revision": state_revision,
         "state": deepcopy(dict(state)),
     }
+    if schema_version is not None:
+        result["schema_version"] = schema_version
+    if has_definition_id:
+        result["definition_id"] = definition_id
+    if actor.get("provisional") is False:
+        result["provisional"] = False
+    return result
 
 
 def _validated_evidence(value: object, actor_id: str) -> list[str]:
@@ -621,9 +646,7 @@ def apply_actor_delta(
         raise ActorContinuityError("actor continuity state must be an object")
     state["continuity"] = _merge_mapping(continuity, normalized_delta["changes"]["continuity"])
     state = _validated_actor_state(state)
-    return {
-        "id": native_actor["id"],
-        "kind": "world.actor",
-        "state_revision": native_actor["state_revision"] + 1,
-        "state": state,
-    }
+    after_image = deepcopy(native_actor)
+    after_image["state_revision"] = native_actor["state_revision"] + 1
+    after_image["state"] = state
+    return after_image

@@ -162,8 +162,47 @@ class NativeActorShapeTests(unittest.TestCase):
         ):
             text = (ROOT / "GAME" / "SCHEMA" / name).read_text(encoding="utf-8")
             self.assertIn(f"schema_name: {schema_name}", text)
-            self.assertIn("schema_version: 1", text)
+            self.assertIn(
+                "schema_version: 2" if name == "actor.schema.yaml" else "schema_version: 1",
+                text,
+            )
             self.assertIn("strict: true", text)
+        actor_schema = (ROOT / "GAME" / "SCHEMA" / "actor.schema.yaml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("state_revision: nonnegative_integer", actor_schema)
+
+    def test_actor_envelope_requires_current_revision_and_accepts_full_native_metadata(
+        self,
+    ) -> None:
+        validator = Draft202012Validator(
+            self.schemas["world-record.schema.json"], registry=self.registry
+        )
+        actor = {
+            "schema_version": 2,
+            "id": "actor.mara",
+            "kind": "world.actor",
+            "definition_id": "definition.npc_villager",
+            "state_revision": 4,
+            "state": {},
+        }
+
+        validator.validate(actor)
+        validator.validate(actor | {"definition_id": None})
+        for invalid in (
+            {key: value for key, value in actor.items() if key != "state_revision"},
+            actor | {"state_revision": True},
+            actor | {"schema_version": 1},
+            actor | {"state_revision": -1},
+            {
+                "id": "asset.one",
+                "kind": "world.asset",
+                "definition_id": None,
+                "state": {},
+            },
+        ):
+            with self.subTest(invalid=invalid), self.assertRaises(ValidationError):
+                validator.validate(invalid)
 
 
 class ActorAssessmentBehaviorTests(unittest.TestCase):
@@ -342,12 +381,25 @@ class ActorAssessmentBehaviorTests(unittest.TestCase):
 
 class ActorMutationIntegrationTests(unittest.TestCase):
     def test_accepted_delta_advances_only_the_native_actor_state(self) -> None:
-        mutated = apply_actor_delta(_actor(), _delta(), _accepted_evidence())
+        actor = _actor() | {
+            "schema_version": 2,
+            "definition_id": "definition.npc_villager",
+        }
+        mutated = apply_actor_delta(actor, _delta(), _accepted_evidence())
 
         self.assertEqual(mutated["state_revision"], 5)
+        self.assertEqual(mutated["schema_version"], 2)
+        self.assertEqual(mutated["definition_id"], "definition.npc_villager")
         evolving = mutated["state"]["continuity"]["evolving"]
         self.assertEqual(evolving["next_intention"]["statement"], "Question the miller")
         self.assertNotIn("knowledge", mutated["state"])
+
+        actor_without_definition = actor | {"definition_id": None}
+        preserved_null = apply_actor_delta(
+            actor_without_definition, _delta(), _accepted_evidence()
+        )
+        self.assertIn("definition_id", preserved_null)
+        self.assertIsNone(preserved_null["definition_id"])
 
     def test_mutation_rejects_stale_input_and_knowledge_or_inventory_aliases(self) -> None:
         stale = _delta()

@@ -425,6 +425,7 @@ class SharedCatalogIntegrationTests(unittest.TestCase):
         binding_conditions = {
             condition["if"]["properties"]["kind"]["const"]: condition["then"]
             for condition in envelope_branch["allOf"]
+            if "const" in condition.get("if", {}).get("properties", {}).get("kind", {})
         }
         for family in CANONICAL_WORLD_FAMILIES - {"world.thread"}:
             binding = shared_world[family]["definition_binding"]
@@ -437,6 +438,13 @@ class SharedCatalogIntegrationTests(unittest.TestCase):
                 else:
                     self.assertNotIn("definition_id", then.get("required", []))
                     self.assertNotIn("not", then)
+
+        actor_envelope = binding_conditions["world.actor"]
+        self.assertIn("schema_version", actor_envelope["required"])
+        self.assertIn("state_revision", actor_envelope["required"])
+        self.assertEqual(
+            actor_envelope["properties"]["schema_version"], {"const": 2}
+        )
 
         validator = Draft202012Validator(wrapper, registry=local_schema_registry())
         for family in CANONICAL_WORLD_FAMILIES - {"world.thread"}:

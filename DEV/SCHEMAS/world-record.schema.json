@@ -32,13 +32,23 @@
             "world.player"
           ]
         },
-        "definition_id": {"$ref": "#/$defs/machineId"},
+        "schema_version": {"type": "integer", "minimum": 1},
+        "definition_id": {
+          "anyOf": [{"$ref": "#/$defs/machineId"}, {"type": "null"}]
+        },
+        "state_revision": {"type": "integer", "minimum": 0},
         "state": {"type": "object"}
       },
       "allOf": [
         {
           "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor"}}},
-          "then": {"properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-state.schema.json"}}}
+          "then": {
+            "required": ["schema_version", "state_revision"],
+            "properties": {
+              "schema_version": {"const": 2},
+              "state": {"$ref": "https://hedgelion.invalid/schemas/world-actor-state.schema.json"}
+            }
+          }
         },
         {
           "if": {"required": ["kind"], "properties": {"kind": {"const": "world.actor_group"}}},
@@ -126,6 +136,30 @@
             "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-player-state.schema.json"}},
             "not": {"required": ["definition_id"]}
           }
+        },
+        {
+          "if": {
+            "required": ["kind"],
+            "properties": {"kind": {"not": {"const": "world.actor"}}}
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {"required": ["schema_version"]},
+                {"required": ["state_revision"]}
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["kind", "definition_id"],
+            "properties": {
+              "kind": {"not": {"const": "world.actor"}},
+              "definition_id": {"type": "null"}
+            }
+          },
+          "then": false
         }
       ]
     },

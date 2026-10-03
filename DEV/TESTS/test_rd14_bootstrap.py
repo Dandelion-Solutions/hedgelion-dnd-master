@@ -208,6 +208,7 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
         repository = object()
         live_transport = object()
         publication_transport = object()
+        hot_owner_store = object()
         host = object()
         with patch(
             "GAME.TOOLS.runtime_host.compose_runtime_host", return_value=host
@@ -217,11 +218,16 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
                 repository,
                 live_transport,
                 publication_transport,
+                hot_owner_store=hot_owner_store,
             )
 
         self.assertIs(result, host)
         compose_root.assert_called_once_with(
-            "campaign.frostfall", repository, live_transport, publication_transport
+            "campaign.frostfall",
+            repository,
+            live_transport,
+            publication_transport,
+            hot_owner_store=hot_owner_store,
         )
 
     def test_unselected_or_new_game_selection_cannot_compose_gameplay_host(
@@ -236,9 +242,16 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
 
         with patch("GAME.TOOLS.runtime_host.compose_runtime_host") as compose_root:
             for selection in (None, CampaignSelection.new()):
-                with self.subTest(selection=selection):
-                    with self.assertRaises(BootstrapContractError):
-                        compose(selection, object(), object(), object())
+                with self.subTest(selection=selection), self.assertRaises(
+                    BootstrapContractError
+                ):
+                    compose(
+                        selection,
+                        object(),
+                        object(),
+                        object(),
+                        hot_owner_store=object(),
+                    )
             compose_root.assert_not_called()
 
     def test_new_selection_composes_only_after_confirmed_initial_publication(
@@ -261,6 +274,7 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
         repository = object()
         live_transport = object()
         publication_transport = object()
+        hot_owner_store = object()
         host = object()
         with patch(
             "GAME.TOOLS.runtime_host.compose_runtime_host", return_value=host
@@ -270,12 +284,17 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
                 repository,
                 live_transport,
                 publication_transport,
+                hot_owner_store=hot_owner_store,
                 initial_publication=publication,
             )
 
         self.assertIs(result, host)
         compose_root.assert_called_once_with(
-            creation.campaign_id, repository, live_transport, publication_transport
+            creation.campaign_id,
+            repository,
+            live_transport,
+            publication_transport,
+            hot_owner_store=hot_owner_store,
         )
 
     def test_host_composition_is_not_a_gameplay_request_dependency(self) -> None:
@@ -290,13 +309,14 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
         self.assertNotIn("request", parameters)
         self.assertNotIn("model_input", parameters)
         self.assertNotIn("runtime_host", parameters)
+        self.assertIn("hot_owner_store", parameters)
 
 
 class InitialCampaignPublicationTests(unittest.TestCase):
     def test_bootstrap_module_version_tracks_material_publication_contract(
         self,
     ) -> None:
-        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.4")
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.5")
 
     def test_freeze_initial_publication_copies_exact_generated_file_identity(
         self,

@@ -452,9 +452,9 @@ class _DramaturgRepository(_StoryPublicationRepository):
             ],
         }
         self.actor = {
+            "schema_version": 2,
             "kind": "world.actor",
             "id": "actor.guard",
-            "campaign_id": self.campaign_id,
             "state_revision": actor_revision,
             "state": {"name": {"en": "Guard"}, "roles": ["actor.nonplayer_character"]},
         }
@@ -2116,10 +2116,18 @@ class StoryT0MaterializationTests(unittest.TestCase):
             "runtime.disclosure", ("player.aria", "fact.party_authorized")
         ).relative_path
         repository.records[actor_path] = {
+            "schema_version": 2,
             "kind": "world.actor",
             "id": "actor.guard",
-            "campaign_id": "campaign.main",
-            "state": {"current_goal": "epistemic.rejected"},
+            "state_revision": 4,
+            "state": {
+                "roles": ["actor.nonplayer_character"],
+                "continuity": {
+                    "evolving": {
+                        "current_objective": {"statement": "Protect the gate"}
+                    }
+                },
+            },
         }
         repository.records[knowledge_path] = {
             "kind": "world.knowledge",
@@ -4492,9 +4500,9 @@ class DramaturgAdmissionTests(unittest.TestCase):
     def test_player_local_pc_source_is_invalidated_after_control_changes(self) -> None:
         repository = _DramaturgRepository()
         player_pc = {
+            "schema_version": 2,
             "kind": "world.actor",
             "id": "pc.aria",
-            "campaign_id": repository.campaign_id,
             "state_revision": 1,
             "state": {"roles": ["actor.player_character"]},
         }

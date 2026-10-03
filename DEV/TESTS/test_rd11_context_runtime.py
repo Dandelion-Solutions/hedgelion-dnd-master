@@ -652,7 +652,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.9")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.10")
 
 
 class CommentatorControlProfileTests(unittest.TestCase):

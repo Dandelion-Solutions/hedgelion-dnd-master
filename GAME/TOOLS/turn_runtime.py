@@ -157,6 +157,7 @@ class AcceptedContextBasis:
     assembly_ordinal: int
     _turn_seal: object = dataclass_field(repr=False, compare=False)
     _seal: object = dataclass_field(repr=False, compare=False)
+    _context_service: object = dataclass_field(repr=False, compare=False)
     _bundle: dict[str, object] = dataclass_field(repr=False, compare=False)
 
     def __init__(
@@ -164,6 +165,7 @@ class AcceptedContextBasis:
         *,
         _seal: object,
         _turn_seal: object,
+        context_service: object,
         turn_id: str,
         role: str,
         purpose: str,
@@ -201,6 +203,7 @@ class AcceptedContextBasis:
         object.__setattr__(self, "assembly_ordinal", assembly_ordinal)
         object.__setattr__(self, "_turn_seal", _turn_seal)
         object.__setattr__(self, "_seal", _seal)
+        object.__setattr__(self, "_context_service", context_service)
         object.__setattr__(self, "_bundle", deepcopy(bundle))
 
     @property
@@ -254,7 +257,7 @@ class ResolvedResponseLanguage:
         )
 
 
-@dataclass(frozen=True, slots=True, init=False)
+@dataclass(frozen=True, slots=True, init=False, weakref_slot=True)
 class AcceptedPhaseResult:
     """Minimum registered result sealed to its accepted source phase and scope."""
 
@@ -270,6 +273,7 @@ class AcceptedPhaseResult:
     assembly_ordinal: int
     _turn_seal: object = dataclass_field(repr=False, compare=False)
     _seal: object = dataclass_field(repr=False, compare=False)
+    _context_service: object = dataclass_field(repr=False, compare=False)
     _result: dict[str, Any] = dataclass_field(repr=False, compare=False)
 
     def __init__(
@@ -277,6 +281,7 @@ class AcceptedPhaseResult:
         *,
         _seal: object,
         _turn_seal: object,
+        context_service: object,
         kind: str,
         role: str,
         purpose: str,
@@ -310,6 +315,7 @@ class AcceptedPhaseResult:
         object.__setattr__(self, "assembly_ordinal", assembly_ordinal)
         object.__setattr__(self, "_turn_seal", _turn_seal)
         object.__setattr__(self, "_seal", _seal)
+        object.__setattr__(self, "_context_service", context_service)
         object.__setattr__(self, "_result", deepcopy(result))
 
     def to_dict(self) -> dict[str, Any]:
@@ -667,6 +673,7 @@ def bind_phase_from_context(
     basis = AcceptedContextBasis(
         _seal=_CONTEXT_BASIS_SEAL,
         _turn_seal=turn_seal,
+        context_service=context_service,
         turn_id=turn_id,
         role=role,
         purpose=purpose,
@@ -938,6 +945,61 @@ def current_phase_context_basis(
     return _validate_bound_context_basis(envelope, role, phase_bindings.get(role))
 
 
+def require_current_actor_phase_result(
+    envelope: dict[str, Any],
+    phase_result: object,
+    *,
+    context_service: object,
+) -> tuple[AcceptedContextBasis, dict[str, Any]]:
+    """Require the exact current Host Context-issued ACTOR result for this turn."""
+
+    if not isinstance(envelope, dict) or type(phase_result) is not AcceptedPhaseResult:
+        raise TurnContractError(
+            "accepted ACTOR phase result and turn envelope are required"
+        )
+    result = phase_result
+    if result._seal is not _PHASE_RESULT_SEAL:
+        raise TurnContractError("accepted ACTOR phase result is not TurnRuntime-issued")
+    if (
+        result.role != "ACTOR"
+        or result.purpose != "assess"
+        or result.profile_id != "profile.actor"
+    ):
+        raise TurnContractError("accepted phase is not the registered ACTOR assessment")
+    bindings = envelope.get("phase_bindings")
+    if not isinstance(bindings, dict):
+        raise TurnContractError("turn envelope phase bindings are invalid")
+    binding = bindings.get("ACTOR")
+    basis = _validate_bound_context_basis(envelope, "ACTOR", binding)
+    if (
+        binding.get("accepted_phase_result") is not result
+        or result._turn_seal is not envelope.get("_turn_seal")
+        or result.turn_id != envelope.get("turn_id")
+        or result.bundle_id != basis.bundle_id
+        or result.assembly_ordinal != basis.assembly_ordinal
+        or result.subject_id != basis.subject_id
+        or result.recipient_id != basis.recipient_id
+        or result.source_frontier != basis.source_frontier
+        or result._context_service is not context_service
+    ):
+        raise TurnContractError("accepted ACTOR result is stale, rebound, or foreign")
+    result_payload = result.to_dict()
+    accepted_results = envelope.get("accepted_results")
+    if (
+        result.kind != "actor_proposal"
+        or not isinstance(accepted_results, dict)
+        or accepted_results.get("ACTOR") != result_payload
+        or result_payload.get("kind") != "actor_proposal"
+        or result_payload.get("purpose") != "assess"
+        or result_payload.get("bundle_id") != basis.bundle_id
+        or result_payload.get("source_generation") != basis.source_frontier
+        or result_payload.get("subject_id") != basis.subject_id
+        or not isinstance(result_payload.get("proposal"), str)
+    ):
+        raise TurnContractError("accepted ACTOR proposal differs from its issued phase")
+    return basis, result_payload
+
+
 def accept_phase_result(
     envelope: dict[str, Any], result: dict[str, Any]
 ) -> dict[str, Any]:
@@ -1012,6 +1074,7 @@ def accept_phase_result(
     typed_result = AcceptedPhaseResult(
         _seal=_PHASE_RESULT_SEAL,
         _turn_seal=basis._turn_seal,
+        context_service=basis._context_service,
         kind=kind,
         role=role,
         purpose=basis.purpose,
