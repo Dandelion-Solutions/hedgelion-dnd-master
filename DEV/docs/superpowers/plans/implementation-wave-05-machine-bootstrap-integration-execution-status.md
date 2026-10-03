@@ -2347,6 +2347,8 @@ VERSION_IMPACT: `runtime_host.py 1.0.11 -> 1.0.12`; `context_runtime.py 1.0.9 ->
 
 SYSTEM_IMPACT: NONE — implementation remained within revised P0. No universal evidence issuer, caller-asserted evidence authority, added evidence classes, PC authorship, or new LIVE mutation/CAS path was introduced. The additional DEV-only Actor-envelope validator/fixture synchronizations are mechanical consumers of the explicitly authorized schema alignment.
 
+RESIDUAL_CONCERN: The existing `actor_proposal.proposal` wire field remains a string. P0 consumes a closed JSON-encoded `{assessment_purpose, reconsideration_cue, delta}` payload inside that field; no model prompt/call-site or product phase wiring changed in this task, so future callers must provide the admitted representation rather than treating arbitrary prose as an accepted delta.
+
 SELF_REVIEW: completed against the revised P0 Envelope and current Actor/Context/HOT/LIVE/phase/version owners. Independent task review was not dispatched because the task explicitly prohibited further agents; independent review and exact-head publication/read-back remain pending.
 
 NEXT_EXACT_TASK: coordinator-directed independent review and publication/read-back of this local checkpoint. Do not start P1A, P1B, P2, P3, or product completion. `DEV/CURRENT_PROGRESS.md` remains unadvanced; the P0 output is not accepted/read back.
