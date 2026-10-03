@@ -7,11 +7,11 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T05 -> **PASS / ACCEPTED** at Senior-audited HEAD `8bc36fc63ac91120c157392dfd66bd20d9e5d6c8`; outputs `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` are accepted/read back.
-NEXT_AUTHORIZED_UNIT: W05.T06-P0 — trusted HOT admission + CurrentOwnerView with bounded native NPC self-state producer; GO under revised stable Envelope.
-REQUIRED_GATE: P0 trusted phase/native-source validation + Actor revision alignment -> W05_T06_CURRENT_OWNER_VIEW_READY -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion + Senior integration audit.
+NEXT_AUTHORIZED_UNIT: none for this request — W05.T06-P0 output `W05_T06_CURRENT_OWNER_VIEW_READY` is accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; downstream tasks remain dependency-gated and unstarted.
+REQUIRED_GATE: P0 output accepted/read back -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion + Senior integration audit. P1A/P1B/P2/P3/product completion remain dependency-gated and unstarted.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: none for starting revised P0. Producer/current-owner proof is pending implementation; later tasks remain dependency-gated; Story remains dormant.
+KNOWN_BLOCKERS: none for W05.T06-P0. Later tasks remain dependency-gated and were not started; Story remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -368,16 +368,16 @@ TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bo
 IMPLEMENTATION_SPEC: `DEV/docs/superpowers/specs/2026-10-02-w05-t06-readiness-retrospective-canonical-spec.md`
 BASE_SHA: `1858b838e9a0390ec7cdccad5b6b5d519aebae7d` — freshly fetched exact public HEAD at the start of this plan repair.
 
-STATUS: SYSTEM_IMPACT_REVIEW_REQUIRED — W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 Review Stop 2 and repaired-plan review remain recorded; P0 is held at the newly documented Actor producer/source-evidence gap.
-CURRENT_TASK: bounded Senior review of the P0 Actor-producer System-Impact brief; no P0 production work has started under this follow-up.
-SYSTEM_IMPACT_BASE_SHA: `4df0484790bbe54bbcf417483b871e0e8345380b` — fresh public HEAD containing the prior plan GO and SP06-11 follow-up before this source-audit checkpoint.
-LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit PASS. T06-S1/S2 remain accepted/read back in the task cursor.
-CURRENT_VERIFICATION_STATE: source audit at SYSTEM_IMPACT_BASE_SHA confirmed no GAME production call to `assess_actor` / `apply_actor_delta`; RD03 evidence is a synthetic unit-test fixture. Focused progress/routing/frontier/version-policy checks: 21 passed, 1 repository-wide census test deselected after its standalone run exceeded 180 seconds during checkout-wide traversal. `git diff --check`: PASS. Maintenance audit exit 1 due existing `DEV/tmp/` and `.hdm-devtools/clean*/` copies containing duplicate `GAME/ENGINE_VERSION.yaml`, plus an `.entire/tmp/` transitional identity carrier; no ignored workspace artifacts were inspected or removed. Earlier 1524-test/maintenance evidence applies to `a61b40ff14fb53d24b715734c43449fea94fbeb9`, not this current checkpoint. No production behavior PASS is claimed for T06-A1. Hosted CI is unavailable in this local-machine runtime and is not claimed.
-VERSION_IMPACT: NONE — plan/index/cursor/current-progress/design-provenance documentation only; no HDM-owned version/revision/schema/catalog/generation namespace changed.
-SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — P0's asserted existing Actor producer is absent as a trusted connected path; the bounded brief makes no new authority claim.
-NEXT_EXACT_TASK: Senior ruling on whether an existing accepted native Actor source/producer path supports the P0 witness or whether a separately bounded owner/design decision is required. Do not begin P0 production code before that ruling and synchronized plan/cursor update.
-KNOWN_BLOCKERS: no trusted accepted-evidence producer/call path for the P0 Actor witness is present in current GAME source. P0 is held; P1A/P1B/P2/P3 production capabilities are not implemented. Story is dormant; T07/T08/W06 remain unstarted.
-UNPUBLISHED_WORK: NONE after this coherent brief/plan/status checkpoint is published and remotely read back; source-audit base is `4df0484790bbe54bbcf417483b871e0e8345380b`.
+STATUS: W05.T06-P0 COMPLETE — `W05_T06_CURRENT_OWNER_VIEW_READY` accepted after independent task review, clean exact verification, publication and read-back. W05.T01-T05 and T06-S1/S2 remain accepted; T06-A1 remains accepted.
+CURRENT_TASK: none in this checkpoint. Downstream T06 tasks remain dependency-gated and unstarted.
+P0_IMPLEMENTATION_SHA: `8f7098c23521237363bca84879485a18f5b7aa25` — implementation output; published/read back as part of status-sync head `99deea8d8c1f0ad5cd5bee01f14a656383b1f84b`.
+LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS. W05.T05 outputs and T06-S1/S2 remain accepted/read back as recorded in the task cursor.
+CURRENT_VERIFICATION_STATE: independent P0 task review PASS (spec compliance and task quality); exact P0 focused suite 509 passed, P0 producer + S6D-09 49 passed, restored movement regression 1 passed. Clean detached checkout at P0_IMPLEMENTATION_SHA: canonical full DEV 1551 passed, 24 existing `RefResolver` deprecation warnings; maintenance audit PASS; release build PASS (`hedgelion-dnd-master-runtime-v1.0-alpha.zip`). Fresh fetch/read-back confirmed `HEAD == origin/v1/engine-rearchitecture == 99deea8d8c1f0ad5cd5bee01f14a656383b1f84b`; hosted CI unavailable and not claimed. Earlier in-place full DEV/maintenance failures came from ignored workspace artifact scans; those artifacts were not inspected or removed.
+VERSION_IMPACT: P0 — `runtime_host.py 1.0.11 -> 1.0.14`; `context_runtime.py 1.0.9 -> 1.0.12`; `bootstrap.py 1.0.4 -> 1.0.5`; `GAME/SCHEMA/actor.schema.yaml 1 -> 2`. `DEV/SCHEMAS/world-record.schema.json` has no local schema namespace. No engine release, campaign-contract/storage/catalog generation, migration or dual-read. Status synchronization itself: NONE.
+SYSTEM_IMPACT: NONE under the revised P0 ruling; implementation and review remained within the bounded NPC self-state producer/Actor-envelope envelope.
+NEXT_EXACT_TASK: downstream P1A/P1B/P2/P3/product completion remain dependency-gated; do not start them in this checkpoint. Story remains dormant; T07/T08/W06 remain unstarted.
+KNOWN_BLOCKERS: none for completed W05.T06-P0. No downstream task was started.
+UNPUBLISHED_WORK: NONE after this status synchronization is published and remotely read back; P0 implementation output is published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
 
 ## Historical Wave-04 execution cursor snapshot (pre-closure)
 

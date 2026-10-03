@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: W05.T06-P0 LOCALLY VERIFIED / INDEPENDENT TASK REVIEW PASS; P0 output awaits publication and remote read-back.
-CURRENT_TASK: publish/read back the reviewed P0 checkpoint, then synchronize global progress; downstream tasks remain dependency-gated and unstarted.
-LAST_COMPLETED_TASK: W05.T05 -> `W05_BOUNDED_CAMPAIGN_DISCOVERY_READY`, `W05_INITIAL_CAMPAIGN_PUBLICATION_READY`, and `W05_BLANK_SCAFFOLD_READY` accepted/read back; final Senior audit report `DEV/docs/superpowers/design/2026-10-02-w05-t05-senior-integration-audit.md` PASS.
-LAST_SAFE_SHA: `29ee6bcb5fa7180ba5c1d940b17c19dc9e685253` — exact source-reviewed checkpoint before this Senior ruling; T06 product code remains unchanged.
+STATUS: W05.T06-P0 COMPLETE — `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back; later T06 tasks remain dependency-gated.
+CURRENT_TASK: none in this checkpoint; no P1A/P1B/P2/P3 or product-completion work started.
+LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
+LAST_SAFE_SHA: `99deea8d8c1f0ad5cd5bee01f14a656383b1f84b` — fresh remote read-back confirms the reviewed P0 code and task-review evidence are published; this status synchronization is the next coherent metadata checkpoint. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2490,8 +2490,14 @@ current-source confirmation is within the approved operation/source revalidation
 boundary; no extra owner, authority, broad scan, retry loop, LIVE write or
 downstream task was added.
 
-NEXT_EXACT_TASK: publish this coherent P0 implementation/review/verification
-checkpoint without force, fresh-read it back, then synchronize
-`DEV/CURRENT_PROGRESS.md` to the published P0 output. P1A/P1B/P2/P3 and product
-completion remain dependency-gated and are not started by this task.
-UNPUBLISHED_WORK: implementation commits `8ba60e849b87d9ac46a4c6e7f1bd5daba1bd21a2` through `8f7098c23521237363bca84879485a18f5b7aa25` plus this status synchronization; remote publication/read-back pending.
+P0_PUBLICATION_READBACK: PASS — fresh fetch confirmed
+`HEAD == origin/v1/engine-rearchitecture == 99deea8d8c1f0ad5cd5bee01f14a656383b1f84b`;
+the `W05_T06_CURRENT_OWNER_VIEW_READY` implementation at
+`8f7098c23521237363bca84879485a18f5b7aa25` is in the published ancestry and
+changed-file diff is empty.
+
+NEXT_EXACT_TASK: P1A/P1B/P2/P3 and product completion remain dependency-gated;
+no downstream implementation was started under this instruction. Wait for the
+next authorized task/cursor advancement.
+UNPUBLISHED_WORK: NONE after this status synchronization is published and
+remotely read back. P0 implementation and its independent review are durable.
