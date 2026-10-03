@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: SENIOR_REVIEW_REQUIRED — W05.T06-P1A paused at a System-Impact Gate.
-CURRENT_TASK: W05.T06-P1A — reconcile the admitted Sorcerer spell-override representation before production implementation.
+STATUS: NEEDS_PO — W05.T06-P1A held after independent Senior System-Impact review; bounded Sorcerer product-scope decision remains.
+CURRENT_TASK: W05.T06-P1A — resolve the acceptance-promise qualification or alternate-loadout scope under `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `016500ffc11513adf71c978be59ba72188925868` — local-only P1A start-envelope cursor commit on top of freshly fetched public HEAD `65d063c5d75664270b2df3cfa07ddb743ddee062`; accepted P0 output remains published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
 
@@ -2852,3 +2852,30 @@ KNOWN_BLOCKERS: Sorcerer override representation is not machine-admitted by the
 exact current seed; P1B/P2/P3/product completion remain unstarted.
 UNPUBLISHED_WORK: NONE — no P1A production/test changes remain; this stop record
 is the only current uncommitted work before its local cursor commit.
+
+## W05.T06-P1A independent Senior System-Impact review — 2026-10-04
+
+REPORT: `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`
+REVIEWED_HEAD: `6dbdf160824060b64cf9586ee1c29ddbb3470f0e`
+DISPOSITION: NEEDS_PO / P1A HELD — actual admitted spell corpus contains one
+complete Sorcerer-1 4+2 membership. Explicit selection of the existing option is
+legal, but a different complete loadout is not admitted. Stable P1A's generic
+override acceptance does not itself mandate a different Sorcerer loadout; the
+separate canonical S6D-07 Sorcerer promise still requires reconciliation.
+PO_DECISION: qualify the promise to admitted alternatives in the narrow MVP,
+or require sufficient alternatives/selection contracts through S6D-07 before
+production implementation. Recommendation: retain the narrow corpus and qualify
+the promise; no such qualification is adopted without PO decision.
+INDEPENDENT_VERIFICATION: S6D-07 + RD15 + RD03 74 passed; resolved-package
+diagnostic verifies one complete 4+2 membership and preserves mismatch rejection.
+Documentation review of the Senior report/header/cursor: independent PASS.
+Current-progress/routing/frontier guards: 10 passed; `git diff --check` PASS.
+PRODUCTION_CHANGE: NONE — no P1A production code or RED tests remain.
+VERSION_IMPACT: NONE — development evidence/status only; no owned numbered
+semantic/schema/module/package/generation namespace changed.
+NEXT_EXACT_TASK: resolve the bounded product decision, reconcile the affected
+owner/plan acceptance and resume P1A. Automatic dependency-driven continuation
+authorization persists after this actual gate; no new routine PO gate is added.
+P1B/P2/P3/product completion: UNSTARTED; Story/T07/T08/W06 gates preserved.
+UNPUBLISHED_WORK: local start-envelope/stop commits plus this review/status
+checkpoint pending non-force publication and fresh read-back.

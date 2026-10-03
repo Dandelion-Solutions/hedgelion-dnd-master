@@ -7,11 +7,11 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: W05.T06-P1A remains the current task; execution is paused at a P1A System-Impact Gate pending Senior resolution recorded in the task cursor.
+NEXT_AUTHORIZED_UNIT: W05.T06-P1A remains current; independent Senior review identifies a bounded Product Owner decision on the Sorcerer override acceptance promise. See `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`.
 REQUIRED_GATE: P0 -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion -> independent Senior integration audit. Ordinary task boundaries require no additional PO permission; the current P1A boundary is the recorded exception.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
-KNOWN_BLOCKERS: W05.T06-P1A is paused pending Senior ruling on the accepted Sorcerer spell-override representation; P1B/P2/P3/product completion remain dependency-gated. Story remains dormant.
+KNOWN_BLOCKERS: NEEDS_PO — qualify the Sorcerer override promise to admitted alternatives in the narrow MVP, or require a genuinely different legal loadout through S6D-07 scope/design. P1A held; P1B/P2/P3/product completion remain dependency-gated. Story remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
@@ -360,7 +360,11 @@ CLS_HDM_REFRESH:
 
 T04A and T07B prior PASS remain accepted. T07C's accepted version transition is History 1.0.5, T0 basis schema 2, Story 1.0.8, EVENTS unit schema 4 and E-EVT semantic generation 2. SemanticEvent outer schema 1 and Story projection-state schema 4 remain valid through their already-separate nested/schema-generation axes. No migration or campaign-contract generation bump is required for the current pre-release unshipped shapes.
 
-## Durable Wave-05 status
+## Historical P0 acceptance snapshot
+
+The P0 acceptance evidence below remains valid. Its scheduling fields are the
+pre-continuation snapshot; the header and the current P1A Senior review in the
+Wave-05 cursor own current scheduling and the NEEDS_PO gate.
 
 PLAN: `DEV/docs/superpowers/plans/implementation-plan-index.md`
 CURRENT_WAVE: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`
