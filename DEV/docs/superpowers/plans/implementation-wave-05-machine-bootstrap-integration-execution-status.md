@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: W05.T06-P0 COMPLETE / ACCEPTED; T06 CONTINUATION AUTHORIZED, dependency-driven.
-CURRENT_TASK: W05.T06-P1A — next authorized task; implementation not claimed started by this scheduling checkpoint.
+STATUS: W05.T06-P1A EXECUTING; T06 continuation authorized, dependency-driven.
+CURRENT_TASK: W05.T06-P1A — production character materialization resolver.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `99deea8d8c1f0ad5cd5bee01f14a656383b1f84b` — fresh remote read-back confirms the reviewed P0 code and task-review evidence are published; this status synchronization is the next coherent metadata checkpoint. T06 product code checkpoint remains `45df53dd344c03e6c16cd04e19d1dddeccc8f340`.
+LAST_SAFE_SHA: `65d063c5d75664270b2df3cfa07ddb743ddee062` — freshly fetched current remote HEAD before P1A work; accepted P0 output remains published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2516,3 +2516,221 @@ Apply the execution contract to every task: fresh currentness/owners, bounded Im
 After T06 completion, route the exact published checkpoint to the mandatory independent Senior integration audit. That is a technical review gate, not a request for PO permission. Only its accepted result produces `W05_PRODUCT_PATHS_READY` and releases consumers whose other inputs are GREEN. T07/T08 and W06 are not activated by this T06 continuation checkpoint. Story and all trigger-gated work remain dormant.
 
 VERSION_IMPACT: NONE — scheduling/control documentation only.
+
+
+## W05.T06-P1A implementation start — 2026-10-03
+
+STATUS: EXECUTING — production RED/GREEN has not started in this checkpoint.
+IMPLEMENTATION START HEAD: `65d063c5d75664270b2df3cfa07ddb743ddee062` —
+`git fetch --prune origin` freshly confirmed this exact local and remote HEAD on
+`v1/engine-rearchitecture`. P0 is accepted/read back; this task does not repeat
+P0.
+
+### Full start Implementation Impact Envelope
+
+SPEC / APPROVED DESIGN:
+- W05.T06-P1A in
+  `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`.
+- S6D-07 / DIEGETIC_ONBOARDING / CHARACTER_READINESS, accepted Actor/Asset/
+  Effect/health/resource owners, P0's accepted current-owner/HOT boundary, and
+  the current native allocator/identifier-policy/catalog/package contracts.
+
+PRIMARY OWNER ARTIFACTS:
+- `GAME/TOOLS/character_progression.py` — NEW_CREATE; typed initial
+  materialization request/result and deterministic S6D-07 resolver.
+- `GAME/TOOLS/runtime_host.py` — EXISTING_MODIFY; fixed Host-bound catalog and
+  character progression service composition.
+- `GAME/TOOLS/bootstrap.py` — EXISTING_MODIFY; pass the already-resolved
+  `BoundCatalogContext` through selected-product Host composition.
+- `GAME/TOOLS/hot_store.py` / `GAME/TOOLS/current_owner.py` — EXISTING_MODIFY
+  only for the P1A owner-specific atomic Actor/Asset/allocator establishment and
+  exact currentness join.
+- `DEV/TESTS/test_character_progression.py` — NEW_CREATE; P1A acceptance and
+  negative witnesses.
+- P1A-owned RuntimeHost/bootstrap/RD04/RD03 consumer tests and this execution
+  cursor.
+
+EXPECTED OWNERS TO CHANGE:
+- New production character progression resolver.
+- RuntimeHost trusted catalog composition and fixed character service.
+- Bootstrap selected-product Host composition.
+- P1A-specific HOT establishment / current-owner / campaign allocator join,
+  limited to the exact owner-specific batch necessary for this task.
+- P1A tests and this task cursor.
+- P0 Actor schema/revision and its version synchronization are read-only and
+  remain consumed from the accepted P0 output.
+
+EXPECTED CONSUMERS TO CHANGE:
+- RuntimeHost fixed character progression service composition.
+- Selected-product bootstrap Host composition.
+- New P1A behavior tests plus RuntimeHost composition, RD14 bootstrap, RD04
+  allocator/HOT, RD03 Actor/Asset/Effect and RD15 catalog regressions.
+- P1B readiness is a downstream consumer only; no P1B implementation is started.
+
+ALLOWED INTERFACES / CONTRACTS TO CHANGE:
+- Typed `CharacterMaterializationRequest` / `CharacterMaterializationResult` and
+  deterministic `CharacterProgressionService.materialize_initial(...)`.
+- Fixed RuntimeHost character service bound to one already-admitted
+  `BoundCatalogContext`; no ambient/default catalog choice or gameplay-provided
+  service/capability injection.
+- Selected bootstrap composition passes that exact bound context.
+- Narrow P1A internal HOT/current-owner batch carrier sufficient to atomically
+  establish exact Actor, new Asset and allocator after-images after revalidating
+  their predecessors. No second allocator or new identity policy.
+- No raw prose authority, arbitrary owner after-images, new content/selector,
+  mechanics primitive, Actor/Asset schema, readiness result, SAVE, publication,
+  or lifecycle state.
+
+GAME RUNTIME / PROJECTION SURFACES:
+- `GAME/TOOLS/character_progression.py`, `runtime_host.py`, `bootstrap.py`, and
+  only the minimum `hot_store.py` / `current_owner.py` internal integration.
+- Exact native Actor and active PLAYER/current control are read through P0's
+  current-owner boundary; P0's accepted Actor schema-v2 envelope is preserved.
+- New campaign-owned starting Asset identities use the existing allocator and
+  current identifier policy; the exact allocator successor joins Actor + Asset
+  HOT establishment in one local transaction.
+- No GAME CORE, persistent schema/template/catalog/package content, publication,
+  migration, or release projection write.
+
+DEV SCHEMAS / CATALOGS / MACHINE CONTRACTS:
+- Consume current `BoundCatalogContext`, exact package identity, admitted
+  definitions/options, S6D-07 seed/capability and existing definition/Actor/
+  Asset/PLAYER/allocator schemas and policy.
+- `DEV/CATALOG/**`, `DEV/SCHEMAS/**`, ruleset package members, and P0 Actor
+  schema alignment are INSPECT_ONLY. Unsupported package content stays absent /
+  nonselectable.
+- No catalog member/generation, selector, option vocabulary, schema or package
+  content expansion.
+
+PERSISTENCE / RECOVERY / CURRENTNESS CONSUMERS:
+- Use exact active PLAYER -> control of the exact same PC Actor through P0
+  CurrentOwnerView; revalidate exact Actor/PLAYER and allocator predecessors at
+  local establishment.
+- Revalidate the Host-bound catalog/ruleset identity and relevant definition
+  frontier for the operation; stale/foreign currentness fails closed.
+- The only semantic mutation is one atomic local HOT establishment batch; no
+  repository/LIVE/model/player I/O inside SQLite, no SAVE/publication, no new
+  durable receipt/pending owner, and no LIVE mutation path.
+- Repeat/resume preserves Actor ID, accepted choices, current HP/resources and
+  existing Asset identities/grants; no duplicate allocation, state reset,
+  reopened choice, or revision increment for a no-op.
+
+VALIDATORS / TESTS / AUDITS:
+- New `DEV/TESTS/test_character_progression.py` positive/negative production
+  witnesses.
+- Extend only P1A-relevant RuntimeHost/RD14, RD04 allocator/HOT, and RD03
+  Actor/Asset tests as needed.
+- Exact stable-plan focused command: `PYTHONDONTWRITEBYTECODE=1
+  .hdm-devtools/venv/bin/python -m pytest -q
+  DEV/TESTS/test_character_progression.py
+  DEV/TESTS/test_s6d_07_character_mvp_seed.py
+  DEV/TESTS/test_rd04_native_routing_index_hot.py
+  DEV/TESTS/test_rd03_actor_asset_effect_continuity.py
+  DEV/TESTS/test_rd15_catalog_runtime.py
+  DEV/TESTS/test_runtime_host_composition.py
+  DEV/TESTS/test_rd14_bootstrap.py`.
+- Also run the required broad clean exact DEV suite, canonical maintenance audit,
+  canonical release build, scoped Python checks, self-review and Version Impact
+  Gate. Hosted CI is unavailable in this local-machine runtime.
+
+DOCUMENTATION / INSTALL / PACKAGE PROJECTIONS:
+- This Wave-05 task cursor only. No root README, GAME CORE/INSTALL, package seed,
+  persistent template or user-facing projection change.
+
+CROSS-WAVE JOINS:
+- Consume accepted/read-back `W05_T06_CURRENT_OWNER_VIEW_READY` P0 and GREEN
+  S6D-07/Actor/Asset/Effect/health/resource/catalog/package/allocator owners.
+- Produce `W05_T06_CHARACTER_MATERIALIZATION_READY` only after P1A verification
+  and independent task review; P1B remains a separate downstream task.
+
+PROTECTED ARCHITECTURE INVARIANTS:
+- Same exact PC Actor ID and exact active PLAYER control; no duplicate PLAYER or
+  control/membership authority.
+- Explicit selections precede rules inheritance, valid inference, adopted
+  default, deterministic conservative delegated default, and only then one
+  material-choice blocker; no inference from raw prose inside this resolver.
+- Exact Host-bound admitted catalog/ruleset context; no name-only/default-latest
+  resolution; unsupported content remains absent/nonselectable.
+- P0 currentness/source selection and accepted Actor envelope remain authoritative.
+- Actor retains sparse native anchors/selections; Assets own significant
+  possessions; no flattened sheet, duplicate inventory, or new semantic owner.
+- Actor + new Assets + allocator after-image establish atomically. Failure,
+  stale context, stale owner or allocator movement leaves all three unchanged.
+- Same-Actor repeat/resume does not duplicate grants/IDs, reset resources/equipment,
+  reopen accepted choices or advance Actor revision for a no-op.
+- No READY_PC, PLAY_READY, SAVE, publication, Activity/RNG, or LLM/questionnaire
+  side effect.
+
+ARCHITECTURE-SENSITIVE SURFACES:
+- Actor/Asset owner-native after-images and P0 schema-v2 revision.
+- Active PLAYER/control and same-Actor promotion.
+- BoundCatalogContext, package/ruleset identity and campaign definition
+  frontier/currentness.
+- Allocator identity and local HOT snapshot/transaction/admission atomicity.
+- Repeat/resume preservation without a receipt or second ownership route.
+
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION:
+- Human/Criminal Fighter and Sorcerer accepted initial paths; delegated
+  deterministic defaults; one unresolved Fighter style; explicit override;
+  same Actor ID and exactly one revision advance.
+- Exact current active PLAYER control; unsupported content and forged/malformed
+  selection rejected; wrong-host/stale catalog rejected; new HOT after-images
+  visible before SAVE.
+- Allocator + Actor + Asset atomicity, rollback on failure, stale/moved allocator
+  and owner rejection, repeat/resume no duplicate IDs/grants, and preservation
+  of prior choices/current resources/equipment.
+- Named S6D-07 conformance, RD03, RD04, RD15, RuntimeHost composition and RD14
+  cross-owner consumers, followed by clean exact DEV, maintenance and release
+  build verification.
+
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES:
+- New D&D content or mechanics; generic concept/NLP; Activity/RNG execution;
+  readiness derivation (P1B); History/Story; save/publication; migration.
+- New mechanics primitive/selector/accessor, persistent schema/catalog/member,
+  semantic owner, identity policy, or broad catalog resolution architecture.
+- T07/T08/W06 and root README.
+
+VERSION IMPACT EXPECTED: classify every actually changed GAME module under the
+current versioning owner. P0's Actor `state_revision` envelope/schema alignment
+is already accepted and is not repeated. No persistent schema, catalog/package
+generation, campaign/storage generation, migration or compatibility transition
+is expected; do not infer the exact module-version set before classifying the
+final actual diff.
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no schema, catalog, package, checkpoint or
+generation edit expected; P0 Actor schema-v2 remains unchanged.
+MIGRATION IMPACT: NONE expected for this unreleased pre-v1 materialization path;
+no compatibility alias/dual-read.
+HG-01 CONSTRAINTS AFFECTED: none expected; verify against the current constraint
+owner.
+
+CURRENTNESS RE-READ SET BEFORE WRITE:
+- Fresh exact remote HEAD, current progress and this cursor; stable W05 plan,
+  implementation execution contract and P1A gate.
+- Accepted T06-A1 canonical spec and P0 acceptance/current-owner output.
+- S6D-07 Character Progression/READY_PC seed; DIEGETIC_ONBOARDING and
+  CHARACTER_READINESS; Actor/Asset/Effect/health/resource owners.
+- Current native Actor/Asset/PLAYER machine schemas, P0 Actor schema-v2
+  validation, active PLAYER/control routes, ID allocator and identifier-policy
+  source.
+- Catalog contracts/admission/inventory/resolution, ruleset package identity
+  and machine closure, catalog_runtime/ruleset_package, exact current package
+  seed/capability.
+- Current RuntimeHost/bootstrap/HOT/current_owner and allocator implementation;
+  exact P1A-relevant RD03/RD04/RD14/RD15/RuntimeHost/S6D-07 tests.
+- `DEV/RELEASE/VERSIONING.md` and detailed canonical versioning owner.
+
+TDD BASELINE BEFORE RED:
+- `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q
+  DEV/TESTS/test_s6d_07_character_mvp_seed.py
+  DEV/TESTS/test_rd04_native_routing_index_hot.py
+  DEV/TESTS/test_rd03_actor_asset_effect_continuity.py
+  DEV/TESTS/test_rd15_catalog_runtime.py
+  DEV/TESTS/test_runtime_host_composition.py
+  DEV/TESTS/test_rd14_bootstrap.py` — 200 passed in 3.45s at start HEAD; no
+  P1A source/test implementation had been added.
+
+START-CURSOR VERSION_IMPACT: NONE — only execution-state evidence changed; no
+HDM-owned version/revision/schema/generation namespace or projection changed.
+START-CURSOR SYSTEM_IMPACT: NONE — the approved P1A scope is entered without a
+new architecture decision. Reassess the actual implementation before crossing
+any boundary.
