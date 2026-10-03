@@ -6,7 +6,7 @@ import hashlib
 import json
 from collections.abc import Callable, Mapping, Sequence
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
 
@@ -70,8 +70,53 @@ class CurrentOwnerRead:
     source_basis: str | None
     generation: int | None
     fingerprint: str | None
-    payload: Mapping[str, object] | None
+    _payload_bytes: bytes | None = field(repr=False)
     predecessor_fingerprint: str | None = None
+
+    def __init__(
+        self,
+        owner_ref: NativeOwnerRef,
+        status: CurrentOwnerStatus,
+        source: CurrentOwnerSource,
+        source_basis: str | None,
+        generation: int | None,
+        fingerprint: str | None,
+        payload: Mapping[str, object] | None,
+        predecessor_fingerprint: str | None = None,
+    ) -> None:
+        object.__setattr__(self, "owner_ref", owner_ref)
+        object.__setattr__(self, "status", status)
+        object.__setattr__(self, "source", source)
+        object.__setattr__(self, "source_basis", source_basis)
+        object.__setattr__(self, "generation", generation)
+        object.__setattr__(self, "fingerprint", fingerprint)
+        object.__setattr__(
+            self,
+            "_payload_bytes",
+            (
+                json.dumps(
+                    dict(payload),
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ).encode("utf-8")
+                if payload is not None
+                else None
+            ),
+        )
+        object.__setattr__(self, "predecessor_fingerprint", predecessor_fingerprint)
+
+    @property
+    def payload(self) -> Mapping[str, object] | None:
+        """Return an isolated copy so nested mutation cannot change retained evidence."""
+
+        if self._payload_bytes is None:
+            return None
+        payload = json.loads(self._payload_bytes)
+        if not isinstance(payload, dict):
+            raise CurrentOwnerError("retained current-owner payload is malformed")
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,6 +151,7 @@ class CurrentOwnerReadSession:
         "_reader",
         "_requested",
         "_selected_live",
+        "_source_basis_reader",
     )
 
     def __init__(
@@ -117,6 +163,9 @@ class CurrentOwnerReadSession:
         selected_live: LiveRouting | None,
         hot_store: HotOwnerStorePort,
         reader: Callable[[PinnedCampaign, str], object],
+        source_basis_reader: Callable[
+            [PinnedCampaign], tuple[PinnedCampaign, LiveRouting | None]
+        ],
         live_reader: Callable[[LiveRouting, LiveEnvelope], object] | None = None,
     ) -> None:
         if not campaign_id or pinned_campaign.campaign_id != campaign_id:
@@ -127,6 +176,7 @@ class CurrentOwnerReadSession:
         self._selected_live = selected_live
         self._hot_store = hot_store
         self._reader = reader
+        self._source_basis_reader = source_basis_reader
         self._live_reader = live_reader
         self._requested: dict[tuple[str, tuple[str, ...]], NativeOwnerRef] = {}
         self._last_observation: CurrentOwnerObservation | None = None
@@ -211,6 +261,15 @@ class CurrentOwnerReadSession:
         ):
             return False
 
+        try:
+            fresh_pinned_campaign, fresh_selected_live = self._source_basis_reader(
+                self._pinned_campaign
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            return False
+        if fresh_pinned_campaign.campaign_id != self._campaign_id:
+            return False
+
         fresh_snapshot = self._hot_store.read_admitted_snapshot(
             self._campaign_id,
             tuple((ref.family_key, ref.identity) for ref in candidate.key_union),
@@ -220,39 +279,61 @@ class CurrentOwnerReadSession:
             != candidate._hot_snapshot.snapshot_fingerprint
         ):
             return False
+        fresh_reads: dict[NativeOwnerRef, CurrentOwnerRead] = {}
         for owner_ref, prior_read in candidate.reads.items():
-            if prior_read.source is not CurrentOwnerSource.SELECTED_LIVE:
-                continue
-            source = _selected_live_source(self._selected_live, owner_ref)
-            if source is None:
+            live_source = _selected_live_source(fresh_selected_live, owner_ref)
+            if prior_read.source is CurrentOwnerSource.SELECTED_LIVE:
+                if live_source is None:
+                    return False
+                current_read = self._read_selected_live(
+                    owner_ref, live_source, selected_live=fresh_selected_live
+                )
+            else:
+                if _selected_live_owns(fresh_selected_live, owner_ref):
+                    return False
+                key = (owner_ref.family_key, owner_ref.identity)
+                document = fresh_snapshot.rows.get(key)
+                if prior_read.source is CurrentOwnerSource.ACCEPTED_HOT:
+                    if document is None:
+                        return False
+                    current_read = _hot_read(
+                        owner_ref,
+                        document,
+                        fresh_snapshot,
+                        pinned_campaign=fresh_pinned_campaign,
+                        reader=self._reader,
+                    )
+                else:
+                    if document is not None:
+                        return False
+                    current_read = self._read_pinned(
+                        owner_ref, pinned_campaign=fresh_pinned_campaign
+                    )
+            fresh_reads[owner_ref] = current_read
+            if _read_basis(current_read) != _read_basis(prior_read):
                 return False
-            current_read = self._read_selected_live(owner_ref, source)
-            if (
-                current_read.status is not CurrentOwnerStatus.RESOLVED
-                or current_read.source_basis != prior_read.source_basis
-                or current_read.fingerprint != prior_read.fingerprint
-            ):
-                return False
-        # Pinned campaign revisions are immutable. Re-reading identical paths
-        # would add duplicate repository I/O without improving source evidence;
-        # the variable local HOT observation is the part that must be reacquired.
+
         return (
-            _observation_fingerprint(
-                candidate.reads, fresh_snapshot.snapshot_fingerprint
-            )
+            _observation_fingerprint(fresh_reads, fresh_snapshot.snapshot_fingerprint)
             == candidate.observation_fingerprint
         )
 
-    def _read_pinned(self, owner_ref: NativeOwnerRef) -> CurrentOwnerRead:
+    def _read_pinned(
+        self,
+        owner_ref: NativeOwnerRef,
+        *,
+        pinned_campaign: PinnedCampaign | None = None,
+    ) -> CurrentOwnerRead:
+        source = self._pinned_campaign if pinned_campaign is None else pinned_campaign
         route = route_native_record(owner_ref.family_key, owner_ref.identity)
         try:
-            raw = self._reader(self._pinned_campaign, route.relative_path)
+            raw = self._reader(source, route.relative_path)
         except KeyError:
             return CurrentOwnerRead(
                 owner_ref,
                 CurrentOwnerStatus.ABSENT,
                 CurrentOwnerSource.PINNED_CAMPAIGN,
-                self._pinned_campaign.revision,
+                source.revision,
                 None,
                 None,
                 None,
@@ -262,7 +343,7 @@ class CurrentOwnerReadSession:
                 owner_ref,
                 CurrentOwnerStatus.UNAVAILABLE,
                 CurrentOwnerSource.PINNED_CAMPAIGN,
-                self._pinned_campaign.revision,
+                source.revision,
                 None,
                 None,
                 None,
@@ -272,7 +353,7 @@ class CurrentOwnerReadSession:
                 owner_ref,
                 CurrentOwnerStatus.INCOMPATIBLE,
                 CurrentOwnerSource.PINNED_CAMPAIGN,
-                self._pinned_campaign.revision,
+                source.revision,
                 None,
                 None,
                 None,
@@ -282,14 +363,14 @@ class CurrentOwnerReadSession:
             _validate_owner_identity(owner_ref, payload)
             _validate_current_payload(owner_ref, payload)
             fingerprint = _payload_fingerprint(
-                owner_ref, payload, self._pinned_campaign.revision, None
+                owner_ref, payload, source.revision, None
             )
         except (NativeStorageError, TypeError, ValueError):
             return CurrentOwnerRead(
                 owner_ref,
                 CurrentOwnerStatus.INCOMPATIBLE,
                 CurrentOwnerSource.PINNED_CAMPAIGN,
-                self._pinned_campaign.revision,
+                source.revision,
                 None,
                 None,
                 None,
@@ -299,7 +380,7 @@ class CurrentOwnerReadSession:
             owner_ref,
             CurrentOwnerStatus.RESOLVED,
             CurrentOwnerSource.PINNED_CAMPAIGN,
-            self._pinned_campaign.revision,
+            source.revision,
             generation if type(generation) is int else None,
             fingerprint,
             MappingProxyType(payload),
@@ -309,9 +390,14 @@ class CurrentOwnerReadSession:
         )
 
     def _read_selected_live(
-        self, owner_ref: NativeOwnerRef, source: LiveEnvelope
+        self,
+        owner_ref: NativeOwnerRef,
+        source: LiveEnvelope,
+        *,
+        selected_live: LiveRouting | None = None,
     ) -> CurrentOwnerRead:
-        if self._selected_live is None or self._live_reader is None:
+        routing = self._selected_live if selected_live is None else selected_live
+        if routing is None or self._live_reader is None:
             return CurrentOwnerRead(
                 owner_ref,
                 CurrentOwnerStatus.UNAVAILABLE,
@@ -322,7 +408,7 @@ class CurrentOwnerReadSession:
                 None,
             )
         try:
-            raw_pack = self._live_reader(self._selected_live, source)
+            raw_pack = self._live_reader(routing, source)
             pack = _validate_live_pack(raw_pack, source)
             raw_owner = pack.native_owner_states.get(owner_ref.family_key)
             if not isinstance(raw_owner, Mapping):
@@ -635,3 +721,14 @@ def _observation_fingerprint(
             )
         )
     return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()
+
+
+def _read_basis(read: CurrentOwnerRead) -> tuple[object, ...]:
+    return (
+        read.status,
+        read.source,
+        read.source_basis,
+        read.generation,
+        read.fingerprint,
+        read.predecessor_fingerprint,
+    )

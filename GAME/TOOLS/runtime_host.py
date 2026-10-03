@@ -59,8 +59,8 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.12
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
+# framework_module_version: 1.0.13
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -1518,6 +1518,7 @@ class CurrentOwnerView(_BoundService):
             selected_live=operation.selected_live,
             hot_store=self._host._hot_store,
             reader=self._host._read_current_owner_path,
+            source_basis_reader=self._host._read_current_owner_basis,
             live_reader=self._host._read_current_owner_live,
         )
 
@@ -1723,6 +1724,53 @@ class ActorContinuityService(_BoundService):
                 before_revision,
             )
         if not session.revalidate(observation):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+
+        try:
+            latest_operation = self._host._begin_operation()
+            latest_authority = lookup_write_authority(
+                "world.actor", actor_id, latest_operation.selected_live
+            )
+        except (RuntimeHostError, TypeError, ValueError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+        if latest_authority is WriteAuthority.LIVE:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.UNSUPPORTED,
+                owner_ref,
+                before_revision,
+            )
+        if latest_authority is WriteAuthority.INTEGRITY_CONFLICT:
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+        latest_session = self._host._current_owner.begin(latest_operation)
+        try:
+            latest_observation = latest_session.require((owner_ref,))
+            latest_read = latest_observation.require(owner_ref)
+        except (TypeError, ValueError, RuntimeHostError):
+            return _actor_establishment_result(
+                ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
+                owner_ref,
+                before_revision,
+            )
+        if (
+            latest_read.status is not CurrentOwnerStatus.RESOLVED
+            or latest_read.payload != actor_record
+            or latest_read.generation != current_read.generation
+            or latest_read.predecessor_fingerprint
+            != current_read.predecessor_fingerprint
+            or not latest_session.revalidate(latest_observation)
+        ):
             return _actor_establishment_result(
                 ActorContinuityEstablishmentStatus.REVALIDATION_REQUIRED,
                 owner_ref,
@@ -2165,6 +2213,19 @@ class RuntimeHost:
             raise
         except (AttributeError, OSError, TypeError, ValueError) as exc:
             raise RuntimeHostError(f"exact current-owner read failed for {path}") from exc
+
+    def _read_current_owner_basis(
+        self, pinned_campaign: PinnedCampaign
+    ) -> tuple[PinnedCampaign, LiveRouting | None]:
+        try:
+            selected_live = self._live_transport.read_selected_live(
+                self._campaign_id, pinned_campaign
+            )
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise RuntimeHostError("selected-LIVE currentness read failed") from exc
+        return pinned_campaign, _validate_selected_live(
+            selected_live, self._campaign_id
+        )
 
     def _read_current_owner_live(
         self, routing: LiveRouting, source: LiveEnvelope

@@ -4,14 +4,20 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Callable
 from copy import deepcopy
 from typing import Any
 
 import pytest
 
-from GAME.TOOLS import turn_runtime
+from GAME.TOOLS import context_runtime, turn_runtime
 from GAME.TOOLS.bootstrap import CampaignSelection, compose_selected_runtime_host
-from GAME.TOOLS.current_owner import CurrentOwnerSource, NativeOwnerRef
+from GAME.TOOLS.current_owner import (
+    CurrentOwnerObservation,
+    CurrentOwnerReadSession,
+    CurrentOwnerSource,
+    NativeOwnerRef,
+)
 from GAME.TOOLS.hot_store import NativeHotStore, OwnerDocument
 from GAME.TOOLS.live_state import (
     LiveClaim,
@@ -107,6 +113,8 @@ class ActorRepository:
         self.revision = CAMPAIGN_REVISION
         self.pin_count = 0
         self.path_reads: list[tuple[str, str]] = []
+        self.read_hook: Callable[[PinnedCampaign, str], None] | None = None
+        self.scene: dict[str, object] | None = None
 
     def repository_identity(self) -> str:
         return "github.com/example/campaigns"
@@ -121,8 +129,14 @@ class ActorRepository:
 
     def read_exact_path(self, pinned: PinnedCampaign, path: str) -> object:
         self.path_reads.append((pinned.revision, path))
+        if self.read_hook is not None:
+            self.read_hook(pinned, path)
         if path == route_native_record("world.actor", (ACTOR_ID,)).relative_path:
             return deepcopy(self.actor)
+        if path == route_native_record("world.scene", ("scene.spring",)).relative_path:
+            if self.scene is None:
+                raise KeyError(path)
+            return deepcopy(self.scene)
         raise KeyError(path)
 
     def read_exact_campaign_ref(self, campaign_id: str) -> object:
@@ -434,6 +448,242 @@ def test_read_session_expansion_reacquires_the_complete_union_after_hot_movement
         assert recomputed_actor.generation == 4
         assert expanded.require(scene_ref).status.value == "ABSENT"
         assert session.revalidate(expanded)
+
+
+def test_context_expansion_rejects_a_retained_actor_from_an_older_observation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        host, _repository = _selected_host(store, repository=repository)
+        initial_actor = _actor()
+        first_envelope, first_phase = _actor_phase(host, initial_actor)
+        first = host.actor_continuity.establish_from_phase(first_envelope, first_phase)
+        assert first.status.value == "ESTABLISHED"
+        assert first.after_state_revision == 5
+
+        current_actor = dict(
+            store.load_current_owner(CAMPAIGN_ID, "world.actor", (ACTOR_ID,)).payload
+        )
+        next_delta = _delta(current_actor)
+        next_delta["changes"]["continuity"]["evolving"]["next_intention"][
+            "statement"
+        ] = "Seek a healer"
+        next_envelope, next_phase = _actor_phase(
+            host,
+            current_actor,
+            proposal=_phase_proposal(current_actor, delta=next_delta),
+            turn_id="turn-actor-context-expansion",
+        )
+        repository.scene = {
+            "id": "scene.spring",
+            "kind": "world.scene",
+            "state": {"name": "The spring"},
+        }
+        original_resolve_candidate = context_runtime._resolve_candidate
+        producer_ran = False
+
+        def advance_actor_after_actor_resolution(
+            *args: Any, **kwargs: Any
+        ) -> dict[str, object]:
+            nonlocal producer_ran
+            resolved = original_resolve_candidate(*args, **kwargs)
+            if not producer_ran and resolved["owner_family"] == "world.actor":
+                producer_ran = True
+                assert not store._connection.in_transaction
+                moved = host.actor_continuity.establish_from_phase(
+                    next_envelope, next_phase
+                )
+                assert moved.status.value == "ESTABLISHED"
+                assert moved.after_state_revision == 6
+            return resolved
+
+        monkeypatch.setattr(
+            context_runtime, "_resolve_candidate", advance_actor_after_actor_resolution
+        )
+        result = host.context.assemble(
+            {
+                "profile_id": "profile.actor",
+                "role": "ACTOR",
+                "purpose": "assess",
+                "subject_id": ACTOR_ID,
+                "recipient_id": PLAYER_ID,
+                "campaign_id": CAMPAIGN_ID,
+                "allowed_channels": ["CURRENT_SCOPE"],
+                "max_candidates": 2,
+                "required_ids": ["actor-source"],
+                "allowed_relations": ["requires"],
+                "budget": 10_000,
+                "source_frontier": CAMPAIGN_REVISION,
+            },
+            [
+                {
+                    "candidate_id": "actor-source",
+                    "channel": "CURRENT_SCOPE",
+                    "rank": 0,
+                    "role": "ACTOR",
+                    "purpose": "assess",
+                    "subject_id": ACTOR_ID,
+                    "recipient_id": PLAYER_ID,
+                    "owner_family": "world.actor",
+                    "owner_identity": [ACTOR_ID],
+                    "dependencies": [
+                        {"relation": "requires", "candidate_id": "scene-source"}
+                    ],
+                },
+                {
+                    "candidate_id": "scene-source",
+                    "channel": "CURRENT_SCOPE",
+                    "rank": 0,
+                    "role": "ACTOR",
+                    "purpose": "assess",
+                    "subject_id": ACTOR_ID,
+                    "recipient_id": PLAYER_ID,
+                    "owner_family": "world.scene",
+                    "owner_identity": ["scene.spring"],
+                    "dependencies": [],
+                },
+            ],
+        )
+
+        assert result["outcome"] == "REVALIDATION_REQUIRED"
+        assert producer_ran
+        assert result["bundle"] is None
+        staged = store.load_current_owner(CAMPAIGN_ID, "world.actor", (ACTOR_ID,))
+        assert staged is not None and staged.payload["state_revision"] == 6
+
+
+def test_actor_route_opening_during_predecessor_read_prevents_local_establishment() -> (
+    None
+):
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        live = SelectedLive()
+        host, _repository = _selected_host(store, repository=repository, live=live)
+        actor = _actor()
+        envelope, phase_result = _actor_phase(
+            host, actor, turn_id="turn-actor-route-opening"
+        )
+        actor_path = route_native_record("world.actor", (ACTOR_ID,)).relative_path
+
+        def open_live_route_during_predecessor_read(
+            _pinned: PinnedCampaign, path: str
+        ) -> None:
+            if path != actor_path:
+                return
+            assert not store._connection.in_transaction
+            repository.read_hook = None
+            live.route = _live_claiming_actor()
+            live.pack = _live_actor_pack(live.route, actor)
+
+        repository.read_hook = open_live_route_during_predecessor_read
+
+        result = host.actor_continuity.establish_from_phase(envelope, phase_result)
+
+        assert result.status.value in {"UNSUPPORTED", "REVALIDATION_REQUIRED"}
+        assert store.load_current_owner(CAMPAIGN_ID, "world.actor", (ACTOR_ID,)) is None
+
+
+def test_read_session_revalidation_rejects_live_route_movement() -> None:
+    with NativeHotStore(":memory:") as store:
+        route = _live_claiming_actor()
+        live = SelectedLive(route, pack=_live_actor_pack(route, _actor()))
+        host, _repository = _selected_host(store, live=live)
+        owner_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
+        session = host._current_owner.begin(host._begin_operation())
+
+        observation = session.require((owner_ref,))
+
+        assert observation.require(owner_ref).source is CurrentOwnerSource.SELECTED_LIVE
+        live.route = LiveRouting(campaign_id=CAMPAIGN_ID, entries=())
+
+        assert not session.revalidate(observation)
+
+
+def test_read_session_revalidation_rereads_the_current_campaign_owner_source() -> None:
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        host, _repository = _selected_host(store, repository=repository)
+        owner_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
+        operation = host._begin_operation()
+        session = host._current_owner.begin(operation)
+        observation = session.require((owner_ref,))
+        initial_source_read_count = len(repository.path_reads)
+
+        repository.revision = "d" * 40
+        repository.actor["state"]["continuity"]["evolving"]["current_objective"] = {
+            "statement": "A current-source change after observation"
+        }
+
+        assert not store._connection.in_transaction
+        assert not session.revalidate(observation)
+        assert len(repository.path_reads) == initial_source_read_count + 1
+        assert repository.path_reads[-1][0] == operation.pinned_campaign.revision
+
+
+def test_actor_source_movement_after_operation_revalidation_blocks_establishment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    with NativeHotStore(":memory:") as store:
+        repository = ActorRepository()
+        host, _repository = _selected_host(store, repository=repository)
+        actor = _actor()
+        envelope, phase_result = _actor_phase(
+            host, actor, turn_id="turn-actor-source-movement"
+        )
+        original_revalidate = CurrentOwnerReadSession.revalidate
+        source_moved = False
+
+        def move_source_after_revalidation(
+            session: CurrentOwnerReadSession,
+            observation: CurrentOwnerObservation | None = None,
+        ) -> bool:
+            nonlocal source_moved
+            valid = original_revalidate(session, observation)
+            if valid and not source_moved:
+                source_moved = True
+                assert not store._connection.in_transaction
+                repository.revision = "d" * 40
+                repository.actor["state"]["continuity"]["evolving"][
+                    "current_objective"
+                ] = {"statement": "A new campaign predecessor"}
+            return valid
+
+        monkeypatch.setattr(
+            CurrentOwnerReadSession, "revalidate", move_source_after_revalidation
+        )
+
+        result = host.actor_continuity.establish_from_phase(envelope, phase_result)
+
+        assert source_moved
+        assert result.status.value == "REVALIDATION_REQUIRED"
+        assert store.load_current_owner(CAMPAIGN_ID, "world.actor", (ACTOR_ID,)) is None
+
+
+def test_current_owner_observation_payload_does_not_retain_nested_mutations() -> None:
+    with NativeHotStore(":memory:") as store:
+        host, _repository = _selected_host(store)
+        owner_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
+        session = host._current_owner.begin(host._begin_operation())
+        observation = session.require((owner_ref,))
+        owner_read = observation.require(owner_ref)
+        original = owner_read.payload["state"]["continuity"]["evolving"][
+            "reconsideration_cues"
+        ][0]["statement"]
+        fingerprint = observation.observation_fingerprint
+
+        owner_read.payload["state"]["continuity"]["evolving"]["reconsideration_cues"][
+            0
+        ]["statement"] = "tampered outside the retained evidence"
+
+        assert (
+            observation.require(owner_ref).payload["state"]["continuity"]["evolving"][
+                "reconsideration_cues"
+            ][0]["statement"]
+            == original
+        )
+        assert observation.observation_fingerprint == fingerprint
+        assert session.revalidate(observation)
 
 
 def test_same_phase_consumption_is_idempotent_and_no_change_writes_nothing() -> None:

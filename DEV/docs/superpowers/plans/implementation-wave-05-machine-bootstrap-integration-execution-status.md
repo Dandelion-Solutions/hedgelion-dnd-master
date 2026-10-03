@@ -2353,3 +2353,35 @@ SELF_REVIEW: completed against the revised P0 Envelope and current Actor/Context
 
 NEXT_EXACT_TASK: coordinator-directed independent review and publication/read-back of this local checkpoint. Do not start P1A, P1B, P2, P3, or product completion. `DEV/CURRENT_PROGRESS.md` remains unadvanced; the P0 output is not accepted/read back.
 UNPUBLISHED_WORK: P0 implementation commit `8ba60e849b87d9ac46a4c6e7f1bd5daba1bd21a2` and this execution-status synchronization are local and unpushed; no other task-local source edits remain.
+
+## W05.T06-P0 scoped independent-review repair round — 2026-10-03
+
+BASE_SHA: `1a91072d65977e76139e35ac477bf1bcbb352918` — local P0 checkpoint before this repair round.
+STATUS: SCOPED REPAIRS IMPLEMENTED LOCALLY; P0 remains pending independent re-review and acceptance.
+
+FINDINGS ADDRESSED:
+
+1. Context expansion binds each retained current-owner derivation to the exact read basis from the final union observation; a previously resolved Actor that moved during later dependency expansion now produces typed `REVALIDATION_REQUIRED` rather than a mixed bundle.
+2. CurrentOwnerReadSession rechecks selected LIVE routing and exact pinned campaign owner reads outside SQLite. The Actor producer additionally reacquires fresh current operation/source before local establishment, returns typed unsupported/revalidation when LIVE owns or source moved, and creates no LIVE mutation/CAS path.
+3. Restored `CoverageTests.test_movement_commits_two_owners_in_one_segment_and_retries` to class scope, retained its assertions, and added Actor envelope `state_revision == revision` alignment.
+4. CurrentOwnerRead stores the validated payload as immutable JSON bytes and returns isolated parsed copies, preventing nested mutation from changing retained evidence/fingerprint.
+
+TDD / BASELINE:
+- P0 exact focused command at this base: 509 passed, 2 existing RD09 `jsonschema.RefResolver` deprecation warnings.
+- Baseline collection of `test_s6d_09_domain_rules_coverage_contract.py`: 23 tests; the exact movement test node was not found because it was nested.
+- Behavioral RED witnesses: expansion returned `ASSEMBLED` with retained Actor revision 5 after the real producer advanced it to 6; route-opening allowed local establishment; LIVE-route movement revalidated `True`; nested payload mutation changed retained evidence. Corrected integration sequencing retained that expected RED before implementation.
+
+VERIFICATION:
+- Exact P0 focused command from the stable plan: 509 passed, 2 existing RD09 `RefResolver` warnings.
+- `test_w05_t06_p0_actor_producer.py`: 23 passed, including production Context expansion, fresh source/routing movement and nested-mutation regressions.
+- `test_s6d_09_domain_rules_coverage_contract.py`: 24 passed; restored movement node collected and passed independently.
+- Version namespace subset excluding the checkout-wide census: 11 passed, 1 deselected.
+- `ruff check --ignore I001,B017` across changed Python files: PASS. Default Ruff reports existing import-order/blind-exception findings in the legacy S6D module; scoped format diagnostics also report pre-existing formatting drift in older P0 code. No broad formatting cleanup was applied.
+- `git diff --check`: PASS. Full DEV, maintenance audit, release build and hosted CI were not rerun in this bounded repair round; prior P0 cursor records the existing checkout-local census contamination, and hosted CI is unavailable here.
+
+VERSION_IMPACT: `runtime_host.py 1.0.12 -> 1.0.13`; `context_runtime.py 1.0.10 -> 1.0.11`. Module headers/constants and exact test assertions are synchronized. `current_owner.py` has no independent module-version namespace and is covered by its versioned RuntimeHost/Context consumers. No GAME schema changed in this repair round; no persistent schema, Actor revision axis, engine release, campaign/storage/catalog generation, migration or dual-read change.
+
+SYSTEM_IMPACT: NONE — changes stay within the revised P0 read-session, RuntimeHost Actor establishment, Context current-owner consumer and requested regression-test envelope. No new semantic/evidence authority, caller-asserted flags, evidence classes, PC writes or LIVE mutation/CAS path.
+
+NEXT_EXACT_TASK: coordinator-directed independent review and decision on the local repair checkpoint. Do not start P1A, P1B, P2, P3 or product completion. No push was authorized or performed.
+UNPUBLISHED_WORK: coherent repair checkpoint to be committed locally on `v1/engine-rearchitecture`; no publication/read-back claim.

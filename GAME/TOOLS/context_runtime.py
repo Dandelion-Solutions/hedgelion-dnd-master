@@ -20,6 +20,8 @@ try:
     from .access_control import AccessControlContractError, PlayerRecord
     from .context_budget import ContextBudgetError, allocate, estimate_size
     from .current_owner import (
+        CurrentOwnerObservation,
+        CurrentOwnerRead,
         CurrentOwnerReadSession,
         CurrentOwnerStatus,
         NativeOwnerRef,
@@ -49,6 +51,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
         estimate_size,
     )
     from GAME.TOOLS.current_owner import (
+        CurrentOwnerObservation,
+        CurrentOwnerRead,
         CurrentOwnerReadSession,
         CurrentOwnerStatus,
         NativeOwnerRef,
@@ -71,8 +75,8 @@ except ImportError:  # pragma: no cover - direct-path focused test imports.
     )
 
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 
 
 class ContextContractError(ValueError):
@@ -1123,7 +1127,7 @@ def _resolve_candidate(
     rank = _candidate_rank(candidate.get("rank", 0))
 
     # current/eligible are deliberately internal post-resolution markers only.
-    return {
+    resolved_candidate = {
         "candidate_id": candidate_id,
         "channel": candidate.get("channel"),
         "rank": rank,
@@ -1134,6 +1138,20 @@ def _resolve_candidate(
         "current": True,
         "eligible": True,
     }
+    if current_owner_session is not None:
+        try:
+            owner_ref = NativeOwnerRef(family, tuple(owner_identity))
+        except (TypeError, ValueError):
+            owner_ref = None
+        observation = current_owner_session.observation
+        if owner_ref is not None and observation is not None:
+            owner_read = observation.reads.get(owner_ref)
+            if owner_read is not None:
+                resolved_candidate["_current_owner_read_basis"] = (
+                    owner_ref,
+                    _current_owner_read_basis(owner_read),
+                )
+    return resolved_candidate
 
 
 def _required_closure(
@@ -1195,6 +1213,28 @@ def _public_candidate(candidate: Mapping[str, object]) -> dict[str, object]:
     }
 
 
+def _current_owner_read_basis(read: CurrentOwnerRead) -> tuple[object, ...]:
+    return (
+        read.status,
+        read.source,
+        read.source_basis,
+        read.generation,
+        read.fingerprint,
+        read.predecessor_fingerprint,
+    )
+
+
+def _retained_owner_reads_match(
+    observation: CurrentOwnerObservation,
+    read_bases: Sequence[tuple[NativeOwnerRef, tuple[object, ...]]],
+) -> bool:
+    for owner_ref, expected_basis in read_bases:
+        current = observation.reads.get(owner_ref)
+        if current is None or _current_owner_read_basis(current) != expected_basis:
+            return False
+    return True
+
+
 def _assemble_bound_context(
     request: dict[str, Any],
     candidates: list[dict[str, Any]],
@@ -1218,8 +1258,19 @@ def _assemble_bound_context(
     )
     if current_owner_session is None:
         return result
+    read_bases = result.pop("_current_owner_read_bases", ())
     observation = current_owner_session.observation
-    if observation is None or current_owner_session.revalidate(observation):
+    if observation is None:
+        if not read_bases:
+            return result
+        return {
+            "outcome": "REVALIDATION_REQUIRED",
+            "bundle": None,
+            "trace": result.get("trace"),
+        }
+    if _retained_owner_reads_match(
+        observation, read_bases
+    ) and current_owner_session.revalidate(observation):
         return result
     return {
         "outcome": "REVALIDATION_REQUIRED",
@@ -1415,7 +1466,16 @@ def _assemble_bound_context_unverified(
         "optional": [_public_candidate(item) for item in allocation["optional"]],
         "retrospective_projection": request.get("retrospective", False) is True,
     }
-    return {"outcome": outcome, "bundle": bundle, "trace": trace}
+    return {
+        "outcome": outcome,
+        "bundle": bundle,
+        "trace": trace,
+        "_current_owner_read_bases": tuple(
+            item["_current_owner_read_basis"]
+            for item in available.values()
+            if "_current_owner_read_basis" in item
+        ),
+    }
 
 
 def assemble_context(

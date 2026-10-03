@@ -652,7 +652,7 @@ class ContextRuntimeHostTests(unittest.TestCase):
             Draft202012Validator(schema).validate(
                 {key: value for key, value in bound_request().items() if key != "role"}
             )
-        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.10")
+        self.assertEqual(context_runtime.FRAMEWORK_MODULE_VERSION, "1.0.11")
 
 
 class CommentatorControlProfileTests(unittest.TestCase):
@@ -741,7 +741,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertNotIn("eligible", evidence)
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.lore_fact", ("fact-public",)).relative_path],
+            [
+                route_native_record("world.lore_fact", ("fact-public",)).relative_path,
+                route_native_record("world.lore_fact", ("fact-public",)).relative_path,
+            ],
         )
 
     def test_player_only_perspective_needs_no_selected_pc_or_information_read(self):
@@ -766,7 +769,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertEqual(result["bundle"]["required"][0]["payload"], player)
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.player", ("player-1",)).relative_path],
+            [
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record("world.player", ("player-1",)).relative_path,
+            ],
         )
 
     def test_player_disclosure_and_lore_are_exact_native_evidence(self):
@@ -949,7 +955,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertIsNone(result["bundle"])
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.player", ("player-1",)).relative_path],
+            [
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record("world.player", ("player-1",)).relative_path,
+            ],
         )
 
     def test_multiple_controlled_pcs_never_union_knowledge(self):
@@ -1075,7 +1084,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertIsNone(result["bundle"])
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.player", ("player-1",)).relative_path],
+            [
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record("world.player", ("player-1",)).relative_path,
+            ],
         )
 
     def test_disclosure_for_another_player_is_not_loaded_or_admitted(self):
@@ -1143,7 +1155,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertIsNone(result["bundle"])
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.player", ("player-1",)).relative_path],
+            [
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record("world.player", ("player-1",)).relative_path,
+            ],
         )
 
     def test_player_candidate_identity_cannot_substitute_another_recipient(self):
@@ -1230,7 +1245,10 @@ class CommentatorControlProfileTests(unittest.TestCase):
         self.assertIsNone(result["bundle"])
         self.assertEqual(
             repository.read_paths,
-            [route_native_record("world.player", ("player-1",)).relative_path],
+            [
+                route_native_record("world.player", ("player-1",)).relative_path,
+                route_native_record("world.player", ("player-1",)).relative_path,
+            ],
         )
 
     def test_selected_pc_without_required_player_evidence_is_unsatisfiable(self):
