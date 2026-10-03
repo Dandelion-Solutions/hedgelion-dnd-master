@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: W05.T06-P1A EXECUTING; T06 continuation authorized, dependency-driven.
-CURRENT_TASK: W05.T06-P1A — production character materialization resolver.
+STATUS: SENIOR_REVIEW_REQUIRED — W05.T06-P1A paused at a System-Impact Gate.
+CURRENT_TASK: W05.T06-P1A — reconcile the admitted Sorcerer spell-override representation before production implementation.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `65d063c5d75664270b2df3cfa07ddb743ddee062` — freshly fetched current remote HEAD before P1A work; accepted P0 output remains published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
+LAST_SAFE_SHA: `016500ffc11513adf71c978be59ba72188925868` — local-only P1A start-envelope cursor commit on top of freshly fetched public HEAD `65d063c5d75664270b2df3cfa07ddb743ddee062`; accepted P0 output remains published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2734,3 +2734,121 @@ HDM-owned version/revision/schema/generation namespace or projection changed.
 START-CURSOR SYSTEM_IMPACT: NONE — the approved P1A scope is entered without a
 new architecture decision. Reassess the actual implementation before crossing
 any boundary.
+
+
+## W05.T06-P1A System-Impact Gate — Sorcerer explicit override not machine-admitted
+
+TRIGGER: P1A acceptance requires a meaningful explicit player override of the
+delegated Sorcerer spell bundle. The accepted S6D-07 semantics say that bundle
+can be overridden before READY_PC, but the exact current admitted package seed
+contains only one selectable bundle. Implementing a different bundle would
+require inventing or admitting a selection representation/options/cardinality
+not present in the approved package contract.
+
+LAST_SAFE_SHA: `016500ffc11513adf71c978be59ba72188925868` — P1A start-envelope
+cursor commit; no P1A production implementation/test files remain.
+CURRENT_TASK: W05.T06-P1A.
+
+APPROVED SPEC / PLAN EXPECTATION:
+- W05.T06-P1A acceptance at stable plan lines 696–703 requires the Human/
+  Criminal Sorcerer initial path, delegated deterministic defaults, an explicit
+  player override, exact admitted context, and repeat/resume preservation.
+- Canonical `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md` §MVP
+  acceptance says the Sorcerer route has one delegated recommended six-spell
+  bundle that can be overridden before READY_PC.
+- The accepted choice model requires stable owner-relative option IDs selected
+  only against the pinned package context; unsupported content stays absent /
+  nonselectable.
+
+DISCOVERED IMPLEMENTATION PRESSURE / SOURCE EVIDENCE:
+- Exact current `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/character-mvp-seed.json`
+  lines 185–207 defines `advancement.sorcerer.level_1.spells` with
+  `minimum: 1`, `maximum: 1`, default `option.spells.mvp_default`, and exactly
+  one option. That option grants/binds the same fixed six spell IDs and the
+  `asset.arcane_focus`; it declares no alternate option or override member.
+- `character-capabilities.json` declares the bounded one Sorcerer-1 profile,
+  `full_srd_character_corpus: false`, and `ABSENT_NONSELECTABLE` for unsupported
+  content. The ruleset manifest includes the seed as an identity-bound package
+  member.
+- S6D-07 candidate-spec §2 requires selected option IDs admitted by the pinned
+  package context; the collaborative review §3 says alternatives not packaged
+  are not selectable. The seed and `DEV/TESTS/test_s6d_07_character_mvp_seed.py`
+  conformance test are the current machine evidence; no second production
+  override owner was found in the implementation-facing contract.
+- Merely marking the sole default option `choice_basis.player_explicit` does not
+  override the delegated selection: it produces the same six spell IDs.
+  Accepting another list/set without an admitted representation would bypass
+  owner-relative option/cardinality validation and could create a new selectable
+  capability outside the package.
+
+AFFECTED OWNERS / CONSUMERS:
+- `DEV/ARCHITECTURE/CHARACTER_PROGRESSION_READY_PC_SEED.md` (accepted semantic
+  promise), current character package seed/capability and its content digest /
+  resolved ruleset identity, the P1A resolver/request/Actor spellcasting choice
+  binding, S6D-07 conformance tests, and the P1A acceptance suite.
+- No current runtime owner/package file has been changed. `GAME/TOOLS/character_progression.py`,
+  package seed/capability, schemas/catalogs and tests have no remaining P1A
+  diff; the test-first probes were discarded rather than shipping a partial
+  materializer.
+
+PROTECTED INVARIANTS AT RISK:
+- No new content/semantics or selectable option outside the admitted package.
+- Stable owner-relative choice identity; deterministic runtime validates only
+  choices admitted by the exact Host-bound catalog context.
+- Unsupported content remains absent/nonselectable; no raw prose or arbitrary
+  spell IDs become mechanics.
+- No duplicate spell-selection authority between choice bindings and
+  `build.spellcasting.known_spell_ids`.
+
+WHAT CAN PROCEED WITHOUT THE CHANGE:
+- The Fighter initial path and Sorcerer delegated-default path appear implementable
+  from the admitted seed, as do strict current PLAYER/control, exact package
+  validation and atomic Actor/Asset/allocator establishment.
+- This subset cannot produce `W05_T06_CHARACTER_MATERIALIZATION_READY` while the
+  plan's explicit override acceptance remains unmet; do not claim P1A complete
+  or start P1B.
+
+SAFE OPTIONS:
+1. Senior determines whether P1A's “explicit player override” is intended to
+   mean only explicit acceptance of the sole packaged `option.spells.mvp_default`
+   (which is not a different loadout and does not satisfy the ordinary meaning
+   of override), and if so reconciles the accepted implementation contract and
+   test acceptance without leaving contradictory wording.
+2. If a different legal loadout is required, route the exact supported spell
+   selection vocabulary/cardinality and its package/Actor/readiness evidence
+   through the owning S6D-07/specification process, then revise P1A's envelope
+   and package identity/test targets before implementation.
+
+RECOMMENDATION: Senior ruling on whether “override” means a genuinely different
+mechanically valid spell selection. The current seed cannot establish that
+meaning. If it is required, amend the owning S6D-07 package contract first; do
+not invent an option, arbitrary spell list or cardinality in the P1A resolver.
+
+COST / RISK IF RECOMMENDATION IS WRONG: Treating the sole default as its own
+override would silently omit a named P1A acceptance behavior. Inventing a
+different list/cardinality would create unsupported or ambiguously admitted
+spells and duplicate the choice-binding owner. A bounded owner ruling may delay
+P1A; proceeding without it risks package/content and Actor binding disagreement.
+
+TDD / VERIFICATION STATE:
+- Start baseline before any P1A test/code: stable plan's existing owner modules
+  — 200 passed (recorded above).
+- RED: the new Host-service probe failed before the P1A service existed. A
+  fixture-driven Fighter positive path and unresolved-style test then failed
+  because the temporary unimplemented service returned `REVALIDATION_REQUIRED`.
+  The probe/test/temporary interface changes were removed; no RED test or partial
+  production code remains.
+- No P1A GREEN, focused acceptance, maintenance, clean exact DEV, or release
+  build result is claimed. Hosted CI is unavailable in this runtime.
+
+VERSION_IMPACT: NONE — only execution status/evidence changed after the start
+envelope. The temporary, incomplete production/test probe was removed; no
+version-bearing owner or projection changed.
+SYSTEM_IMPACT: SENIOR_REVIEW_REQUIRED — an implementation decision about the
+spell-selection contract would cross the admitted package/selection boundary.
+NEXT_EXACT_TASK: obtain the Senior ruling above, then continue W05.T06-P1A only
+under the resulting current contract/envelope.
+KNOWN_BLOCKERS: Sorcerer override representation is not machine-admitted by the
+exact current seed; P1B/P2/P3/product completion remain unstarted.
+UNPUBLISHED_WORK: NONE — no P1A production/test changes remain; this stop record
+is the only current uncommitted work before its local cursor commit.

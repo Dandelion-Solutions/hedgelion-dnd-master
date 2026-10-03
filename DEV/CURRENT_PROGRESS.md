@@ -7,11 +7,11 @@ GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACT
 CURRENT_WORKSTREAM: production implementation
 CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: W05.T06-P1A; automatically continue the accepted T06 chain as each named dependency becomes GREEN/published/read back.
-REQUIRED_GATE: P0 -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion -> independent Senior integration audit. Ordinary task boundaries require no additional PO permission.
+NEXT_AUTHORIZED_UNIT: W05.T06-P1A remains the current task; execution is paused at a P1A System-Impact Gate pending Senior resolution recorded in the task cursor.
+REQUIRED_GATE: P0 -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion -> independent Senior integration audit. Ordinary task boundaries require no additional PO permission; the current P1A boundary is the recorded exception.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
-TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO.
-KNOWN_BLOCKERS: none for the next P1A task; remaining tasks require their named producer outputs. Story remains dormant.
+TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
+KNOWN_BLOCKERS: W05.T06-P1A is paused pending Senior ruling on the accepted Sorcerer spell-override representation; P1B/P2/P3/product completion remain dependency-gated. Story remains dormant.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: NONE — global/current-progress and task-cursor status only; no HDM-owned version namespace changes.
 
 PLANNING_CONSOLIDATION_SOURCE_SHA: `8636369cbb9f2d8fb9b90a92cffbc0ccdddd3d4d`
