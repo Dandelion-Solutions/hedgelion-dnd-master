@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: CONTINUATION_READY / P1A NEEDS_PO — P1A and its consumers remain held; the independent P2 lane is eligible under its exact own inputs. No P2 implementation is claimed by this instruction checkpoint.
 CURRENT_TASK: W05.T06-P2 continuation entry: fresh-read exact plan/owners and establish its bounded start envelope; the P1A Sorcerer decision remains separately held under `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `be1c9b919bba65bcb1a9e5d5eb7b19e7c72fd82f` — verified remote baseline of this instruction checkpoint; prior P1A stop/Senior evidence remains at `820c0f773b69f3951008be3e3b21814d10461a23`. Resume from the published current HEAD and this cursor, preserving accepted P0; no P1A/P2 production is present in this amendment.
+LAST_SAFE_SHA: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7` — accepted instruction checkpoint: independent DEV/GAME source review PASS, exact 22-file remote read-back PASS, hosted run `37160553540` maintenance PASS / 1526 DEV tests OK. Prior P1A stop/Senior evidence remains at `820c0f773b69f3951008be3e3b21814d10461a23`. Resume from current HEAD and this cursor; accepted P0 is preserved and no P1A/P2 production is added.
 
 ## W05.T01 Implementation Impact Envelope
 

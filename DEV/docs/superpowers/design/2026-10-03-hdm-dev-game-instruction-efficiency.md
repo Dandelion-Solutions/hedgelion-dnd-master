@@ -112,3 +112,11 @@ Local checks on the connector-sourced bounded exact candidate: JSON parsing, fou
 Root AGENTS character count: 49,670 -> 33,215 before this report-only record; this measures text volume only, not tokens, model latency or quality. Full DEV/maintenance hosted acceptance is evaluated on the published exact commit by the existing Validate workflow; no pre-publication full-suite/build PASS is claimed. VPS model availability and real GAME behavior remain unmeasured as specified above.
 
 Independent bounded DEV re-review of corrected candidate 05c94b9db8d778ed70e00800f84f1d25d2dbcbd3: PASS; DEV-01 closed. The re-review covers the corrected local authorization paragraph and report metadata/evidence; other DEV sources retain prior reviewed identity. GAME source bytes remain identical to the independent GAME PASS candidate. This final evidence-only record does not alter those normative bytes.
+
+## Published checkpoint acceptance
+
+Published instruction checkpoint: f7399294e85fe0d03d8cb3ba8073c7918d7b29e7. Fresh Connector ref read confirmed the target equals that commit; all 22 changed files were fetched at that SHA and matched the intended bytes exactly.
+
+Hosted Validate engine source run 37160553540, job 111312924357: SUCCESS. Full maintenance audit: PASS. Exact hosted DEV command `.hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v`: 1,526 tests, OK. Logs also report VERSION_UNCLASSIFIED=[] and VERSION_LEGACY_HITS=[]. This is actual hosted evidence; no VPS model-availability, target latency or behavioral-model evaluation is implied.
+
+This following evidence/cursor synchronization changes no normative instruction, configuration, module version or production byte and has VERSION_IMPACT: NONE. Existing future behavioral assurance and the genuine P1A PO gate remain.
