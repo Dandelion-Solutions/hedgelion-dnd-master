@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: NEEDS_PO — W05.T06-P1A held after independent Senior System-Impact review; bounded Sorcerer product-scope decision remains.
 CURRENT_TASK: W05.T06-P1A — resolve the acceptance-promise qualification or alternate-loadout scope under `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `016500ffc11513adf71c978be59ba72188925868` — local-only P1A start-envelope cursor commit on top of freshly fetched public HEAD `65d063c5d75664270b2df3cfa07ddb743ddee062`; accepted P0 output remains published/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
+LAST_SAFE_SHA: `820c0f773b69f3951008be3e3b21814d10461a23` — P1A start-envelope, stop evidence and independent Senior review published/read back. P0 remains accepted; no P1A production code is present.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2877,5 +2877,8 @@ NEXT_EXACT_TASK: resolve the bounded product decision, reconcile the affected
 owner/plan acceptance and resume P1A. Automatic dependency-driven continuation
 authorization persists after this actual gate; no new routine PO gate is added.
 P1B/P2/P3/product completion: UNSTARTED; Story/T07/T08/W06 gates preserved.
-UNPUBLISHED_WORK: local start-envelope/stop commits plus this review/status
-checkpoint pending non-force publication and fresh read-back.
+PUBLICATION_READBACK: PASS — non-force native publication followed by successful
+`git fetch --prune origin` confirms `HEAD == origin/v1/engine-rearchitecture ==
+820c0f773b69f3951008be3e3b21814d10461a23`; exact tree comparison is empty.
+UNPUBLISHED_WORK: NONE for the reviewed start/stop/Senior package; this
+publication-evidence synchronization introduces no production or owner change.
