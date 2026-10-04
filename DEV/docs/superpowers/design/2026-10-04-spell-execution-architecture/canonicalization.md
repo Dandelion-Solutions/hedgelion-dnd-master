@@ -46,7 +46,7 @@ Main specification has24 selected contract keys. Exact annexes own detailed ABI;
 
 ## Owner reconciliation and finding propagation
 
-`owner-propagation.json` enumerates each exact insertion, superseded/retained statement and deferred GAME projection. Current architecture owners are synchronized; current executable schemas/catalogs/GAME sources stay unchanged. Only source-proven insufficient exclusions receive the selected narrow amendment. Former six-spell/no-concentration baseline still describes its accepted old snapshot, with the accepted full support extension explicitly routed.
+`owner-propagation.md` enumerates each exact insertion, superseded/retained statement and deferred GAME projection. Current architecture owners are synchronized; current executable schemas/catalogs/GAME sources stay unchanged. Only source-proven insufficient exclusions receive the selected narrow amendment. Former six-spell/no-concentration baseline still describes its accepted old snapshot, with the accepted full support extension explicitly routed.
 
 SC01 quote corruption is WITHDRAWN false positive; original Russian remains exact. SC02 chosen principal/body factoring is preserved and now closes hp-neutral principal fields/policy and current-state return. SC03 WP16 close/final/absorb then one owner remains selected. SC04 PO004 clean-slate is kept distinct from agency. SC05 no new MAPPER or model phase. SC06 duplicate non8 rays remain legal. All prior findings/source qualifications/history remain retrievable, and old candidate/brief/SI/resolution are expressly demoted from present law.
 

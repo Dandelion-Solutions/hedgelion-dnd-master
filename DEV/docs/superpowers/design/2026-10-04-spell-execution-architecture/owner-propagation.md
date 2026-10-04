@@ -1,3 +1,8 @@
+# Exact owner propagation — documentary record
+
+This Markdown report preserves exact amendment anchors, new owning routes and old-statement dispositions for Step8. It is documentary traceability, not a serialized runtime contract/identity carrier. GAME projection proposals remain deferred to the approved worker task.
+
+```json
 {
   "schema_version": 1,
   "evidence_pin": "fbaef81af38a64f3defd0ee928c9313a0c488fd2",
@@ -260,3 +265,4 @@
     }
   ]
 }
+```

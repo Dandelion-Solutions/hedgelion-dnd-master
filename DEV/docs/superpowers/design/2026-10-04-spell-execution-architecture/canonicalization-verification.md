@@ -9,3 +9,5 @@ Artifact checks: exact selected SP01..24 set; six final specs including four det
 Publication protocol: fresh remote ref -> coherent tree/commit parent -> nonforced same-branch update -> all changed files exact-content readback + exact resulting ref/tree delta -> hosted CI evidence when available. These postpublication facts are recorded by the later readback receipt, never inferred here. Independent Senior Stop2 reviews the actual verified published canonical checkpoint before stable-plan reconciliation.
 
 VERSION_IMPACT: NONE. Accepted waves/S1/S2/P0 and independent P2/P3 gates preserved; NEEDS_PO NONE.
+
+Initial hosted run `37231865681` failed maintenance before DEV tests because documentary `owner-propagation.json` quotes the retired identity token and the owning census scans every machine/code JSON/Python/YAML carrier. Root cause reproduced against exact forbidden-token/suffix conditions in the unchanged validator. The report is now Markdown documentation preserving all evidence; the accidental new JSON carrier is retired. No audit exemption, code or machine-policy change. Later hosted evidence must verify the repaired checkpoint.
