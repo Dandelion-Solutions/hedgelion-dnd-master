@@ -3,15 +3,15 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES01-04 COMPLETE / SENIOR PASS — WAVE05 DEPENDENCY-GATED; LOCAL SPELL ARCHITECTURE / PO-013 INCORPORATED / SENIOR STOP2 TECHNICAL REPAIR
+GLOBAL_STATE: R2.7 CLOSED — WAVES01-04 COMPLETE / SENIOR PASS — WAVE05 DEPENDENCY-GATED; LOCAL SPELL ARCHITECTURE / PO-013 INCORPORATED / SENIOR STOP2 RE-REVIEW
 CURRENT_WORKSTREAM: complete exact local-spell canonicalization at safe worker boundary; separate worker implementation and accepted dependency gates preserved
-CURRENT_SLICE: independent Senior Stop2 technical findings SS2-01/02/03; exact native suspension/return and legal SRD/extra option partition repair; no Product Owner gate
+CURRENT_SLICE: SS2-01/02/03 exact technical repairs applied; coherent remote verification/CI and independent Senior Stop2 re-review before stable worker planning
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: repair SS2-01 closed TruePolymorph suspension/return ABI, SS2-02 exact documentary insertion strings and SS2-03 SRD-subset/extra option partition -> coherent publication/readback/CI -> same independent Senior re-review. Only GO opens stable-plan reconciliation.
+NEXT_AUTHORIZED_UNIT: verify repaired remote checkpoint/CI -> same independent Senior Stop2 re-review -> only GO permits stable Wave05/Wave06/index/cursor/envelope reconciliation and independent Senior plan review. No production in this author session.
 REQUIRED_GATE: Step8 remote readback -> independent Senior Stop2 GO -> complete stable-plan reconciliation + independent Senior plan GO -> other worker implementation. Existing P0 -> P1A -> P1B and independent P0 -> P2 -> P3; P1B + P3 -> T06 completion. No repeat PO permission at ordinary boundaries.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
-KNOWN_BLOCKERS: NEEDS_PO NONE. Independent Senior Stop2 REPAIR: SS2-01/03 significant technical contract gaps, SS2-02 minor exact-report mismatch. Existing P1A materialization/plan/support and all accepted dependency gates preserved.
+KNOWN_BLOCKERS: NEEDS_PO NONE. SS2-01/03 significant and SS2-02 minor repairs require independent actual-remote confirmation. Existing P1A acquisition/support/approved-plan and all accepted dependency gates survive.
 INSTRUCTION_CHECKPOINT_ACCEPTED: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7`; independent DEV/GAME review and exact 22-file read-back PASS; hosted Validate run `37160553540` maintenance PASS / 1526 DEV tests OK. Evidence owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: control headers alone NONE; the separately authorized instruction checkpoint changes AI_REASONING 0.1.3 -> 1.0.4, PLAY_POLICY 0.8.4 -> 1.0.5, RUNTIME 1.0.2 -> 1.0.3 and DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. No campaign/storage/catalog generation or engine identity change.
 

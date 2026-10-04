@@ -61,7 +61,7 @@ Starting equipment remains independent of spell identity. The existing one Arcan
 
 ### Complete SRD option pool
 
-For the promised fully realized SRD package, the initial option lists must equal the independently reconciled source-eligible sets below. During authorized development, unsupported members remain absent/nonselectable and a partial profile must say so. Full-corpus release cannot hide a missing member by shrinking this list.
+For the promised fully realized package, the **SRD subsets** of the two initial option lists must equal the independently reconciled source-eligible sets below: exactly16 cantrips and21 level-1 entries. The total option set is that exact SRD subset union only explicitly proved, separately named **existing extras** with their own lawful provenance, Sorcerer eligibility and complete all-mode support. The current existing-extra consideration is Thunderclap; this contract authorizes no new non-SRD content. Report SRD and extra membership separately, with no overlap, and never count an extra among339. During authorized development, unsupported members remain absent/nonselectable and a partial profile must say so. Full-corpus release cannot hide a missing SRD member by shrinking its subset; initial selections remain exactly4+2 regardless of lawful pool size.
 
 | Pool | Exact source names |
 |---|---|

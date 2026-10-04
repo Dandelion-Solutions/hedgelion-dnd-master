@@ -83,3 +83,12 @@ No new unresolved architecture/product decision is hidden as debt. The owner dec
 Local canonical artifact checks verify all24 contract keys, six final specs, unique exact owner anchors, zero invalid controls/replacement characters, unchanged original39 PO text blocks, closed current human gate, no GAME/schema/catalog changes, coherent logical role/Wish/stochastic/cost interface and link destinations. The seven existing progress/PO-routing tests run against proposed controls plus pinned owning inputs; their actual output is recorded in verification evidence. Hosted CI and exact byte/ref/tree readback are recorded only after actual publication. CI does not prove unimplemented recipes or target latency.
 
 VERSION_IMPACT: NONE for architecture/spec/control and owner-route changes. No schema/catalog/engine/campaign/storage/package/module generation changes occur; future actual materialization obeys its natural version owner. This document is a durable design checkpoint and can support fresh-chat continuation without conversation reconstruction.
+
+
+## Independent Senior repair propagation — SS2-01/02/03
+
+SS2-01 closes lifecycle §5.1 exact neutral object variant/policy, protected minimum basis, per-consumer pre-outcome source-ambiguity result, sole active object integrity, current owner return/death/suppression/persistence/gear/grant/resource/memory and complete witnesses. Main/execution inventories and native Actor/Asset/Health pointers are synchronized. It does not import an unsupported HP formula, admit current fields or reopen product scope.
+
+SS2-02 corrects six documentary relative-link blocks to exact actual published insertions; original18 blocks now match. SS2-03 makes source-set equality exact: SRD subset16/21, total lawful options union only explicitly proved already-installed extras, disjoint reported sets/no extra count among339; initial4+2 and default/adoption/support boundaries remain. Content, S6D-07 and main routes are synchronized. No new non-SRD content is authorized.
+
+The independent provisional review is retained as initial REPAIR; the same reviewer must re-read the actual repaired remote checkpoint and fresh verification/CI before final GO. New typed source-ambiguity/binding/basis/profile consumers are materialization obligations in the future approved stable plan. No product judgment remains.

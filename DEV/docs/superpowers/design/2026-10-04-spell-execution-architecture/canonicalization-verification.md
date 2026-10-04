@@ -11,3 +11,8 @@ Publication protocol: fresh remote ref -> coherent tree/commit parent -> nonforc
 VERSION_IMPACT: NONE. Accepted waves/S1/S2/P0 and independent P2/P3 gates preserved; NEEDS_PO NONE.
 
 Initial hosted run `37231865681` failed maintenance before DEV tests because documentary `owner-propagation.json` quotes the retired identity token and the owning census scans every machine/code JSON/Python/YAML carrier. Root cause reproduced against exact forbidden-token/suffix conditions in the unchanged validator. The report is now Markdown documentation preserving all evidence; the accidental new JSON carrier is retired. No audit exemption, code or machine-policy change. Later hosted evidence must verify the repaired checkpoint.
+
+
+## Senior repair verification
+
+SS2-01 seven exact unique replacement blocks verified against semantic pin and reviewed in full by root and independent Senior preflight. The per-consumer/profile/native owner routes and required negative witnesses are synchronized. SS2-02 all18 earlier insertion blocks match actual published bytes after exact relative-link repair; SS2-03 exact SRD/extra partition retains the full16/21 source sets and4+2 choices. Fresh schema/code/catalog/GAME remain untouched; protected evidence is not current state. The repair is not final GO until exact remote readback, hosted CI and independent re-review occur. Actual new recipe/runtime/latency proofs remain NOT_ESTABLISHED.
