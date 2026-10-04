@@ -1,6 +1,6 @@
 # Архитектура локального исполнения заклинаний
 
-Статус: **каноническая архитектура; PO-013 и узкое исключение Wish приняты; независимый Senior Stop2 GO опубликован; stable план из32 заданий подготовлен, проходит отдельный Senior plan review**. Текущая спецификация: `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md` и execution/lifecycle/content/Wish annexes. [Каноникализация](canonicalization.md) фиксирует propagation, риски, отложенную реализацию и доказательства. VERSION_IMPACT NONE; GAME не изменён.
+Статус: **каноническая архитектура; PO-013 и узкое исключение Wish приняты; независимый Senior Stop2 GO опубликован; stable план из32 заданий получил независимый Senior plan GO; другой воркер авторизован к исполнению по готовым зависимостям**. Текущая спецификация: `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md` и execution/lifecycle/content/Wish annexes. [Каноникализация](canonicalization.md) фиксирует propagation, риски, отложенную реализацию и доказательства. VERSION_IMPACT NONE; GAME не изменён.
 
 Ниже — исторические материалы принятого решения. Прежний SP14 NEEDS_PO закрыт «Принимается»; candidate/Decision Brief не являются текущим законом или исполнительным планом.
 
@@ -45,4 +45,4 @@ SP-14 касается опубликованного режима Wish, мен�
 
 ## Передача реализации другому агенту
 
-Исполняемые задания и Impact Envelopes находятся только в существующих stable Wave05/Wave06 и implementation-plan-index.md. [Подготовка независимой проверки плана](implementation-plan-review-preparation.md) фиксирует источники/покрытие/границы; [возобновление воркера](worker-resume.md) — краткий указатель. Текущий gate и exact cursor принадлежат DEV/CURRENT_PROGRESS.md. Архитектор production не выполняла; реальные339 рецепты/native/offline/скорость ещё должны быть доказаны воркером.
+Исполняемые задания и Impact Envelopes находятся только в существующих stable Wave05/Wave06 и implementation-plan-index.md. [Source Manifest и проверки](implementation-plan-review-preparation.md) фиксируют источники/покрытие/границы; [независимый Senior plan GO](implementation-plan-senior-review.md) принимает все32 задания на `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`; [возобновление воркера](worker-resume.md) — готовый краткий указатель. Оба небольших замечания закрыты; новых вопросов к PO нет. Текущий gate и exact cursor принадлежат DEV/CURRENT_PROGRESS.md. Архитектор production не выполняла; реальные339 рецепты/native/offline/скорость ещё должны быть доказаны воркером.

@@ -1,6 +1,6 @@
 # HDM v1 Implementation Wave 05 — Machine, Bootstrap and Shared Integration
 
-Status: **ACCEPTED BASELINE PRESERVED / LOCAL-SPELL EXTENSION REVIEW-READY; INDEPENDENT COMPLETE-PLAN SENIOR GO REQUIRED / GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
+Status: **ACCEPTED BASELINE PRESERVED / COMPLETE LOCAL-SPELL EXTENSION — INDEPENDENT SENIOR PLAN GO / GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, realize the accepted local339 spell profile over existing owners, complete bootstrap/product paths, and finish each shared physical integration through its one designated writer with owner-correct version cutovers.
 
@@ -14,6 +14,7 @@ W05.T06 has an additional task-specific gate: the accepted T06-A1 architecture
 does not authorize its P0–P3 or held product-completion production tasks. Those
 tasks remain held until this stable plan and its Impact Envelopes receive Senior
 plan GO. T06-S1/S2 remain accepted and are not repeated.
+The complete current plan gate is CLOSED by the independent Senior GO in `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`, reviewed head `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`; otherworker implementation is authorized only for tasks with their own accepted inputs. This control closure adds no task semantics or completed production claim.
 
 Minimum wave impact envelope:
 
@@ -1360,7 +1361,7 @@ NEXT_EXACT_TASK: existing authorized W05.T06-P2 entry/envelope, not a new task a
 
 ## 2026-10-04 accepted local-spell realization — stable executable extension
 
-**Plan state:** REVIEW-READY / INDEPENDENT COMPLETE-PLAN SENIOR GO REQUIRED. Canonical architecture has independent Senior Stop2 GO at 84b9da6bbabb6abda274f4cb63408d5a8298b36e; this gate permits planning, not worker implementation before plan GO. No PO question remains. Current activation is exclusively DEV/CURRENT_PROGRESS.md.
+**Plan state:** INDEPENDENT COMPLETE32-TASK SENIOR GO. Canonical architecture has independent Senior Stop2 GO at84b9da6bbabb6abda274f4cb63408d5a8298b36e; complete-plan GO at `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` is recorded in `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`. Otherworker dependency-eligible implementation is authorized through the unchanged task process. No PO question remains. Current activation is exclusively DEV/CURRENT_PROGRESS.md.
 
 The executable tasks below are part of this existing stable Wave05. Source/architecture/proof reports and the dated independent plan-review report are evidence only. Preserve accepted Waves01..04, W05.T01..T05, T06 S1/S2/P0 and earlier owner-local inputs. Do not rebuild those mechanisms because the new tasks reuse them.
 
@@ -1771,7 +1772,7 @@ Required maintenance after affected checks; final clean exact suite, packaged of
 
 ## Lifecycle source manifest and constraints
 
-Remote source pin: `84b9da6bbabb6abda274f4cb63408d5a8298b36e`. Final Senior Stop2 GO: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/senior-stop2-review.md`, accepting repaired architecture `e048106b10350acae49b7f9d2bd3ed5d2f43c4b8`; separate stable-plan Senior GO still precedes production.
+Remote source pin: `84b9da6bbabb6abda274f4cb63408d5a8298b36e`. Final Senior Stop2 GO: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/senior-stop2-review.md`, accepting repaired architecture `e048106b10350acae49b7f9d2bd3ed5d2f43c4b8`; the separate complete stable-plan Senior GO requirement is now satisfied at `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` as recorded in `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`; actual task entry/technical review/integration gates remain.
 
 The following short references identify actual current owners under `DEV/docs/superpowers/specs/`: S=`2026-10-04-local-spell-execution-canonical-spec.md`; E=`2026-10-04-local-spell-execution-contracts.md`; L=`2026-10-04-local-spell-lifecycle-contracts.md`; W=`2026-10-04-wish-roll-redo-reconciliation-contracts.md`; C=`2026-10-04-local-spell-content-acquisition-contracts.md`. Directly inspected: AGENTS/runtime overlays/skill scope, both DESIGN_PROCESS owners, execution process/contract, stable Wave05; current Actor/Asset/Health/Entity Structures qualifications; actual current_owner/runtime_host/actor_continuity/temporal/information/history/recovery/live_state APIs and RD02/03/08 tests; VERSIONING and its detailed canonical owner. Complete current tree confirms all proposed lifecycle/Wish modules are absent.
 

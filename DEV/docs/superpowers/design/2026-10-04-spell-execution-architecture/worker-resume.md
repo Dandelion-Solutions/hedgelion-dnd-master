@@ -1,6 +1,6 @@
 # Возобновление утверждённой реализации локальных заклинаний
 
-Это краткий указатель на существующий исполняемый план, а не новый план или дополнительная архитектурная власть. Следовать текущему HEAD, DEV/CURRENT_PROGRESS.md и независимому Senior plan GO; при отсутствии GO техническая проверка должна завершиться до production.
+Это краткий указатель на существующий исполняемый план. Независимый Senior plan **GO** опубликован в [implementation-plan-senior-review.md](implementation-plan-senior-review.md): все32 задания проверены, SPPR-01/02 закрыты на `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`. Следовать fresh HEAD и DEV/CURRENT_PROGRESS.md. Последующие status/review-публикации и обычные implementation commits не отменяют GO для неизменённого принятого scope; существенное изменение проходит свой технический gate.
 
 Возобнови работу в Dandelion-Solutions/hedgelion-dnd-master, v1/engine-rearchitecture. Сделай fresh fetch/read-back по AGENTS.md и DEV/AGENT_RUNTIMES/OPENCODE.md + LOCAL_MACHINE.md. Прочитай глобальный progress, implementation-plan-index.md, execution contract и текущий Wave05 cursor. Архитектура339 локальных SRD5.2.1 заклинаний и узкое исключение Wish приняты; прежний PO gate закрыт.
 

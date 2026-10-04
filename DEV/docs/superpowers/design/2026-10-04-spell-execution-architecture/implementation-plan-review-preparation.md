@@ -1,6 +1,6 @@
 # Independent stable local-spell implementation-plan review preparation
 
-Status: REVIEW-READY; not an executable plan or implementation result.
+Status: INDEPENDENT SENIOR PLAN GO; source/review/verification evidence, not an executable plan or implementation result.
 Role: HDM Architect/spec+plan author; other paused OpenCode/VPS worker implements.
 Source pin:84b9da6bbabb6abda274f4cb63408d5a8298b36e. Architecture repair e048106b10350acae49b7f9d2bd3ed5d2f43c4b8 and independent published Senior Stop2 GO accepted; SS2-01/02/03 and PO-013 Wish residual judgment closed. Reviewer is independent of all task authors.
 
@@ -55,7 +55,7 @@ HOSTED_CI: Validate run37236573461/job111536749044, exact review-ready HEAD, com
 
 ## Independent complete-plan review and bounded routing repair
 
-Independent Senior completed all32 task blocks/shared ABI/envelopes/common level clauses, modified P1A/P1B/T08/W06/index/cursor/handoff plus actual native/schema/seed/transport/version consumers. Its independent32-node topological check and actual candidate CI passed. No blocking/significant finding or new product/architecture question was proved. Two MINOR routing corrections are required before final GO:
+Independent Senior completed all32 task blocks/shared ABI/envelopes/common level clauses, modified P1A/P1B/T08/W06/index/cursor/handoff plus actual native/schema/seed/transport/version consumers. Its independent32-node topological check and actual candidate CI passed. No blocking/significant finding or new product/architecture question was proved. Two MINOR routing corrections were required and are now independently verified CLOSED:
 
 | Finding | Exact correction / unchanged scope |
 |---|---|
@@ -63,3 +63,9 @@ Independent Senior completed all32 task blocks/shared ABI/envelopes/common level
 | SPPR-02 SP12 attributes general ambiguity preflight to SP07 | SP03 general preflight/resolver fixes basis before save/RNG/cost/effect; SP07 joins only ritual/long mode timing |
 
 The two exact plan anchors are repaired together. All32 tasks/outputs/DAG/envelopes/source/native/fixture/admission/adoption/target semantics and non-plan files are otherwise unchanged. Fresh remote changed-byte/ref verification and exact CI support final independent re-review; no production code is touched.
+
+## Final independent complete-plan ruling
+
+SENIOR_PLAN_GO: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`; report `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`. The reviewer independently fetched all32 complete task blocks and actual consumers, verified the complete repaired Wave05 equals the frozen candidate with only the two identified routing replacements, and independently confirmed exact repair CI `37237362895` / job `111539062540`: maintenance PASS,1526 tests in19.885s / OK, empty unclassified/legacy version lists. SPPR-01/02 CLOSED; no blocking/significant finding or new PO question remains.
+
+The ruling approves unchanged task/interface/envelope/DAG/source/support/acceptance semantics across later nonsemantic GO/control receipts. The final status/index/cursor/README/handoff publication records this GO and enables the otherworker's exact eligible entry; it adds no production support or measured latency. Original task/integration/activation gates and truthful planned task states remain. Fresh final changed-byte/ref/tree/control checks and final exact-head hosted verification are recorded in `implementation-plan-readback.md` after publication.

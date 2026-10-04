@@ -1,13 +1,13 @@
 # Wave 05 Machine, Bootstrap and Shared Integration — Execution Status
 
 PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration.md`
-SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
+SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`; accepted local-spell canonical spec and exact execution/lifecycle/content-acquisition/Wish annexes, PO-013 owner decision.
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: INDEPENDENT COMPLETE-PLAN REVIEW DONE / TWO MINOR ROUTING REPAIRS PUBLISHED FOR FINAL REREVIEW; SENIOR PLAN GO REQUIRED. No blocking/significant finding or PO question.
-CURRENT_TASK: independent final rereview of runtime transport/SP03 preflight routing corrections; all32 task definitions/accepted outputs preserved, no production.
+STATUS: INDEPENDENT COMPLETE32-TASK SENIOR PLAN GO / OTHER-WORKER AUTONOMOUS DEPENDENCY-DRIVEN IMPLEMENTATION AUTHORIZED; task inputs/technical reviews/original integration gates remain.
+CURRENT_TASK: otherworker fresh SP00/SP01 own-entry preparation and original independent P2 after its exact inputs/envelope; approved32-task realization then original eligible continuation. No production task is marked complete by this GO.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `84b9da6bbabb6abda274f4cb63408d5a8298b36e` — published canonical Stop2 GO; architecture/spec/control only, no production changes. Original P0/accepted task evidence below preserved. Fresh current HEAD and current plan gate govern resumption.
+LAST_SAFE_SHA: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` — exact independently reviewed repaired plan, maintenance PASS /1526 DEV tests OK; canonical Stop2 GO and original P0/accepted task evidence below preserved. Fresh current ref and own task inputs govern resumption.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2906,53 +2906,63 @@ Global active route, only residual Wish SP-14 judgment, Step8/SeniorStop2 and ne
 
 PO-013/SP14 acceptance supersedes older pending product-scope reports. Canonical spell specification/annexes and canonicalization evidence hold final contracts. Independent Senior Stop2 follows verified publication; its GO opens stable-plan reconciliation, whose independent Senior GO precedes implementation by another worker. Accepted S1/S2/P0/prior evidence and independent P2/P3 remain. Story is not activated. VERSION_IMPACT NONE.
 
-## 2026-10-04 local-spell stable-plan review-ready checkpoint
+## 2026-10-04 local-spell stable-plan current task roster — independent Senior GO
 
 SPEC: main local-spell canonical spec and exact execution/lifecycle/content-acquisition/Wish annexes; PO-013 owner decision. Architecture semantic repair e048106b10350acae49b7f9d2bd3ed5d2f43c4b8 and independent Stop2 GO 84b9da6bbabb6abda274f4cb63408d5a8298b36e preserved.
 PLAN: existing stable Wave05/Wave06/index;32 additional tasks, complete envelopes/interfaces/tests/dependencies, T08 material spell projections and real-source/native/packaged/WP24 proof. No new executable plan/overlay. Current task IDs below are PLANNED, not implementation evidence.
 
 | Task | State | Activation |
 |---|---|---|
-| W05.SP00 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP01 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP02 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP03 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP04 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP05 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP06 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP07 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP08 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP09 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP10 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP11 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP12 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP13 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP14 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP15A | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP15B | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP16 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP17 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP18 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP19 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP20 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP21 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP22 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP23 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP24 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP25 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP26 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP27 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP28 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP29 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
-| W05.SP30 | PLANNED / WAIT_PLAN_GO | own exact named inputs + independent plan GO |
+| W05.SP00 | PLANNED / ELIGIBLE_OWN_ENTRY | fresh own entry/envelope/currentness checks; plan GO accepted |
+| W05.SP01 | PLANNED / ELIGIBLE_OWN_ENTRY | fresh own entry/envelope/currentness checks; plan GO accepted |
+| W05.SP02 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP03 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP04 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP05 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP06 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP07 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP08 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP09 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP10 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP11 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP12 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP13 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP14 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP15A | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP15B | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP16 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP17 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP18 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP19 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP20 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP21 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP22 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP23 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP24 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP25 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP26 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP27 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP28 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP29 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP30 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 
 PRESERVED_ACCEPTANCE: Waves01..04; W05.T01..T05; T06 S1/S2/P0 and T06-A1. Existing P0->P2->P3 independent; P1A consumes SP29 supported package/acquisition then P1B; P1B+P3 join T06 completion/independent Senior. No production mechanism/mode,339 recipe count or measured performance is claimed in this planning checkpoint.
-NEXT_EXACT_TASK: independent complete-plan Senior review; repair ordinary technical findings autonomously, publish/verify final ruling. After GO otherworker starts SP00/SP01 eligible preparation and P2 own-input lane, then dependency-driven approved continuation.
+NEXT_EXACT_TASK: otherworker starts SP00/SP01 own-entry checks and independently eligible P2 after its exact inputs/envelope, then approved dependency-driven continuation. Independent complete-plan GO is published in `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`.
 CURRENT_VERIFICATION_STATE: proportionate plan/source/DAG/envelope/reference/control checks; exact published-head maintenance/full DEV/CI recorded only after actual results.
 VERSION_IMPACT: NONE — design/plan/status/report only; GAME/schemas/catalog/package untouched. Future namespace transitions are required worker obligations, not current bumps.
 SYSTEM_IMPACT: NONE beyond accepted spell ownership/PO-013; no new human judgment.
-UNPUBLISHED_WORK: review-ready planning text until its coherent publication/readback; no production code.
+UNPUBLISHED_WORK: NONE after coherent final GO/control publication/readback; all32 task states remain planning/entry states, with no implementation evidence claimed.
 
 ## Complete-plan independent review repair checkpoint
 
-Reviewed candidate: `0d01fa3537d4426b47e463742a5769e45328c1a2`; verification receipt `cb44e04b4a22614627f7100116acb58cab709888`. Independent full review found only SPPR-01/02 MINOR plan routing errors; both corrected in stable Wave05. Actual hosted candidate maintenancePASS/full DEV1526 in39.415s OK;32-node DAG independently acyclic. Final independent exact remote repair rereview remains required. UNPUBLISHED_WORK: NONE after coherent repair publication/readback; no runtime implementation. NEXT_EXACT_TASK: final Senior plan ruling, then existing approved32-task continuation and original eligible P2.
+Reviewed candidate: `0d01fa3537d4426b47e463742a5769e45328c1a2`; verification receipt `cb44e04b4a22614627f7100116acb58cab709888`. Independent full review found only SPPR-01/02 MINOR plan routing errors; both corrected in stable Wave05. Actual hosted candidate maintenancePASS/full DEV1526 in39.415s OK;32-node DAG independently acyclic. Final independent exact repair rereview completed at `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`: Senior GO; maintenance PASS /1526 DEV tests in19.885s OK. SPPR-01/02 CLOSED. This repair record precedes the current GO/entry route below; no runtime implementation is claimed.
+
+## Current final Senior plan GO and autonomous worker cursor
+
+SENIOR_PLAN_REVIEW_HEAD: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9`.
+SENIOR_PLAN_REPORT: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-senior-review.md`.
+APPROVED_SCOPE: full frozen32-task candidate `0d01fa3537d4426b47e463742a5769e45328c1a2` plus exactly two independently verified routing repairs at the reviewed head; complete stable Wave05/Wave06/index/control joins. Report/status publication changes no task/envelope/DAG/support semantics.
+GATE_STATE: architecture Stop2 and complete-plan Senior GO CLOSED; NEEDS_PO NONE. Original T06/Senior integration and own T07/T08/W06/Story/empirical activation gates remain; actual SP29 supported package/acquisition releases P1A only when accepted.
+NEXT_EXACT_TASK: otherworker fresh bootstrap then eligible SP00/SP01; preserve independently eligible original P2 after its own inputs. Continue through satisfied task dependencies without stopping at ordinary checkpoints; one shared integrator/publisher.
+UNPUBLISHED_WORK: NONE after this coherent GO/control publication and exact remote readback.
+VERSION_IMPACT: NONE — review/control/handoff only.
