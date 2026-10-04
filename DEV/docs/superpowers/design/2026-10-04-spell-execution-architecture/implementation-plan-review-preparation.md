@@ -47,3 +47,8 @@ VERSION_IMPACT: NONE — only existing stable plan/index/control/report/navigati
 ## Fresh author checks before publication
 
 Bounded local documentary check:32 unique task headings and cursor rows; exact10 level counts total339;24 SP/8 WR/SS2/PT mappings; complete21-field envelope vocabulary with inherited lifecycle envelope; zero invalid controls;9 changed documentary paths only. A32-node completion DAG topologically sorted with no cycle; external P2/Wish and source INPUTS/native DOMAINS edges distinguished. Existing global progress/PO-routing guards:7 tests,0.033s,OK against proposed controls and pinned reference mirror. These static/control checks do not prove future spell behavior; no future implementation test was run. Exact remote readback/hosted candidate evidence follows publication.
+
+## Exact candidate publication and hosted verification
+
+REVIEW_READY_HEAD: `0d01fa3537d4426b47e463742a5769e45328c1a2`; parent `84b9da6bbabb6abda274f4cb63408d5a8298b36e`; complete tree `6c7a11acd49c2d387a3cb37dfdfcd82ebcfa080d`,1687 entries untruncated. Exact9/9 changed UTF8 contents and fresh ref equality PASS; complete parent/current delta is exactly9 documentary blobs, no GAME/schema/catalog/code/runtime changes.
+HOSTED_CI: Validate run37236573461/job111536749044, exact review-ready HEAD, completed/success. Maintenance stepPASS, full DEV unit-test discoveryPASS; Ran 1526 tests in 39.415s. Version census unclassified/legacy lists empty. This validates the unchanged actual implementation and documentary routing; it does not execute future spell task tests or prove new mechanics/latency.
