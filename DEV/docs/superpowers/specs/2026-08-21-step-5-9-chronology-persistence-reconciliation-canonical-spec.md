@@ -1031,3 +1031,9 @@ Carry-forward:
 - Step 6/implementation must realize the Dramaturg temporal-capability guard and machine contracts without weakening Step-5.9 domain typing/boundedness.
 
 No second temporal compensation model is introduced.
+
+# Exact local-spell consumer qualification
+
+`2026-10-04-wish-roll-redo-reconciliation-contracts.md` is the sole accepted exception to general exclusion of retroactive current-consequence replacement. Only lawful Wish Roll Redo and its exact recent-round Procedure/boundary/chronology predicate apply. New cause is forward and owns typed current replacement-validity. LAW5.9-4 acyclic CAUSES, LAW5.9-24 immutable old-event/anchor meaning, scoped current frontiers and protected bounded evidence remain controlling. No old event edit, global timeline counter or backward causal ancestry.
+
+Technical preparation follows LAW5.9-39/42 and WP16-43: close/freeze/final-proof/absorb advances no fiction; partial accepted close is not partial fictional reconciliation. One replacement follows complete source preparation; recovery preserves accepted edges/new replacement forward. Context/History and eventual Story resolve explicit current-validity while retaining old evidence. Story remains dormant until its own gates. All other chronology/ordinary retry law remains.

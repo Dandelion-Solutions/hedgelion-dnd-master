@@ -62,4 +62,14 @@ S6D-09 adds `gameplay-spine-seed.json` to the same identity-bound package. That 
 ## S6D-11 identity migration
 
 `ruleset-package-manifest.json` is the only package declaration; member and package digests are builder-derived. `character-capabilities.json` is capability-only and points to the manifest without carrying identity authority. READY_PC derivation evidence binds to exact `ruleset_set_sha256` plus Actor revision/catalog context; the former aggregate `content_set_sha256` and `package_content_set_sha256` forms are invalid.
+
+## Local spell-content and initial acquisition amendment
+
+The accepted `DEV/docs/superpowers/specs/2026-10-04-local-spell-content-acquisition-contracts.md` supersedes the six-spell-only package/option promise at its reviewed materialization boundary. Human + Criminal + Fighter 1–2 + Sorcerer 1, the exact initial four-cantrip/two-level-1 cardinality, progressive local sufficiency, fixed pre-exposure choices and READY_PC predicate are retained. Full spell content is separately scoped and does not establish a full SRD character corpus.
+
+Sorcerer 1 uses two definition-owned finite per-spell option slots: `advancement.sorcerer.level_1.cantrips` selects exactly four legal supported level-0 Sorcerer entries, and `advancement.sorcerer.level_1.prepared_spells` selects exactly two legal supported level-1 Sorcerer entries. Each option grants one exact spell and its source-specific spell bindings. Actor bindings remain owner-relative and catalog-context-bound. The selected union, not a first/default option, determines grants and the complete selected Activity/support closure. Unsupported, duplicate, cross-slot, wrong-class/level, stale, omitted and extra selections fail closed; `spell_selection_binding_mismatch` remains required.
+
+For this bounded HDM profile, `known_spell_ids` retains the accepted six-entry acquisition-membership meaning; `prepared_spell_ids` equals the two selected level-1 entries, and spellbook membership is absent. Actual casting eligibility follows the current source-specific cantrip/prepared profile, not an older edition's generic known-spell rule. Existing spell choices/default IDs and the one Arcane Focus are preserved when lawful provenance/eligibility/full support close. Thunderclap is a separate existing extra, not one of 339 SRD entries. Any required default-content repair is an explicit coherent owner repair before release, never a runtime substitution.
+
+The old bundle binding remains reconstructable in its original exact snapshot. New bindings, prepared membership and any content repair require exact comparator/adoption or migration evidence; changed choice semantics are not automatically compatible merely because spell count grows. Full class progression and future preparation/replacement boundaries remain separately gated. No primitive, schema, content or production task is activated by this owner amendment alone.
 +

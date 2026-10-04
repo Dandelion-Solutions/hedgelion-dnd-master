@@ -107,3 +107,9 @@ The S6D-09 senior-audit repair uses TargetSpec/AreaSpec only as bounded constrai
 ## 12. S6D-10 policy-basis integration
 
 Every accepted `INVOCATION_ADJUDICATED` parameter binding and invocation fact carries required `policy_basis_refs`. The array is empty for a one-off judgment with no durable policy basis; otherwise it contains every materially applied durable policy as an exact historical reference. Binders reject duplicates and non-ascending Unicode code-point order before Resolution construction. The array is causal evidence only and creates no policy/value lifecycle or execution authority.
+
+## Local spell continuation amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §8 selects a closed stochastic_state union embedded only in the same owning Resolution/Continuation, with profile_id/profile_generation and the exact per-profile typed fields. Its only discriminators are execution.stochastic.teleport_mishap, execution.stochastic.prismatic_spray_rays and execution.stochastic.reincarnate_choice. Fixed dice remain canonical RollResults; committed consequences remain native owners/events; no new value owner, generic loop state or executable details bag follows.
+
+Technical work-budget/capacity continuation remains RUNNING with a generation-bound Continuation and nonsettled command; genuine choice/reaction uses the existing offer/status. The operation receipt distinguishes the technical hold without falsely reporting arrival/completion or misusing terminal failure as resumability. Typed bindings/facts/policy refs/fixed RNG/revisions/exports and future RNG frontier retain their existing causal meaning. Unknown branch fields, cross-profile refs, stale generation and contradictory phase membership fail validation. Signal/StateDelta remain nonowners and only exact reviewed variants may activate.

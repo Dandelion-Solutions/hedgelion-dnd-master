@@ -299,3 +299,11 @@ Exact Step-5 frontier representation, durable runtime-record placement,
 publication/recovery protocol, multiplayer reconciliation, chronology
 persistence, Story persistence, retention and cleanup remain owned by later
 Step-5 slices and are not silently encoded here.
+
+## Typed spell profiles over existing native kinds
+
+The [accepted local-spell lifecycle contract](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) extends membership only through its exact discriminated profiles: Actor embodiment/temporary-grant provenance; Asset gear/replica/clone/conversion state; Effect form/identity/conversion/control/subject-binding/native progress; Zone admitted geometry/participation episodes; Connection portal/traversal profile; Location exact spell-place/progress. It introduces no world record kind, soul service, generic graph, callback or details-based mechanic. Existing definition-binding compatibility remains authoritative.
+
+Actor location remains a durable Location. Finite scene-local placement/crossing facts and typed persistent Zone geometry never create micro-location records or a mandatory coordinate simulator. Each exact shape closes dimensions, placement provenance, member/adjacency/support predicate and complete affected-set source. Zone participation is native under its admitted episode profile and is not copied into Actor state. Portal closure changes Connection availability and does not delete a permitted persistent destination or contents. Native progress and protected observable-release/temporal dependency keys enable bounded recovery and due work without history scans.
+
+Physical HP/location belongs to one current Actor body/proxy; object integrity belongs to one active Asset representation. The existing Actor's stable principal/knower identity survives lawful splitting and return. Existing world.knowledge remains the sole current epistemic owner, including rule-caused illusion recognition/memory changes; accepted death-time/original-memory evidence is protected source basis, not a second current knowledge map. Human disclosure and PLAYER control remain their own existing owners. New typed profile fields require coordinated machine schema/catalog/consumer realization before gameplay activation.

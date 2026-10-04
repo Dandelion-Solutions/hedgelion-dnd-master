@@ -315,3 +315,9 @@ Round 2 SHALL use the accepted Steps 1–5 architecture as a strong base togethe
 The previous Step-6 decomposition is not binding on Round 2. A new roadmap SHALL be derived from the actual current problem structure, dependencies and evidence rather than preserving the old six-step sequence by inertia.
 
 No broad implementation is authorized by this amendment.
+
+# Exact local-spell consumer qualification
+
+Local spell specs consume this same-chat logical-role law. Interpreter maps intent over locally eligible capability cards; deterministic code performs rules arithmetic/RNG/costs/native mutations/receipts without dedicated spell/deterministic-step model calls. Genuinely fictional adjudication uses existing bounded accepted facts. Narrator consumes eligible accepted exports; optional Story/Commentator cannot block base response. No MAPPER/runtime subagent/physical role split.
+
+Sensory links, possession/control, corpse answers, illusions, memory alteration and Wish revalidate exact source/recipient/current epistemic/disclosure scope. No private-mind union, narrative truth promotion, overwrite of human exposure or broad voluntary PC control. world.knowledge/runtime.disclosure remain separate. Promised installed support is locally provisioned before admission; missing support is a capability defect, not model/web fallback. Unrelated preparation retains own authorization.

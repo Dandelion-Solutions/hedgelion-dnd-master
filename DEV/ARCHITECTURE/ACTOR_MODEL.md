@@ -122,6 +122,8 @@ A player need not state level, HP maximum, resource capacity or every proficienc
 
 WP-06 owns the final advancement/choice-definition contract that supplies stable choice IDs and validates each `choice_bindings` selection against the loaded ResolvedCatalogContext. Structurally valid arbitrary choice keys are not automatically legal.
 
+The initial Sorcerer spell profile is qualified by `DEV/docs/superpowers/specs/2026-10-04-local-spell-content-acquisition-contracts.md`. Actor stores accepted owner-relative selected option IDs; their definitions derive grants. In this narrow existing HDM profile, `known_spell_ids` is the six-entry acquired membership and `prepared_spell_ids` is exactly the two selected level-1 entries. Casting availability is separately derived through the actual source-specific cantrip/prepared profile. These fields do not introduce spellbook state, a universal cross-class preparation rule, a flattened spell sheet or permission to reopen initial selections at a Long Rest. Exact context/choice adoption preserves committed selections and accepted work.
+
 ## 4. Abilities
 
 Actor ability state stores only instance-owned components:
@@ -335,3 +337,9 @@ Semantic authority follows the Actor owner contract, not storage format.
 - Publication materializes accepted owner state through Step-5 laws; Git/YAML format does not create another semantic owner.
 
 Loss of unpublished SOFT Actor state recovers to compatible durable sources; recovery never invents lost progress.
+
+## Spell lifecycle and principal/body extension
+
+The accepted local-spell owner and its [lifecycle contract](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) extend the ordinary one-body model only for SP10/SP22's exact admitted spell profiles. Ordinary Actor HP/location/build laws remain unchanged. On an actual split, transfer original physical HP/LifeState/progress/location and source-declared physical resource/Asset/Procedure bindings atomically into a native body Actor; remove competing physical fields from the stable principal. The principal retains stable build/continuity/knower identity and the exact hp-neutral spell-principal LifeStatePolicy. Body/proxy Actors own their sole physical state and reference the principal's permitted construction/statistic basis without a copied build or private mind. Lawful return merges current physical state into the stable principal and retires the no-longer-independent carrier; old HP/inventory snapshots cannot restore state.
+
+The companion owns exact typed Actor embodiment variants, principal versus physical MechanicalContext bindings, exclusive spell-root relation, explicit live Effect subject rebind, conditional temporary-HP grant provenance and form/conversion/replica/return/death policies. Principal alive/dead status never becomes second body HP or death-save progress. Split/return/control never changes campaign PLAYER ownership. All newly required schemas/policies/consumers must be materialized and verified before activation.

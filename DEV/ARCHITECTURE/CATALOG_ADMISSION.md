@@ -218,3 +218,9 @@ Each embedded protocol value names its actual containing architecture/interface 
 ## Canonical authority and downstream boundary
 
 This document is canonical for S6D-02 admission disposition, realization routing, evidence sufficiency and the built-in package admission-plan boundary. It does not replace exact IDs in `core-catalog.json`, semantic domain owners, or runtime package snapshots. S6D-03 is next; no S6D-03 design is performed here.
+
+## Local spell exact-admission amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §§2/5/10 and [the lifecycle contracts](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) select exact new consumers/profiles for full local SRD spell support. They do not alter current core ID authority, admit IDs by a ledger row alone, activate dormant/quarantined capabilities or turn admission into a production claim.
+
+Every materialized profile/value/primitive/pair/accessor/fact addition requires the current exact core registration, semantic owner, complete closed contract, exact consumer/dependency equality and coordinated ledger/schema/runtime proof. READY_PC/P1A acquisition offers only currently legal admitted and realized complete support units; definition membership itself grants no capability. Existing six-spell acquisition fixtures remain bounded baseline evidence, while the selected expanded support set is derived from its exact owner-qualified acquisition contract. Preserve missing/unauthorized/mismatch negatives and all independently authorized lane gates.

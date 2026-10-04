@@ -314,3 +314,20 @@ Activation of any dormant item requires its named downstream owner, exact consum
 ## 13. S6D-10 policy-basis retention
 
 Accepted invocation facts retain unique lexicographically sorted exact policy-basis refs when durable policy materially contributed, or an empty array for one-off adjudication. The Activity invocation validator checks this canonical form, exact consumer, binding and rules context before Resolution construction. Resolution/Continuation retain it across retry/recovery; MechanicalContext and its caches remain disposable nonowners.
+
+## Local-spell typed profile and subject binding extension
+
+The [accepted lifecycle contract](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) adds exact compiled consumers for SP08–12/SP22–24. Principal, physical Actor, origin, control episode and each cost payer are explicit separately validated bindings. Ordinary principal/physical identity remains the same Actor; split/body/form profiles may project mind/build and physical statistics from their exact current native owners. Accepted applications/actions retain their subject binding generation; a later body change never silently retargets old work. Forms, neutral principals and source-specific controls do not permit arbitrary state/property paths or copied sheets.
+
+New spatial/typed causal/profile facts, valued-Condition access and exact health/identity/control/knowledge reads require registry AND per-consumer permission with complete typed args/results/readset/provenance. Geometry judgments enter only the exact approved fictional boundary; continuously engine-owned health, form, resource, knowledge stance, native occupancy and entitlement use native state access. Prospective interception uses its closed cause profile in the same scoped dependency graph. Unknown/missing values remain typed missing input, never false.
+
+Current admitted/dormant matrices remain the exact current machine profile until synchronized downstream activation. The accepted extension is not blanket fact/selector/accessor permission. Profile/occurrence/subject binding, native revisions and materially applied policy/provenance participate in context identity; re-pin/rebuild and currentness rules remain unchanged. All derived body/form/knowledge/spatial/support projections are disposable.
+
+
+## Local spell read and cache amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §§3–6 closes source-authenticated compiled caches and native read/evaluation interfaces. Shared exact role bindings distinguish principal_subject_id, physical_actor_id, source_actor_id, origin_subject_id, actual cost payer/Procedure participant and optional admitted control_effect_id; [the lifecycle owner](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) owns their domain semantics.
+
+A compiled read plan is the exact consumer-scoped union of bindings, active selector pairs/accessors, admitted fact IDs, named native owner roles and admitted bounded infrastructure profiles. CurrentOwnerReadSession acquires/reacquires the complete finite native owner union; native source completeness is required wherever absence or affected-set membership affects mechanics. Derived index absence is not proof. Relevant native revisions and the entire semantic read footprint are fenced before establishment.
+
+MechanicalContext identity includes typed catalog identity, committed/prospective view, exact role/definition/application bindings, relevant owner revisions/source projections, permitted accepted fact fingerprint and materially applied canonical policy refs. Expected child work re-pins/recomputes; suspension/recovery never trusts old context/DAG/prospective deltas. Exact selector/accessor/fact consumer permissions and single transitive DAG law remain unchanged. New spell visibility/spatial/information inputs require their exact downstream consumer contracts; no dormant fact or engine-state substitution is activated by this amendment.

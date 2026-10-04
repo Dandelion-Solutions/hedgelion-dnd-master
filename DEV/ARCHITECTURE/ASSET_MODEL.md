@@ -606,3 +606,9 @@ state. Targeted dependency invalidation is added only if profiling justifies it.
 The LLM sends semantic intent and bounded adjudication. Python performs graph
 lookup, hand accounting, validation, arithmetic, ID allocation, atomic state
 changes, and receipts.
+
+## Spell forms, physical replicas and conversion
+
+SP10/SP22 in the [accepted lifecycle contract](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) add only witnessed typed Asset profiles: source-owned equipment merge/resize, astral replica lineage/lifetime, inert Clone body/vessel/maturity and exact directed creature/object conversion. Placement exclusivity, acyclic containment, stable physical lineage and sole Asset durability remain mandatory. A merged item keeps canonical placement and derives availability from its exact form profile; a drop changes native placement. Return reconciles current surviving items rather than restoring a copied inventory. Astral replicas have distinct native IDs and independent current integrity/resources; original Assets remain with the original physical body. Clone never duplicates equipment.
+
+An Actor/Asset conversion admits exact outgoing-state removal, incoming-state initialization, active physical representation, overflow/reversion and Effect/Procedure reference migration. It cannot leave two targetable integrity owners for one physical representation or reuse an ID for two simultaneously active kinds. Native remains/panels/objects survive only under their actual source profile. This is an exact extension of directed transformation, not generic Actor-to-Asset interchangeability or mutable details authority.

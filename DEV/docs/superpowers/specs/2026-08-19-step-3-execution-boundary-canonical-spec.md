@@ -901,3 +901,10 @@ Step 3 remains **IN PROGRESS** until implementation planning, machine/schema/cat
 Human decision required now: **NO**.
 
 Recommendation confidence: **HIGH**.
+
+
+# Exact local-spell consumer qualification
+
+The accepted `2026-10-04-local-spell-execution-contracts.md` closes compiler-issued immutable inputs, real native segment establishment, selected technical continuation and mandatory command closure. §§9–23 remain default: accepted segments/results are immutable evidence; ordinary retry never rerolls/undoes accepted work; presentation is not state. Three exact admitted stochastic profiles can yield/resume pending exact work without changing probabilities or charging again.
+
+Only `2026-10-04-wish-roll-redo-reconciliation-contracts.md` WR01–08 authorizes a new source-permitted Wish cause to reconcile current consequences of a qualified recent roll. Original executions/rolls/events/choices/messages/physical exposure remain evidence. Its closed Resolution profile owns new RNG/selection and one native replacement. No accepted mutation replay, whole-owner historical restore, mandatory-work loss or ordinary retry reinterpretation. Protected witness and complete consumer enrollment are additional admission obligations. Production requires approved stable plan and actual native/durability/recovery proof.

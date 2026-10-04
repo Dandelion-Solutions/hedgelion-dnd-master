@@ -67,3 +67,10 @@ Both definitions compile through the same closed argument/result contracts alrea
 
 The amended exact-consumer lists are content-identity-bound through `GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json` and its entry in `character-capabilities.json`. Removing that file, changing its digest, or failing package compilation makes both consumers nonselectable; it does not fall back to a descriptive overlay.
 
+## Local spell exact-consumer amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §§4–8 selects finite casting, calculation and three stochastic continuation profiles. [Local spell lifecycle contracts](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) selects the exact native lifecycle profile union. These are implementation-facing contract obligations, not present machine activation.
+
+Every new spell occurrence must prove its exact active primitive/value/selector-pair/accessor/fact/native-profile dependencies, closed args/results, bound roles/readset, cost/timing/RNG, atomicity, failure and recovery before coordinated consumer admission. The existing eleven active primitive rows and all other quarantine remain the exact machine baseline until that materialization. Registration, broad profile-family relevance and a schema-valid dictionary do not extend consumer lists.
+
+The three exact finite-state profiles use only op.roll as RNG authority. Each accepted attempt commits its fixed request/generation/result and the rule's coupled native consequence at its lawful edge; typed Continuation retains causal state, never a trusted delta. Prismatic Spray rejects secondary8 only and permits duplicate non8 rays. Normal compiler-form/trigger bounds remain, with mandatory pending work preserved rather than silently dropped. No generic Signal, StateDelta, event callback or fact variant is activated.

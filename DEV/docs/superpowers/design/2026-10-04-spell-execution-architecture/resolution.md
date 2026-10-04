@@ -1,5 +1,8 @@
 # Candidate review resolution and propagation
 
+CURRENT DISPOSITION: historical reviewed proposal/finding evidence at fbaef81af38a64f3defd0ee928c9313a0c488fd2. PO-013 accepts SP14; canonical main/annexes and canonicalization.md supersede pending/proposal wording below. Original findings/trade-offs retained as evidence, not present NEEDS_PO or law.
+
+
 Status: STEP-7 REPAIR / PROPAGATION COMPLETE AT CANDIDATE SCOPE; independent final verdict DECISION-READY PROPOSAL. SP-14 remains a genuine Product Owner decision. This is not completed Step 8 or Senior Review Stop 2.
 
 Current proposal owner: `candidate-spec.md`, at the same published checkpoint as this record. It is the only current source for proposed SP-01..24 wording. Accepted repository owners remain law. Initial investigator analysis and review findings are evidence/history and must not override the repaired proposal.

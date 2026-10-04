@@ -53,7 +53,7 @@ An agent-owned route marked `ACTIVE` or `PENDING` must not name a work package t
 | `PO-010` | MUTABLE FILE SIZE / OPERABILITY POLICY | INCORPORATED | implementation is active under the six-wave package; owner-specific writer/schema/test realization proceeds without a universal partition topology, with final shared/runtime projections remaining Wave-05/Wave-06 gated | sizing-bands owner decision; superseded former 10 KiB owner; WP-24; Story growth/sharding owner; active implementation tasks and final shared-writer/proof gates | NONE |
 | `PO-011` | PLAYER-LANGUAGE / DIAGNOSTIC PRESENTATION REQUIREMENT | INCORPORATED | accepted owner now defines transient `ResolvedResponseLanguage`, forbids visible fallback-language substitution caused only by missing optional policy/assets, separates internal/diagnostic language and requires no persistent PLAYER-language field | `2026-09-26-player-facing-response-language-owner-decision.md`; W04.T06B; maintenance diagnostics; Wave-05 shipped projections; Wave-06 proof | NONE |
 
-| `PO-013` | SPELL COVERAGE / PERFORMANCE | NEEDS_PO | complete local339-spell candidate prepared and independently challenged; ordinary technical design addressed; exact Wish Roll Redo conflicts with accepted immutable past | spell architecture candidate/decision brief; Activity/S6D/native owners; P1A acquisition reconciliation; later implementation/target measurements | SP-14 narrow recent-roll reality exception and its bounded retention/reconciliation risk |
+| `PO-013` | SPELL COVERAGE / PERFORMANCE | INCORPORATED | accurate complete local339-spell architecture and narrow Wish accepted; technical/worker gates separately routed | canonical spell specs/owner decision; S6D/native owners; stable-plan reconciliation; source/production/target proof | NONE |
 
 ---
 
@@ -788,7 +788,7 @@ Product Owner decision still required: `NONE`.
 
 Date: 2026-10-04  
 Kind: SPELL COVERAGE / RUNTIME PERFORMANCE / ARCHITECTURE DIRECTION  
-Status: NEEDS_PO
+Status: INCORPORATED — accepted architecture and owner routes; worker implementation/empirical proof remain separately gated.
 
 ### Product Owner clarification — VERBATIM / IMMUTABLE
 
@@ -806,25 +806,35 @@ Status: NEEDS_PO
 Как бы там ни было, займись сейчас проектированием архитектуры заклинаний - чтобы реализация позволила использовать их максимально эффективно.
 ```
 
-### Agent-owned interpretation and routing
+### Product Owner responsibility clarification — VERBATIM / IMMUTABLE
 
-The Product Owner chooses accurate spell mechanics with hidden player-facing mathematics and protected runtime responsiveness, not rule simplification or a generic LLM mechanical fallback. The immediate authorization is architecture design. The bounded target corpus is the existing339-entry SRD5.2.1 inventory; non-SRD content, unrestricted homebrew, all class progression and arbitrary world simulation are not implied.
+```text
+Собственно имплементацией будет заниматься другой агент. Твоя задача: спроектировать систему заклинаний и написать документацию/specs, а затем подготовить необходимое количество заданий воркеру (который сейчас на паузе). 
 
-This is a content/admission extension over accepted Activity/native-owner execution, with production closure and shared capability gaps to establish. Do not reopen accepted state/durability/context owners without proven insufficiency. Ordinary spell resolution must use local admitted rules/supporting content and must not browse for rules or external help.
+Какие еще есть вопросы ко мне?
+```
 
-| Route | State | Obligation / trigger | Owner or current artifact |
+### Product Owner acceptance of the remaining narrow Wish exception — VERBATIM / IMMUTABLE
+
+```text
+Принимается
+```
+
+### Agent-owned decision meaning and routing
+
+Accept accurate full339-entry SRD5.2.1 modes/dependencies, local deterministic execution, hidden player mathematics and physical GAME responsiveness. Current Architect authors specs, owner reconciliation, independent technical reviews and complete worker assignments; another agent implements. “Принимается” accepts the immediately proposed narrow Wish Roll Redo exception and bounded retention/complete-consequence/recovery risk: immutable original evidence/exposure; one new forward Wish cause with new RNG/choice and one coherent current replacement after complete WP16 preparation. No general undo or ordinary retry reroll.
+
+| Route | State | Obligation / trigger | Owner |
 |---|---|---|---|
-| Spell architecture design | ACTIVE / addressed by candidate | framing/Senior Stop1, full-body339 routing, candidate, independent critic and repair are complete; acceptance/Step8/Stop2 await the genuine decision | `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/candidate-spec.md`; `adversarial-review.md`; `resolution.md` |
-| Wish Roll Redo boundary | NEEDS_PO | choose the concrete narrow exception or explicit limitation; no dependent canonicalization/implementation before decision | `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/decision-brief.md` SP-14; Step3/Step5.9/native durability/information/LIVE owners |
-| Exact content/consumer admission | DEFERRED | accepted spell specification and owner-local amendments; required closed dependency/failure/recovery proof | Activity/S6D-03..11/package owners;339-entry requirement map |
-| Current P1A Sorcerer choice conflict | DISTINCT OPEN ROUTE | broad accurate support direction is supplied; do not repeat the old narrow-versus-broad scope question. Reconcile legal alternatives/acquisition/support and stable-plan semantics through accepted design gates before revised P1A execution | S6D-07; current P1A Senior review; Wave-05 plan/cursor |
-| Production implementation | DEFERRED | accepted architecture, implementation decomposition and required Senior plan GO; no production authority from this ledger | existing execution process and current global cursor |
-| GAME latency and local rules closure | DEFERRED | realized supported target and meaningful benchmark/host acceptance; structural design is not measured latency | Activity Model; WP-24; Context/TurnRuntime/native storage owners |
-| Non-SRD seed content | DEFERRED | provenance/contract reconciliation of existing Thunderclap seed entry; no automatic removal/replacement | admitted package/legal owners |
+| Complete spell architecture | INCORPORATED | all24 contracts/exact annexes/scoped owner qualifications; Step8 readback then independent Senior Stop2 | canonical spell specs/owner decision/canonicalization evidence |
+| Wish decision | ACCEPTED / NO NEEDS_PO | WR01–08: recent-round proof, complete native replacement and forward recovery | Wish annex |
+| Content/admission/runtime | DEFERRED_TO_AUTHORIZED_WORKER | approved stable plan and actual source/mode/consumer/native/recovery equality; no design-count support claim | execution/lifecycle/content annexes and native owners |
+| P1A Sorcerer choice | DISTINCT OPEN TECHNICAL ROUTE | finite4/2 choices; selected membership/support/default/adoption; stable envelope | S6D-07/content annex/stable Wave05 |
+| Local rules/performance | DEFERRED_TO_REALIZED_TARGET | packaged offline native path and physical model/context/compute/network/retry/cold/warm/save/LIVE/recovery instrumentation | WP-24 |
+| Existing Thunderclap extra | DEFERRED_TO_CONTENT_MATERIALIZATION | separate lawful provenance/eligibility/support or explicit coherent owner default/adoption repair before release; never count as339 | content/legal/package owners |
+| Story current validity | CONDITIONAL / DORMANT | consume Wish relation when own tasks activate; no Story activation now | WR07/existing T07/T08/W06 |
 
-Existing P0/S1/S2 and independently eligible P2/P3 routes remain under their current dependency gates. Story/T07/T08/W06 are not activated by this direction. Final candidate acceptance remains pending; no new initial product-scope question is required merely to repeat this instruction.
-
-Product Owner judgment remaining: only SP-14's bounded rule-authorized recent-roll reality exception (recommended) versus explicit omission/alteration of that mode. Original RNG/events remain immutable evidence; cross-LIVE closes/finals/absorption precede one campaign-native reconciliation. This adds recent-consequence retention and complex exceptional recovery proof. No ordinary task-boundary reauthorization or repeat general scope question. After decision complete owning Step8 and independent Senior Stop2, then stable-plan reconciliation.
+No Product Owner judgment remains in this bounded decision. AI owns technical review. Independent Senior Stop2 GO after actual Step8 publication/readback opens stable-plan reconciliation; independent Senior plan GO precedes the other worker’s automatic continuation. Accepted waves/S1/S2/P0 and independent P2/P3 edges survive. This ledger grants no production by itself.
 
 ---
 

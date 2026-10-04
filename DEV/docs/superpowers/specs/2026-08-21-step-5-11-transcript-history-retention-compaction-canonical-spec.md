@@ -967,3 +967,10 @@ No material owner decision remains open in Step 5.11.
 Next architecture slice after roadmap/status verification:
 
 **Step 5.12 / Host Delivery & Disclosure Boundary.**
+
+
+# Exact local-spell consumer qualification
+
+The lifecycle/Wish annexes add exact protected consumers: death-time knower basis for corpse answers, source-caused original memory for restoration, and Wish’s minimal recent-roll/input/dependency/before-value basis while legally targetable or referenced by pending reconciliation. Exact law is in `2026-10-04-local-spell-lifecycle-contracts.md` and `2026-10-04-wish-roll-redo-reconciliation-contracts.md`. No second current knowledge/state owner or permanent verbatim-retention promise.
+
+Complete protection/discovery enrolls with accepted native work before compaction relies on absence. Rule-defined eligibility and pending references govern release. Age, chunk width, hash, model summary or storage pressure cannot discharge needed content. Original messages/physical disclosure remain immutable during replacement. Compact only after exact consumer obligations are discharged. Existing retention/non-authority/forward recovery remain; no universal GC platform/Story activation.

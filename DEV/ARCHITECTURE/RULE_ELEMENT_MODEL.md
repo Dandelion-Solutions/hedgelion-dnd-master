@@ -506,3 +506,8 @@ metadata is absent.
 
 `CALCULATION_SELECTOR_METADATA.md` owns current selector selectability, selector/operation compatibility, contribution/result typing, subject/binding restrictions and deterministic combination-policy semantics. This document continues to own Rule Elements as pure embedded Contributions. Neither owner grants portable payload-member authority, generic queries, mutation, callbacks or author-controlled execution order.
 
+## Native spell lifecycle profile integration
+
+SP08–12/SP22–24's [accepted lifecycle contract](../docs/superpowers/specs/2026-10-04-local-spell-lifecycle-contracts.md) defines closed native health/interception/support/successor/progress/control/spatial/identity consumers. Rule Elements remain pure typed contributions; mutable progress belongs to the exact Actor/Effect/Asset/Location/process profile and never to a Rule Element. New trigger/fact/value variants require exact necessity, compiled consumer/binding/provenance, timing, readset, cost and recovery admission. A typed prospective cause is not a free-form Signal bus or callback capability.
+
+The complete finite responder set and source-specific entitlement are discovered from rebuildable typed dependency indexes over current native state. Outcome-sensitive order remains registered rules/controller/order-adjudication law. Source-specific successor creation preserves immutable support; suppression preserves live episode identity/deadline. None of these extensions grants scripting, arbitrary queries, world scanning, implicit fact permission or model-authored mechanical payloads.

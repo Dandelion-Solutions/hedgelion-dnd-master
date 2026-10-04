@@ -1,5 +1,8 @@
 # Spell execution system impact and source reconciliation
 
+CURRENT DISPOSITION: historical reviewed proposal/finding evidence at fbaef81af38a64f3defd0ee928c9313a0c488fd2. PO-013 accepts SP14; canonical main/annexes and canonicalization.md supersede pending/proposal wording below. Original findings/trade-offs retained as evidence, not present NEEDS_PO or law.
+
+
 Status: CANDIDATE IMPACT / EVIDENCE - source baseline `05576261665280c3f424d791c19d8c4080343c6a`, existing `v1/engine-rearchitecture`.
 
 ## Bounded dependency graph and authority

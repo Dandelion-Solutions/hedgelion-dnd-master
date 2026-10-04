@@ -630,3 +630,10 @@ WP17_STARTED:             NO
 IMPLEMENTATION_PLANNING:  NO
 NEXT_GATE:                MANDATORY SENIOR FINAL AUDIT
 ```
+
+
+# Exact local-spell consumer qualification
+
+The lifecycle annex distinguishes spell-imposed control/principal-body binding from campaign PLAYER ownership/access. Spell grants only its exact involuntary action/perception authority, no PLAYER transfer or unrelated voluntary cognition.
+
+For Wish WR06, WP16-43 close/freeze/final-proof/absorb brings complete affected ACTIVE LIVE basis to one lawful campaign owner before one native replacement. WP16-42 no distributed transaction and WP16-44/46 accepted-edge/RNG preservation remain absolute. First accepted close survives second-source conflict with fiction unreconciled. Accepted replacement survives publication/successor failure and recovers forward. Ordinary retry WP16-47 gains no reroll, WP16-49 physical exposure is not erased. No new shared owner/LIVE mutation protocol/access override.

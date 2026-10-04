@@ -1,0 +1,11 @@
+# Canonicalization verification
+
+Scope: architecture/owner/control only at the Step8 checkpoint after PO013 acceptance. No production code/schema/catalog/GAME or release-package inspection occurred.
+
+Fresh executed local control checks: `python -X utf8 -m unittest DEV.TESTS.test_current_progress_authority DEV.TESTS.test_product_owner_routing_consistency -v` against proposed current controls plus exact pinned remote inputs: **7 passed**, exit0, 0.176s. This is bounded control evidence, not full-repository or runtime verification.
+
+Artifact checks: exact selected SP01..24 set; six final specs including four detailed annexes/decision; exact unique owner anchors; all prior39 PO text blocks unchanged; new role/acceptance inputs preserved; zero invalid controls/U+FFFD; no GAME/schema/catalog/version writes. Coauthor JSON parses and exact anchors verified against evidence pin `fbaef81af38a64f3defd0ee928c9313a0c488fd2`. Actual entry/mode/runtime/target measurements remain NOT_ESTABLISHED.
+
+Publication protocol: fresh remote ref -> coherent tree/commit parent -> nonforced same-branch update -> all changed files exact-content readback + exact resulting ref/tree delta -> hosted CI evidence when available. These postpublication facts are recorded by the later readback receipt, never inferred here. Independent Senior Stop2 reviews the actual verified published canonical checkpoint before stable-plan reconciliation.
+
+VERSION_IMPACT: NONE. Accepted waves/S1/S2/P0 and independent P2/P3 gates preserved; NEEDS_PO NONE.

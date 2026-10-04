@@ -39,3 +39,15 @@ The B′ machine migration and the 2026-09-05 version-namespace normalization ar
 ## Activation boundary
 
 The current package is ACTIVE_VERIFIED_MACHINE_CONTRACT only after the Step-7 Resolution Gate verifies its exact derived identities, registered validators/tests, transitional-key absence and negative cases. This status does not activate dormant/quarantined content or implement production execution. S6D-12 remains separate.
+
+## Local spell-content closure extension
+
+The accepted local content/acquisition annex adds explicit finite semantic spell/support shards to the existing package manifest, one authoritative record per definition, and a separately truthful spell capability promise. Character progression remains bounded. Old seed spell bodies and new shards cannot coexist as duplicate definition owners. Every applicable registered validator must prove exact reconstructed source/mode/dependency/active-consumer/production-proof equality before its corresponding support or release claim.
+
+Runtime-owned conformance evidence compiles from those build checks without DEV paths or a competing digest authority. Generic loader validation, package-specific admission and exact adoption/comparator proof remain cumulative requirements. Immutable admitted-input/cache contracts preserve existing tamper and forged-digest negatives; warm invocation consumes only the selected recipe and its bound live dependencies. Source acquisition occurs before release, never as ordinary GAME rule lookup. No generation, package revision or compatibility disposition is inferred solely from expanded entry count.
+
+## Local spell support closure amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §§2/10 adds exact full-spell release obligations to this existing builder/validator route. The derived requirement/mode/dependency/consumer/contract/proof relations must agree bidirectionally for the promised support set. Architecture routing, definition closure, machine admission, production realization, scenario verification and target performance retain separate evidence dimensions. A full-support release cannot substitute339 names/schema-valid entries or aggregate fixture counts for per-mode native production closure.
+
+New explicit semantic members, exact native/calculation/primitive/value/accessor/fact consumers and complete lawful supporting statblock/feat domains require their owner-specific validators before generic package admission. Attestation remains path-neutral and digest-bound; GAME reads no DEV. Source reconstruction/provenance qualifiers remain before recipe admission. Current ACTIVE_VERIFIED_MACHINE_CONTRACT baseline remains exact but grants no new spell recipe execution. No package generation/namespace bump or compatibility verdict is guessed by this amendment.

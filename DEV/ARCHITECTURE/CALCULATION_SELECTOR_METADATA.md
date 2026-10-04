@@ -196,3 +196,8 @@ S6D-04 is canonically closed by `DEV/ARCHITECTURE/MECHANICAL_CONTEXT.md`.
 
 This document owns selector selectability, selector/operation semantic compatibility, active combination policies, subject/binding restrictions and the selector-side dependency/input boundary. It does not own portable payload members, Activity primitives, seed content or the complete MechanicalContext graph.
 
+## Local spell policy-contract amendment
+
+[Local spell execution contracts](../docs/superpowers/specs/2026-10-04-local-spell-execution-contracts.md) §5 selects exact policy profiles calculation.roll_advantage_srd521, calculation.damage_defense_srd521, calculation.armor_class_srd521 and calculation.capability_projection_srd521. They close cancellation/raw-dice selection, type/origin/bypass defense and rounding, nonadditive AC basis and exact native grant/restriction/form/movement/sense projection respectively.
+
+These names do not activate a dormant selector or rule.* operation. Each used pair requires complete closed Contribution/result types, subjects/roles, normalization/composition, dependencies/exact fact allowlist, conflict/choice and provenance, synchronized with exact consumers and machine admission. The present 10-selector/3-operation roster remains current until that proof. Generic multiplication/override and order-by-input are insufficient substitutes. Single MechanicalContext DAG/currentness and engine-owned state provenance remain binding.
