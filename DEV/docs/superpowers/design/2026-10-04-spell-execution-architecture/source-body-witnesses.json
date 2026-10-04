@@ -1,0 +1,2381 @@
+{
+  "status": "FROZEN_EXTRACTION_WITNESS_NOT_CANONICAL_RULE_TEXT",
+  "source": "https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf",
+  "extraction_lf_utf8_sha256": "be2fea96cb788fa1cd863d2e2658f7551a7e8cd0150ebbdba4f9d354a0977ecd",
+  "qualification": "Hash covers the exact extracted span, including recorded contamination/tail qualifiers. Reproduction from witnesses does not reverify primary text or recipe semantics.",
+  "rows": [
+    {
+      "name": "Acid Arrow",
+      "level": 2,
+      "page": 107,
+      "line": 8993,
+      "body_sha256": "15a370bdab0998aa669c4fe8bebdc2c5bec72a965e128dee4597325199929090"
+    },
+    {
+      "name": "Acid Splash",
+      "level": 0,
+      "page": 107,
+      "line": 9008,
+      "body_sha256": "1400b22d999b5aadd7bd2a01583e281d79da8014e337fdcfef0a392910ff9440"
+    },
+    {
+      "name": "Aid",
+      "level": 2,
+      "page": 107,
+      "line": 9021,
+      "body_sha256": "40d66aae2ec29df83884c0d92830ddf6cc2c548bf81694f1e2d212483d1bb27b"
+    },
+    {
+      "name": "Alarm",
+      "level": 1,
+      "page": 107,
+      "line": 9033,
+      "body_sha256": "f7e93941e07c01fa35cfec247fe0e4962281904e5601927626f226f7300ba8e4"
+    },
+    {
+      "name": "Alter Self",
+      "level": 2,
+      "page": 107,
+      "line": 9052,
+      "body_sha256": "5fe758b1cf43527e2fe1941db4c8a21a798da09294234419ade4fe6c0485186f"
+    },
+    {
+      "name": "Animal Friendship",
+      "level": 1,
+      "page": 107,
+      "line": 9082,
+      "body_sha256": "a2a86931c2abbc3a191e6905660a86b532d7f85abc23c91a005420fca4be5370"
+    },
+    {
+      "name": "Animal Messenger",
+      "level": 2,
+      "page": 108,
+      "line": 9095,
+      "body_sha256": "f21a41e628ec8c0858612b1c2805742a4b04035c08963a31b48ebda0e92e6a0c"
+    },
+    {
+      "name": "Animal Shapes",
+      "level": 8,
+      "page": 108,
+      "line": 9119,
+      "body_sha256": "03d481793d7e0c658b4aaa9a9b554175c3a5e6308cfaf4125905b6d28dcbc46c"
+    },
+    {
+      "name": "Animate Dead",
+      "level": 3,
+      "page": 108,
+      "line": 9143,
+      "body_sha256": "e0372c681fe2ca4623ee488323c519b02b82a1d89f740c2e347d8bf3fe363cce"
+    },
+    {
+      "name": "Animate Objects",
+      "level": 5,
+      "page": 108,
+      "line": 9177,
+      "body_sha256": "efe70f7b72190ee70914f7823caa681680f3a9c84f7c4f118f1ac4cd52c6098d"
+    },
+    {
+      "name": "Antimagic Field",
+      "level": 8,
+      "page": 109,
+      "line": 9214,
+      "body_sha256": "bfacef11368f98cc329ad0d18881a3e5568ee97861fad4429c60fd29411373e8"
+    },
+    {
+      "name": "Antipathy/Sympathy",
+      "level": 8,
+      "page": 109,
+      "line": 9234,
+      "body_sha256": "66e7939ba87aaa4f65fb23fa27965c0de4e2bb27706f4215319e04ff4c4cd1cd"
+    },
+    {
+      "name": "Antilife Shell",
+      "level": 5,
+      "page": 109,
+      "line": 9274,
+      "body_sha256": "da9435a8a61f1122396b515ca261c68824f9034cd888327bc5f5dfb26b2c05c5"
+    },
+    {
+      "name": "Arcane Eye",
+      "level": 4,
+      "page": 110,
+      "line": 9289,
+      "body_sha256": "6d58d044dab2338e91a2a6252048a93b4f0ac8248c61001f4b0ab60300d3438d"
+    },
+    {
+      "name": "Arcane Hand",
+      "level": 5,
+      "page": 110,
+      "line": 9304,
+      "body_sha256": "cb1111db0229565bbd1bf7e10985ec914cff4c873ee80f726ed4c9d335635a33"
+    },
+    {
+      "name": "Arcane Lock",
+      "level": 2,
+      "page": 110,
+      "line": 9345,
+      "body_sha256": "da8415331b89d2f79688480e1d0010a235d6889b766cea99922e4f8ee54e34ea"
+    },
+    {
+      "name": "Arcane Sword",
+      "level": 7,
+      "page": 110,
+      "line": 9359,
+      "body_sha256": "cfc6150fd646b334a4698b1ad837ef0c600fe15c646c9b1233404583320a21be"
+    },
+    {
+      "name": "Arcanist’s Magic Aura",
+      "level": 2,
+      "page": 110,
+      "line": 9376,
+      "body_sha256": "95dc368e392b20b55d54119445800bf9b06a65ff265ab10c48594f2f3c0ae41b"
+    },
+    {
+      "name": "Astral Projection",
+      "level": 9,
+      "page": 111,
+      "line": 9397,
+      "body_sha256": "df7f2e054665f96a7bd46591eefd7f5a5bf6931e6f77ef12b8e692230b2c6b59"
+    },
+    {
+      "name": "Augury",
+      "level": 2,
+      "page": 111,
+      "line": 9429,
+      "body_sha256": "39c373d26ae507e9ef9b00f138c75ffbb16e041d3b647d0a6e2bea0ff92fc36e"
+    },
+    {
+      "name": "Aura of Life",
+      "level": 4,
+      "page": 111,
+      "line": 9451,
+      "body_sha256": "3e8c202bca393c060f68f55fe1783c69eff5b64c74e02d33672dfb2a6275c80e"
+    },
+    {
+      "name": "Awaken",
+      "level": 5,
+      "page": 111,
+      "line": 9462,
+      "body_sha256": "7c5d7b01a811885c9b697d819dd64383ae4697bb8f2edb9fd0a404bf5c22fe04"
+    },
+    {
+      "name": "Bane",
+      "level": 1,
+      "page": 112,
+      "line": 9484,
+      "body_sha256": "cfd206fd942fda4035a2a2cab39ef268f939ac8c0f7c1a994db4c49f9d582389"
+    },
+    {
+      "name": "Banishment",
+      "level": 4,
+      "page": 112,
+      "line": 9499,
+      "body_sha256": "cdfcc6224cdcf1ff58d45e65b01d77bee3bb2f24e09337f0d3f79782142ce719"
+    },
+    {
+      "name": "Barkskin",
+      "level": 2,
+      "page": 112,
+      "line": 9518,
+      "body_sha256": "218143400139261621ab7ca8053a24a0991e9e2b0afc7a54be0d771b048f1cbd"
+    },
+    {
+      "name": "Beacon of Hope",
+      "level": 3,
+      "page": 112,
+      "line": 9528,
+      "body_sha256": "064999ff0670a510f39b4ef5d964a092e05bcc631515158bb95b770727ef2ce3"
+    },
+    {
+      "name": "Befuddlement",
+      "level": 8,
+      "page": 112,
+      "line": 9538,
+      "body_sha256": "ca295b02fced13f0c1685d38d5dcfdacdfeff3c93add233d3384a2e0ae45ab74"
+    },
+    {
+      "name": "Bestow Curse",
+      "level": 3,
+      "page": 112,
+      "line": 9553,
+      "body_sha256": "47a3df237c3400f792c6b5fd5969b0dbd891f59d1f0b7693aaa9133db77cbf92"
+    },
+    {
+      "name": "Black Tentacles",
+      "level": 4,
+      "page": 113,
+      "line": 9577,
+      "body_sha256": "bc6039d778a370652579a12d1b0e38b8ec3b771f776b35dd08bc098db17d5808"
+    },
+    {
+      "name": "Blade Barrier",
+      "level": 6,
+      "page": 113,
+      "line": 9594,
+      "body_sha256": "59a588dc669d791139e91f22201dfa298cc43dafb623b04b17299315b38cf0b9"
+    },
+    {
+      "name": "Bless",
+      "level": 1,
+      "page": 113,
+      "line": 9612,
+      "body_sha256": "da887f8ac55f1f9d7fedd71d60c02ce3f6d062931ea6c290215c01d5ca2bf4f0"
+    },
+    {
+      "name": "Blight",
+      "level": 4,
+      "page": 113,
+      "line": 9623,
+      "body_sha256": "6d7fdf9fd87d849c15c1b6650834258f964b9c7e147a2d530b6440a93270c4f3"
+    },
+    {
+      "name": "Blindness/Deafness",
+      "level": 2,
+      "page": 113,
+      "line": 9639,
+      "body_sha256": "cc898e8e8a3f21450aeaec3b5466b7c32e6c0f6954cb9c229ce074d0f1e35ed8"
+    },
+    {
+      "name": "Blink",
+      "level": 3,
+      "page": 113,
+      "line": 9654,
+      "body_sha256": "13bda04f5f99d4339374bd66bd4a20ea4887e2dda552790b4323984fee05368a"
+    },
+    {
+      "name": "Blur",
+      "level": 2,
+      "page": 114,
+      "line": 9676,
+      "body_sha256": "03cc0f72a4070807c0a0f173921ad643dd6936cc204ad8e57a907c39b9aff413"
+    },
+    {
+      "name": "Burning Hands",
+      "level": 1,
+      "page": 114,
+      "line": 9685,
+      "body_sha256": "a711b86f61e918be3b9d6b3fbfbef4e9104709df82b1d193961f1498bf491484"
+    },
+    {
+      "name": "Call Lightning",
+      "level": 3,
+      "page": 114,
+      "line": 9698,
+      "body_sha256": "eb6751bf3f6f5de11f7530997e5723cebc14347cf6c2018907ebfcaed640b99d"
+    },
+    {
+      "name": "Calm Emotions",
+      "level": 2,
+      "page": 114,
+      "line": 9720,
+      "body_sha256": "7a6e3f4dd003c1afb69f86510fdec109b6d9275317b704960274b641227a6dc0"
+    },
+    {
+      "name": "Chain Lightning",
+      "level": 6,
+      "page": 114,
+      "line": 9738,
+      "body_sha256": "aa1ebeed8e5e2c499ed5e6da0d4d304a5665645100de94b31e44b00a875e2407"
+    },
+    {
+      "name": "Charm Monster",
+      "level": 4,
+      "page": 114,
+      "line": 9755,
+      "body_sha256": "75f763f9f94d94918dca08f39bca3ee59cf508a143d4c867a7dd7cbe8673720d"
+    },
+    {
+      "name": "Charm Person",
+      "level": 1,
+      "page": 115,
+      "line": 9772,
+      "body_sha256": "94f75cf31219c0773fa7baf16e47ea5f621b62ea96814c55e82da05ddd334c6e"
+    },
+    {
+      "name": "Chill Touch",
+      "level": 0,
+      "page": 115,
+      "line": 9789,
+      "body_sha256": "e806986a657d0a8ab404d73d62bd75135a260035bef72964a4d34efd0763cfa3"
+    },
+    {
+      "name": "Chromatic Orb",
+      "level": 1,
+      "page": 115,
+      "line": 9801,
+      "body_sha256": "6a1f9ba224b9661d66cafe826aaf7c3f28a02ecb7cb46eb6b36a678dc5f2da42"
+    },
+    {
+      "name": "Circle of Death",
+      "level": 6,
+      "page": 115,
+      "line": 9821,
+      "body_sha256": "4082af062e4cbed815431fee40fcd19401fbaba3a58a174f8bbd432931f42d4f"
+    },
+    {
+      "name": "Clairvoyance",
+      "level": 3,
+      "page": 115,
+      "line": 9834,
+      "body_sha256": "82e0825f327f718ff24f7b08902695aacb65d8f5e90605a579bddad8a18becd9"
+    },
+    {
+      "name": "Clone",
+      "level": 8,
+      "page": 115,
+      "line": 9853,
+      "body_sha256": "5f7117c281b4a7b50d1470e0dfe4d611a5922340282d86bab66b3ec45be1c6e8"
+    },
+    {
+      "name": "Cloudkill",
+      "level": 5,
+      "page": 116,
+      "line": 9874,
+      "body_sha256": "63515948429c0992c23c05d78cb7c2412504bae91e4098c453d260757ce84166"
+    },
+    {
+      "name": "Color Spray",
+      "level": 1,
+      "page": 116,
+      "line": 9895,
+      "body_sha256": "6449d0cebeff5f32c3f967b3273ded9170d3aba9236b02de4000fa7293642935"
+    },
+    {
+      "name": "Command",
+      "level": 1,
+      "page": 116,
+      "line": 9906,
+      "body_sha256": "afa5e97d13fb52926da15370e6a6a06a6fdf4d8255d568a0e7792d5dc3b90648"
+    },
+    {
+      "name": "Commune",
+      "level": 5,
+      "page": 116,
+      "line": 9930,
+      "body_sha256": "7264d524183e35394fac6fb8b9254829b4233b78b21dbd60ccfc99a011b7d6e7"
+    },
+    {
+      "name": "Commune with Nature",
+      "level": 5,
+      "page": 116,
+      "line": 9948,
+      "body_sha256": "52b56902ef243bdee091bb7489a69368144f085ee3f7f7e3253bdcd6db0565e3"
+    },
+    {
+      "name": "Comprehend Languages",
+      "level": 1,
+      "page": 117,
+      "line": 9972,
+      "body_sha256": "eb08bfbe58921d4d026c6dff5177d2a069765cafab43c0cab0e1bb9c28169728"
+    },
+    {
+      "name": "Compulsion",
+      "level": 4,
+      "page": 117,
+      "line": 9984,
+      "body_sha256": "75906ec82e19e79a71f9f5435a09d01a1642f68202c6c5edbd5f4932602c3fa5"
+    },
+    {
+      "name": "Cone of Cold",
+      "level": 5,
+      "page": 117,
+      "line": 10000,
+      "body_sha256": "d03c76c54e76d0fef192098df5fc0916298234c12e4b66791aea6517ba80fffa"
+    },
+    {
+      "name": "Confusion",
+      "level": 4,
+      "page": 117,
+      "line": 10012,
+      "body_sha256": "8865f70fa7570e21ca9383b00930c02305d49162a64351f7a2e381e822fa5ba3"
+    },
+    {
+      "name": "Conjure Animals",
+      "level": 3,
+      "page": 117,
+      "line": 10037,
+      "body_sha256": "cab96ecd092ff9589487958b18774db6f59ed4fc5753053a6f0ec9d4a3db6f0d"
+    },
+    {
+      "name": "Conjure Celestial",
+      "level": 7,
+      "page": 118,
+      "line": 10057,
+      "body_sha256": "e493e0e3b0eb3ccdfbbe338e1beb14a89196b0628507e543d3a9f3754f7f7ad9"
+    },
+    {
+      "name": "Conjure Elemental",
+      "level": 5,
+      "page": 118,
+      "line": 10084,
+      "body_sha256": "afeb69f22109c2bb18781613593613afb5bf2218f9f16a858ae446d4dadbba28"
+    },
+    {
+      "name": "Conjure Fey",
+      "level": 6,
+      "page": 118,
+      "line": 10105,
+      "body_sha256": "962887e143718078afac20abb382c5e14a82ebb1c2cb4ff8cfb306d9c565a4e4"
+    },
+    {
+      "name": "Conjure Minor Elementals",
+      "level": 4,
+      "page": 118,
+      "line": 10126,
+      "body_sha256": "b0b57f04606b46de9fb9072838bb407cb2efe76068c5e56cb6188183591754f0"
+    },
+    {
+      "name": "Conjure Woodland Beings",
+      "level": 4,
+      "page": 118,
+      "line": 10138,
+      "body_sha256": "ebe4733ea681a029c51a511a62e94ece0d1720cdfb204298ad95509f6554e7c0"
+    },
+    {
+      "name": "Contact Other Plane",
+      "level": 5,
+      "page": 119,
+      "line": 10156,
+      "body_sha256": "d143791f72fa5603a74a7dd1b7785ac078cc78caa0aa01492a423df1eeee14d9"
+    },
+    {
+      "name": "Contagion",
+      "level": 5,
+      "page": 119,
+      "line": 10177,
+      "body_sha256": "d91d9a57b7d8c5ecb322a97483fbc795c4bae450c50b2808e042be2a508cbb54"
+    },
+    {
+      "name": "Contingency",
+      "level": 6,
+      "page": 119,
+      "line": 10197,
+      "body_sha256": "40f5827eefcb4c6b8c4f4e3605caa66baeb4e0c4b83659ad601428d0cfa9f60f"
+    },
+    {
+      "name": "Continual Flame",
+      "level": 2,
+      "page": 119,
+      "line": 10220,
+      "body_sha256": "1722574fca069ebb32b57a8658ea0248c9c99610b1ca430f3598e940cb598d05"
+    },
+    {
+      "name": "Control Water",
+      "level": 4,
+      "page": 119,
+      "line": 10232,
+      "body_sha256": "16add75b363de285a3eb6ff898fb96a0876534fd3e7a5a4a1d6c0baa04bcba87"
+    },
+    {
+      "name": "Control Weather",
+      "level": 8,
+      "page": 120,
+      "line": 10284,
+      "body_sha256": "1464ca06b0734ab127cce02dfda0f9fea2c1b64006fb9e869fd2a1e2b6d77313"
+    },
+    {
+      "name": "Counterspell",
+      "level": 3,
+      "page": 120,
+      "line": 10326,
+      "body_sha256": "1d292c8dc1c8c88c71a1c98c86fb6078e70ae3fa00c33ee41a6814ace83b7b6e"
+    },
+    {
+      "name": "Create Food and Water",
+      "level": 3,
+      "page": 120,
+      "line": 10339,
+      "body_sha256": "9946980e9bb139bbca90acf25cad36161d3e5be242241e3f3a1c9c40ab9000c2"
+    },
+    {
+      "name": "Create or Destroy Water",
+      "level": 1,
+      "page": 121,
+      "line": 10352,
+      "body_sha256": "9b29492f6e1a41cf2bad8341159e61ff378520a73f3ef7fdf24c5d4d74866b47"
+    },
+    {
+      "name": "Create Undead",
+      "level": 6,
+      "page": 121,
+      "line": 10369,
+      "body_sha256": "060364bb654d29d0f3b0e0592c5b9b6084caaf577f6c2fc6cbee3c1b15336466"
+    },
+    {
+      "name": "Creation",
+      "level": 5,
+      "page": 121,
+      "line": 10404,
+      "body_sha256": "98d0dcc922709f60e72863da5a880ab1136388554db1c15ec8883fecea73af4b"
+    },
+    {
+      "name": "Cure Wounds",
+      "level": 1,
+      "page": 121,
+      "line": 10428,
+      "body_sha256": "1c8d3a2430fe201b6b38b179d0d3510c6137285db21321e6d4c77c04212743e0"
+    },
+    {
+      "name": "Dancing Lights",
+      "level": 0,
+      "page": 121,
+      "line": 10438,
+      "body_sha256": "7a4bb7d9da03b23c72825b338bd456913654232f6685f81e70fc0f59d265adf5"
+    },
+    {
+      "name": "Darkness",
+      "level": 2,
+      "page": 122,
+      "line": 10453,
+      "body_sha256": "92d607bf5aba507ed0a69d79bbb8ad1482093be1a11f8ebff399a90b05951eca"
+    },
+    {
+      "name": "Darkvision",
+      "level": 2,
+      "page": 122,
+      "line": 10471,
+      "body_sha256": "b1d2133d0952f9378a53c88f600afb87e20e120932a2ba3ac0aa264fbac0023f"
+    },
+    {
+      "name": "Daylight",
+      "level": 3,
+      "page": 122,
+      "line": 10480,
+      "body_sha256": "b43703f6837a3358778aefa73c4f81d96126242e60e3e7d901e6ca3767c09c6a"
+    },
+    {
+      "name": "Death Ward",
+      "level": 4,
+      "page": 122,
+      "line": 10499,
+      "body_sha256": "0e7e6408f834341c3525c3f79b6a32098c9329d55b4ef1995023d79acf3f530c"
+    },
+    {
+      "name": "Delayed Blast Fireball",
+      "level": 7,
+      "page": 122,
+      "line": 10510,
+      "body_sha256": "4ccd9e5ddff87eee08b4bba84ff1ba46165eb4dbc5caf64d1710c5a708ce0c6e"
+    },
+    {
+      "name": "Demiplane",
+      "level": 8,
+      "page": 122,
+      "line": 10537,
+      "body_sha256": "7aed64ae9dd1842f8459f6ae2383ff14aac5c1e659fd3954a54b65000fdd686b"
+    },
+    {
+      "name": "Detect Evil and Good",
+      "level": 1,
+      "page": 123,
+      "line": 10560,
+      "body_sha256": "db5ac0c968464e9f0b8c495ce7d8a1ac5ba13bd34d7e91dc96c97548171e29c4"
+    },
+    {
+      "name": "Detect Magic",
+      "level": 1,
+      "page": 123,
+      "line": 10571,
+      "body_sha256": "e0cdc16bbfdea122a6617dfc7b12d108a55301af2ffef39b15f1dfb7c2b5b45a"
+    },
+    {
+      "name": "Detect Poison and Disease",
+      "level": 1,
+      "page": 123,
+      "line": 10585,
+      "body_sha256": "aa3e92445702ecaf4f18edae3ccea418bc7cf9d2055a162ab1c192bab0520680"
+    },
+    {
+      "name": "Detect Thoughts",
+      "level": 2,
+      "page": 123,
+      "line": 10597,
+      "body_sha256": "0438b5af49c583315faf6a21369e3f40d2d18258d85c9c2b489fdf12380f07c9"
+    },
+    {
+      "name": "Dimension Door",
+      "level": 4,
+      "page": 123,
+      "line": 10630,
+      "body_sha256": "91483c2316135004198523a153ce56d307c201f97466196259a723b0595d437f"
+    },
+    {
+      "name": "Disguise Self",
+      "level": 1,
+      "page": 124,
+      "line": 10649,
+      "body_sha256": "64deeaa478db725af93da51e27df87065ee2f92c9d62a980b99ceec5220191d5"
+    },
+    {
+      "name": "Disintegrate",
+      "level": 6,
+      "page": 124,
+      "line": 10671,
+      "body_sha256": "08ff206c34ff6052c9e9840d50a39b4be926eda80fb2e5d48e079076b5cb577a"
+    },
+    {
+      "name": "Dispel Evil and Good",
+      "level": 5,
+      "page": 124,
+      "line": 10690,
+      "body_sha256": "9738f0c69a2798b4c05e51195a3935398b6de4dce417def511aea5a89c9b20a2"
+    },
+    {
+      "name": "Dispel Magic",
+      "level": 3,
+      "page": 124,
+      "line": 10708,
+      "body_sha256": "986d85d075220ad2b7fc9ede4077fe74662d6bc3369130bd7197d7da7ba11f53"
+    },
+    {
+      "name": "Dissonant Whispers",
+      "level": 1,
+      "page": 124,
+      "line": 10724,
+      "body_sha256": "83bb74fcc88c04efdbea2b6b7649e72c5dc785e221fc292d1074b8cf3d742d4a"
+    },
+    {
+      "name": "Divination",
+      "level": 4,
+      "page": 125,
+      "line": 10737,
+      "body_sha256": "728c2459a8c2db246fa7542750d87d3b87ed9a851fb21e0b28a22ab62d7a6fa1"
+    },
+    {
+      "name": "Divine Favor",
+      "level": 1,
+      "page": 125,
+      "line": 10752,
+      "body_sha256": "3711c6f83ef121e46b99d6c0b8b3ac87950268edf8e86205384de8f1b28f7120"
+    },
+    {
+      "name": "Divine Smite",
+      "level": 1,
+      "page": 125,
+      "line": 10760,
+      "body_sha256": "40296fa67ee8674db9c6068d62c4912d60a32c3368775f0bae889b171946a0b4"
+    },
+    {
+      "name": "Divine Word",
+      "level": 7,
+      "page": 125,
+      "line": 10770,
+      "body_sha256": "50116dce7a75b471cdce5ef85ea4e6955c307dd5d82584346582684ddff746f4"
+    },
+    {
+      "name": "Dominate Beast",
+      "level": 4,
+      "page": 125,
+      "line": 10795,
+      "body_sha256": "fa470fcb1a69d5a57d8d9eedb71786618fdf8476e45091ab469f1518e02103b3"
+    },
+    {
+      "name": "Dominate Monster",
+      "level": 8,
+      "page": 125,
+      "line": 10817,
+      "body_sha256": "ae13ac59f7d1b464146891e96de43ff1c1e2a75704bb2ff5be95bd1a3b245702"
+    },
+    {
+      "name": "Dominate Person",
+      "level": 5,
+      "page": 126,
+      "line": 10840,
+      "body_sha256": "e08927a74287f48748ff4bb120df2b2962eecd186a48e40a540fb0b05e3bc7c8"
+    },
+    {
+      "name": "Dragon’s Breath",
+      "level": 2,
+      "page": 126,
+      "line": 10862,
+      "body_sha256": "2e78a4c1fd96986216faf7a582b198cb444021d3da17a2dc444b8b0f34b46873"
+    },
+    {
+      "name": "Dream",
+      "level": 5,
+      "page": 126,
+      "line": 10876,
+      "body_sha256": "b11a0b6304d78c47ac6f3064ee81759bf933adcbf495b42660aecf23707bb5cc"
+    },
+    {
+      "name": "Druidcraft",
+      "level": 0,
+      "page": 126,
+      "line": 10901,
+      "body_sha256": "de059ae3515d9589f7c956818f35a9ef4e62fb7ed8554f61bb3668146839789e"
+    },
+    {
+      "name": "Earthquake",
+      "level": 8,
+      "page": 127,
+      "line": 10921,
+      "body_sha256": "2a29b3a17797dceca7d1d73228de4713bcda99c9ef6234efb5b86b6686eb9223"
+    },
+    {
+      "name": "Eldritch Blast",
+      "level": 0,
+      "page": 127,
+      "line": 10957,
+      "body_sha256": "716b4317fe8745bcf5de6417b13f12a5f20d3b74f650c79c5561319d5f946efa"
+    },
+    {
+      "name": "Elementalism",
+      "level": 0,
+      "page": 127,
+      "line": 10971,
+      "body_sha256": "89447f198f59c6f40b804964ed34c80c1206c652ab894c2e876a556ca602cd00"
+    },
+    {
+      "name": "Enhance Ability",
+      "level": 2,
+      "page": 127,
+      "line": 11000,
+      "body_sha256": "6fe763535996d5c1e5ca28202e6fc4b80d437bbb5876379c6f8ac9aba761a020"
+    },
+    {
+      "name": "Enlarge/Reduce",
+      "level": 2,
+      "page": 127,
+      "line": 11014,
+      "body_sha256": "036b77513b31c9c822aade79e3ee3518ca3d9ea59e024ff989e11498522280a0"
+    },
+    {
+      "name": "Ensnaring Strike",
+      "level": 1,
+      "page": 128,
+      "line": 11039,
+      "body_sha256": "a4c0e625308db911840168e630948a8ca47a3937b5294d0534d0df3034cb4a6b"
+    },
+    {
+      "name": "Entangle",
+      "level": 1,
+      "page": 128,
+      "line": 11057,
+      "body_sha256": "f38b69d6c4c22639d817122cfb53d02e2023b42c10e42fb42124e6698e66179d"
+    },
+    {
+      "name": "Enthrall",
+      "level": 2,
+      "page": 128,
+      "line": 11075,
+      "body_sha256": "7511677425ad81f8dd064d63aecc161084890ec3f51d34f22fb973b126fc17e3"
+    },
+    {
+      "name": "Etherealness",
+      "level": 7,
+      "page": 128,
+      "line": 11086,
+      "body_sha256": "1cd32c88c9afcccf805dd32a12453e51dfe2d9ee8bbf4add84f01d2d5d4bc0ed"
+    },
+    {
+      "name": "Expeditious Retreat",
+      "level": 1,
+      "page": 129,
+      "line": 11119,
+      "body_sha256": "ad0381f80cf4b3303786fc88cf5b24ab2129828269813bed734dc9077599d39d"
+    },
+    {
+      "name": "Eyebite",
+      "level": 6,
+      "page": 129,
+      "line": 11127,
+      "body_sha256": "9ee5c4e28d42d36d07afa2dd5a41cf152fd803ae4ac6423113db94d61d93bff3"
+    },
+    {
+      "name": "Fabricate",
+      "level": 4,
+      "page": 129,
+      "line": 11150,
+      "body_sha256": "c68c5f66088e214248367ac970b360dcf3906dbef1569be26a7f5c707d83df12"
+    },
+    {
+      "name": "Faerie Fire",
+      "level": 1,
+      "page": 129,
+      "line": 11173,
+      "body_sha256": "42af3065d8d2997cd903ba9259e323db401ec75a946d7b44fd1e80769f907a7c"
+    },
+    {
+      "name": "Faithful Hound",
+      "level": 4,
+      "page": 129,
+      "line": 11185,
+      "body_sha256": "990acb79722df789b9aac69afb4fcde31100c2a5745a8d894b336174bbe3795d"
+    },
+    {
+      "name": "False Life",
+      "level": 1,
+      "page": 129,
+      "line": 11205,
+      "body_sha256": "32cb9ff89712e00e78a77f401db60ff955d17b85c26846e94226543dfcc1a309"
+    },
+    {
+      "name": "Fear",
+      "level": 3,
+      "page": 130,
+      "line": 11214,
+      "body_sha256": "a805f36aaaa33c335856a273331b039bfcd65c5e9be32bad226d374f3cc82d4d"
+    },
+    {
+      "name": "Feather Fall",
+      "level": 1,
+      "page": 130,
+      "line": 11229,
+      "body_sha256": "19861be011d3111781160ea69876e5523ce6dba9c7688b089abb004657fc380b"
+    },
+    {
+      "name": "Find Familiar",
+      "level": 1,
+      "page": 130,
+      "line": 11241,
+      "body_sha256": "7ad9e1e88ac2c18e7f7573442ad84ecab53c842c4f0d22616cfd1b446215aac6"
+    },
+    {
+      "name": "Find Steed",
+      "level": 2,
+      "page": 130,
+      "line": 11284,
+      "body_sha256": "71a581b530f20eb4459e14de65b8d4fced42099209321bdf8106019119342420"
+    },
+    {
+      "name": "Find Traps",
+      "level": 2,
+      "page": 131,
+      "line": 11313,
+      "body_sha256": "76a88e76bd6f5df2d688064a529fccf7c6eabf3cb1cd8c527644ed9cf81f8068"
+    },
+    {
+      "name": "Finger of Death",
+      "level": 7,
+      "page": 131,
+      "line": 11327,
+      "body_sha256": "ffa484d51276e7509cfe702e4afae8bc15b5c94d30200c2db0d98c2c618fa0f4"
+    },
+    {
+      "name": "Fireball",
+      "level": 3,
+      "page": 131,
+      "line": 11339,
+      "body_sha256": "56288275edeac90049c915851a5c8b791b7577c21412a0c013671b94115f0cf8"
+    },
+    {
+      "name": "Find the Path",
+      "level": 6,
+      "page": 131,
+      "line": 11386,
+      "body_sha256": "175d93efe9b76c95c5b96f0d474894a42ee20ba37cf0f0a89d4164e240042802"
+    },
+    {
+      "name": "Fire Bolt",
+      "level": 0,
+      "page": 132,
+      "line": 11400,
+      "body_sha256": "3918d497f9c4e29024b1a2682cc3b4b753da47e51726d967f46f71f8cd31dbd2"
+    },
+    {
+      "name": "Fire Shield",
+      "level": 4,
+      "page": 132,
+      "line": 11414,
+      "body_sha256": "8b79c60bdc4a392405f85b9c728849d5a634ad2cbbdff591a7cc64394d487045"
+    },
+    {
+      "name": "Fire Storm",
+      "level": 7,
+      "page": 132,
+      "line": 11431,
+      "body_sha256": "c6a9547144f233e0b19bea0668215f86bbf392c3b3fb9156b844c48b72f6fc3f"
+    },
+    {
+      "name": "Flame Blade",
+      "level": 2,
+      "page": 132,
+      "line": 11445,
+      "body_sha256": "d791d123e2a30dd08301debb160c1022569be7a97c8a75e9fb08be39093bdb1f"
+    },
+    {
+      "name": "Flame Strike",
+      "level": 5,
+      "page": 132,
+      "line": 11460,
+      "body_sha256": "da027b9fbe73208bbf82192fc1c5ee7243411d85a92aa4b0cb1e186da62e2f72"
+    },
+    {
+      "name": "Flaming Sphere",
+      "level": 2,
+      "page": 132,
+      "line": 11474,
+      "body_sha256": "302ebd4433a46a10b817f6ff8bfdb652a78e760f8fb5ce3308b0a820bcf4a49a"
+    },
+    {
+      "name": "Flesh to Stone",
+      "level": 6,
+      "page": 133,
+      "line": 11496,
+      "body_sha256": "50582b8fc0fd1e890f467039ba7bea39d3d51ae492f9f31c1c2fc5904e56b490"
+    },
+    {
+      "name": "Floating Disk",
+      "level": 1,
+      "page": 133,
+      "line": 11515,
+      "body_sha256": "24d5b9598689bf0dd79188ea1b112e0af252b7ceaad7a7d2a76d2fd8796086e0"
+    },
+    {
+      "name": "Fly",
+      "level": 3,
+      "page": 133,
+      "line": 11537,
+      "body_sha256": "cef63e71ec80ad45496ffbe017aca12450a7eed42d1189ba14c3bd73b18b9d68"
+    },
+    {
+      "name": "Fog Cloud",
+      "level": 1,
+      "page": 133,
+      "line": 11550,
+      "body_sha256": "ac0631a710bf18d7ea01b794c1a7427599384740aa4e914687ac6061b082eb67"
+    },
+    {
+      "name": "Forbiddance",
+      "level": 6,
+      "page": 133,
+      "line": 11561,
+      "body_sha256": "9d6429b1aea6f96e6f8f5dcfe108ff8ea2d2bb56027ad91b48f9112056bbff5f"
+    },
+    {
+      "name": "Forcecage",
+      "level": 7,
+      "page": 134,
+      "line": 11589,
+      "body_sha256": "987a1de1830a03dd0dd8b2229ff66b462bb7a407dc766afc19a64d9058f990d9"
+    },
+    {
+      "name": "Foresight",
+      "level": 9,
+      "page": 134,
+      "line": 11617,
+      "body_sha256": "1a127f8a68513cd59bd0f8c7d4ed9fe189e0d363638cac6ca84477909da29331"
+    },
+    {
+      "name": "Freedom of Movement",
+      "level": 4,
+      "page": 134,
+      "line": 11627,
+      "body_sha256": "0ad6e402833f0c0e84bb1132afc2d669812fecac082317e27fb01eebfe3bb237"
+    },
+    {
+      "name": "Freezing Sphere",
+      "level": 6,
+      "page": 134,
+      "line": 11644,
+      "body_sha256": "1f68ed7eff81ee8279c956b8293684d21cc8b0a8e7102949c231b03dd013fb76"
+    },
+    {
+      "name": "Gaseous Form",
+      "level": 3,
+      "page": 134,
+      "line": 11673,
+      "body_sha256": "53b8b32cc81c8a1c539517867f15d3c8c1a6f4b1a4780e0ce4c95d7531bae2bc"
+    },
+    {
+      "name": "Gate",
+      "level": 9,
+      "page": 135,
+      "line": 11698,
+      "body_sha256": "8d66005c6ce7eb86245af3e925791ac221ce4b3c187e8b9bedb4797eed59d965"
+    },
+    {
+      "name": "Geas",
+      "level": 5,
+      "page": 135,
+      "line": 11724,
+      "body_sha256": "610203f3134e6848d76c3e4740f94b80766c0330dcf873f48ad01c8d2867d00a"
+    },
+    {
+      "name": "Gentle Repose",
+      "level": 2,
+      "page": 135,
+      "line": 11749,
+      "body_sha256": "72f180622ffb4cd5c343a0d87ba79e0f6cfba5e392f24575c248fc72ce7673dd"
+    },
+    {
+      "name": "Giant Insect",
+      "level": 4,
+      "page": 135,
+      "line": 11762,
+      "body_sha256": "6e27d708407e23b7b8f6106e66893ac9af8932dd076ae8351786405ffc00873c"
+    },
+    {
+      "name": "Glibness",
+      "level": 8,
+      "page": 136,
+      "line": 11811,
+      "body_sha256": "50199f0fb7056ffd872da995360a207b7e9ff6872945927932e0e7d50abb6af7"
+    },
+    {
+      "name": "Globe of Invulnerability",
+      "level": 6,
+      "page": 136,
+      "line": 11821,
+      "body_sha256": "f17f5aca3c98434a76c154e3c2493cdfa190ff922316a21a313862836eef3b50"
+    },
+    {
+      "name": "Glyph of Warding",
+      "level": 3,
+      "page": 136,
+      "line": 11839,
+      "body_sha256": "27875fe4f8a42bbd86eec2f8e74fc7bc4737fa914a903840572325f1e5f1fd68"
+    },
+    {
+      "name": "Goodberry",
+      "level": 1,
+      "page": 137,
+      "line": 11895,
+      "body_sha256": "07df408d6b561503f17637e77d81aad1fdf46bc97788ed69530efc300d62cb9d"
+    },
+    {
+      "name": "Grease",
+      "level": 1,
+      "page": 137,
+      "line": 11906,
+      "body_sha256": "e0631de96d167b5412b14f4bb4e270badedbd6e4129bd3c149f218a7766e5b51"
+    },
+    {
+      "name": "Greater Invisibility",
+      "level": 4,
+      "page": 137,
+      "line": 11918,
+      "body_sha256": "9e4b66fc1997f6c4f1f8d4fc3bfaae94505841b2f586d6517b0ad06a2d02871f"
+    },
+    {
+      "name": "Greater Restoration",
+      "level": 5,
+      "page": 137,
+      "line": 11925,
+      "body_sha256": "ca98347f8603fb0fbb58006de58fa413e292f0f98122811d7ae0f1b0f3c01501"
+    },
+    {
+      "name": "Guardian of Faith",
+      "level": 4,
+      "page": 137,
+      "line": 11941,
+      "body_sha256": "73b8f4cc4c8723caec6f1d3bfe1a803e0270f8bfa9d1d3ecc6b5f4ce452dc520"
+    },
+    {
+      "name": "Guards and Wards",
+      "level": 6,
+      "page": 137,
+      "line": 11957,
+      "body_sha256": "021a52057b6c70bf3238d4f1a2e2aac38a46db93b39ee03e6494f8cc5a2ba4be"
+    },
+    {
+      "name": "Guidance",
+      "level": 0,
+      "page": 138,
+      "line": 12004,
+      "body_sha256": "d844c7a9a6d1a5c680c6e7057356623a126d19eb0754d4b74603e40a08a1b733"
+    },
+    {
+      "name": "Guiding Bolt",
+      "level": 1,
+      "page": 138,
+      "line": 12013,
+      "body_sha256": "1b0e6118828054d3664a5fb3595afe209fe95a90df506ddd9f637ed39e7dfcda"
+    },
+    {
+      "name": "Gust of Wind",
+      "level": 2,
+      "page": 138,
+      "line": 12024,
+      "body_sha256": "e250e6255bc7969a01417ec41312795906db25902a2d1f3d022a81df927aa0d8"
+    },
+    {
+      "name": "Hallow",
+      "level": 5,
+      "page": 138,
+      "line": 12046,
+      "body_sha256": "3a771ffe8d6480a303ea0ae7b70e4d9488d944a3c6c34c5baf4c117c7d997fdb"
+    },
+    {
+      "name": "Hallucinatory Terrain",
+      "level": 4,
+      "page": 139,
+      "line": 12090,
+      "body_sha256": "8e494e8a4a065591082be0e0c8ffb3444927e11f404e10f0e97b922eb8c143f6"
+    },
+    {
+      "name": "Harm",
+      "level": 6,
+      "page": 139,
+      "line": 12112,
+      "body_sha256": "da36c80592f648d86719d22ad0bb1b2a30afbbc86c824bc1ae731b74f565c94a"
+    },
+    {
+      "name": "Haste",
+      "level": 3,
+      "page": 139,
+      "line": 12124,
+      "body_sha256": "b796674c526120317d1c0b8308f7027e097ebee44d32adfc694141e7deea19cc"
+    },
+    {
+      "name": "Heal",
+      "level": 6,
+      "page": 139,
+      "line": 12139,
+      "body_sha256": "21ff54c54e738d70bc2f2fcc41d0a72e0743c3275e664692b0030266852c2aa6"
+    },
+    {
+      "name": "Healing Word",
+      "level": 1,
+      "page": 139,
+      "line": 12149,
+      "body_sha256": "53facf77c2f11e7639cf6b3e0715260c940b8762742e558525e5dabe1578aaed"
+    },
+    {
+      "name": "Heat Metal",
+      "level": 2,
+      "page": 139,
+      "line": 12159,
+      "body_sha256": "fa0a950c09ea544ea1b3936f144a1692001c196b34a01ea7c067828378c53c60"
+    },
+    {
+      "name": "Hellish Rebuke",
+      "level": 1,
+      "page": 140,
+      "line": 12178,
+      "body_sha256": "207c6a0c3afa1ff7f67aad5fb7cec409f7310325a26d15710b674a66996b3870"
+    },
+    {
+      "name": "Heroes’ Feast",
+      "level": 6,
+      "page": 140,
+      "line": 12189,
+      "body_sha256": "ae00fe248d26b0a41d3ca892501f793e3d46a5a27d98e46d817ffca920485fe3"
+    },
+    {
+      "name": "Heroism",
+      "level": 1,
+      "page": 140,
+      "line": 12207,
+      "body_sha256": "465b4a53cfd64fe5284c19167ee1f8e802138c8cfdfee3f9eeca34a2f2f1b00c"
+    },
+    {
+      "name": "Hex",
+      "level": 1,
+      "page": 140,
+      "line": 12220,
+      "body_sha256": "df12f3cda388af329ebf931ae0502b5d98a19a6e56f52af8e4fc22391e6207e3"
+    },
+    {
+      "name": "Hideous Laughter",
+      "level": 1,
+      "page": 140,
+      "line": 12237,
+      "body_sha256": "f19e7aecb1d0bb0f36194d00ec1932f624ae8a2dd94fa2702e8c0add7e979310"
+    },
+    {
+      "name": "Hold Monster",
+      "level": 5,
+      "page": 140,
+      "line": 12256,
+      "body_sha256": "ddce9980cfe8ee2f348b90d7da75a9b255ad1ea0c91f142cd92822ea52bf2f45"
+    },
+    {
+      "name": "Hold Person",
+      "level": 2,
+      "page": 141,
+      "line": 12271,
+      "body_sha256": "aae731fd6c25b389a33d64f3af3c06d5a2c917aa4d71b7ccce77afa2b6fd2dab"
+    },
+    {
+      "name": "Holy Aura",
+      "level": 8,
+      "page": 141,
+      "line": 12286,
+      "body_sha256": "8a8d0040e7cf8f8d7d9fed3634f1ce8dd6985b0bc9dddf5a737d7373af531658"
+    },
+    {
+      "name": "Hunter’s Mark",
+      "level": 1,
+      "page": 141,
+      "line": 12299,
+      "body_sha256": "3b0fe49e69de7ead35d81cdf685039b1ce31d41238458d91facd84c1ae08a43d"
+    },
+    {
+      "name": "Hypnotic Pattern",
+      "level": 3,
+      "page": 141,
+      "line": 12315,
+      "body_sha256": "453a168655a5dabead240b43d8efe757414e0d6ab6050587615827dd403cc10d"
+    },
+    {
+      "name": "Ice Knife",
+      "level": 1,
+      "page": 141,
+      "line": 12329,
+      "body_sha256": "d5ef8f9f66c561bb8f65e9efab48a25ce854a47850f540fc28811937141c015f"
+    },
+    {
+      "name": "Ice Storm",
+      "level": 4,
+      "page": 141,
+      "line": 12344,
+      "body_sha256": "f2e037a1656e4ae4317e10a28f36b7de43f9153d7288ab2986173fe5d2747cdb"
+    },
+    {
+      "name": "Identify",
+      "level": 1,
+      "page": 142,
+      "line": 12359,
+      "body_sha256": "2025bb96a18f4d737b2ee4253029d147d8c40ab1c0e003e4b2e5bbeea77f4711"
+    },
+    {
+      "name": "Illusory Script",
+      "level": 1,
+      "page": 142,
+      "line": 12375,
+      "body_sha256": "1efb11e213ae61a562348d3b40f4739c2ee79b4390df10a6c78ebd8e73ebc842"
+    },
+    {
+      "name": "Imprisonment",
+      "level": 9,
+      "page": 142,
+      "line": 12396,
+      "body_sha256": "c3d47d4850b945b8a241f9ec0d7e040a641dad5c745ec24f97df8a34246b6d2e"
+    },
+    {
+      "name": "Incendiary Cloud",
+      "level": 8,
+      "page": 142,
+      "line": 12439,
+      "body_sha256": "fd953402921bb2d535e931e1cd6c0e5d6b2c7c4f7e99cf21937c96346d50f0e4"
+    },
+    {
+      "name": "Inflict Wounds",
+      "level": 1,
+      "page": 143,
+      "line": 12457,
+      "body_sha256": "1a4631c5153bc657f0e4c63b4b49db380ecad398770419cb6c9c9145d421020d"
+    },
+    {
+      "name": "Insect Plague",
+      "level": 5,
+      "page": 143,
+      "line": 12467,
+      "body_sha256": "3c3fd34217e384fb29a3f42b00d1a44726c1f1c35b1091c67ecfc88d169888f4"
+    },
+    {
+      "name": "Instant Summons",
+      "level": 6,
+      "page": 143,
+      "line": 12485,
+      "body_sha256": "367312ab3b9a1ac934679a7923c5e732da8f0685b824b119ca738e4b1c093d9a"
+    },
+    {
+      "name": "Irresistible Dance",
+      "level": 6,
+      "page": 143,
+      "line": 12502,
+      "body_sha256": "c0666832de7879627064169fff9621edbdf23a1d344971e7a5a15d04dd65afe6"
+    },
+    {
+      "name": "Invisibility",
+      "level": 2,
+      "page": 143,
+      "line": 12521,
+      "body_sha256": "c161843fcc86beec97376c4c790d77416fd984ef42a89c3e68853d2f0167eb9a"
+    },
+    {
+      "name": "Jump",
+      "level": 1,
+      "page": 143,
+      "line": 12533,
+      "body_sha256": "74e5149b5098fe7446df95ef3ef64bdd23fefe7de49b77d67f03a66d1bffaa13"
+    },
+    {
+      "name": "Knock",
+      "level": 2,
+      "page": 143,
+      "line": 12546,
+      "body_sha256": "4da42a5511abfaa432d0fb4d673bd236d1d762f848370cd85513794245ab2245"
+    },
+    {
+      "name": "Legend Lore",
+      "level": 5,
+      "page": 144,
+      "line": 12564,
+      "body_sha256": "0d9eca97d185c89babf27d3cd3b2c154f682df22cb045d00efc30d94671d739a"
+    },
+    {
+      "name": "Lesser Restoration",
+      "level": 2,
+      "page": 144,
+      "line": 12580,
+      "body_sha256": "1da78392edc1b9006bffc26ca987cdc5199385e8db5107e8208dd009442c9e9d"
+    },
+    {
+      "name": "Levitate",
+      "level": 2,
+      "page": 144,
+      "line": 12589,
+      "body_sha256": "20365e640e51818fa0cda79a81a675fc48355f702bfcf2db952051b134bb5190"
+    },
+    {
+      "name": "Light",
+      "level": 0,
+      "page": 144,
+      "line": 12611,
+      "body_sha256": "073c48c36bc9a8923f5f72016953b31f97ed81bcfefda458bf5dc415ca0b4673"
+    },
+    {
+      "name": "Lightning Bolt",
+      "level": 3,
+      "page": 144,
+      "line": 12624,
+      "body_sha256": "984d17509f9e95483707105848b5fcf595e850dcd2c50334c46db7e1624611dc"
+    },
+    {
+      "name": "Locate Animals or Plants",
+      "level": 2,
+      "page": 144,
+      "line": 12635,
+      "body_sha256": "6d80aaa14cac0094cf4f3f5ccb31386a263528fe63da0f3882ab71d59e3e29b8"
+    },
+    {
+      "name": "Locate Creature",
+      "level": 4,
+      "page": 145,
+      "line": 12644,
+      "body_sha256": "0746522a5a472c3447bc9a2a69bf2e508b6a05aa08d159edfe712724acf1126c"
+    },
+    {
+      "name": "Locate Object",
+      "level": 2,
+      "page": 145,
+      "line": 12666,
+      "body_sha256": "976c5efbfb68ce41ef1ad75f91d27f7378a5e2b452f7b96f166a4de38f84da39"
+    },
+    {
+      "name": "Longstrider",
+      "level": 1,
+      "page": 145,
+      "line": 12685,
+      "body_sha256": "1c8b4f15108865068b21aa07b40eeb20b174b6af434ce9e4151eba89f3e66d80"
+    },
+    {
+      "name": "Mage Armor",
+      "level": 1,
+      "page": 145,
+      "line": 12696,
+      "body_sha256": "8fa168e51979a0c83e202912ebe0a3dee540fe6e15a9fe0a57d071f47cdada23"
+    },
+    {
+      "name": "Mage Hand",
+      "level": 0,
+      "page": 145,
+      "line": 12705,
+      "body_sha256": "20f9d0951f32eeee8ba362a3db21121753361970c861d76ee134bd5260f7ae15"
+    },
+    {
+      "name": "Magic Circle",
+      "level": 3,
+      "page": 145,
+      "line": 12722,
+      "body_sha256": "4e1661a3e4e10ca31b2301d76b5c8df165b7ba7144082cb90a30c71703bf1d22"
+    },
+    {
+      "name": "Magic Jar",
+      "level": 6,
+      "page": 146,
+      "line": 12749,
+      "body_sha256": "d90f944a66bfdab180a367db274aaf470d4ed3d439493b568f83d152ca0e25f7"
+    },
+    {
+      "name": "Magic Missile",
+      "level": 1,
+      "page": 146,
+      "line": 12789,
+      "body_sha256": "0f691800c3e9c5664ebd220ade84cb02ffff15989cecfa111fb365835724019c"
+    },
+    {
+      "name": "Magic Mouth",
+      "level": 2,
+      "page": 146,
+      "line": 12802,
+      "body_sha256": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0"
+    },
+    {
+      "name": "Magic Weapon",
+      "level": 2,
+      "page": 146,
+      "line": 12830,
+      "body_sha256": "26e63b0335e54fa9f5872629b2b252eff2cc9d7bc69d91ceb44a35b294dcd27b"
+    },
+    {
+      "name": "Magnificent Mansion",
+      "level": 7,
+      "page": 147,
+      "line": 12843,
+      "body_sha256": "d8b79241e192de6fd2402ac94157d3535b966c86cb5c1d89779884d4cdd05ec6"
+    },
+    {
+      "name": "Major Image",
+      "level": 3,
+      "page": 147,
+      "line": 12876,
+      "body_sha256": "0f0c3d72755c81fd4eb0f67b1d118594f6f3cba3161e04c2550932c625a5306a"
+    },
+    {
+      "name": "Mass Cure Wounds",
+      "level": 5,
+      "page": 147,
+      "line": 12906,
+      "body_sha256": "2ab1f2a30ef25a6360b605f9dc8c16d816644b70a2eeb0cdde5d79347c18b810"
+    },
+    {
+      "name": "Mass Heal",
+      "level": 9,
+      "page": 147,
+      "line": 12917,
+      "body_sha256": "11c3ada84913edcf9ddf1e7e46b987ed209a5a288701cb4b1e00395370514125"
+    },
+    {
+      "name": "Mass Healing Word",
+      "level": 3,
+      "page": 148,
+      "line": 12929,
+      "body_sha256": "f69b1809226ad41d35de8ef0a219aeab9a67939bd7f0354c17fbf4acbb3da362"
+    },
+    {
+      "name": "Mass Suggestion",
+      "level": 6,
+      "page": 148,
+      "line": 12939,
+      "body_sha256": "338af64735a9b877f6be16a6bc9593fb5e03871e147ca1979fb89089930633cc"
+    },
+    {
+      "name": "Maze",
+      "level": 8,
+      "page": 148,
+      "line": 12964,
+      "body_sha256": "63f992299acc3d43915044e76873c7d719786dc00765c9187eb08c128e276c1c"
+    },
+    {
+      "name": "Meld into Stone",
+      "level": 3,
+      "page": 148,
+      "line": 12978,
+      "body_sha256": "df253851fe506972540bee963b371398ab43f06096c6fd106a726fcc828522cd"
+    },
+    {
+      "name": "Mending",
+      "level": 0,
+      "page": 148,
+      "line": 13005,
+      "body_sha256": "ef7396f774552d6d76c86bba757b4c685912d33f37fe8a35ed30e9dfa1ba524b"
+    },
+    {
+      "name": "Message",
+      "level": 0,
+      "page": 148,
+      "line": 13020,
+      "body_sha256": "94a57586472ac8d8443f996146d2c143844404426d654ee487fb9049b27de533"
+    },
+    {
+      "name": "Meteor Swarm",
+      "level": 9,
+      "page": 149,
+      "line": 13035,
+      "body_sha256": "7a2130397eeb24f5f640007c4363fb84df66b787b29129e181a7c62c1e650d47"
+    },
+    {
+      "name": "Mind Blank",
+      "level": 8,
+      "page": 149,
+      "line": 13052,
+      "body_sha256": "523c7e0715ca85c5cf7f5163d69623384372ab7b8538123745b74aeddb255952"
+    },
+    {
+      "name": "Mind Spike",
+      "level": 2,
+      "page": 149,
+      "line": 13066,
+      "body_sha256": "a792c66144210f0e78191d9fcbead32d17b393d5761625c4fb0963ca511dcb17"
+    },
+    {
+      "name": "Minor Illusion",
+      "level": 0,
+      "page": 149,
+      "line": 13084,
+      "body_sha256": "93170c3c66d9fbb008f831d0594537274be552571da886e033c4087f67f8e87c"
+    },
+    {
+      "name": "Mirage Arcane",
+      "level": 7,
+      "page": 149,
+      "line": 13110,
+      "body_sha256": "d93e422b5077567fde90c8b38f950cc51f2c50e0d54694c43c1f91660a151d50"
+    },
+    {
+      "name": "Mirror Image",
+      "level": 2,
+      "page": 150,
+      "line": 13136,
+      "body_sha256": "5e31a0533fd9a07384ace82e3f4eae5821add82c9e3a4bcc6e33b16fccca9648"
+    },
+    {
+      "name": "Mislead",
+      "level": 5,
+      "page": 150,
+      "line": 13155,
+      "body_sha256": "7a0766d4a6695f01d787287c984103c4d3e1060947ca2f156aba5b90e2a6f241"
+    },
+    {
+      "name": "Misty Step",
+      "level": 2,
+      "page": 150,
+      "line": 13171,
+      "body_sha256": "fa71c62ef35d87ed7c87006f9498ff2ac7af01c5857b38778bec842d7d1331c7"
+    },
+    {
+      "name": "Modify Memory",
+      "level": 5,
+      "page": 150,
+      "line": 13179,
+      "body_sha256": "d2f1d09a22b71f0b7d41eba5bfc6fb526e80504791c9755272258910b427d71b"
+    },
+    {
+      "name": "Moonbeam",
+      "level": 2,
+      "page": 150,
+      "line": 13220,
+      "body_sha256": "3e8d49e0f7177a8672169646f5c0f88426b149b29232214e4eb9e2adba1f0067"
+    },
+    {
+      "name": "Move Earth",
+      "level": 6,
+      "page": 151,
+      "line": 13241,
+      "body_sha256": "ba5bc45934f53dbf74c262f971a472cd902aa3fa8afb69d81ba81d2d4d5bd32f"
+    },
+    {
+      "name": "Nondetection",
+      "level": 3,
+      "page": 151,
+      "line": 13270,
+      "body_sha256": "4f07b02ff11bf61e122c794d50d52b1d354f0af10ad0a4f9fc1e1675fac10ad7"
+    },
+    {
+      "name": "Passwall",
+      "level": 5,
+      "page": 151,
+      "line": 13283,
+      "body_sha256": "c727f4f88eafbc8f0a1601137226238a8027c5cbd6d702d460bc976889c590c4"
+    },
+    {
+      "name": "Pass without Trace",
+      "level": 2,
+      "page": 151,
+      "line": 13298,
+      "body_sha256": "68b06279a1f031bb6976a24099a1972bce808c44b3c27a6f9f61b7c67d228407"
+    },
+    {
+      "name": "Phantasmal Force",
+      "level": 2,
+      "page": 151,
+      "line": 13306,
+      "body_sha256": "185c36a4db855231a3b09b9be9a0654cbbc63d1d43a5e2e0b9292465f2f37180"
+    },
+    {
+      "name": "Phantasmal Killer",
+      "level": 4,
+      "page": 152,
+      "line": 13334,
+      "body_sha256": "bb87e6a507e887bfc64b027883bb9b6b7745806ae0c31e09f1c5c11b1b240a14"
+    },
+    {
+      "name": "Phantom Steed",
+      "level": 3,
+      "page": 152,
+      "line": 13349,
+      "body_sha256": "1e2c47c42d18c7b0bf70f1380055d71acb2fc4b0a38723597d999e0e5d889538"
+    },
+    {
+      "name": "Planar Ally",
+      "level": 6,
+      "page": 152,
+      "line": 13369,
+      "body_sha256": "024ca906ea8f17d796ab7fd7d6c729b30fc3c562c3255b3484e7ddb153e2534f"
+    },
+    {
+      "name": "Planar Binding",
+      "level": 5,
+      "page": 152,
+      "line": 13412,
+      "body_sha256": "95df44263a2bd3ac1f07666f60021c961bd14d3f22aec22b64dd01ec4af257f6"
+    },
+    {
+      "name": "Plane Shift",
+      "level": 7,
+      "page": 153,
+      "line": 13442,
+      "body_sha256": "40b2accd4cc8b82dc5d9e808c54e5fbecd0cd9385827fef70cfce462a6f9e36a"
+    },
+    {
+      "name": "Plant Growth",
+      "level": 3,
+      "page": 153,
+      "line": 13460,
+      "body_sha256": "0e376212c68cfc324ca710b5674f954868c7f0a8d16197e8dbbe3c92fc617be8"
+    },
+    {
+      "name": "Poison Spray",
+      "level": 0,
+      "page": 153,
+      "line": 13480,
+      "body_sha256": "df866c31a3e256950cfb5c27aef34f53c3308f73a66ca6688d0946a8d0917b6c"
+    },
+    {
+      "name": "Polymorph",
+      "level": 4,
+      "page": 153,
+      "line": 13493,
+      "body_sha256": "e7dc1a7b1e8ff31c8a1c3774c3872736c8001c970d9e2f9d017d5d8de9cab9a3"
+    },
+    {
+      "name": "Power Word Heal",
+      "level": 9,
+      "page": 154,
+      "line": 13520,
+      "body_sha256": "34e938d966a5793537ef6262932281c8d83297a729e3217c03489e2ede31b948"
+    },
+    {
+      "name": "Power Word Kill",
+      "level": 9,
+      "page": 154,
+      "line": 13531,
+      "body_sha256": "45f88e4bab0c7fa52aa14d447e001806f43ace912dbe82c3d09363f35a07f4f8"
+    },
+    {
+      "name": "Power Word Stun",
+      "level": 8,
+      "page": 154,
+      "line": 13541,
+      "body_sha256": "2146314b4d9b4d4871ca8bd7113ef8ac1ce26157d3152d6006c316b6e2a30f3d"
+    },
+    {
+      "name": "Prayer of Healing",
+      "level": 2,
+      "page": 154,
+      "line": 13554,
+      "body_sha256": "fd0df00cfdaf3ed9b6a03304107390c6dbf574f9bef34c924a1642fea74e5e2d"
+    },
+    {
+      "name": "Prestidigitation",
+      "level": 0,
+      "page": 154,
+      "line": 13566,
+      "body_sha256": "5534f4c69a03d731a4c6a9bc8fd28428902400cff12734201983417fd33d77af"
+    },
+    {
+      "name": "Prismatic Spray",
+      "level": 7,
+      "page": 154,
+      "line": 13592,
+      "body_sha256": "f8cbc795ecdaceea92e3ae4e252af1fc9968e89af240ee43071a3bd23992262a"
+    },
+    {
+      "name": "Prismatic Wall",
+      "level": 9,
+      "page": 155,
+      "line": 13628,
+      "body_sha256": "df4b42e6c311f0dbe302693c6c5f9072fa8b22abd1c7481070ae940d2858f724"
+    },
+    {
+      "name": "Private Sanctum",
+      "level": 4,
+      "page": 156,
+      "line": 13699,
+      "body_sha256": "c3b4ed62e3a0d9680db3de92e41887f7e2a49ec12812c2bc2ecc37ab0d928408"
+    },
+    {
+      "name": "Produce Flame",
+      "level": 0,
+      "page": 156,
+      "line": 13727,
+      "body_sha256": "75e847e25a4c26de140469f64e93e663626e597585746b64704dc0662c678313"
+    },
+    {
+      "name": "Programmed Illusion",
+      "level": 6,
+      "page": 156,
+      "line": 13744,
+      "body_sha256": "78d17b6aa5a0247123cbde28215db5af67d5f1f0d8c5088a283de52cc9c4450a"
+    },
+    {
+      "name": "Project Image",
+      "level": 7,
+      "page": 156,
+      "line": 13774,
+      "body_sha256": "17f2447de99bdb0ce125ff0ef57c3bc1a6c0c96ae028be5a7193cdbc2c3e83bf"
+    },
+    {
+      "name": "Protection from Energy",
+      "level": 3,
+      "page": 157,
+      "line": 13800,
+      "body_sha256": "f97f64285bb8a774382d142c640cb1c02748fe8f5ebf42f7acaf2b87e13cde4e"
+    },
+    {
+      "name": "Protection from Evil and Good",
+      "level": 1,
+      "page": 157,
+      "line": 13810,
+      "body_sha256": "b888ba72de84761569222ad7813068f7ddcbd5ce7b5c6e16756c3b7e74cefa4c"
+    },
+    {
+      "name": "Protection from Poison",
+      "level": 2,
+      "page": 157,
+      "line": 13826,
+      "body_sha256": "e658d3eac1b33c9aa6a20770a078a87b0e24fa49f1e4a79333caeccdec619c72"
+    },
+    {
+      "name": "Purify Food and Drink",
+      "level": 1,
+      "page": 157,
+      "line": 13834,
+      "body_sha256": "1e64c1d386b7aba93ced8ab4ef50f3572cbba1af6f24175ba5ea91249ec58a1a"
+    },
+    {
+      "name": "Raise Dead",
+      "level": 5,
+      "page": 157,
+      "line": 13843,
+      "body_sha256": "00b67f918144436ded9a01b9c6b7f9713f2a7e489531233507deba29c7fe39d1"
+    },
+    {
+      "name": "Ray of Enfeeblement",
+      "level": 2,
+      "page": 157,
+      "line": 13861,
+      "body_sha256": "d05feb22a3b228153949caf4f7688d4b777e3da76ace1785aea087f882bac609"
+    },
+    {
+      "name": "Ray of Frost",
+      "level": 0,
+      "page": 157,
+      "line": 13876,
+      "body_sha256": "acbf5544ece9d8b267804f550f65e342733ad0d02eb95f8ee6c0e11d30f3cb35"
+    },
+    {
+      "name": "Regenerate",
+      "level": 7,
+      "page": 158,
+      "line": 13889,
+      "body_sha256": "2f021d202c59a84b2a671bd8319214bca5876f5c18595a5073c1b9ea20d04b04"
+    },
+    {
+      "name": "Ray of Sickness",
+      "level": 1,
+      "page": 158,
+      "line": 13899,
+      "body_sha256": "686cb0ee710840a6c57f058345bd04e3a4e276d24d67aba69860e86384c7c30e"
+    },
+    {
+      "name": "Reincarnate",
+      "level": 5,
+      "page": 158,
+      "line": 13910,
+      "body_sha256": "ba94a7b7a9cfba495972ad193a70028ed8a00a039817f37e08928f11d33d64d9"
+    },
+    {
+      "name": "Remove Curse",
+      "level": 3,
+      "page": 158,
+      "line": 13933,
+      "body_sha256": "64772b8a518ce400cb6e68491b281aabb1dd86e8e4a2e65722ee129f70800ffd"
+    },
+    {
+      "name": "Resilient Sphere",
+      "level": 4,
+      "page": 158,
+      "line": 13944,
+      "body_sha256": "7f76440278c4297ff56dcf7b04bb09fa4139f4c55395490a94ffc5278bf47195"
+    },
+    {
+      "name": "Resistance",
+      "level": 0,
+      "page": 158,
+      "line": 13968,
+      "body_sha256": "f13455e2f9b58c45a738c097b310d12495a006028c9720b8047d941dd52e885b"
+    },
+    {
+      "name": "Resurrection",
+      "level": 7,
+      "page": 158,
+      "line": 13979,
+      "body_sha256": "4a21839dd57dbb78bf21199233f70230114dce4082848474d3a585b3696cbb7b"
+    },
+    {
+      "name": "Reverse Gravity",
+      "level": 7,
+      "page": 159,
+      "line": 14001,
+      "body_sha256": "34eda29ce98ab3f2cbcc9de5c8a05f7ece9ba055ee5d33ac402fb29b898d0054"
+    },
+    {
+      "name": "Revivify",
+      "level": 3,
+      "page": 159,
+      "line": 14020,
+      "body_sha256": "fee33d529cd4668081f0bcd148c94efa3b6ca0aea20b90eeb7ee742eb748e4f3"
+    },
+    {
+      "name": "Rope Trick",
+      "level": 2,
+      "page": 159,
+      "line": 14031,
+      "body_sha256": "0967df1adf8eb7b37fb6de2fab37f4bd0d65b5c296eb36d928a759a543fa3cf9"
+    },
+    {
+      "name": "Sacred Flame",
+      "level": 0,
+      "page": 159,
+      "line": 14048,
+      "body_sha256": "7832dc7aa85ff8007830b96a27c183189c8e7ae97eb77c24115f5e89f70d3fce"
+    },
+    {
+      "name": "Sanctuary",
+      "level": 1,
+      "page": 159,
+      "line": 14061,
+      "body_sha256": "172c6947953cab15ba8a03206ccbfaf563010621e778c33d1b6c4ec57f0b9943"
+    },
+    {
+      "name": "Scorching Ray",
+      "level": 2,
+      "page": 159,
+      "line": 14074,
+      "body_sha256": "18a95736eff0af43acf5cb85f55c9aa982f0e09e16766a596bf4d53d9f9e8ece"
+    },
+    {
+      "name": "Scrying",
+      "level": 5,
+      "page": 160,
+      "line": 14086,
+      "body_sha256": "7077a3253c76ef50270393daf3e1d036c3f5d8de649f5efde7fcfc642e1bdd75"
+    },
+    {
+      "name": "Searing Smite",
+      "level": 1,
+      "page": 160,
+      "line": 14121,
+      "body_sha256": "fe5e310e5c47bfbf2ec0de2cea083f3eee00d8bbaedc6285039060b7f27b4c1a"
+    },
+    {
+      "name": "Secret Chest",
+      "level": 4,
+      "page": 160,
+      "line": 14134,
+      "body_sha256": "5b95273e83d87d583d4c845c3e15b6f298fbe9d8c0981aabc7630b389907df0a"
+    },
+    {
+      "name": "See Invisibility",
+      "level": 2,
+      "page": 160,
+      "line": 14159,
+      "body_sha256": "fbf249c715f39fd01d3f5249f32b0f5450b04c51ea3a541e5cfded7b52128104"
+    },
+    {
+      "name": "Seeming",
+      "level": 5,
+      "page": 160,
+      "line": 14169,
+      "body_sha256": "6be6c76dc0f79297abf221d2c5e8f5defa3548546f6d6eca2f4e20aa1611215b"
+    },
+    {
+      "name": "Sending",
+      "level": 3,
+      "page": 161,
+      "line": 14194,
+      "body_sha256": "591f947d79ed5b032e1c178d25af1527fa260fac29da0988aa7ebd42ac3b7235"
+    },
+    {
+      "name": "Sequester",
+      "level": 7,
+      "page": 161,
+      "line": 14217,
+      "body_sha256": "11f10141cb39dcc6a8766dd2e4873d6d48958f49f6359f23d9e2c8740d0905dc"
+    },
+    {
+      "name": "Shapechange",
+      "level": 9,
+      "page": 161,
+      "line": 14235,
+      "body_sha256": "ad27d29c20922a447194e841e6d109f890ffffff51699449fd28e5ae186b4a5c"
+    },
+    {
+      "name": "Shatter",
+      "level": 2,
+      "page": 161,
+      "line": 14259,
+      "body_sha256": "975468546723348f9e473872af6249fdfacc6199d306e76c09c70cd9585985e4"
+    },
+    {
+      "name": "Shield",
+      "level": 1,
+      "page": 161,
+      "line": 14272,
+      "body_sha256": "630c5078e0c3e01b11537538d62b7be02056916e791e8d6a93f5e19870b43bbd"
+    },
+    {
+      "name": "Shield of Faith",
+      "level": 1,
+      "page": 162,
+      "line": 14284,
+      "body_sha256": "dca9e1d95007506f0c96cc7231a08bf5e9fc3e1ba7aeea1ebb433ba5c108c410"
+    },
+    {
+      "name": "Shillelagh",
+      "level": 0,
+      "page": 162,
+      "line": 14293,
+      "body_sha256": "a517ead419ca4af3779a13fa5c0dfc4fbc44f9885968b93c463adb2409cc463f"
+    },
+    {
+      "name": "Shining Smite",
+      "level": 2,
+      "page": 162,
+      "line": 14311,
+      "body_sha256": "e2a479b7ffd397db208926918614fc2f69f7a53a774bb3c971d3d618628ae1fb"
+    },
+    {
+      "name": "Shocking Grasp",
+      "level": 0,
+      "page": 162,
+      "line": 14323,
+      "body_sha256": "43f1c19233d4eb952b4594f05141000ca55bb5818733ff771437c3e5ada67b19"
+    },
+    {
+      "name": "Silence",
+      "level": 2,
+      "page": 162,
+      "line": 14336,
+      "body_sha256": "acf94c7b9c6d44da924c8bd76584d0dd0e37f43306caa9d713279b4e25730747"
+    },
+    {
+      "name": "Silent Image",
+      "level": 1,
+      "page": 162,
+      "line": 14349,
+      "body_sha256": "c2f0ab470e6b448240713c0a30c997a3c49610f3bb4a13ec11dbdfc629bb894b"
+    },
+    {
+      "name": "Simulacrum",
+      "level": 7,
+      "page": 162,
+      "line": 14374,
+      "body_sha256": "9a69fec8f0970ebc34b362e5232951459ea40ad3b03a7ebdd441fe84ef0d5022"
+    },
+    {
+      "name": "Sleep",
+      "level": 1,
+      "page": 163,
+      "line": 14399,
+      "body_sha256": "0bf26f913569a17a2228a162f9ee7b616a32c3e38908852704d855b5b32f7372"
+    },
+    {
+      "name": "Sleet Storm",
+      "level": 3,
+      "page": 163,
+      "line": 14413,
+      "body_sha256": "d50dc50116f15a544ded9abfa900ab6a5e77cf9f5d94f0645388b4685bacb043"
+    },
+    {
+      "name": "Slow",
+      "level": 3,
+      "page": 163,
+      "line": 14428,
+      "body_sha256": "8c75c8c2abc73fcbea3c69d87b16af887377d682c387ac57cb46e6ca82d35f5d"
+    },
+    {
+      "name": "Sorcerous Burst",
+      "level": 0,
+      "page": 163,
+      "line": 14448,
+      "body_sha256": "a6861f5b314a1a32a8e9b32f14076c5b057c418ea5ed49294ea6c9d8ff3da902"
+    },
+    {
+      "name": "Spare the Dying",
+      "level": 0,
+      "page": 163,
+      "line": 14466,
+      "body_sha256": "0c376f4f474c7fb891414aa31b4c2890d82d4f364255548ecc6dd16a80772c4c"
+    },
+    {
+      "name": "Speak with Animals",
+      "level": 1,
+      "page": 164,
+      "line": 14477,
+      "body_sha256": "bb2656f63664b99cdc33b71a74071dd474465bc4e4410ef5cfb5fc195439e386"
+    },
+    {
+      "name": "Speak with Dead",
+      "level": 3,
+      "page": 164,
+      "line": 14491,
+      "body_sha256": "14543b820b9745aa91637691854e2bb2c7501012dcda99ae1544bbe83f788c0d"
+    },
+    {
+      "name": "Speak with Plants",
+      "level": 3,
+      "page": 164,
+      "line": 14512,
+      "body_sha256": "7fdc86f6657e45b529d04dc29c1cc61db4126dac912f1a6dba6ae54fc5797ed4"
+    },
+    {
+      "name": "Spider Climb",
+      "level": 2,
+      "page": 164,
+      "line": 14532,
+      "body_sha256": "c3011a94495ca4c7803f253e9f6debfe8b8510fb3b0cb7e37ad8bf014d782787"
+    },
+    {
+      "name": "Spike Growth",
+      "level": 2,
+      "page": 164,
+      "line": 14546,
+      "body_sha256": "184dd1f3a482f6d5e6f809144f810a55281d4a3c025d0cd73ce4be88b3b17db8"
+    },
+    {
+      "name": "Spirit Guardians",
+      "level": 3,
+      "page": 164,
+      "line": 14564,
+      "body_sha256": "12f7a055386d475f7b93a83b93193d5361d0363585a519956bb9c2f0372a48c0"
+    },
+    {
+      "name": "Spiritual Weapon",
+      "level": 2,
+      "page": 165,
+      "line": 14582,
+      "body_sha256": "2efbaf2fd3d0a3b9d9bb3d98c4b6b15af6be723a90e7d33ebe3ec6536c093e37"
+    },
+    {
+      "name": "Starry Wisp",
+      "level": 0,
+      "page": 165,
+      "line": 14599,
+      "body_sha256": "e82a066ebc469f68625b4c8f085727c51356fc352ddf07314fd0ef1a3fb5cd5e"
+    },
+    {
+      "name": "Stinking Cloud",
+      "level": 3,
+      "page": 165,
+      "line": 14613,
+      "body_sha256": "7c0130717d3018ac5cfa8e902850eb4859f5f842ac0b215a00280c677016a0bf"
+    },
+    {
+      "name": "Stone Shape",
+      "level": 4,
+      "page": 165,
+      "line": 14627,
+      "body_sha256": "694b602ea229f374ffcec9093aac8a4457aac8bbcd34708b6d8a18d0052c8a55"
+    },
+    {
+      "name": "Stoneskin",
+      "level": 4,
+      "page": 165,
+      "line": 14640,
+      "body_sha256": "d847c79ee1cf66b35274358c66df6a5517d5742638779e52b9fef80c32c55fa1"
+    },
+    {
+      "name": "Storm of Vengeance",
+      "level": 9,
+      "page": 165,
+      "line": 14650,
+      "body_sha256": "79b7af281002d48f974db00b4c50b5c9b9ad1d910e5a3af4493a4acad3a6314e"
+    },
+    {
+      "name": "Suggestion",
+      "level": 2,
+      "page": 166,
+      "line": 14677,
+      "body_sha256": "9751dc59b3173880dd5ffae289b886db01f1ca817884606953947635460f6619"
+    },
+    {
+      "name": "Summon Dragon",
+      "level": 5,
+      "page": 166,
+      "line": 14698,
+      "body_sha256": "dce109370e03cb4dd21b9c1a9266978323d0efcbff114ad1c64fa54b7882ce59"
+    },
+    {
+      "name": "Sunbeam",
+      "level": 6,
+      "page": 166,
+      "line": 14747,
+      "body_sha256": "d7205f7eed73c36846530d6427fd1dcb75f3b951a298fc28ba549e983d65b592"
+    },
+    {
+      "name": "Sunburst",
+      "level": 8,
+      "page": 167,
+      "line": 14765,
+      "body_sha256": "8a0475a6daaafdee7364cf8ae067cf370cbdace51eb37505253045794e7226be"
+    },
+    {
+      "name": "Symbol",
+      "level": 7,
+      "page": 167,
+      "line": 14782,
+      "body_sha256": "dfc3ece2421f7e0b97fc50812dbe84c32d9905378a9a5741a3f0745b3d22ee71"
+    },
+    {
+      "name": "Telekinesis",
+      "level": 5,
+      "page": 167,
+      "line": 14842,
+      "body_sha256": "d3f82c5d21ccfb9f2b2a4c00b24b2ea50cc3fc168615de376c2ee51dd709c945"
+    },
+    {
+      "name": "Telepathic Bond",
+      "level": 5,
+      "page": 168,
+      "line": 14873,
+      "body_sha256": "2e3adeb1c85b685df8fd3da4f641cd2c4f7866f34629b44564583963f38aff96"
+    },
+    {
+      "name": "Teleport",
+      "level": 7,
+      "page": 168,
+      "line": 14887,
+      "body_sha256": "c532020059ac049d17f8710ca57d77ec2c9f57862236a5c216c6403c06ec411c"
+    },
+    {
+      "name": "Teleportation Circle",
+      "level": 5,
+      "page": 168,
+      "line": 14950,
+      "body_sha256": "c4b3684261a61e2beac9e9270caac54b8568cd0c591149f8decb0a6b2a2a57d4"
+    },
+    {
+      "name": "Thaumaturgy",
+      "level": 0,
+      "page": 169,
+      "line": 14977,
+      "body_sha256": "d2364dc16642aced4f66a1d8840a9b3edd638c1048bdc831ee4b86bfebc16581"
+    },
+    {
+      "name": "Thunderwave",
+      "level": 1,
+      "page": 169,
+      "line": 14999,
+      "body_sha256": "0dd5bc79939afd8f7e521d74bb7e2d6626d386254650acc75b769bf7a24d1d9e"
+    },
+    {
+      "name": "Time Stop",
+      "level": 9,
+      "page": 169,
+      "line": 15015,
+      "body_sha256": "603a536b8575c799234370a201b25f3f1650ea473b5389283e71a2dfacf5f338"
+    },
+    {
+      "name": "Tiny Hut",
+      "level": 3,
+      "page": 169,
+      "line": 15030,
+      "body_sha256": "0cb3871c7b062acaefcd2f6cf808ae8083ea73acd9884793b96a2e1a27cb52e3"
+    },
+    {
+      "name": "Tongues",
+      "level": 3,
+      "page": 169,
+      "line": 15052,
+      "body_sha256": "cbfde2e8467b23e0d6270d8a04f33d2bc903f05bd6036f5cb67ba330d72a1db4"
+    },
+    {
+      "name": "Transport via Plants",
+      "level": 6,
+      "page": 170,
+      "line": 15064,
+      "body_sha256": "d9dbeb9dfa4579244e101a75762564a6335a9b65d0441c7c8911e8f69c4c42dd"
+    },
+    {
+      "name": "Tree Stride",
+      "level": 5,
+      "page": 170,
+      "line": 15075,
+      "body_sha256": "e90fd5855f58bfd7d73371d3138c47fbab4796b0aef834cdb69d555f9aaf374a"
+    },
+    {
+      "name": "True Polymorph",
+      "level": 9,
+      "page": 170,
+      "line": 15095,
+      "body_sha256": "74398e38777b2b64ae74e29347aad80b35b7a45fe2d146c5d4d345634b4ef87f"
+    },
+    {
+      "name": "True Resurrection",
+      "level": 9,
+      "page": 170,
+      "line": 15147,
+      "body_sha256": "272b6c1378788dec28080f3b9fc7937c2fc7692dc4ed16f300a55cd86da9356f"
+    },
+    {
+      "name": "True Seeing",
+      "level": 6,
+      "page": 171,
+      "line": 15168,
+      "body_sha256": "0c4a8943fa2c7de75698a90fb457c09f3eb78ab3b7fe00f606ec89f59e5a7d88"
+    },
+    {
+      "name": "True Strike",
+      "level": 0,
+      "page": 171,
+      "line": 15178,
+      "body_sha256": "3362afb3c4dec50c319156127c9e7b649e91e29c9ad904b06d3d6338ea587259"
+    },
+    {
+      "name": "Tsunami",
+      "level": 8,
+      "page": 171,
+      "line": 15192,
+      "body_sha256": "0b84f6d93cebcafdcb05544f5f3d607436329f92d77b915609889e2e664de84a"
+    },
+    {
+      "name": "Unseen Servant",
+      "level": 1,
+      "page": 171,
+      "line": 15220,
+      "body_sha256": "f650682363b2b72639401347b5415a21fbc9d9e2fab4bd98bf4da8930e94c4b4"
+    },
+    {
+      "name": "Vampiric Touch",
+      "level": 3,
+      "page": 171,
+      "line": 15245,
+      "body_sha256": "199cf974fae79b313e901e6cfc1143495d84c6c77e06a9d286e335003e1fa238"
+    },
+    {
+      "name": "Vicious Mockery",
+      "level": 0,
+      "page": 171,
+      "line": 15260,
+      "body_sha256": "1d105f797ba2775f90031bb5c93a292dad77f8b61f74c1f25fefbc8d6f41af3a"
+    },
+    {
+      "name": "Vitriolic Sphere",
+      "level": 4,
+      "page": 172,
+      "line": 15275,
+      "body_sha256": "cff323f8fda3e0dc9ce2c213d78aaaee71ab3bc761880b1f9992959cc86019b3"
+    },
+    {
+      "name": "Wall of Fire",
+      "level": 4,
+      "page": 172,
+      "line": 15290,
+      "body_sha256": "b823761c5054948818e024775af1ef9c834e6c8ec0827b2594b246cbe153f116"
+    },
+    {
+      "name": "Wall of Force",
+      "level": 5,
+      "page": 172,
+      "line": 15312,
+      "body_sha256": "5949cacd8bae36fc7b5cbd2b945857661885bae56bb5e99513e4ca1083e4d028"
+    },
+    {
+      "name": "Wall of Ice",
+      "level": 6,
+      "page": 172,
+      "line": 15336,
+      "body_sha256": "674421efad6bc05b1fbeeb39ed1344c24f8517eaaeed133ca299b1f9d7da52f7"
+    },
+    {
+      "name": "Wall of Stone",
+      "level": 5,
+      "page": 173,
+      "line": 15368,
+      "body_sha256": "409b15415fe8e07f904447454ee454be8dbd8006a9b616643999aa63b490082b"
+    },
+    {
+      "name": "Wall of Thorns",
+      "level": 6,
+      "page": 173,
+      "line": 15401,
+      "body_sha256": "98afb4e4fb9e92317cec3ba9a850eec59c3abcd4722426da7ca76073bba56ffd"
+    },
+    {
+      "name": "Warding Bond",
+      "level": 2,
+      "page": 173,
+      "line": 15429,
+      "body_sha256": "81941f005a019698af46d35f30a0afe20a613d8cc941a0c6deae0f4d95aa5cc6"
+    },
+    {
+      "name": "Water Breathing",
+      "level": 3,
+      "page": 173,
+      "line": 15448,
+      "body_sha256": "d17ec1b9321cde7953f06117f3328143e8780753ad7cda35370190fc0634081f"
+    },
+    {
+      "name": "Water Walk",
+      "level": 3,
+      "page": 173,
+      "line": 15458,
+      "body_sha256": "082aecb6358e5cb830ed2e4b0c67d6dc6baa3bbf180a0513ec884ca8d703e17b"
+    },
+    {
+      "name": "Web",
+      "level": 2,
+      "page": 174,
+      "line": 15474,
+      "body_sha256": "1b67beef86a550a46365f882a0e021ec7554fffcfc9813260355062c01a3985e"
+    },
+    {
+      "name": "Weird",
+      "level": 9,
+      "page": 174,
+      "line": 15501,
+      "body_sha256": "834d5f6697d8f4e92a27f6f624ff59fcfec449dd7863d75b2455bda5c8ad2c6f"
+    },
+    {
+      "name": "Wind Walk",
+      "level": 6,
+      "page": 174,
+      "line": 15518,
+      "body_sha256": "e48facf241cb3bc9ae9f80685c76ae8664a7e44adabd3bb9f4d39e83a2a0591e"
+    },
+    {
+      "name": "Wind Wall",
+      "level": 3,
+      "page": 174,
+      "line": 15539,
+      "body_sha256": "f9fd76b595c82552635340ab8bd4e8b3d532e972700fd542dbe8961f09c5b4f7"
+    },
+    {
+      "name": "Wish",
+      "level": 9,
+      "page": 175,
+      "line": 15563,
+      "body_sha256": "f0582be9cbed66a73b8193a9648e89e1d7f29615b7d09ff473fa79eb4109b555"
+    },
+    {
+      "name": "Word of Recall",
+      "level": 6,
+      "page": 175,
+      "line": 15635,
+      "body_sha256": "7c7e1a030c386301bd8de28292fdef0172c892816517fbc631e67a21439303d6"
+    },
+    {
+      "name": "Zone of Truth",
+      "level": 2,
+      "page": 175,
+      "line": 15649,
+      "body_sha256": "4decc63c4ec99d23de8a08c2ef6f9553a6c7eacf4e86f95676ad06b18e1e9a2f"
+    }
+  ]
+}

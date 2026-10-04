@@ -241,3 +241,10 @@ S6D_FINAL_CLOSURE: PASS
 ```
 
 ---
+
+
+## Inserted spell architecture direction — PO-013
+
+Scope/dependencies only; global current state remains `DEV/CURRENT_PROGRESS.md`. Direct Product Owner instruction inserts design for complete accurate offline SRD5.2.1 spell support over existing Activity/native owners. Review-ready candidate/evidence: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`. Exact339 entries/modes/support dependencies require materialization and production proof; counts/routing are not admission.
+
+Sequence: concrete SP-14 Wish decision -> accepted-owner Step8 canonicalization/propagation/verification/publication -> independent Senior Stop2 -> authorized stable implementation-plan reconciliation -> exact source/support/admission/native-execution/recovery realization -> packaged GAME and physical target-performance acceptance. Existing numbered Round2 closure and accepted waves/S1/S2/P0 are preserved. S6D-07 acquisition and current P1A contracts need reconciled legal alternative support before P1A; independent P2/P3 dependencies remain. No new executable wave overlay or Story activation is created.

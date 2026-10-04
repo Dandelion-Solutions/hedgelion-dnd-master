@@ -1,0 +1,39 @@
+# Full-body source obligations and candidate resolution
+
+Status: DESIGN ROUTING / CANDIDATE RESOLUTION. No source recipe, admission or production PASS is implied.
+
+The three independent source passes read all available extracted bodies: levels 0-2: 141, levels 3-5: 114, levels 6-9: 84. Their exact-name sets are disjoint and equal the pinned 339-entry inventory. Each body hash was recomputed against the supplied extraction. Extracted spans can contain the next heading, displaced material or a truncated continuation; this hash is an evidence witness, never canonical rule-content identity. Every per-entry mode, exception, confidence, negative evidence and qualification remains in the linked source-pass JSON row and pinned research input. The compact requirement matrix references those exact artifacts and hashes.
+
+The current technical proposal owner is `candidate-spec.md`; all SP statements remain unaccepted until the actual process gates close. The source pass is discovery/evidence, not a second specification. Requirements below are routed with concrete consumer/acceptance obligations; future recipe materialization must prove source/mode/dependency/consumer/proof set equality rather than count rows.
+
+| Source finding | Current proposal / impact | Exact resolution and future proof trigger |
+|---|---|---|
+| L02-C01 Unseen Servant | SP-10/15; SI-04 | Choose stat-bearing native Actor force proxy with exact profile; no private mind or inferred creature-type targeting. Close target classification through source/common rule or narrow adopted adjudication before outcome; prove zero-HP disappearance, command/range and recovery |
+| L02-C02 ongoing dismissal | SP-08; SI-05 | Exact non-Incapacitated caster/source/time-span consumer, no action, complete support teardown; distinguish other duration classes in admission fixtures |
+| L02-C03 false opposed-check label | SP-24; SI-02/17 | Preserve research as history and qualify it here: current fixed-DC checks do not authorize contested-roll activation. Exact Detect Thoughts/Ensnaring Strike/Entangle/Web checks required |
+| L02-C04 rest, linked benefit and grouping | SP-24/08/10; SI-05/27 | Prayer of Healing Short Rest responder and Long Rest gate; Steed heal mirror/type resources; simultaneous Magic Missile darts; Resistance turn gate; Mirror Image hit frontier. Each is an exact profile/test consumer |
+| L35-O1 Reincarnate redraw | SP-21; SI-24 | Resumable native stochastic state, preserved raw sequence/distribution, no semantic attempt cap; repeated results beyond execution chunk and crash/resume proof |
+| L35-O2 consequences survive parent | SP-23; SI-26 | Atomic successor/permanent native establishment before source teardown; stable occurrence identity for Haste/Phantom Steed/Glyph/Wall of Stone |
+| L35-O3 Planar Binding | SP-23; SI-26 | Update exact originating duration and dependency enrollment; no generic concentration waiver; suppression/end/recovery fixtures |
+| L35-O4 Polymorph | SP-10; SI-04/25 | Current native HP plus source-specific form temporary HP/provenance/cleanup; no older replacement-HP snapshot; newer temp-HP grant and end fixtures |
+| L35-O5 health/removal/cast interception | SP-24/05; SI-27 | Exact prospective zero-HP, instant-death, cure, max-HP, Slow cast and Creation material gates; coupled outcome/cost/termination native closure |
+| L35-O6 scoped information | SP-11/24; SI-08 | Death-time knowledge, memory restoration, hidden save purpose and recipient scope have distinct eligible sources, timing and disclosure tests |
+| L35-O7 exact reaction payer | SP-05/12/24; SI-27 | Target enclosure escape reaction, domination caster reaction, Counterspell action/slot split; no uniform payer/refund |
+| L35-O8 progress without history scans | SP-23; SI-12/26 | Native target/caster/location/day/rest/year counters with exact occurrence/reset enrollment; fixed relevant work with growing unrelated history |
+| L35-O9 displaced blocks/tails | SP-01/02/19; SI-18/19 | Reconstruct Animated Object/Otherworldly Steed and foreign continuations; retain Telekinesis licensed-tail qualification. Valid Unicode signs preserved; admission awaits actual reconstruction proof |
+| L35-O10 supporting eligible domains | SP-01/10/19; SI-04/17 | Complete eligible stat blocks/actions/species/traits and GM-choice frontier within lawful SRD domain, not only example creatures |
+| L69-01 Teleport/Prismatic repeats | SP-21; SI-24 | Fixed resumable attempt state; secondary Spray 8 rejected, equal non8 rays legal; exact damage/LifeState edges and probability-preserving fixtures |
+| L69-02 Wish modes/stress | SP-13/14/19; SI-07 | All enumerated modes, stress/damage/Strength/recovery/permanent-loss profile and feat prerequisites are obligations; only Roll Redo is NEEDS_PO |
+| L69-03 linked bodies | SP-22; SI-25 | Chosen native principal/body/Asset carriers and typed root Effect relation; exact sole health/location/knower/controller ownership, return/death/replicas/subject binding and cold/LIVE recovery |
+| L69-04 forward temporal profiles | SP-08/13; SI-06 | Time Stop isolated procedure and early-end profile; Sequester/Clone/Astral maturity/stasis use forward chronology. No mutable-past gate for these cases |
+| L69-05 conditional/re-armed triggers | SP-08/13/23; SI-05/12/26 | Finite declared observable facts/predicates and dependency-local enrollment. Imprisonment likely-within-decade condition is not automatic expiry; possession/cooldown/dispel families remain distinct |
+| L69-06 full form/summon identity | SP-01/10/22/23; SI-04/25/26 | Source-specific retained/granted fields, gear, temp-HP, permanent conversion, commands/control expiry, snapshot and no-recursive-Simulacrum restrictions |
+| L69-07 exact interaction precedence | SP-05/08/09/12; SI-05/22 | Source-defined suppression/termination, duration, source-level/origin, travel, Wish exceptions, layer destruction and failed-exit costs; no suppress-all shortcut |
+| L69-08 distinct shape predicates | SP-09/16; SI-04/22 | Each-cube-neighbor does not imply one global connected component. Fire Storm, Wall of Ice and Guards and Wards preserve different exact finite predicates |
+| L69-09 persistent/phase health work | SP-08/23/24; SI-26/27 | Harm actual dealt damage, Befuddlement/Stun recovery, Feast consumption, Regenerate anatomy, restoration tax and storm/wave/transition phases use exact native profiles |
+| L69-10 planes/contents/access | SP-09/10/11/23; SI-04/08/26 | Native destination/connection/Asset identity and full expulsion/retention sets; closing portal does not automatically delete room/contents. Exact willing group/name/knowledge/linked-object/sanctuary profiles |
+| ROOT-COMMON-01 current casting rules | SP-05/08; SI-02/05 | Primary common rules independently reread through casting/combining sections: one slot expended to cast per turn; prepared ritual +10 minutes/no slot; long cast Magic action/concentration/no slot on interruption; armor/components/DC/attack/dismissal/invalid-target/stacking exact profiles |
+
+Withdrawn false positives: SC-01 PO quote corruption; U+2212 minus and U+00D7 multiplication corruption in extracted text. Raw Unicode verification disproved these console-rendering impressions. Do not repair valid quotes or source signs. True displaced/truncated source evidence remains qualified separately.
+
+Reproduction: run `python build_requirements.py` in this folder within a repository containing the pinned research inventory, or pass `--inventory PATH`. This reproduces routing from frozen witnesses and independent rows; it does not read/validate the primary rule text again. Optional `--extracted-sources PATH` recomputes every body witness against the original extraction. Both paths produced identical matrix bytes in this design session. Required attribution is preserved in matrix/source-pass artifacts and the existing research input; primary full spell text is not copied into this design folder.

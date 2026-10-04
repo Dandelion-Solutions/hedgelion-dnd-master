@@ -3,15 +3,15 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 ACTIVE / DEPENDENCY-GATED; PO-011/PO-012 INCORPORATED
-CURRENT_WORKSTREAM: production implementation
-CURRENT_SLICE: Wave 05 — machine, bootstrap and shared integration
+GLOBAL_STATE: R2.7 CLOSED — WAVES 01-04 COMPLETE / SENIOR PASS — WAVE 05 DEPENDENCY-GATED; INSERTED SPELL ARCHITECTURE CANDIDATE / SP-14 NEEDS_PO; PO-011/PO-012 INCORPORATED
+CURRENT_WORKSTREAM: inserted local spell architecture design at the Product Owner's safe worker boundary; production authorization/dependencies preserved
+CURRENT_SLICE: PO-013 complete local339-spell candidate and exact Wish Roll Redo decision; Wave05 T06 progress preserved
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: W05.T06-P2 is the independent eligible continuation lane after accepted P0; establish its exact fresh envelope/input proof before RED. P1A remains held for the bounded Product Owner decision in `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`; no P2 production is claimed here.
-REQUIRED_GATE: P0 -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion -> independent Senior integration audit. Ordinary task boundaries require no additional PO permission; the current P1A boundary is the recorded exception.
+NEXT_AUTHORIZED_UNIT: Product Owner judgment on candidate SP-14 in DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/decision-brief.md; then accepted-owner Step8 synchronization and independent Senior Review Stop2 before stable implementation-plan reconciliation. W05.T06-P2 remains independently eligible only after its own fresh envelope/input proof; it is not activated or implemented by this architecture checkpoint.
+REQUIRED_GATE: Spell dependent canonicalization/implementation waits for SP-14 decision -> complete Step8 -> independent Senior Stop2 GO -> authorized stable-plan reconciliation. Existing T06 edges remain P0 -> P1A -> P1B; independently P0 -> P2 -> P3; P1B + P3 -> T06 completion -> independent Senior integration audit. Ordinary task boundaries require no additional PO permission.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
-KNOWN_BLOCKERS: NEEDS_PO — qualify the Sorcerer override promise to admitted alternatives in the narrow MVP, or require a genuinely different legal loadout through S6D-07 scope/design. P1A held; P1B waits for P1A. P2 is independent of that PO choice and may proceed under its own inputs/envelope; P3 waits for accepted P2, and product completion waits for P1B + P3. Story remains dormant.
+KNOWN_BLOCKERS: NEEDS_PO only for spell candidate SP-14's narrow Wish recent-roll reality reconciliation and material retention/recovery risk. General broad/offline/accurate spell direction is supplied by PO-013, so do not repeat the prior narrow-versus-broad P1A choice. P1A stays gated by accepted S6D-07/acquisition/support/plan reconciliation; P1B waits for P1A. P2 remains independent under its own inputs, P3 waits for accepted P2; Story/T07/T08/W06 remain dormant.
 INSTRUCTION_CHECKPOINT_ACCEPTED: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7`; independent DEV/GAME review and exact 22-file read-back PASS; hosted Validate run `37160553540` maintenance PASS / 1526 DEV tests OK. Evidence owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: control headers alone NONE; the separately authorized instruction checkpoint changes AI_REASONING 0.1.3 -> 1.0.4, PLAY_POLICY 0.8.4 -> 1.0.5, RUNTIME 1.0.2 -> 1.0.3 and DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. No campaign/storage/catalog generation or engine identity change.
 
@@ -472,3 +472,16 @@ DEV uses bounded subagents and isolated/disjoint preparation, with one integrato
 
 VERSION_IMPACT: AI_REASONING 0.1.3 -> 1.0.4; PLAY_POLICY 0.8.4 -> 1.0.5; RUNTIME 1.0.2 -> 1.0.3; DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. Other control/process/profile edits NONE under the version owner; no schema/catalog/storage/campaign generation, migration or engine release change.
 NEXT_EXACT_TASK: existing authorized W05.T06-P2 entry/envelope, not a new task assignment. P1A waits for the recorded product judgment; completed P0/S1/S2 remain accepted.
+
+
+## 2026-10-04 inserted local spell architecture / PO-013
+
+SOURCE_HEAD: `05576261665280c3f424d791c19d8c4080343c6a`.
+PACKAGE: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`.
+STATUS: DECISION-READY CANDIDATE / SP-14 NEEDS_PO; not canonical architecture or implementation authorization.
+
+The Product Owner authorizes complete accurate local339-spell architecture, hidden player-facing mathematics and protected GAME responsiveness. Step1 critic PASS and independent Senior Stop1 GO were followed by full-body evidence passes (141+114+84), exact339 routing/source-hash checks, independent candidate challenge and repaired technical findings. These are design/evidence validations, not production recipe tests or measured latency. The package reuses current Activity/MechanicalContext/native owners; GAME stays one chat with logical roles and no dedicated spell-model invocations. Design/control publication VERSION_IMPACT NONE; no GAME bytes or schema/catalog generation changed.
+
+Only Wish Roll Redo requires residual product judgment: published current-spell reality change conflicts with accepted immutable-past boundary. Decision Brief recommends a narrow recent-round exception, preserving original evidence and using existing freeze/close/final-proof/absorb before one native campaign replacement. Hold dependent acceptance and implementation. After decision complete accepted-owner Step8 synchronization/traceability/verification/publication/read-back/finding propagation, then independent Senior Stop2; only its GO allows stable implementation-plan reconciliation.
+
+This checkpoint supersedes earlier current-state wording that still asks whether to keep the six-spell narrow MVP. Those reports remain historical evidence. It does not waive S6D-07/READY_PC acquisition/support contracts or give P1A GO. S1/S2/P0/T06-A1 and completed waves remain accepted. The task-local Wave05 cursor remains implementation evidence and exact dependency authority within the global state here. Independently eligible P2/P3 routes are preserved; no production execution during this design checkpoint is claimed. Story remains dormant. Resume from this exact published decision package, not conversation reconstruction or a restarted corpus pass.

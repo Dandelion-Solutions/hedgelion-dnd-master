@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: CONTINUATION_READY / P1A NEEDS_PO — P1A and its consumers remain held; the independent P2 lane is eligible under its exact own inputs. No P2 implementation is claimed by this instruction checkpoint.
-CURRENT_TASK: W05.T06-P2 continuation entry: fresh-read exact plan/owners and establish its bounded start envelope; the P1A Sorcerer decision remains separately held under `DEV/docs/superpowers/design/2026-10-04-w05-t06-p1a-sorcerer-override-senior-review.md`.
+STATUS: CONTINUATION_READY / P1A OWNER_RECONCILIATION_REQUIRED — PO-013 supplies broad accurate spell direction. The inserted architecture's SP-14 is the residual global NEEDS_PO; independent P2 eligibility is preserved under exact own inputs. No production is added by the architecture checkpoint.
+CURRENT_TASK: production cursor preserved at W05.T06-P2 eligible entry; global active inserted design/decision is owned by DEV/CURRENT_PROGRESS.md. P1A needs accepted S6D-07 acquisition/support and stable-envelope reconciliation before execution, not a repeated narrow-versus-broad scope question.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7` — accepted instruction checkpoint: independent DEV/GAME source review PASS, exact 22-file remote read-back PASS, hosted run `37160553540` maintenance PASS / 1526 DEV tests OK. Prior P1A stop/Senior evidence remains at `820c0f773b69f3951008be3e3b21814d10461a23`. Resume from current HEAD and this cursor; accepted P0 is preserved and no P1A/P2 production is added.
 
@@ -2893,3 +2893,10 @@ DEV uses bounded subagents and isolated/disjoint preparation, with one integrato
 
 VERSION_IMPACT: AI_REASONING 0.1.3 -> 1.0.4; PLAY_POLICY 0.8.4 -> 1.0.5; RUNTIME 1.0.2 -> 1.0.3; DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. Other control/process/profile edits NONE under the version owner; no schema/catalog/storage/campaign generation, migration or engine release change.
 NEXT_EXACT_TASK: existing authorized W05.T06-P2 entry/envelope, not a new task assignment. P1A waits for the recorded product judgment; completed P0/S1/S2 remain accepted.
+
+
+## 2026-10-04 PO-013 spell architecture routing
+
+The Product Owner directs accurate complete local339-spell support and explicitly commissions architecture before resuming the stopped worker boundary. Candidate/evidence/review package: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`. Earlier P1A reports asking narrow-MVP versus expanded choice are historical: the broad direction is now supplied. Their source insufficiency, validator constraints and unproduced P1A output remain true. Accepted acquisition/support/plan reconciliation is required before P1A; this control update changes no stable envelope or code.
+
+Global active route, only residual Wish SP-14 judgment, Step8/SeniorStop2 and next authorization are governed solely by CURRENT_PROGRESS. Accepted S1/S2/P0 and P0 -> P1A -> P1B / P0 -> P2 -> P3 / P1B+P3 -> T06 gates remain. Independently eligible P2 is preserved, no P2/P3 implementation claimed here. No Story activation. VERSION_IMPACT NONE for this route/status update.

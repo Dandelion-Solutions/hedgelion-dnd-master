@@ -394,3 +394,8 @@ must be checked separately from accepted architecture.
 ## Current bounded instruction-efficiency amendment
 
 `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md` owns the source manifest, diagnosed instruction gaps, accepted-scope impact/version reconciliation and validation limits. This is a bounded early projection and process correction, not a new architecture roadmap or T08 closure. Current scheduling remains under CURRENT_PROGRESS and the Wave-05 cursor.
+
+
+## Local spell execution architecture / PO-013
+
+Candidate/design entry point: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`; exact proposed contracts in `candidate-spec.md`, residual Wish judgment in `decision-brief.md`. Production/capability/performance manifests, all339 full-body requirement routes, source qualifiers and independent review/resolution live in that folder. It is design/evidence, not accepted implementation authority. Adjacent owners: Activity/MechanicalContext/Calculation, Actor/Asset/Effect/Health/Zone/Location/Connection/Procedure/Information, Step3/Step5.9, WP16/WP24, S6D-03..11 package/acquisition/admission, actual GAME host/durability/recovery and stable Wave05. Current route/gates are solely CURRENT_PROGRESS; accepted canonical index and implementation plans are unchanged until the actual decision/Step8/SeniorStop2/plan gates.

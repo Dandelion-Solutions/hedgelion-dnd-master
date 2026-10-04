@@ -1,10 +1,15 @@
 # W05.T06-P1A — Sorcerer override System-Impact review
 
-Status: **NEEDS_PO — BOUNDED PRODUCT-SCOPE DECISION; P1A HELD**
+Status: **HISTORICAL SYSTEM-IMPACT REVIEW — BROAD PRODUCT DIRECTION SUPPLIED; P1A OWNER/PLAN RECONCILIATION STILL REQUIRED**
+Original review status: **NEEDS_PO — BOUNDED PRODUCT-SCOPE DECISION; P1A HELD**
 Date: 2026-10-04
 Reviewed implementation-stop HEAD: `6dbdf160824060b64cf9586ee1c29ddbb3470f0e`
 Published continuation basis: `65d063c5d75664270b2df3cfa07ddb743ddee062`
 Review: independent Senior System-Impact technical review, not production acceptance.
+
+## Current routing clarification — PO-013
+
+Later Product Owner input chooses accurate broader local spell support and commissions its architecture. Do not repeat this review's original narrow-versus-broad question. `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md` routes the candidate and the sole residual SP-14 Wish judgment. The original technical insufficiency and failed alternative-loadout promise below remain evidence; P1A is unproduced and needs accepted S6D-07/acquisition/support/stable-plan reconciliation before execution. This clarification is agent-owned status/routing, not a new Senior GO or changed spell contract. Original findings/recommendation/verification below are retained as historical review. Current global schedule is exclusively `DEV/CURRENT_PROGRESS.md`; independent P2/P3 eligibility is preserved.
 
 ## Disposition
 

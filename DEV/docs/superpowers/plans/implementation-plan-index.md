@@ -4,6 +4,10 @@ Status: **SENIOR-APPROVED / W05.T06 CONTINUATION AUTHORIZED AFTER ACCEPTED P0**
 
 Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. The bounded Actor-producer Senior ruling restores W05.T06-P0 GO under its revised stable Envelope. P1A/P1B/P2/P3 and held product completion remain dependency-gated.
 
+## Current inserted spell architecture route — PO-013
+
+The Product Owner supplies broader accurate local spell direction; the earlier six-spell narrow-versus-broad question is superseded as a current question. Candidate/evidence: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`. No candidate law, new task, changed envelope or alternate executable plan is introduced into this index. After the genuine SP-14 decision and complete Step8/independent SeniorStop2, reconcile actual owning acquisition/support contracts and this stable plan package through its required process before P1A. Global active state/authorization stays exclusively in CURRENT_PROGRESS; task-local cursor preserves accepted S1/S2/P0 and independent P2/P3 gates. Earlier current-state statements below remain historical where the latest global/route note qualifies them.
+
 ## 1. Sole current planning route
 
 This file is the only entry point for HDM v1 production implementation planning. The plan is organized by dependency waves. There are no mandatory overlays, precedence amendments, alternate RD plans or separately executable proof ledgers.
