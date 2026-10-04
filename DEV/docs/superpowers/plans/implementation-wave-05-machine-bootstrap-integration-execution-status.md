@@ -4,8 +4,8 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: LOCAL-SPELL COMPLETE STABLE-PLAN REVIEW-READY / INDEPENDENT SENIOR PLAN GO REQUIRED. Architecture Stop2 GO and SS2-01/02/03 closed; no current PO question.
-CURRENT_TASK: architect has prepared32 new stable Wave05 tasks, rewritten P1A/P1B acquisition inputs and Wave06 proof consumers; independent plan review before other-worker production. P0 accepted; P2 independent own-input lane preserved.
+STATUS: INDEPENDENT COMPLETE-PLAN REVIEW DONE / TWO MINOR ROUTING REPAIRS PUBLISHED FOR FINAL REREVIEW; SENIOR PLAN GO REQUIRED. No blocking/significant finding or PO question.
+CURRENT_TASK: independent final rereview of runtime transport/SP03 preflight routing corrections; all32 task definitions/accepted outputs preserved, no production.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `84b9da6bbabb6abda274f4cb63408d5a8298b36e` — published canonical Stop2 GO; architecture/spec/control only, no production changes. Original P0/accepted task evidence below preserved. Fresh current HEAD and current plan gate govern resumption.
 
@@ -2952,3 +2952,7 @@ CURRENT_VERIFICATION_STATE: proportionate plan/source/DAG/envelope/reference/con
 VERSION_IMPACT: NONE — design/plan/status/report only; GAME/schemas/catalog/package untouched. Future namespace transitions are required worker obligations, not current bumps.
 SYSTEM_IMPACT: NONE beyond accepted spell ownership/PO-013; no new human judgment.
 UNPUBLISHED_WORK: review-ready planning text until its coherent publication/readback; no production code.
+
+## Complete-plan independent review repair checkpoint
+
+Reviewed candidate: `0d01fa3537d4426b47e463742a5769e45328c1a2`; verification receipt `cb44e04b4a22614627f7100116acb58cab709888`. Independent full review found only SPPR-01/02 MINOR plan routing errors; both corrected in stable Wave05. Actual hosted candidate maintenancePASS/full DEV1526 in39.415s OK;32-node DAG independently acyclic. Final independent exact remote repair rereview remains required. UNPUBLISHED_WORK: NONE after coherent repair publication/readback; no runtime implementation. NEXT_EXACT_TASK: final Senior plan ruling, then existing approved32-task continuation and original eligible P2.

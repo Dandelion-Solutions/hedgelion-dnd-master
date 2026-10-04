@@ -52,3 +52,14 @@ Bounded local documentary check:32 unique task headings and cursor rows; exact10
 
 REVIEW_READY_HEAD: `0d01fa3537d4426b47e463742a5769e45328c1a2`; parent `84b9da6bbabb6abda274f4cb63408d5a8298b36e`; complete tree `6c7a11acd49c2d387a3cb37dfdfcd82ebcfa080d`,1687 entries untruncated. Exact9/9 changed UTF8 contents and fresh ref equality PASS; complete parent/current delta is exactly9 documentary blobs, no GAME/schema/catalog/code/runtime changes.
 HOSTED_CI: Validate run37236573461/job111536749044, exact review-ready HEAD, completed/success. Maintenance stepPASS, full DEV unit-test discoveryPASS; Ran 1526 tests in 39.415s. Version census unclassified/legacy lists empty. This validates the unchanged actual implementation and documentary routing; it does not execute future spell task tests or prove new mechanics/latency.
+
+## Independent complete-plan review and bounded routing repair
+
+Independent Senior completed all32 task blocks/shared ABI/envelopes/common level clauses, modified P1A/P1B/T08/W06/index/cursor/handoff plus actual native/schema/seed/transport/version consumers. Its independent32-node topological check and actual candidate CI passed. No blocking/significant finding or new product/architecture question was proved. Two MINOR routing corrections are required before final GO:
+
+| Finding | Exact correction / unchanged scope |
+|---|---|
+| SPPR-01 lifecycle common loop says Connector publication | runtime-applicable authenticated publication/readback; OpenCode follows OPENCODE/LOCAL_MACHINE, ChatGPT architect uses Connector |
+| SPPR-02 SP12 attributes general ambiguity preflight to SP07 | SP03 general preflight/resolver fixes basis before save/RNG/cost/effect; SP07 joins only ritual/long mode timing |
+
+The two exact plan anchors are repaired together. All32 tasks/outputs/DAG/envelopes/source/native/fixture/admission/adoption/target semantics and non-plan files are otherwise unchanged. Fresh remote changed-byte/ref verification and exact CI support final independent re-review; no production code is touched.
