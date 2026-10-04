@@ -1,6 +1,6 @@
 # Архитектура локального исполнения заклинаний
 
-Статус: **каноническая архитектура; PO-013 и узкое исключение Wish приняты; независимый Senior Stop2 требуется до планирования реализации**. Текущая спецификация: `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md` и execution/lifecycle/content/Wish annexes. [Каноникализация](canonicalization.md) фиксирует propagation, риски, отложенную реализацию и доказательства. VERSION_IMPACT NONE; GAME не изменён.
+Статус: **каноническая архитектура; PO-013 и узкое исключение Wish приняты; независимый Senior Stop2 GO опубликован; stable план из32 заданий подготовлен, проходит отдельный Senior plan review**. Текущая спецификация: `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md` и execution/lifecycle/content/Wish annexes. [Каноникализация](canonicalization.md) фиксирует propagation, риски, отложенную реализацию и доказательства. VERSION_IMPACT NONE; GAME не изменён.
 
 Ниже — исторические материалы принятого решения. Прежний SP14 NEEDS_PO закрыт «Принимается»; candidate/Decision Brief не являются текущим законом или исполнительным планом.
 
@@ -42,3 +42,7 @@ SP-14 касается опубликованного режима Wish, мен�
 Проект расширяет принятый движок; завершённые waves и S1/S2/P0 не отменяются. После решения SP-14 нужно формализовать владельцев, завершить Step 8 и независимый Senior Stop 2, затем согласовать существующий stable implementation plan. Старый выбор «оставить только шесть или расширить» повторно не запрашивается: направление на расширение уже дано. Точное расширение S6D-07/READY_PC и production остаётся dependency-gated. Глобальное состояние — только `DEV/CURRENT_PROGRESS.md`.
 
 [Публикация и remote read-back](publication-readback.md): 29 файлов исходного payload подтверждены побайтно по нормализованному UTF-8 содержимому; hosted maintenance audit и DEV tests PASS на точном опубликованном payload. Протокол фиксирует конкретный commit и границы этих свидетельств.
+
+## Передача реализации другому агенту
+
+Исполняемые задания и Impact Envelopes находятся только в существующих stable Wave05/Wave06 и implementation-plan-index.md. [Подготовка независимой проверки плана](implementation-plan-review-preparation.md) фиксирует источники/покрытие/границы; [возобновление воркера](worker-resume.md) — краткий указатель. Текущий gate и exact cursor принадлежат DEV/CURRENT_PROGRESS.md. Архитектор production не выполняла; реальные339 рецепты/native/offline/скорость ещё должны быть доказаны воркером.

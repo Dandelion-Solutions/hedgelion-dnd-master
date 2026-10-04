@@ -1,12 +1,16 @@
 # HDM v1 Implementation Plan — Authoritative Wave Index
 
-Status: **SENIOR-APPROVED / W05.T06 CONTINUATION AUTHORIZED AFTER ACCEPTED P0**
+Status: **ACCEPTED BASELINE / LOCAL-SPELL EXTENSION REVIEW-READY — INDEPENDENT COMPLETE-PLAN SENIOR GO REQUIRED**
 
 Production implementation remains subject to `DEV/CURRENT_PROGRESS.md`, named producer checkpoints, wave-level Senior integration gates and `DEV/DEVELOPMENT_EXECUTION_PROCESS.md`. The bounded Actor-producer Senior ruling restores W05.T06-P0 GO under its revised stable Envelope. P1A/P1B/P2/P3 and held product completion remain dependency-gated.
 
-## Current inserted spell architecture route — PO-013
+## Current accepted local-spell implementation route — PO-013
 
-The Product Owner supplies broader accurate local spell direction; the earlier six-spell narrow-versus-broad question is superseded as a current question. Candidate/evidence: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/README.md`. No candidate law, new task, changed envelope or alternate executable plan is introduced into this index. After the genuine SP-14 decision and complete Step8/independent SeniorStop2, reconcile actual owning acquisition/support contracts and this stable plan package through its required process before P1A. Global active state/authorization stays exclusively in CURRENT_PROGRESS; task-local cursor preserves accepted S1/S2/P0 and independent P2/P3 gates. Earlier current-state statements below remain historical where the latest global/route note qualifies them.
+Canonical architecture: DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md plus exact execution/lifecycle/content-acquisition/Wish annexes and owner decision. Independent Senior Stop2 GO is published at84b9da6bbabb6abda274f4cb63408d5a8298b36e; SS2-01/02/03 and the narrow Wish risk judgment are closed. No current six-only or Wish PO gate remains.
+
+The existing stable Wave05 contains32 additional tasks SP00..SP30 with separate SP15A/SP15B, complete Impact Envelopes, actual native/source/mode/support/acquisition/adoption/packaged-proof interfaces and tests. Wave06 owns final proof-after-target/Senior consumers. There is no executable overlay. The extension is review-ready; independent complete-plan Senior GO must be recorded before other-worker production. Review/source manifest: DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-review-preparation.md. Global current activation remains exclusively DEV/CURRENT_PROGRESS.md; exact task states/next inputs in the stable Wave05 cursor.
+
+Initial eligible preparation after plan GO: SP00 source qualification and SP01 closed foundation, with independent P2 own-input lane preserved. Then source/compiler/native/lifecycle mechanisms -> partial real host SP28 -> actual all-mode level/support proof -> full339 package/acquisition SP29 -> P1A/P1B; package offline/cost proof SP30 follows its targets. P0->P2->P3 remains independent; P1B+P3 join original T06 product/Senior integration. All eligible approved continuation proceeds autonomously with disjoint agents and one integrator, until a real gate. T07/T08/W06 activate only from their own published inputs/technical reviews; Story/empirical capabilities retain exact triggers.
 
 ## 1. Sole current planning route
 
@@ -228,7 +232,11 @@ CAMPAIGN_SETUP    1.0.3 -> 1.0.4
 SESSION           1.0.1 -> 1.0.2
 PLAY_POLICY       0.8.4 -> 1.0.5 (early instruction checkpoint) -> 1.0.6 (remaining T08 inputs)
 CORE_INDEX        0.3.1 -> 1.0.2
-ADJUDICATION      1.0.2 -> 1.0.3
+ADJUDICATION      1.0.2 -> 1.0.3 (joined spell source-open profiles)
+MAGIC             0.2.0 -> 1.0.1
+CHARACTER_READINESS 1.0.3 -> 1.0.4
+MECHANICS_INTEGRITY 1.0.1 -> 1.0.2
+RUNTIME           1.0.3 -> 1.0.4 (later T08 spell interface projection)
 ```
 
 These are exact targets for the recorded consolidation baseline. At implementation time the worker fresh-reads each namespace. If an accepted intervening change has already advanced a target, apply the same owning version law and record the reconciled transition; never blindly downgrade, double-bump or preserve a stale number.
@@ -244,7 +252,7 @@ The plan is ready for production execution only after all of the following are t
 
 Until then, implementation, migration execution, release execution and gameplay bootstrap remain unauthorized.
 
-## 2026-10-03 autonomous T06 continuation authorization
+## Historical 2026-10-03 autonomous T06 continuation authorization
 
 AUTHORIZATION_BASE_SHA: `37872ca98c425b7b194e48aaed2a543b2058e7f8`.
 The Product Owner directs continued execution until a real product-semantics, material trade-off or explicit risk-acceptance question. This removes the request-local scheduling pause; it does not waive technical verification or change accepted architecture.
@@ -259,7 +267,7 @@ After T06 completion, route the exact published checkpoint to the mandatory inde
 
 VERSION_IMPACT: NONE — scheduling/control documentation only.
 
-## 2026-10-03 instruction-efficiency checkpoint and scheduling reconciliation
+## Historical 2026-10-03 instruction-efficiency checkpoint and scheduling reconciliation
 
 Source basis: `be1c9b919bba65bcb1a9e5d5eb7b19e7c72fd82f`. The Product Owner separately stopped the worker at a safe boundary and authorized the Architect to amend instructions. Evidence/impact/review owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
 

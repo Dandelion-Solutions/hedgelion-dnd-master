@@ -190,7 +190,7 @@ Output checkpoint: `W06_NEGATIVE_CURRENTNESS_AUDIT_READY`.
 Run `DEV/TESTS/test_implementation_package_version_cutovers.py` and the matching proof-ledger classes. Verify:
 
 - all eleven retained schema targets in the package index;
-- all sixteen material CORE targets in the package index;
+- all twenty material CORE targets in the package index;
 - one final writer for every shared file/checkpoint in the execution contract;
 - all required semantic deltas are present in actual final bytes;
 - no final target is written again by a downstream task;
@@ -238,3 +238,37 @@ Output checkpoint: `W06_INDEPENDENT_SENIOR_HANDOFF_COMPLETE`.
 ## Wave 06 completion evidence
 
 This wave closes only with item-level readiness/proof evidence, all named suites and audits GREEN, remote read-back, exact-head hosted disposition and independent Senior result recorded durably. The traceability file remains consolidation provenance and cannot close an implementation or proof row.
+
+## Local-spell final proof consumers — accepted SP-01..24
+
+The full local-spell architecture is now accepted under the 2026-10-04 main/execution/lifecycle/content/Wish specifications and independent Senior Stop2 GO. Its implementation tasks reside only in the stable Wave05 SP00..SP30 extension, with SP15A/SP15B. This section strengthens existing W06 tasks; it is not a separate executable proof wave. All rows are PROOF_AFTER_TARGET and require actual native host/entry-mode/support/installed-package outputs. Completed earlier waves and dormant Story/target triggers are preserved.
+
+| Existing W06 owner | Additional required realized target/evidence |
+|---|---|
+| T01 complete suites | all new SP core/lifecycle/Wish/content/acquisition/native-host/equality/offline/cost suites; every named test executes real assertions; preserve P0/T06 suite scope |
+| T02 readiness/composites | SP29 exact339 lawful source/mode/requirement/consumer/transitive support/native proof relations, separately named existing extras; all six support dimensions and exact current Actor/acquisition/context joins; native command/durability/recovery, no fixture count closure |
+| T03 PG18/23/28/31/35/37 | real nested accepted catalog context, source-qualified binding, command->native producer->owner-issued durability join->host publication; fixed IDs/RNG/currentness, native/LIVE/operational-root/adjudication/recovery evidence; PT-D1/PT-D2 repaired on the actual producer path |
+| T04 negative law | no runtime web rules/DEV paths, promised-mode gaps after spend, corpus recompile on warm cast, extra deterministic-step or dedicated spell model; no loose profile/detail authority, fake HP/body/object, whole-owner restore/undo/replay, count-only support or erased exposure |
+| T05 version/graph | all actual new module/schema/catalog/package/compatibility/digest transitions and projections; partial coherent content relocations, one final full-support writer, ten disjoint level shards and separate extras; no proof/package activation cycle; final T08 twenty-module joined targets qualified by actual fresh owner |
+| T06 exact head/package | exact final integrated source/build with all local rules/support/actions/native conformance evidence; block rules-network access, prove absent/corrupt local support failure before advertised cast costs, actual cold/warm/save/LIVE/recovery; maintenance/full DEV and exact-head hosted disposition |
+| T07 independent Senior | exact stage/claim/evidence, all required source/mode/consumer/native and installed-package results, qualified target cost report, accepted Wish residual risk and current-validity/History/Story trigger disposition; no automatic release/gameplay/tag authorization |
+
+Required W06.T01 commands additionally run the current complete task suites and these consolidated discovery scopes:
+
+~~~sh
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_local_spell_*.py DEV/TESTS/test_spell_*.py DEV/TESTS/test_wish_*.py
+python3 -m unittest discover -s DEV/TESTS -p 'test_*.py'
+python3 DEV/TOOLS/run_maintenance_audit.py
+~~~
+
+The shell wildcard selects actual current files after their targets exist; confirm every task's named test module is present and no expected prefix is absent. Do not create empty classes or silently omit a renamed consumer. The complete DEV discovery and exact owning acceptance commands remain mandatory at T06.
+
+**Item-level proof basis:** preserve independently qualified source body/name/hash, each mode/branch and parameter/domain boundary, exceptions/non-goals/confidence, transitive supporting action/stat/species/feat graph and exact current native profile/primitive/pair/accessor/fact/policy/value consumer. Report source/design coverage separately from definition/machine/native/scenario/target-performance stages. Valid Unicode minus/multiplication and withdrawn false-corruption findings stay preserved. Source-displaced Animated Object/Otherworldly Steed, foreign Antipathy/Find the Path tails, qualified Telekinesis continuation, Acid Splash edition mismatch and lawful existing Thunderclap lane are explicitly closed before claimed admission. No research raw text or unqualified extraction can stand in for admitted recipes.
+
+**Required native trajectories:** actual installed source->sealed catalog/compiled Activity->accepted command/cost/reaction/choice/native plan->native HP/resource/Asset/Effect/Zone/Information/Procedure/RNG/event/receipt closure->durability/publication->exact retry/cold recovery. Include three stochastic profiles, nested/long casting, suppression/repeated-progress/permanent successor, directed conversion/principal/body and exact TruePolymorph object return profile. Wish proves protected minimum original evidence/complete affected closure, new draw and original selection cost/stress, corresponding old/new branch RNG, multi-LIVE partial preparation/one atomic replacement, Information/History current validity, exposure immutability and forward recovery. Every declared supported mode and required supporting action has actual native evidence; schema-valid data or a working same-family example alone cannot prove another mode.
+
+**Acquisition:** actual published supported catalog offers exact16/21 SRD subsets plus only individually proved named existing extras. Initial selected4cantrips+2level1 remain exact known-all6/prepared-two, complete selected Activity union, one focus grant and repeat/resume/current-context/resource preservation. Explicit alternative is proved by P1A using actual available Sorcerer options. Retained old default bindings/adopted snapshots are independently interpreted and explicitly mapped, never silently compatible by spell count.
+
+**WP24 proof and target trigger:** use SP30 observer over actual adapters; record physical LLM invocation count/serial depth, prompt/card/receipt bytes/tokens, compile/lock/census/cache work, local primitive/CPU/native owner work, remote currentness/publication/retries and user-to-base-response cold/warm/load/save/LIVE/recovery distributions. Hold relevant work fixed while unrelated installed content/history grows; separately observe complete legitimate large affected sets, without reducing their semantic domain. Zero dedicated spell/deterministic-step model calls and optional Story/Commentator independence are structural acceptance obligations. Real user latency/model behavior additionally needs the actual supported GAME/model/transport environment; model-free timing has its qualified scope. No invented SLA or declared fast response. Real target available -> perform its eligible evidence; absent target -> exact EMPIRICAL_DEFERRED trigger/owner, never label measured PASS. VPS development-agent concurrency statistics do not prove GAME runtime speed.
+
+The independent final Senior verifies whether the exact available evidence and declared target/trigger dispositions discharge the proper current gate. Technical repairs go to their approved mechanism tasks and preserve unchanged scoped proof. Only a genuinely new product/material risk/authority decision routes beyond technical repair.

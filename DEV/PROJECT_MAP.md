@@ -404,3 +404,7 @@ Candidate/design entry point: `DEV/docs/superpowers/design/2026-10-04-spell-exec
 ## Local spell canonical source route — PO-013
 
 Use `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md`, exact execution/lifecycle/content-acquisition/Wish annexes and `2026-10-04-spell-architecture-owner-decision.md`. They delegate to existing Activity/MechanicalContext/Actor/Asset/Health/Effect/Zone/Information/Step3/Step5/WP16 and narrowly qualify proven exclusions. `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/canonicalization.md` routes manifest/dispositions/findings/risks/deferred actual proofs; candidate/source passes remain evidence. Navigation grants no machine admission, measured latency or activation. Global state is only `DEV/CURRENT_PROGRESS.md`; execution only stable plan index/cursor.
+
+## Stable local-spell worker-plan route
+
+The accepted local-spell canonical route is realized by32 additional tasks in the existing stable Wave05 (SP00..SP30 with SP15A/SP15B), updated original P1A/P1B and Wave06 proof-after-target consumers. Review/evidence locator: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-review-preparation.md`; worker bootstrap pointer: `worker-resume.md` in that same folder. Neither report is an executable plan. Global current state/gates remain only CURRENT_PROGRESS; stable plan index and cursor govern execution. No new runtime module/schema/catalog is claimed present by this routing update.

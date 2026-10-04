@@ -3,15 +3,15 @@
 Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
-GLOBAL_STATE: R2.7 CLOSED — WAVES01-04 COMPLETE / SENIOR PASS — WAVE05 DEPENDENCY-GATED; LOCAL SPELL ARCHITECTURE ACCEPTED / SENIOR STOP2 GO / PO-013 INCORPORATED
-CURRENT_WORKSTREAM: complete exact local-spell canonicalization at safe worker boundary; separate worker implementation and accepted dependency gates preserved
-CURRENT_SLICE: architecture complete with independent Senior Stop2 GO; stable Wave05/Wave06/index/task-envelope reconciliation and independent Senior plan review; other worker performs implementation
+GLOBAL_STATE: R2.7 CLOSED — WAVES01-04 COMPLETE / SENIOR PASS — WAVE05 LOCAL-SPELL STABLE-PLAN REVIEW-READY; CANONICAL ARCHITECTURE / SENIOR STOP2 GO / PO-013 ACCEPTED
+CURRENT_WORKSTREAM: complete independent review/publication of32 local-spell worker tasks in existing stable Wave05/Wave06/index; separate otherworker implementation, accepted outputs preserved
+CURRENT_SLICE: full source/native/lifecycle/content/acquisition/offline/performance task package and updated envelopes prepared; independent complete-plan Senior review
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: author complete source/machine/native/profile/content/acquisition/proof worker tasks in existing stable Wave05/Wave06 plan; reconcile index/cursor/ImpactEnvelopes and obtain independent Senior plan GO before other-worker production. Independent P2 own-input route preserved.
-REQUIRED_GATE: Step8 remote readback -> independent Senior Stop2 GO -> complete stable-plan reconciliation + independent Senior plan GO -> other worker implementation. Existing P0 -> P1A -> P1B and independent P0 -> P2 -> P3; P1B + P3 -> T06 completion. No repeat PO permission at ordinary boundaries.
+NEXT_AUTHORIZED_UNIT: independent technical Senior review of actual published stable plan; resolve technical findings and record GO, then otherworker executes eligible SP00/SP01/P2 and approved dependencies autonomously.
+REQUIRED_GATE: architecture Stop2 GO CLOSED -> actual complete stable-plan independent Senior GO -> otherworker implementation/review/publication -> original T06 independent integration and eligible T07/T08/W06. P1A needs actual SP29 supported package/acquisition; P0->P2->P3 remains independent.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
-KNOWN_BLOCKERS: NEEDS_PO NONE. SS2-01/02/03 CLOSED under independent actual-remote re-review; only stable-plan preparation/independent technical plan GO and later dependency/materialization proofs remain. Existing accepted waves/S1/S2/P0/P2-P3 boundaries preserved.
+KNOWN_BLOCKERS: NEEDS_PO NONE. SS2-01/02/03 CLOSED. Only independent complete-plan technical GO before production and actual task dependencies/proofs; no additional human permission at ordinary boundaries.
 INSTRUCTION_CHECKPOINT_ACCEPTED: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7`; independent DEV/GAME review and exact 22-file read-back PASS; hosted Validate run `37160553540` maintenance PASS / 1526 DEV tests OK. Evidence owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: control headers alone NONE; the separately authorized instruction checkpoint changes AI_REASONING 0.1.3 -> 1.0.4, PLAY_POLICY 0.8.4 -> 1.0.5, RUNTIME 1.0.2 -> 1.0.3 and DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. No campaign/storage/catalog generation or engine identity change.
 
@@ -500,3 +500,7 @@ Independent Senior Stop2 reviews actual published/read-back checkpoint. Its GO o
 SPELL_CANONICAL_SEMANTIC_HEAD: `e780be317e436aaee033161094cff12138542c5c`.
 SPELL_CANONICAL_READBACK: 39/39 exact-content PASS; complete delta39, zero GAME/schema/catalog changes.
 SPELL_CANONICAL_HOSTED_CI: Validate `37232000919`, exact semantic head, maintenance PASS; full DEV1526 tests OK. Evidence: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/canonicalization-readback.md`.
+
+## 2026-10-04 accepted local-spell stable plan
+
+Existing stable Wave05 holds32 additional task units SP00..SP30 with SP15A/SP15B, full native/profile/source/mode/support/acquisition/version/adoption/envelope proof and exact shared-writer/currentness discipline. Wave06 final proof is strengthened; accepted old checkpoints and independent P2/P3 preserved. Entry/index/cursor are the sole implementation route; report preparation is `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/implementation-plan-review-preparation.md`. No new current product question; independent complete-plan technical review precedes implementation by the otherworker.
