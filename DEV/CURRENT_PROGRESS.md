@@ -496,3 +496,7 @@ SPELL_ARCHITECTURE_HOSTED_CI: Validate run `37204842454`, exact payload head, co
 PO-013 final “Принимается” closes the narrow Wish exception. Main owner: `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md`; four exact execution/lifecycle/content/Wish annexes and owner decision hold final law. `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/canonicalization.md` and `owner-propagation.md` record source basis, all24 routes, scoped supersession, findings, risks/deferred proof and verification. Architecture changes no GAME/schema/catalog bytes; VERSION_IMPACT NONE. Matrix/source bodies remain qualified routing evidence, not recipe support or measured performance.
 
 Independent Senior Stop2 reviews actual published/read-back checkpoint. Its GO opens stable-plan reconciliation; independent Senior plan GO precedes the other worker. No human judgment is open. Accepted P0/S1/S2/waves and independent P2/P3 survive. Older evidence remains historical at its scoped checkpoint.
+
+SPELL_CANONICAL_SEMANTIC_HEAD: `e780be317e436aaee033161094cff12138542c5c`.
+SPELL_CANONICAL_READBACK: 39/39 exact-content PASS; complete delta39, zero GAME/schema/catalog changes.
+SPELL_CANONICAL_HOSTED_CI: Validate `37232000919`, exact semantic head, maintenance PASS; full DEV1526 tests OK. Evidence: `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/canonicalization-readback.md`.
