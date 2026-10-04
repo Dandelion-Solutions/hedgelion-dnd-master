@@ -4,7 +4,7 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: TECHNICAL CANONICALIZATION / SENIOR STOP2 PENDING — PO-013/SP14 accepted; stable spell tasks/envelopes require later independent plan GO.
+STATUS: SENIOR STOP2 TECHNICAL REPAIR — PO-013/SP14 accepted; SS2-01/02/03 repair/re-review required before stable spell task planning. No new product question.
 CURRENT_TASK: architecture/spec/plan authoring owned by DEV/CURRENT_PROGRESS.md; no production in this session. P0 accepted; P1A waits exact acquisition/support and approved plan; independent P2 own-input eligibility preserved.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7` — accepted instruction checkpoint: independent DEV/GAME source review PASS, exact 22-file remote read-back PASS, hosted run `37160553540` maintenance PASS / 1526 DEV tests OK. Prior P1A stop/Senior evidence remains at `820c0f773b69f3951008be3e3b21814d10461a23`. Resume from current HEAD and this cursor; accepted P0 is preserved and no P1A/P2 production is added.
