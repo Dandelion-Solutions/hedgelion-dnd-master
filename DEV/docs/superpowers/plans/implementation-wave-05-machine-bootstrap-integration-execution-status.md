@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: INDEPENDENT COMPLETE32-TASK SENIOR PLAN GO / OTHER-WORKER AUTONOMOUS DEPENDENCY-DRIVEN IMPLEMENTATION AUTHORIZED; task inputs/technical reviews/original integration gates remain.
-CURRENT_TASK: SP01 reviewed candidate integration; parallel SP00 partial source-census review and P2 non-HOT preparation integration. SP00/P2 full outputs remain held on their exact remaining inputs; no full339 support claim.
+CURRENT_TASK: SP02 eligible after accepted SP01; parallel SP00 partial census and P2 non-HOT preparation integration. SP00/P2 full outputs remain held on their exact remaining inputs; no full339 support claim.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` — exact independently reviewed repaired plan, maintenance PASS /1526 DEV tests OK; canonical Stop2 GO and original P0/accepted task evidence below preserved. Fresh current ref and own task inputs govern resumption.
 
@@ -2914,8 +2914,8 @@ PLAN: existing stable Wave05/Wave06/index;32 additional tasks, complete envelope
 | Task | State | Activation |
 |---|---|---|
 | W05.SP00 | PLANNED / ELIGIBLE_OWN_ENTRY | fresh own entry/envelope/currentness checks; plan GO accepted |
-| W05.SP01 | PLANNED / ELIGIBLE_OWN_ENTRY | fresh own entry/envelope/currentness checks; plan GO accepted |
-| W05.SP02 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP01 | COMPLETE / ACCEPTED | `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` at `30c5a66f234b75bec926462c6301454133506884`, independent review and integrated proof/read-back PASS |
+| W05.SP02 | ELIGIBLE_OWN_ENTRY | accepted SP01 plus prior catalog/package binding; task-local checks/TDD/review required |
 | W05.SP03 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP04 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP05 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
@@ -3042,5 +3042,13 @@ New capability/structural protocols schema 1; no engine/catalog/campaign/storage
 digest-generation bump or migration. Schema restrictions/optional shapes are
 qualified in the independent review, not a generic no-bump-by-filetype rule.
 SYSTEM_IMPACT: NONE — all repairs close the authorized SP01 ABI and consumers.
-OUTPUT: W05_SPELL_CLOSED_MACHINE_SHAPES_READY pending integrated proof,
-publication/read-back; SP02 must wait for that actual accepted checkpoint.
+OUTPUT: `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` ACCEPTED at
+`30c5a66f234b75bec926462c6301454133506884` after integrated verification,
+non-force publication and successful fresh `git fetch --prune origin`.
+Local HEAD and refreshed remote ref matched exactly; tree diff empty.
+INTEGRATED_PROOF: exact committed clean source 1597 pytest passed (24 inherited
+warnings), canonical unittest 1572 tests OK, maintenance audit PASS, release
+build PASS. Hosted CI unavailable/not claimed. Earlier pending statements are
+historical; this receipt releases SP02 from the actual accepted foundation.
+UNPUBLISHED_WORK: NONE for SP01; metadata read-back synchronization is the next
+coherent checkpoint. No native execution or source339 support claim is issued.
