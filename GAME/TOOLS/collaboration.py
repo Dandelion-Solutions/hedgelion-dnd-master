@@ -58,8 +58,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.19
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
+# framework_module_version: 1.0.20
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -4025,6 +4025,70 @@ def _validate_access_live_forward_boundary(
         )
 
 
+def _read_exact_absorption_event_collision_snapshots(
+    host: RuntimeHost,
+    basis: _OperationBasis,
+    source_packs: Sequence[LiveNativeStatePack],
+    campaign_event_index: Mapping[str, object],
+) -> dict[str, Mapping[str, object]]:
+    """Read exact existing bodies only when incoming source IDs collide."""
+    from .history import validate_event_index
+    from .native_storage import route_native_record
+
+    try:
+        existing_ids = {
+            entry["event_id"]
+            for entry in validate_event_index(campaign_event_index)["entries"]
+        }
+    except (TypeError, ValueError) as exc:
+        raise CollaborationAdmissionError(
+            "campaign event index is not an exact absorption collision basis"
+        ) from exc
+    incoming_ids: set[str] = set()
+    for pack in source_packs:
+        if not isinstance(pack, LiveNativeStatePack):
+            raise CollaborationAdmissionError(
+                "absorption collision check requires typed native source packs"
+            )
+        for bucket in (
+            pack.native_owner_states,
+            pack.provenance,
+            pack.privacy,
+            pack.chronology,
+            pack.unresolved_work,
+        ):
+            enrollment = bucket.get("runtime.semantic_event")
+            if not isinstance(enrollment, Mapping):
+                continue
+            raw_entries = enrollment.get("entries")
+            if not isinstance(raw_entries, Sequence) or isinstance(
+                raw_entries, (str, bytes)
+            ):
+                continue
+            for raw_entry in raw_entries:
+                if not isinstance(raw_entry, Mapping):
+                    continue
+                event_id = raw_entry.get("event_id")
+                if isinstance(event_id, str) and event_id:
+                    incoming_ids.add(event_id)
+
+    snapshots: dict[str, Mapping[str, object]] = {}
+    for event_id in sorted(incoming_ids.intersection(existing_ids)):
+        path = route_native_record("runtime.semantic_event", (event_id,)).relative_path
+        try:
+            value = host._repository.read_exact_path(basis.pinned_campaign, path)
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            raise CollaborationAdmissionError(
+                "existing absorption event identity lacks an exact campaign body"
+            ) from exc
+        if not isinstance(value, Mapping):
+            raise CollaborationAdmissionError(
+                "existing absorption event body is not typed"
+            )
+        snapshots[path] = deepcopy(dict(value))
+    return snapshots
+
+
 def _absorption_rebind_inputs(
     delta: FrozenCampaignAbsorptionDelta,
     host: RuntimeHost,
@@ -4053,6 +4117,16 @@ def _absorption_rebind_inputs(
                 f"exact W03 absorption predecessor path is not typed: {path}"
             )
         snapshots[path] = deepcopy(dict(value))
+    event_index = snapshots.get("INDEX/EVENT_INDEX.yaml")
+    if event_index is not None:
+        snapshots.update(
+            _read_exact_absorption_event_collision_snapshots(
+                host,
+                basis,
+                tuple(attempt.packed_state for attempt in delta.source_attempts),
+                event_index,
+            )
+        )
     if snapshots:
         state["path_snapshots"] = snapshots
     return state
@@ -4422,6 +4496,16 @@ def _rederive_p1_absorption_delta_for_recovery(
             ) from exc
         path_snapshots[path] = deepcopy(
             dict(_mapping(value, f"exact W03 predecessor {path}"))
+        )
+    event_index_snapshot = path_snapshots.get("INDEX/EVENT_INDEX.yaml")
+    if event_index_snapshot is not None:
+        path_snapshots.update(
+            _read_exact_absorption_event_collision_snapshots(
+                host,
+                predecessor_basis,
+                tuple(packed_states.values()),
+                event_index_snapshot,
+            )
         )
     campaign_body.pop("path_snapshots", None)
     if path_snapshots:

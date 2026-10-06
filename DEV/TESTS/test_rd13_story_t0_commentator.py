@@ -197,10 +197,18 @@ class _HistoryRepository:
             path = route_native_record(
                 "runtime.semantic_event", (event_id,)
             ).relative_path
-            entries.append({"event_id": event_id, "ordinal": ordinal, "path": path})
+            entries.append(
+                {
+                    "event_id": event_id,
+                    "ordinal": ordinal,
+                    "path": path,
+                    "source_origin": "LOCAL",
+                    "admission_ordinal": ordinal,
+                }
+            )
             self.records[path] = event
         self.records["INDEX/EVENT_INDEX.yaml"] = {
-            "schema_version": 1,
+            "schema_version": 2,
             "entity_type": "EVENT",
             "complete": True,
             "upper_ordinal": len(events) if events else None,
@@ -956,7 +964,10 @@ class NativeHistoryWindowTests(unittest.TestCase):
         with self.assertRaises(HistoryContractError):
             host.history.read(origin=f"LIVE:{live.source.epoch_id}")
 
-        self.assertNotIn("INDEX/EVENT_INDEX.yaml", repository.read_paths)
+        self.assertIn("INDEX/EVENT_INDEX.yaml", repository.read_paths)
+        self.assertTrue(
+            all(not path.startswith("LOG/") for path in repository.read_paths)
+        )
         self.assertNotIn("LOG/SEMANTIC_EVENTS", repository.read_paths)
 
     def test_history_rejects_wrong_provenance_order_schema_and_interval(self) -> None:
@@ -4656,7 +4667,7 @@ class StorySchemaTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.8")
         self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.4")
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
         schema_names = (
             "runtime-semantic-event-state.schema.json",
             "native-history-currentness.schema.json",
@@ -4938,7 +4949,7 @@ class StorySchemaTests(unittest.TestCase):
 
 class SchemaVersionTests(unittest.TestCase):
     def test_history_module_version_tracks_its_material_revision(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.5")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
 
     def test_owner_native_python_ingress_accepts_only_actual_integer_one(self) -> None:
         valid_horizon = {

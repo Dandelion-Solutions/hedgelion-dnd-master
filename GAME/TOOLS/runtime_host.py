@@ -18,7 +18,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from typing import Final, NoReturn, Protocol
+from typing import TYPE_CHECKING, Final, NoReturn, Protocol
 
 from .current_owner import (
     CurrentOwnerReadSession,
@@ -59,8 +59,16 @@ from .publication import (
     reconcile_indeterminate_publication,
 )
 
-# framework_module_version: 1.0.14
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.14"
+if TYPE_CHECKING:
+    from .history import (
+        HistoryDiscoveryRequest,
+        HistoryDiscoveryResult,
+        NativeHistoryCandidate,
+        NativeSemanticEvent,
+    )
+
+# framework_module_version: 1.0.17
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.17"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -581,6 +589,13 @@ class CampaignPublicationService(_BoundService):
             raise RuntimeHostError("publication basis belongs to another runtime host")
         if operation_basis.pinned_campaign.campaign_id != self._host._campaign_id:
             raise RuntimeHostError("publication basis belongs to another campaign")
+        if routed_operation.owner_kind == "runtime.semantic_event":
+            # Campaign-native event publication only. Existing LIVE absorption
+            # closures retain their native owner-derived companion unchanged;
+            # source-local -> campaign ordinal reconciliation is a held arm.
+            path_operations = self._prepare_event_index_companion(
+                operation_basis.pinned_campaign, path_operations
+            )
         manifest = self._read_exact_path(
             operation_basis.pinned_campaign, "MANIFEST.yaml"
         )
@@ -654,6 +669,75 @@ class CampaignPublicationService(_BoundService):
                     "confirmed campaign publication lacks valid W02 acceptance evidence"
                 ) from exc
         return outcome
+
+    def _prepare_event_index_companion(
+        self,
+        pinned: PinnedCampaign,
+        operations: Mapping[str, object | None],
+    ) -> Mapping[str, object | None]:
+        """Join serialized native events to the existing W02 closure, not acceptance."""
+        from .history import (
+            _semantic_event_fingerprint,
+            event_index_after_image,
+            validate_event_index,
+            validate_semantic_event_draft,
+        )
+        from .native_storage import FAMILY_ROOTS
+
+        prefix = FAMILY_ROOTS["runtime.semantic_event"] + "/RECORDS/"
+        event_operations = {
+            path: value for path, value in operations.items()
+            if isinstance(path, str) and path.startswith(prefix)
+        }
+        if not event_operations:
+            return operations
+        try:
+            records = []
+            for path, value in event_operations.items():
+                event = validate_semantic_event_draft(value)
+                expected = route_native_record(
+                    "runtime.semantic_event", (event["event_id"],)
+                ).relative_path
+                if path != expected:
+                    raise RuntimeHostError("event publication path differs from native identity")
+                records.append(event)
+            index = self._read_exact_path(pinned, _EVENT_INDEX_PATH)
+            checked = validate_event_index(index)
+            existing = {entry["event_id"]: entry for entry in checked["entries"]}
+            after_image = _json_copy(index, "event index")
+            changed = False
+            # This is the existing campaign admission ordinal, never ID order or
+            # fictional chronology. LIVE absorption has a separate held arm.
+            for event in sorted(records, key=lambda record: record["semantic_order"]):
+                enrolled = existing.get(event["event_id"])
+                if enrolled is None:
+                    after_image = event_index_after_image(after_image, event)
+                    changed = True
+                else:
+                    path = route_native_record(
+                        "runtime.semantic_event", (event["event_id"],)
+                    ).relative_path
+                    exact = self._read_exact_path(pinned, path)
+                    exact_event = validate_semantic_event_draft(exact)
+                    # Existing exact events may anchor another owner's W02 edge.
+                    if (
+                        _semantic_event_fingerprint(event)
+                        != _semantic_event_fingerprint(exact_event)
+                        or enrolled["source_origin"] != "LOCAL"
+                        or "native_source_binding" in enrolled
+                        or event["semantic_order"] != enrolled["admission_ordinal"]
+                        or event["semantic_delta"].get("discovery_refs", [])
+                        != enrolled.get("discovery_refs", [])
+                    ):
+                        raise RuntimeHostError("existing event differs from exact native evidence")
+            if (
+                _EVENT_INDEX_PATH in operations
+                and _json_copy(operations[_EVENT_INDEX_PATH], "event index") != after_image
+            ):
+                raise RuntimeHostError("event-index companion differs from native derivation")
+            return dict(operations) | {_EVENT_INDEX_PATH: after_image} if changed else operations
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RuntimeHostError("event publication enrollment is invalid") from exc
 
     def measure_path_operations(
         self, path_operations: Mapping[str, object | None]
@@ -823,6 +907,18 @@ class CampaignPublicationService(_BoundService):
                     "CAMPAIGN_CREATION_IDENTITY_CHANGED",
                     observed_head,
                 )
+            recovery_path_operations = path_operations
+            if routed_operation.owner_kind == "runtime.semantic_event":
+                try:
+                    recovery_path_operations = self._prepare_event_index_companion(
+                        predecessor_pin, path_operations
+                    )
+                except RuntimeHostError as exc:
+                    raise _PublicationRevalidationFailure(
+                        PublicationStatus.CONFLICT,
+                        "RECOVERY_EVENT_INDEX_COMPANION_INVALID",
+                        observed_head,
+                    ) from exc
             try:
                 recovery_basis = freeze_campaign_publication_recovery_basis(
                     repository_id=repository_id,
@@ -833,7 +929,7 @@ class CampaignPublicationService(_BoundService):
                     intended_commit_sha=intended,
                     manifest=predecessor_manifest,
                     campaign_card=predecessor_card,
-                    path_operations=path_operations,
+                    path_operations=recovery_path_operations,
                     owner_generations=owner_generations,
                     routed_operation=routed_operation,
                     publication_reason=reason,
@@ -1198,7 +1294,7 @@ class SemanticEventSourceAdapter(_BoundService):
         if not isinstance(branch, str) or not branch:
             raise RuntimeHostError("LOCAL evt source has no exact campaign ref")
         index = self._read_exact_path(basis.pinned_campaign, _EVENT_INDEX_PATH)
-        selected = self._index_entries(index, lower, max_items)
+        selected = self._index_entries(index, lower, max_items, source_origin="LOCAL")
         entries: list[Mapping[str, object]] = []
         for ordinal, event_id, path in selected:
             record = self._read_exact_path(basis.pinned_campaign, path)
@@ -1230,8 +1326,15 @@ class SemanticEventSourceAdapter(_BoundService):
         lower_exclusive_ordinal: int | None,
         max_items: int,
         _basis: _OperationBasis | None = None,
+        require_complete_source: bool = False,
     ) -> EvtSourceWindow:
         lower = self._validate_window_request(lower_exclusive_ordinal, max_items)
+        if type(require_complete_source) is not bool:
+            raise RuntimeHostError("complete-source requirement must be boolean")
+        if require_complete_source and (lower is not None or max_items != 1000):
+            raise RuntimeHostError(
+                "complete LIVE metadata revalidation requires the full finite window"
+            )
         if _LIVE_ORIGIN.fullmatch(origin) is None:
             raise RuntimeHostError("selected LIVE evt origin is invalid")
         basis = self._operation_basis(_basis)
@@ -1242,8 +1345,65 @@ class SemanticEventSourceAdapter(_BoundService):
         matches = tuple(
             entry for entry in routing.entries if entry.epoch_id == epoch_id
         )
-        if len(matches) != 1:
-            raise RuntimeHostError("selected LIVE source is missing or ambiguous")
+        if len(matches) > 1:
+            raise RuntimeHostError("selected LIVE source is ambiguous")
+        if not matches:
+            from .history import validate_event_index, validate_semantic_event_draft
+
+            index = self._read_exact_path(basis.pinned_campaign, _EVENT_INDEX_PATH)
+            try:
+                checked = validate_event_index(index)
+            except (TypeError, ValueError) as exc:
+                raise RuntimeHostError("absorbed LIVE event index is invalid") from exc
+            anchored = tuple(
+                entry
+                for entry in checked["entries"]
+                if entry["source_origin"] == origin
+            )
+            if not anchored:
+                raise RuntimeHostError(
+                    "selected LIVE source has no positively anchored absorbed history"
+                )
+            binding = anchored[0]["native_source_binding"]
+            if binding["source_key"][0] != self._host._campaign_id:
+                raise RuntimeHostError(
+                    "absorbed LIVE source binding belongs to another campaign"
+                )
+            selected = self._index_entries(
+                checked, lower, max_items, source_origin=origin
+            )
+            entries: list[Mapping[str, object]] = []
+            entry_by_ordinal = {entry["admission_ordinal"]: entry for entry in anchored}
+            for ordinal, event_id, path in selected:
+                record = validate_semantic_event_draft(
+                    self._read_exact_path(basis.pinned_campaign, path)
+                )
+                index_entry = entry_by_ordinal[ordinal]
+                if (
+                    record["event_id"] != event_id
+                    or record["semantic_order"] != ordinal
+                    or record["semantic_delta"].get("discovery_refs", [])
+                    != index_entry.get("discovery_refs", [])
+                ):
+                    raise RuntimeHostError(
+                        "absorbed LIVE event differs from its exact source anchor"
+                    )
+                entries.append(
+                    {"ordinal": ordinal, "event_id": event_id, "event_record": record}
+                )
+            upper = selected[-1][0] if selected else None
+            return _issue_evt_source_window(
+                host_token=self._host._basis_token,
+                campaign_id=self._host._campaign_id,
+                origin=origin,
+                source_ref=binding["source_ref"],
+                source_revision=binding["source_revision"],
+                lane="evt",
+                lower_exclusive_ordinal=lower,
+                upper_ordinal=upper,
+                interval_complete_through_upper=True,
+                entries=tuple(entries),
+            )
         source = select_live_source(routing, matches[0].source_key)
         if source is None or source.epoch_id != epoch_id:
             raise RuntimeHostError("selected LIVE source is not current")
@@ -1256,6 +1416,26 @@ class SemanticEventSourceAdapter(_BoundService):
             packed = reader(routing, source)
         except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
             raise RuntimeHostError("selected LIVE source-domain read failed") from exc
+        if require_complete_source:
+            if isinstance(packed, LiveNativeStatePack):
+                owner_states: object = packed.native_owner_states
+            elif isinstance(packed, Mapping):
+                owner_states = packed.get("native_owner_states")
+            else:
+                owner_states = None
+            event_state = (
+                owner_states.get("runtime.semantic_event")
+                if isinstance(owner_states, Mapping)
+                else None
+            )
+            if (
+                not isinstance(event_state, Mapping)
+                or type(event_state.get("upper_ordinal")) is not int
+                or event_state["upper_ordinal"] > 1000
+            ):
+                raise RuntimeHostError(
+                    "selected LIVE exact metadata exceeds the finite source bound"
+                )
         selected = self._live_entries(packed, source, lower, max_items)
         entries = tuple(
             {"ordinal": ordinal, "event_id": event_id, "event_record": record}
@@ -1311,67 +1491,49 @@ class SemanticEventSourceAdapter(_BoundService):
 
     @staticmethod
     def _index_entries(
-        value: Mapping[str, object], lower: int | None, max_items: int
+        value: Mapping[str, object],
+        lower: int | None,
+        max_items: int,
+        *,
+        source_origin: str = "LOCAL",
     ) -> list[tuple[int, str, str]]:
-        if value.get("schema_version") != 1 or value.get("entity_type") != "EVENT":
-            raise RuntimeHostError(
-                "LOCAL evt enrollment/index is not the accepted event index"
-            )
-        raw_entries = value.get("entries")
-        if not isinstance(raw_entries, Sequence) or isinstance(
-            raw_entries, (str, bytes)
-        ):
-            raise RuntimeHostError("LOCAL evt enrollment/index entries are not bounded")
-        if value.get("complete") is not True or "upper_ordinal" not in value:
-            raise RuntimeHostError(
-                "LOCAL evt enrollment/index does not prove completeness"
-            )
-        upper_ordinal = value["upper_ordinal"]
-        if upper_ordinal is not None and (
-            type(upper_ordinal) is not int or upper_ordinal < 1
-        ):
-            raise RuntimeHostError("LOCAL evt enrollment/index upper basis is invalid")
-        expected_length = 0 if upper_ordinal is None else upper_ordinal
-        if expected_length != len(raw_entries):
-            raise RuntimeHostError(
-                "LOCAL evt index upper basis differs from enrollment"
-            )
+        from .history import validate_event_index
+
+        try:
+            checked = validate_event_index(value)
+        except (TypeError, ValueError) as exc:
+            raise RuntimeHostError("evt enrollment/index is invalid") from exc
+        if source_origin != "LOCAL" and _LIVE_ORIGIN.fullmatch(source_origin) is None:
+            raise RuntimeHostError("evt source origin is not admitted")
+        lane_entries = [
+            entry
+            for entry in checked["entries"]
+            if entry["source_origin"] == source_origin
+        ]
+        expected_length = len(lane_entries)
         start = lower or 0
         if start > expected_length:
             raise RuntimeHostError(
-                "LOCAL evt lower cursor exceeds the complete upper basis"
+                "evt source-local lower cursor exceeds the complete upper basis"
             )
         stop = min(expected_length, start + max_items)
         if start == expected_length and start > 0:
             raise RuntimeHostError(
-                "LOCAL evt source has no new interval after the cursor"
+                "evt source has no new interval after the source-local cursor"
             )
         result: list[tuple[int, str, str]] = []
-        for index in range(start, stop):
-            raw = raw_entries[index]
-            if not isinstance(raw, Mapping):
-                raise RuntimeHostError("LOCAL evt enrollment entry is not typed")
-            event_id = raw.get("event_id", raw.get("id"))
-            if not isinstance(event_id, str) or not event_id:
-                raise RuntimeHostError(
-                    "LOCAL evt enrollment entry has no event identity"
-                )
-            ordinal = raw.get("ordinal")
-            if type(ordinal) is not int or ordinal != index + 1:
-                raise RuntimeHostError(
-                    "LOCAL evt enrollment interval is not contiguous"
-                )
-            path = raw.get("path")
+        for raw in lane_entries[start:stop]:
+            event_id = raw["event_id"]
+            ordinal = raw["admission_ordinal"]
+            path = raw["path"]
             expected_path = route_native_record(
                 "runtime.semantic_event", (event_id,)
             ).relative_path
-            if path is not None and path != expected_path:
-                raise RuntimeHostError(
-                    "LOCAL evt enrollment path is not the known-ID route"
-                )
+            if path != expected_path:
+                raise RuntimeHostError("evt enrollment path is not the known-ID route")
             result.append((ordinal, event_id, expected_path))
         if len({event_id for _ordinal, event_id, _path in result}) != len(result):
-            raise RuntimeHostError("LOCAL evt enrollment identities are not unique")
+            raise RuntimeHostError("evt source-local event identities are not unique")
         return result
 
     @classmethod
@@ -2000,6 +2162,20 @@ class HistoryService(_BoundService):
     """Fixed route to native history; it is a sibling of ContextService."""
 
     __slots__ = ()
+
+    def discover(self, request: HistoryDiscoveryRequest) -> HistoryDiscoveryResult:
+        """Bounded campaign/LIVE preparation; HOT producer dependency remains held."""
+        from .history import _discover_bound_history
+
+        return _discover_bound_history(self._host, request)
+
+    def read_candidate(
+        self, result: HistoryDiscoveryResult, candidate: NativeHistoryCandidate
+    ) -> NativeSemanticEvent:
+        """Exact native evidence only from this Host's retained shortlist."""
+        from .history import _read_discovery_candidate
+
+        return _read_discovery_candidate(self._host, result, candidate)
 
     def read(self, *, origin: str = "LOCAL") -> object:
         """Read a bounded native evt window through this host's fresh basis."""

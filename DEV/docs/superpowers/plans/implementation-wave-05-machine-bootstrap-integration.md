@@ -873,6 +873,18 @@ P1B semantically. Eligible lanes may prepare in parallel only with isolated/disj
 existing EVENT_INDEX artifact plus accepted unpublished HOT and selected LIVE
 event evidence.
 
+**Bounded technical allocation:** campaign/selected-LIVE preparation is eligible
+now. The complete local-HOT producer arm consumes the actual SP04 native segment
+kernel and its kernel-derived strict SemanticEvent establishment, not P0's
+Actor-only producer or raw event staging. This holds full P2/P3, not independent
+preparation; P2 does not wait for SP28, whose Wish/History integration consumes
+accepted P2. Independent ruling/review evidence:
+`DEV/docs/superpowers/design/2026-10-06-p2-origin-and-producer-allocation.md`.
+Preserve origin-local `semantic_order == admission_ordinal`; campaign index
+`ordinal` is routing position. EVENT_INDEX retains `source_origin`, native
+admission ordinal and exact LIVE source binding through absorption, with bodies
+unchanged and source-anchor retention qualified separately from derived hints.
+
 **Files:**
 - Modify: `GAME/TOOLS/history.py`, `runtime_host.py`, `hot_store.py`.
 - Modify named accepted event producers/joins only as required:
@@ -1524,6 +1536,20 @@ Future: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DE
 **HARD_PRECEDES:** `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` and accepted catalog/package binding checkpoint. **Output:** `W05_SPELL_SEALED_CATALOG_READY`: compiler/cache/index mechanisms verified on admitted conformance sources; full339 content/proof/adoption remains unestablished. **JOIN_BEFORE_INTEGRATION:** source/domain/recipe equality + this output -> final installed package loader/support writer.
 
 **Files/actions:** `NEW_CREATE` `GAME/TOOLS/activity_runtime.py`, `DEV/TESTS/test_local_spell_catalog.py`, SP02 private fixtures. `EXISTING_MODIFY` `GAME/TOOLS/catalog_runtime.py` and `ruleset_package.py` only to reuse actual source-validation/freeze interfaces without weakening negatives. `INSPECT_ONLY` package seed/manifests/lock, engine inventory/comparator, source/native frontiers, existing catalog tests. The final integration task later adds `plan_next_segment` to this same module; SP02 does not add dispatch.
+
+**Bounded compiler-source allocation:** independent Senior review in
+`DEV/docs/superpowers/design/2026-10-06-sp02-compiler-source-allocation.md`
+authorizes the missing immutable path-neutral compiler contract projection.
+Reuse the canonical DEV family assemblers/identity producer via the minimum
+`validate_ruleset_package_closure.py` generation/equality helper; NEW_CREATE
+`GAME/TOOLS/activity_compiler_contracts.json` schema 1. Refine the existing
+source input to authenticate inventory plus exact frozen projection, retaining
+inventory schema 2 and BoundCatalogContext wire form where possible. Conditional
+release-builder/schema/test alignment establishes installed source binding only.
+Original source hash and sanitized projection verification stay distinct;
+no handwritten duplicate registry, self-hash authority, production activation,
+SP01 reopening or final SP28/SP29 writer transfer. The task Impact Envelope
+includes precisely this producer -> projection -> compiler integration.
 
 **Interfaces:** exact execution section 7 `admit_activity_catalog(context_request: object, *, package_snapshots: Mapping[str,PackageSnapshot], engine_contract_inventory_source: object, natural_owner_sources: object, compiler_generation: int, mode_policy_profile_id: str) -> AdmittedActivityCatalog`; `compile_activity(catalog: AdmittedActivityCatalog, activity_id: str) -> CompiledActivity`. Add pure `lookup_activity(catalog, activity_id: str) -> CompiledActivity` and `lookup_capability_cards(catalog, *, eligible_activity_ids: tuple[str,...], query: str, maximum_candidates: int) -> tuple[Mapping[str,object],...]`; the supplied IDs must come from the actual source-specific Actor availability projection, and the lookup grants no capability. Hydration returns only eligible catalog-card data for the caller's existing Context budget/disclosure route. Frozen source bytes, exact consumer/read/dependency/profile contracts and compiled cache identity are the section 3 contract, not mutable snapshot paths.
 

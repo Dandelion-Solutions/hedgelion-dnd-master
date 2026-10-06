@@ -3052,3 +3052,30 @@ build PASS. Hosted CI unavailable/not claimed. Earlier pending statements are
 historical; this receipt releases SP02 from the actual accepted foundation.
 UNPUBLISHED_WORK: NONE for SP01; metadata read-back synchronization is the next
 coherent checkpoint. No native execution or source339 support claim is issued.
+
+## P2 reviewed non-HOT preparation integration — 2026-10-06
+
+IMPLEMENTATION_START_HEAD: `565b7625c2f04e937cfca4425507af61a366bc01`.
+TASK/SPEC: original P2/T06-A1/WP11–19 native History/currentness/enrollment;
+bounded Senior producer/ordinal allocation recorded in
+`DEV/docs/superpowers/design/2026-10-06-p2-origin-and-producer-allocation.md`.
+ALLOWED OWNERS/CONSUMERS: History/Host/HOT helper preparation, event-index
+schema/scaffold/generator, existing campaign publication/recovery and LIVE/
+Collaboration absorption companions, exact source regression consumers.
+PROTECTED: no second acceptance authority, raw append, absence inference,
+campaign body scan, pre-CAS currentness, LIVE fallback, Story activation or
+fictional chronology from enrollment. HOT semantic establishment remains SP04.
+ACTUAL FROZEN INPUT: `0e95fcbcf168ee948be5bb6c2031e6755955ac5a`, independent
+preparation spec/quality PASS after R1–R4 repairs. Integrated P2 owner bytes are
+unchanged from that candidate; accepted SP01 and worker/tooling metadata retained.
+COORDINATOR_FOCUSED: P2 preparation + exact six-module P2 command + RD12:
+699 passed, 2 existing warnings; diff check PASS.
+FULL_INTEGRATED_PROOF: pending exact committed clean-source execution.
+VERSION_IMPACT: History 1.0.5 -> 1.0.7; Host 1.0.14 -> 1.0.17;
+LIVE 1.0.22 -> 1.0.24; Collaboration 1.0.19 -> 1.0.20;
+EVENT_INDEX schema 1 -> 2 with producers/reader/scaffold synchronization.
+No SemanticEvent body/History generation change, migration or coordinated bump.
+SYSTEM_IMPACT: RESOLVED technical allocation within accepted owners; no PO issue.
+CLAIM: reviewed coherent preparation only; full P2 output NOT_PRODUCED, P3 held
+until actual SP04 native producer and full P2 proof. Independent compiler/source
+lanes continue. Publication/read-back pending.

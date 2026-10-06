@@ -36,8 +36,8 @@ if TYPE_CHECKING:
     from .publication import PublicationOutcome
 
 
-# framework_module_version: 1.0.22
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.22"
+# framework_module_version: 1.0.24
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.24"
 
 LiveSourceKey: TypeAlias = tuple[str, str, str]
 
@@ -2909,20 +2909,26 @@ def _absorption_campaign_basis(
     raw_snapshots = state.pop(_ABSORPTION_PATH_SNAPSHOTS_KEY, {})
     if not isinstance(raw_snapshots, Mapping):
         raise LiveContractError("absorption path snapshots must be an explicit mapping")
+    from .native_storage import FAMILY_ROOTS
     from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
 
     allowed_paths = {
         _CAMPAIGN_EVENT_INDEX_PATH,
         OPERATIONAL_ROOT_MEMBERSHIP_PATH,
     }
-    if any(path not in allowed_paths for path in raw_snapshots):
-        raise LiveContractError(
-            "absorption campaign basis contains an unregistered path snapshot"
+    semantic_event_prefix = f"{FAMILY_ROOTS['runtime.semantic_event']}/RECORDS/"
+    snapshots: dict[str, dict[str, object]] = {}
+    for raw_path, value in raw_snapshots.items():
+        path = _campaign_path(raw_path)
+        if path not in allowed_paths and not path.startswith(semantic_event_prefix):
+            raise LiveContractError(
+                "absorption campaign basis contains an unregistered path snapshot"
+            )
+        if path in snapshots:
+            raise LiveContractError("absorption path snapshots repeat a normalized path")
+        snapshots[path] = _copy_json_mapping(
+            value, f"absorption path snapshot {path}"
         )
-    snapshots = {
-        path: _copy_json_mapping(value, f"absorption path snapshot {path}")
-        for path, value in raw_snapshots.items()
-    }
     return state, snapshots
 
 
@@ -3136,77 +3142,115 @@ def _absorption_records_for_family(
 def _campaign_event_index_after_image(
     value: object,
     *,
-    source_events: Sequence[tuple[LiveSourceKey, int, str]],
+    source_events: Sequence[tuple[LiveEnvelope, int, str, Mapping[str, object]]],
+    existing_event_bodies: Mapping[str, object],
 ) -> dict[str, object]:
+    from .history import (
+        _semantic_event_fingerprint,
+        validate_discovery_refs,
+        validate_event_index,
+        validate_semantic_event_draft,
+    )
+    from .native_storage import route_native_record
+
     if not isinstance(value, Mapping):
         raise LiveContractError(
             "LIVE SemanticEvent absorption requires the exact campaign event index"
         )
-    index = _copy_json_mapping(value, "campaign EventIndex")
-    if (
-        type(index.get("schema_version")) is not int
-        or index.get("schema_version") != 1
-        or index.get("entity_type") != "EVENT"
-        or index.get("complete") is not True
-    ):
+    try:
+        index = validate_event_index(value)
+    except (TypeError, ValueError) as exc:
         raise LiveContractError(
             "campaign EventIndex is not a complete compatible owner snapshot"
-        )
-    raw_entries = index.get("entries")
-    if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
-        raise LiveContractError("campaign EventIndex entries are not an array")
-    upper = index.get("upper_ordinal")
-    if upper is None:
-        if raw_entries:
-            raise LiveContractError(
-                "empty campaign EventIndex upper conflicts with entries"
-            )
-    elif type(upper) is not int or upper < 1 or upper != len(raw_entries):
-        raise LiveContractError("campaign EventIndex upper differs from exact entries")
-    from .native_storage import route_native_record
-
-    existing_ids: set[str] = set()
-    entries: list[dict[str, object]] = []
-    for expected_ordinal, raw_entry in enumerate(raw_entries, start=1):
-        if not isinstance(raw_entry, Mapping):
-            raise LiveContractError("campaign EventIndex entry is not an object")
-        ordinal = raw_entry.get("ordinal")
-        event_id = raw_entry.get("event_id")
-        if type(ordinal) is not int or ordinal != expected_ordinal:
-            raise LiveContractError("campaign EventIndex ordinals are not contiguous")
-        if not isinstance(event_id, str) or not event_id or event_id in existing_ids:
-            raise LiveContractError(
-                "campaign EventIndex event identities are invalid or duplicated"
-            )
-        expected_path = route_native_record(
-            "runtime.semantic_event", (event_id,)
-        ).relative_path
-        if raw_entry.get("path", expected_path) != expected_path:
-            raise LiveContractError(
-                "campaign EventIndex entry path differs from its native owner"
-            )
-        existing_ids.add(event_id)
-        entries.append(deepcopy(dict(raw_entry)))
-    # This is deterministic event-index enrollment order only, never chronology.
+        ) from exc
+    entries = deepcopy(index["entries"])
+    existing_entries = {entry["event_id"]: entry for entry in entries}
+    added_events: dict[str, tuple[dict[str, object], str]] = {}
+    # This is deterministic campaign route enrollment only, never chronology.
     ordered = sorted(
         source_events,
-        key=lambda entry: (*_live_source_key_sort_key(entry[0]), entry[1]),
+        key=lambda item: (*_live_source_key_sort_key(item[0].source_key), item[1]),
     )
-    for _source_key, _ordinal, event_id in ordered:
-        if event_id in existing_ids:
+    for source, admission_ordinal, event_id, raw_event in ordered:
+        event = validate_semantic_event_draft(raw_event)
+        event_fingerprint = _semantic_event_fingerprint(event)
+        if (
+            event["event_id"] != event_id
+            or event["semantic_order"] != admission_ordinal
+        ):
             raise LiveContractError(
-                "absorbed SemanticEvent already exists in campaign EventIndex"
+                "absorbed SemanticEvent body differs from its source-local admission"
             )
-        existing_ids.add(event_id)
-        entries.append(
-            {
-                "ordinal": len(entries) + 1,
-                "event_id": event_id,
-                "path": route_native_record(
-                    "runtime.semantic_event", (event_id,)
-                ).relative_path,
-            }
-        )
+        source_origin = f"LIVE:{source.epoch_id}"
+        source_binding = {
+            "source_key": list(source.source_key),
+            "source_ref": source.source_ref,
+            "source_revision": source.source_revision,
+        }
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        prior_entry = existing_entries.get(event_id)
+        if prior_entry is not None:
+            existing_body = existing_event_bodies.get(event_path)
+            if not isinstance(existing_body, Mapping):
+                raise LiveContractError(
+                    "absorbed SemanticEvent collision lacks exact campaign body evidence"
+                )
+            prior_event = validate_semantic_event_draft(existing_body)
+            prior_event_fingerprint = _semantic_event_fingerprint(prior_event)
+            prior_event_refs = validate_discovery_refs(
+                prior_event["semantic_delta"].get("discovery_refs", [])
+            )
+            indexed_prior_refs = validate_discovery_refs(
+                prior_entry.get("discovery_refs", [])
+            )
+            if indexed_prior_refs != prior_event_refs:
+                raise LiveContractError(
+                    "campaign EVENT_INDEX discovery-ref nomination differs from exact prior event"
+                )
+            if (
+                prior_event_fingerprint != event_fingerprint
+                or prior_entry["source_origin"] != source_origin
+                or prior_entry["admission_ordinal"] != admission_ordinal
+                or prior_entry.get("native_source_binding") != source_binding
+                or prior_event["semantic_order"] != admission_ordinal
+            ):
+                raise LiveContractError(
+                    "absorbed SemanticEvent collision differs in body, origin, "
+                    "native coordinate, or exact source"
+                )
+            continue
+        previous_incoming = added_events.get(event_id)
+        if previous_incoming is not None:
+            previous_entry, previous_fingerprint = previous_incoming
+            if (
+                previous_fingerprint != event_fingerprint
+                or previous_entry["source_origin"] != source_origin
+                or previous_entry["admission_ordinal"] != admission_ordinal
+                or previous_entry["native_source_binding"] != source_binding
+            ):
+                raise LiveContractError(
+                    "absorbed SemanticEvent batch collision differs in body, origin, "
+                    "native coordinate, or exact source"
+                )
+            continue
+        entry: dict[str, object] = {
+            "ordinal": len(entries) + 1,
+            "event_id": event_id,
+            "path": event_path,
+            "source_origin": source_origin,
+            "admission_ordinal": admission_ordinal,
+            "native_source_binding": source_binding,
+        }
+        refs = event["semantic_delta"].get("discovery_refs")
+        if refs is not None:
+            entry["discovery_refs"] = [
+                {"family_key": ref.family_key, "identity": list(ref.identity)}
+                for ref in validate_discovery_refs(refs)
+            ]
+        entries.append(entry)
+        added_events[event_id] = (entry, event_fingerprint)
     index["entries"] = entries
     index["complete"] = True
     index["upper_ordinal"] = len(entries) if entries else None
@@ -3633,7 +3677,9 @@ def freeze_campaign_absorption_delta(
 
     attempts: list[FrozenCampaignAbsorption] = []
     operations: dict[str, object | None] = {}
-    event_enrollments: list[tuple[LiveSourceKey, int, str]] = []
+    event_enrollments: list[
+        tuple[LiveEnvelope, int, str, Mapping[str, object]]
+    ] = []
     operational_handoffs: list[OperationalRootHandoff] = []
     represented_native_ids: dict[LiveSourceKey, set[str]] = {
         source.source_key: set() for source in ordered_sources
@@ -3727,14 +3773,10 @@ def freeze_campaign_absorption_delta(
                     add_owner_after_image(path, record, f"{category}.{family}")
                     represented_native_ids[source.source_key].update(identity)
                 for ordinal, event_id, event_record in events:
-                    path = route_native_record(
-                        "runtime.semantic_event", (event_id,)
-                    ).relative_path
-                    add_owner_after_image(
-                        path, event_record, f"{category}.runtime.semantic_event"
-                    )
                     represented_native_ids[source.source_key].add(event_id)
-                    event_enrollments.append((source.source_key, ordinal, event_id))
+                    event_enrollments.append(
+                        (source, ordinal, event_id, event_record)
+                    )
         missing_native_ids = set(packed.source_native_ids).difference(
             represented_native_ids[source.source_key]
         )
@@ -3750,15 +3792,35 @@ def freeze_campaign_absorption_delta(
             raise LiveContractError(
                 "LIVE SemanticEvent absorption requires the pinned campaign EventIndex"
             )
+        from .history import validate_event_index
+
+        prior_event_ids = {
+            entry["event_id"] for entry in validate_event_index(event_index)["entries"]
+        }
         add_owner_after_image(
             _CAMPAIGN_EVENT_INDEX_PATH,
             _campaign_event_index_after_image(
                 event_index,
                 source_events=event_enrollments,
+                existing_event_bodies=path_snapshots,
             ),
             "campaign.semantic_event EventIndex",
         )
         used_path_snapshots.add(_CAMPAIGN_EVENT_INDEX_PATH)
+        published_event_ids: set[str] = set()
+        for _source, _ordinal, event_id, event_record in event_enrollments:
+            path = route_native_record(
+                "runtime.semantic_event", (event_id,)
+            ).relative_path
+            if event_id in prior_event_ids:
+                used_path_snapshots.add(path)
+                continue
+            if event_id in published_event_ids:
+                continue
+            add_owner_after_image(
+                path, event_record, "native LIVE SemanticEvent absorption"
+            )
+            published_event_ids.add(event_id)
     if operational_handoffs:
         from .publication import OPERATIONAL_ROOT_MEMBERSHIP_PATH
 

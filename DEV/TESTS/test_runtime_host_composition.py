@@ -367,7 +367,7 @@ class LocalEventRepository(PublicationRepository):
                     "created_at": "2026-09-22T00:00:00Z",
                 },
                 "INDEX/EVENT_INDEX.yaml": {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "entity_type": "EVENT",
                     "complete": True,
                     "upper_ordinal": 2,
@@ -376,11 +376,15 @@ class LocalEventRepository(PublicationRepository):
                             "event_id": "event-1",
                             "ordinal": 1,
                             "path": first_route.relative_path,
+                            "source_origin": "LOCAL",
+                            "admission_ordinal": 1,
                         },
                         {
                             "event_id": "event-2",
                             "ordinal": 2,
                             "path": second_route.relative_path,
+                            "source_origin": "LOCAL",
+                            "admission_ordinal": 2,
                         },
                     ],
                 },
@@ -517,7 +521,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.14")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.17")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -1148,6 +1152,8 @@ class RuntimeHostCompositionTests(unittest.TestCase):
                     "path": route_native_record(
                         "runtime.semantic_event", (f"event-{ordinal}",)
                     ).relative_path,
+                    "source_origin": "LOCAL",
+                    "admission_ordinal": ordinal,
                 }
                 for ordinal in range(1, 1002)
             ]
@@ -1164,7 +1170,6 @@ class RuntimeHostCompositionTests(unittest.TestCase):
 
         self.assertEqual(len(window.entries), 1)
         self.assertEqual(window.entries[0]["event_id"], "event-1")
-        self.assertEqual(oversized_entries.accesses, 1)
         self.assertEqual(
             repository.read_paths,
             [

@@ -1,0 +1,84 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+schema_name: semantic_event_index
+schema_version: 2
+title: Derived SemanticEvent enrollment and discovery
+type: object
+additionalProperties: false
+required: [schema_version, entity_type, complete, upper_ordinal, entries]
+properties:
+  schema_version: {type: integer, const: 2}
+  entity_type: {const: EVENT}
+  complete: {const: true}
+  upper_ordinal:
+    anyOf:
+      - {type: integer, minimum: 1}
+      - {type: 'null'}
+  entries:
+    type: array
+    items:
+      type: object
+      additionalProperties: false
+      required: [ordinal, event_id, source_origin, admission_ordinal]
+      properties:
+        ordinal: {type: integer, minimum: 1}
+        event_id: {type: string, minLength: 1}
+        path: {type: string, minLength: 1}
+        source_origin:
+          type: string
+          pattern: '^(LOCAL|LIVE:e1-[a-f0-9]{64})$'
+        admission_ordinal: {type: integer, minimum: 1}
+        native_source_binding:
+          type: object
+          additionalProperties: false
+          required: [source_key, source_ref, source_revision]
+          properties:
+            source_key:
+              type: array
+              minItems: 3
+              maxItems: 3
+              items: {type: string, minLength: 1}
+            source_ref: {type: string, minLength: 1}
+            source_revision:
+              type: string
+              pattern: '^[a-f0-9]{40}([a-f0-9]{24})?$'
+        discovery_refs:
+          type: array
+          maxItems: 1000
+          uniqueItems: true
+          items:
+            type: object
+            additionalProperties: false
+            required: [family_key, identity]
+            properties:
+              family_key:
+                enum: [world.scene, world.actor, world.actor_group, world.asset, world.location, world.lore_fact, world.player, world.thread, world.effect, world.connection, world.zone, world.organization, world.contract, world.mission, world.encounter, world.hazard, world.knowledge, runtime.interaction, runtime.intent_plan, runtime.command, runtime.procedure, runtime.resolution, runtime.continuation, runtime.resolution_trace, runtime.disclosure, runtime.collaboration_obligation, runtime.maintenance_audit, runtime.catalog_gap_report, runtime.semantic_event, runtime.mechanical_event, runtime.message, runtime.checkpoint, runtime.session]
+              identity:
+                type: array
+                minItems: 1
+                maxItems: 2
+                items: {type: string, minLength: 1}
+            allOf:
+              - if:
+                  properties:
+                    family_key: {enum: [world.knowledge, runtime.disclosure]}
+                then:
+                  properties:
+                    identity: {minItems: 2, maxItems: 2}
+                else:
+                  properties:
+                    identity: {maxItems: 1}
+      allOf:
+        - if:
+            properties:
+              source_origin: {const: LOCAL}
+            required: [source_origin]
+          then:
+            not:
+              required: [native_source_binding]
+          else:
+            required: [native_source_binding]
+$comment: >-
+  ordinal is the campaign's unique route position; admission_ordinal is contiguous
+  only within source_origin and semantic_order. LIVE bindings retain the exact
+  native source key/ref/revision after campaign absorption. These are nominations,
+  not event truth, chronology, currentness, eligibility or absence proof.

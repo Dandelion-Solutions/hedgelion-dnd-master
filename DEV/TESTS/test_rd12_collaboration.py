@@ -887,6 +887,8 @@ def _live_absorption_delta(
     expected_campaign_revision: str,
     proposed_campaign_revision: str,
     event_index: Mapping[str, object] | None = None,
+    event_bodies: Mapping[str, Mapping[str, object]] | None = None,
+    event_record_overrides: Mapping[str, Mapping[str, object]] | None = None,
     operational_roots: Mapping[str, object] | None = None,
 ) -> live_state_module.FrozenCampaignAbsorptionDelta:
     sources = tuple(route.entries)
@@ -911,6 +913,8 @@ def _live_absorption_delta(
                 "provenance_refs": ["source.live"],
                 "semantic_delta": {"scene_id": source.scene_id},
             }
+            if event_record_overrides is not None and event_id in event_record_overrides:
+                event_record = deepcopy(dict(event_record_overrides[event_id]))
             native_owner_states["runtime.semantic_event"] = {
                 "complete": True,
                 "upper_ordinal": 1,
@@ -966,6 +970,10 @@ def _live_absorption_delta(
         campaign_state["path_snapshots"] = {
             "INDEX/EVENT_INDEX.yaml": deepcopy(dict(event_index))
         }
+    if event_bodies is not None:
+        path_snapshots = dict(campaign_state.get("path_snapshots", {}))
+        path_snapshots.update(deepcopy(dict(event_bodies)))
+        campaign_state["path_snapshots"] = path_snapshots
     if operational_roots is not None:
         path_snapshots = dict(campaign_state.get("path_snapshots", {}))
         path_snapshots["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"] = deepcopy(
@@ -980,6 +988,47 @@ def _live_absorption_delta(
         expected_campaign_revision=expected_campaign_revision,
         proposed_campaign_revision=proposed_campaign_revision,
     )
+
+
+def _event_index_with_live_anchor(
+    source: LiveEnvelope,
+    event_id: str,
+    *,
+    discovery_refs: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    live_path = route_native_record("runtime.semantic_event", (event_id,)).relative_path
+    live_entry: dict[str, object] = {
+        "ordinal": 2,
+        "event_id": event_id,
+        "path": live_path,
+        "source_origin": f"LIVE:{source.epoch_id}",
+        "admission_ordinal": 1,
+        "native_source_binding": {
+            "source_key": list(source.source_key),
+            "source_ref": source.source_ref,
+            "source_revision": source.source_revision,
+        },
+    }
+    if discovery_refs is not None:
+        live_entry["discovery_refs"] = deepcopy(discovery_refs)
+    return {
+        "schema_version": 2,
+        "entity_type": "EVENT",
+        "complete": True,
+        "upper_ordinal": 2,
+        "entries": [
+            {
+                "ordinal": 1,
+                "event_id": "campaign-event-before-live",
+                "path": route_native_record(
+                    "runtime.semantic_event", ("campaign-event-before-live",)
+                ).relative_path,
+                "source_origin": "LOCAL",
+                "admission_ordinal": 1,
+            },
+            live_entry,
+        ],
+    }
 
 
 def _live_delta_packs(
@@ -3228,7 +3277,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.19")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.20")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -4173,7 +4222,7 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             "runtime.semantic_event", (previous_event_id,)
         ).relative_path
         event_index: dict[str, object] = {
-            "schema_version": 1,
+            "schema_version": 2,
             "entity_type": "EVENT",
             "complete": True,
             "upper_ordinal": 1,
@@ -4182,6 +4231,8 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
                     "ordinal": 1,
                     "event_id": previous_event_id,
                     "path": previous_event_path,
+                    "source_origin": "LOCAL",
+                    "admission_ordinal": 1,
                 }
             ],
         }
@@ -4222,8 +4273,35 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
         operations = next(
             payload for name, payload in transport.calls if name == "create_tree"
         )
-        self.assertEqual(operations[event_path]["event_id"], event_id)
+        source = next(
+            entry
+            for entry in closed_route.entries
+            if entry.scene_id == "scene-live-0"
+        )
+        live_attempt = next(
+            attempt
+            for attempt in rebound.source_attempts
+            if attempt.source_key == source.source_key
+        )
+        source_event = live_attempt.packed_state.native_owner_states[
+            "runtime.semantic_event"
+        ]["entries"][0]["event_record"]
+        self.assertEqual(
+            _thaw_for_test(operations[event_path]), _thaw_for_test(source_event)
+        )
         self.assertEqual(operations["INDEX/EVENT_INDEX.yaml"]["upper_ordinal"], 2)
+        absorbed_entry = operations["INDEX/EVENT_INDEX.yaml"]["entries"][-1]
+        self.assertEqual(absorbed_entry["ordinal"], 2)
+        self.assertEqual(absorbed_entry["source_origin"], f"LIVE:{source.epoch_id}")
+        self.assertEqual(absorbed_entry["admission_ordinal"], 1)
+        self.assertEqual(
+            _thaw_for_test(absorbed_entry["native_source_binding"]),
+            {
+                "source_key": list(source.source_key),
+                "source_ref": source.source_ref,
+                "source_revision": source.source_revision,
+            },
+        )
         cold = replace(
             published,
             transition=replace(published.transition),
@@ -4240,9 +4318,330 @@ class CollaborationAccessPublicationClosureTests(unittest.TestCase):
             ]["upper_ordinal"],
             2,
         )
+        recovered_index = recovered.composed_absorption.delta.path_operations[
+            "INDEX/EVENT_INDEX.yaml"
+        ]
+        self.assertEqual(
+            _thaw_for_test(recovered_index["entries"][-1]),
+            _thaw_for_test(absorbed_entry),
+        )
         self.assertEqual(
             len([name for name, _payload in transport.calls if name == "update_ref"]),
             1,
+        )
+
+    def test_absorption_deduplicates_only_exact_event_body_origin_coordinate_and_source(self) -> None:
+        (
+            _repository,
+            _transport,
+            transition,
+            _reconciliation,
+            _active_route,
+            closed_route,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        source = closed_route.entries[0]
+        event_id = f"live-event-{source.scene_id}"
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        event_record = {
+            "schema_version": 1,
+            "event_id": event_id,
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": ["source.live"],
+            "semantic_delta": {"scene_id": source.scene_id},
+        }
+        event_index: dict[str, object] = {
+            "schema_version": 2,
+            "entity_type": "EVENT",
+            "complete": True,
+            "upper_ordinal": 2,
+            "entries": [
+                {
+                    "ordinal": 1,
+                    "event_id": "campaign-event-before-live",
+                    "path": route_native_record(
+                        "runtime.semantic_event", ("campaign-event-before-live",)
+                    ).relative_path,
+                    "source_origin": "LOCAL",
+                    "admission_ordinal": 1,
+                },
+                {
+                    "ordinal": 2,
+                    "event_id": event_id,
+                    "path": event_path,
+                    "source_origin": f"LIVE:{source.epoch_id}",
+                    "admission_ordinal": 1,
+                    "native_source_binding": {
+                        "source_key": list(source.source_key),
+                        "source_ref": source.source_ref,
+                        "source_revision": source.source_revision,
+                    },
+                },
+            ],
+        }
+
+        delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+            event_index=event_index,
+            event_bodies={event_path: event_record},
+        )
+
+        assert event_path not in delta.path_operations
+        resulting_index = delta.path_operations["INDEX/EVENT_INDEX.yaml"]
+        assert resulting_index["upper_ordinal"] == 2
+        assert _thaw_for_test(resulting_index["entries"]) == _thaw_for_test(
+            event_index["entries"]
+        )
+
+        other_source = _live_source("scene-other-live-source")
+        contradictory = deepcopy(event_index)
+        contradictory["entries"][1]["source_origin"] = f"LIVE:{other_source.epoch_id}"
+        contradictory["entries"][1]["native_source_binding"] = {
+            "source_key": list(other_source.source_key),
+            "source_ref": other_source.source_ref,
+            "source_revision": other_source.source_revision,
+        }
+        with self.assertRaisesRegex(
+            live_state_module.LiveContractError, "collision differs"
+        ):
+            _live_absorption_delta(
+                closed_route,
+                expected_campaign_revision=transition.expected_campaign_revision,
+                proposed_campaign_revision=transition.proposed_campaign_revision,
+                event_index=contradictory,
+                event_bodies={event_path: event_record},
+            )
+
+    def test_absorption_existing_body_collision_uses_json_typed_fingerprint(self) -> None:
+        from GAME.TOOLS import history as history_module
+
+        (
+            _repository,
+            _transport,
+            transition,
+            _reconciliation,
+            _active_route,
+            closed_route,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        source = closed_route.entries[0]
+        event_id = f"live-event-{source.scene_id}"
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        existing_event = {
+            "schema_version": 1,
+            "event_id": event_id,
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": ["source.live"],
+            "semantic_delta": {"scene_id": source.scene_id, "numeric": 1},
+        }
+        event_index = _event_index_with_live_anchor(source, event_id)
+
+        for lookalike in (True, 1.0):
+            with self.subTest(lookalike=repr(lookalike)):
+                incoming_event = deepcopy(existing_event)
+                incoming_event["semantic_delta"]["numeric"] = lookalike
+                self.assertEqual(existing_event, incoming_event)
+                self.assertNotEqual(
+                    history_module._semantic_event_fingerprint(existing_event),
+                    history_module._semantic_event_fingerprint(incoming_event),
+                )
+                with self.assertRaisesRegex(
+                    live_state_module.LiveContractError, "collision differs"
+                ):
+                    _live_absorption_delta(
+                        closed_route,
+                        expected_campaign_revision=transition.expected_campaign_revision,
+                        proposed_campaign_revision=transition.proposed_campaign_revision,
+                        event_index=event_index,
+                        event_bodies={event_path: existing_event},
+                        event_record_overrides={event_id: incoming_event},
+                    )
+
+    def test_absorption_repeated_incoming_collision_uses_json_typed_fingerprint(self) -> None:
+        from GAME.TOOLS import history as history_module
+
+        source = _live_source("scene-repeated-live")
+        event_id = "repeated-live-event"
+        native_event = {
+            "schema_version": 1,
+            "event_id": event_id,
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": ["source.live"],
+            "semantic_delta": {"numeric": 1},
+        }
+        lookalike_event = deepcopy(native_event)
+        lookalike_event["semantic_delta"]["numeric"] = True
+        self.assertEqual(native_event, lookalike_event)
+        self.assertNotEqual(
+            history_module._semantic_event_fingerprint(native_event),
+            history_module._semantic_event_fingerprint(lookalike_event),
+        )
+        event_index = {
+            "schema_version": 2,
+            "entity_type": "EVENT",
+            "complete": True,
+            "upper_ordinal": None,
+            "entries": [],
+        }
+
+        with self.assertRaisesRegex(
+            live_state_module.LiveContractError, "batch collision"
+        ):
+            live_state_module._campaign_event_index_after_image(
+                event_index,
+                source_events=(
+                    (source, 1, event_id, native_event),
+                    (source, 1, event_id, lookalike_event),
+                ),
+                existing_event_bodies={},
+            )
+
+    def test_absorption_rejects_event_index_refs_that_contradict_existing_body(self) -> None:
+        (
+            _repository,
+            _transport,
+            transition,
+            _reconciliation,
+            _active_route,
+            closed_route,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        source = closed_route.entries[0]
+        event_id = f"live-event-{source.scene_id}"
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        existing_event = {
+            "schema_version": 1,
+            "event_id": event_id,
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": ["source.live"],
+            "semantic_delta": {
+                "scene_id": source.scene_id,
+                "discovery_refs": [
+                    {"family_key": "world.actor", "identity": ["actor-a"]}
+                ],
+            },
+        }
+        event_index = _event_index_with_live_anchor(
+            source,
+            event_id,
+            discovery_refs=[
+                {"family_key": "world.actor", "identity": ["actor-b"]}
+            ],
+        )
+
+        with self.assertRaisesRegex(
+            live_state_module.LiveContractError, "index.*discovery|nomination"
+        ):
+            _live_absorption_delta(
+                closed_route,
+                expected_campaign_revision=transition.expected_campaign_revision,
+                proposed_campaign_revision=transition.proposed_campaign_revision,
+                event_index=event_index,
+                event_bodies={event_path: existing_event},
+                event_record_overrides={event_id: existing_event},
+            )
+
+    def test_absorption_rebind_reads_exact_existing_event_body_for_collision(self) -> None:
+        (
+            repository,
+            transport,
+            transition,
+            _reconciliation,
+            active_route,
+            closed_route,
+            _plan,
+            _progress,
+        ) = self._live_reconciliation(complete_forward=True)
+        source = closed_route.entries[0]
+        event_id = f"live-event-{source.scene_id}"
+        event_path = route_native_record(
+            "runtime.semantic_event", (event_id,)
+        ).relative_path
+        event_record = {
+            "schema_version": 1,
+            "event_id": event_id,
+            "semantic_order": 1,
+            "kind": "event.action",
+            "provenance_refs": ["source.live"],
+            "semantic_delta": {"scene_id": source.scene_id},
+        }
+        event_index = {
+            "schema_version": 2,
+            "entity_type": "EVENT",
+            "complete": True,
+            "upper_ordinal": 2,
+            "entries": [
+                {
+                    "ordinal": 1,
+                    "event_id": "campaign-event-before-live",
+                    "path": route_native_record(
+                        "runtime.semantic_event", ("campaign-event-before-live",)
+                    ).relative_path,
+                    "source_origin": "LOCAL",
+                    "admission_ordinal": 1,
+                },
+                {
+                    "ordinal": 2,
+                    "event_id": event_id,
+                    "path": event_path,
+                    "source_origin": f"LIVE:{source.epoch_id}",
+                    "admission_ordinal": 1,
+                    "native_source_binding": {
+                        "source_key": list(source.source_key),
+                        "source_ref": source.source_ref,
+                        "source_revision": source.source_revision,
+                    },
+                },
+            ],
+        }
+        repository.records["INDEX/EVENT_INDEX.yaml"] = event_index
+        repository.records[event_path] = event_record
+        repository.capture_current_revision()
+        delta = _live_absorption_delta(
+            closed_route,
+            expected_campaign_revision=transition.expected_campaign_revision,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+            event_index=event_index,
+            event_bodies={event_path: event_record},
+        )
+        live = LiveFixture(active_route)
+        host = _host(repository, transport, live)
+        basis = host._begin_operation()
+        campaign_body = _access_campaign(
+            revision=transition.expected_campaign_revision
+        )
+
+        rebound_inputs = collaboration_module._absorption_rebind_inputs(
+            delta, host, basis, campaign_body
+        )
+
+        self.assertEqual(
+            _thaw_for_test(rebound_inputs["path_snapshots"][event_path]),
+            event_record,
+        )
+        rebound = collaboration_module._freeze_absorption_delta_for_revision(
+            delta,
+            campaign_body=rebound_inputs,
+            proposed_campaign_revision=transition.proposed_campaign_revision,
+        )
+        self.assertEqual(
+            _thaw_for_test(rebound.path_operations),
+            _thaw_for_test(delta.path_operations),
         )
 
     def test_live_operational_root_snapshot_is_reused_for_actual_revision_binding(

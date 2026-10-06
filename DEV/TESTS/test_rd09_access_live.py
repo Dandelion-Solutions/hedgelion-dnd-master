@@ -781,7 +781,7 @@ class LiveEnvelopeClaimTests(unittest.TestCase):
             (schema_dir / "live-publication-attempt.schema.json").read_text(encoding="utf-8")
         )
 
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.22")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.24")
         self.assertEqual(LIVE_CLAIM_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_PUBLICATION_ATTEMPT_SCHEMA_VERSION, 5)
@@ -2146,7 +2146,7 @@ def _p1_empty_event_index(
     entries: tuple[dict[str, object], ...] = (),
 ) -> dict[str, object]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "entity_type": "EVENT",
         "complete": True,
         "upper_ordinal": len(entries) if entries else None,
@@ -2813,7 +2813,7 @@ class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
     def test_live_module_version_advances_without_schema_projection_changes(
         self,
     ) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.22")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.24")
         self.assertEqual(LIVE_ROUTING_SCHEMA_VERSION, 4)
         self.assertEqual(LIVE_NATIVE_STATE_PACK_SCHEMA_VERSION, 2)
         self.assertEqual(LIVE_ABSORPTION_ATTEMPT_SCHEMA_VERSION, 1)
@@ -3026,6 +3026,8 @@ class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
             "path": route_native_record(
                 "runtime.semantic_event", (previous_event_id,)
             ).relative_path,
+            "source_origin": "LOCAL",
+            "admission_ordinal": 1,
         }
         pack = _p1_pack(
             source,
@@ -3053,7 +3055,7 @@ class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
         self.assertEqual(
             delta.as_mapping()["path_operations"][P1_EVENT_INDEX_PATH],
             {
-                "schema_version": 1,
+                "schema_version": 2,
                 "entity_type": "EVENT",
                 "complete": True,
                 "upper_ordinal": 2,
@@ -3063,6 +3065,13 @@ class LiveComposedCampaignAbsorptionDeltaTests(unittest.TestCase):
                         "ordinal": 2,
                         "event_id": event_id,
                         "path": event_path,
+                        "source_origin": f"LIVE:{source.epoch_id}",
+                        "admission_ordinal": 1,
+                        "native_source_binding": {
+                            "source_key": list(source.source_key),
+                            "source_ref": source.source_ref,
+                            "source_revision": source.source_revision,
+                        },
                     },
                 ],
             },

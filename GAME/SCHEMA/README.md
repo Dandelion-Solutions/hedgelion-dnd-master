@@ -28,6 +28,7 @@
 | Collaboration | [collaboration_obligation.schema.yaml](collaboration_obligation.schema.yaml) | Scoped collaboration obligation state. PLAYER route references name obligations but grant no authority. |
 | Recovery routing/handoff | [operational_root_routing.schema.yaml](operational_root_routing.schema.yaml), [operational_root_handoff.schema.yaml](operational_root_handoff.schema.yaml) | Bounded routes to current `runtime.command`, `runtime.procedure`, `runtime.interaction` and `runtime.intent_plan` owners; those records own lifecycle and closure. |
 | Session/checkpoint/index | [session.schema.yaml](session.schema.yaml), [checkpoint.schema.yaml](checkpoint.schema.yaml), [index.schema.yaml](index.schema.yaml) | Coordination observations, optional immutable evidence and derived discovery. None selects current gameplay truth or proves completeness. |
+| EVENT_INDEX | [event_index.schema.yaml](event_index.schema.yaml) | Campaign route positions plus source-local SemanticEvent admission coordinates and exact LIVE source bindings; bounded nominations remain non-authoritative. The generic family index remains separate. |
 | Policy/allocation support | [house_rules_policy.schema.yaml](house_rules_policy.schema.yaml), [id_allocator.schema.yaml](id_allocator.schema.yaml) | Narrow typed policy and allocation support, each subordinate to its native owner. |
 
 ## Current retained schema targets
@@ -42,6 +43,7 @@
 | [session.schema.yaml](session.schema.yaml) | 1 |
 | [checkpoint.schema.yaml](checkpoint.schema.yaml) | 4 |
 | [index.schema.yaml](index.schema.yaml) | 2 |
+| [event_index.schema.yaml](event_index.schema.yaml) | 2 |
 | [scene.schema.yaml](scene.schema.yaml) | 3 |
 | [location.schema.yaml](location.schema.yaml) | 2 |
 | [player.schema.yaml](player.schema.yaml) | 2 |

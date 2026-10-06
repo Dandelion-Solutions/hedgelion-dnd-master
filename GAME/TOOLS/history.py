@@ -14,7 +14,9 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Final
 
 if TYPE_CHECKING:
+    from .current_owner import NativeOwnerRef
     from .policy_basis import RepositoryPort
+    from .runtime_host import RuntimeHost, _OperationBasis
 
 
 _GIT_REVISION: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
@@ -40,12 +42,966 @@ _T0_FACTOR_FIELDS: Final[frozenset[str]] = frozenset(
 _NATIVE_HISTORY_KIND: Final[str] = "runtime.native_history"
 _MISSING_HOST_TOKEN: Final[object] = object()
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 
 
 class HistoryContractError(ValueError):
     """Raised when a caller supplies invalid native history material."""
+
+
+def validate_discovery_refs(value: object) -> tuple[NativeOwnerRef, ...]:
+    """Validate routing shape only; native producers own input/provenance admission."""
+    from .current_owner import NativeOwnerRef
+    from .native_storage import FAMILY_ROOTS
+
+    if (
+        not isinstance(value, Sequence)
+        or isinstance(value, (str, bytes))
+        or len(value) > 1000
+    ):
+        raise HistoryContractError("discovery_refs must be a finite typed array")
+    refs: list[NativeOwnerRef] = []
+    for raw in value:
+        if not isinstance(raw, Mapping) or set(raw) != {"family_key", "identity"}:
+            raise HistoryContractError("discovery ref fields are not strict")
+        family = raw["family_key"]
+        identity = raw["identity"]
+        if (
+            not isinstance(family, str)
+            or family not in FAMILY_ROOTS
+            or family == "world.faction"
+        ):
+            raise HistoryContractError("discovery ref family is not registered")
+        arity = 2 if family in {"world.knowledge", "runtime.disclosure"} else 1
+        if (
+            not isinstance(identity, Sequence)
+            or isinstance(identity, (str, bytes))
+            or len(identity) != arity
+        ):
+            raise HistoryContractError("discovery ref identity is incomplete")
+        refs.append(NativeOwnerRef(family, tuple(identity)))
+    if len(set(refs)) != len(refs):
+        raise HistoryContractError("discovery refs repeat a native owner")
+    return tuple(refs)
+
+
+def _discovery_ref_mappings(refs: Sequence[NativeOwnerRef]) -> list[dict[str, object]]:
+    return [
+        {"family_key": ref.family_key, "identity": list(ref.identity)} for ref in refs
+    ]
+
+
+def _normalize_native_source_binding(
+    value: object, source_origin: str
+) -> dict[str, object]:
+    from .live_state import build_live_ref
+
+    binding = _mapping(value, "LIVE native source binding")
+    if set(binding) != {"source_key", "source_ref", "source_revision"}:
+        raise HistoryContractError("LIVE native source binding fields are not strict")
+    raw_source_key = binding["source_key"]
+    if (
+        not isinstance(raw_source_key, Sequence)
+        or isinstance(raw_source_key, (str, bytes))
+        or len(raw_source_key) != 3
+    ):
+        raise HistoryContractError(
+            "LIVE native source key must contain campaign, scene, and epoch"
+        )
+    campaign_id = _nonempty_string(
+        raw_source_key[0], "LIVE native source key campaign_id"
+    )
+    scene_id = _nonempty_string(raw_source_key[1], "LIVE native source key scene_id")
+    epoch_id = _nonempty_string(raw_source_key[2], "LIVE native source key epoch_id")
+    source_key = (campaign_id, scene_id, epoch_id)
+    source_ref = _history_source_ref(binding["source_ref"])
+    source_revision = _git_revision(
+        binding["source_revision"], "LIVE native source revision"
+    )
+    if source_key[2] != source_origin.removeprefix("LIVE:"):
+        raise HistoryContractError("LIVE source key epoch differs from source_origin")
+    try:
+        expected_source_ref = build_live_ref(campaign_id, scene_id, epoch_id)
+    except (TypeError, ValueError) as exc:
+        raise HistoryContractError(
+            "LIVE source key cannot derive its exact source ref"
+        ) from exc
+    if source_ref != expected_source_ref:
+        raise HistoryContractError("LIVE source ref differs from its exact source key")
+    return {
+        "source_key": list(source_key),
+        "source_ref": source_ref,
+        "source_revision": source_revision,
+    }
+
+
+def _normalize_event_index_entry(
+    raw: object, expected_route_ordinal: int
+) -> dict[str, object]:
+    from .native_storage import route_native_record
+
+    if (
+        not isinstance(raw, Mapping)
+        or not {
+            "ordinal",
+            "event_id",
+            "source_origin",
+            "admission_ordinal",
+        }.issubset(raw)
+        or set(raw)
+        - {
+            "ordinal",
+            "event_id",
+            "path",
+            "source_origin",
+            "admission_ordinal",
+            "native_source_binding",
+            "discovery_refs",
+        }
+    ):
+        raise HistoryContractError("EVENT_INDEX entry fields are not strict")
+    event_id = _nonempty_string(raw["event_id"], "enrolled event_id")
+    source_origin = _history_origin(raw["source_origin"])
+    admission_ordinal = _positive_int(
+        raw["admission_ordinal"], "EVENT_INDEX admission_ordinal"
+    )
+    if type(raw["ordinal"]) is not int or raw["ordinal"] != expected_route_ordinal:
+        raise HistoryContractError(
+            "EVENT_INDEX campaign route positions are not contiguous"
+        )
+    path = route_native_record("runtime.semantic_event", (event_id,)).relative_path
+    if raw.get("path", path) != path:
+        raise HistoryContractError("EVENT_INDEX path differs from exact native route")
+    entry: dict[str, object] = {
+        "ordinal": expected_route_ordinal,
+        "event_id": event_id,
+        "path": path,
+        "source_origin": source_origin,
+        "admission_ordinal": admission_ordinal,
+    }
+    if source_origin == "LOCAL":
+        if "native_source_binding" in raw:
+            raise HistoryContractError(
+                "LOCAL EVENT_INDEX origin cannot carry a LIVE source binding"
+            )
+    else:
+        if "native_source_binding" not in raw:
+            raise HistoryContractError(
+                "LIVE EVENT_INDEX origin requires an exact native source binding"
+            )
+        entry["native_source_binding"] = _normalize_native_source_binding(
+            raw["native_source_binding"], source_origin
+        )
+    if "discovery_refs" in raw:
+        entry["discovery_refs"] = _discovery_ref_mappings(
+            validate_discovery_refs(raw["discovery_refs"])
+        )
+    return entry
+
+
+def _exact_event_index_anchor(value: object, event_id: str) -> dict[str, object] | None:
+    """Read one intact source anchor when unrelated coarse-index fields are invalid."""
+    index = _mapping(value, "EVENT_INDEX")
+    if type(index.get("schema_version")) is not int or index.get("schema_version") != 2:
+        return None
+    if index.get("entity_type") != "EVENT":
+        return None
+    raw_entries = index.get("entries")
+    if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
+        return None
+    matches = [
+        (position, raw)
+        for position, raw in enumerate(raw_entries, 1)
+        if isinstance(raw, Mapping) and raw.get("event_id") == event_id
+    ]
+    if len(matches) != 1:
+        return None
+    position, raw_anchor = matches[0]
+    anchor = _normalize_event_index_entry(raw_anchor, position)
+    lane_ordinal = 1
+    for route_position, raw_entry in enumerate(raw_entries, 1):
+        if not isinstance(raw_entry, Mapping):
+            continue
+        if raw_entry.get("source_origin") != anchor["source_origin"]:
+            continue
+        lane_entry = _normalize_event_index_entry(raw_entry, route_position)
+        if lane_entry["admission_ordinal"] != lane_ordinal:
+            raise HistoryContractError(
+                "exact EVENT_INDEX source lane has contradictory admission coordinates"
+            )
+        if anchor["source_origin"] != "LOCAL" and lane_entry.get(
+            "native_source_binding"
+        ) != anchor.get("native_source_binding"):
+            raise HistoryContractError(
+                "exact EVENT_INDEX source lane has contradictory LIVE bindings"
+            )
+        lane_ordinal += 1
+    return anchor
+
+
+def validate_event_index(value: object) -> dict[str, object]:
+    """Validate route positions and source-local evidence anchors separately."""
+    index = _mapping(value, "EVENT_INDEX")
+    if set(index) != {
+        "schema_version",
+        "entity_type",
+        "complete",
+        "upper_ordinal",
+        "entries",
+    }:
+        raise HistoryContractError("EVENT_INDEX fields are not strict")
+    if (
+        type(index["schema_version"]) is not int
+        or index["schema_version"] != 2
+        or index["entity_type"] != "EVENT"
+        or index["complete"] is not True
+    ):
+        raise HistoryContractError("EVENT_INDEX is not complete compatible enrollment")
+    raw_entries = index["entries"]
+    if not isinstance(raw_entries, Sequence) or isinstance(raw_entries, (str, bytes)):
+        raise HistoryContractError("EVENT_INDEX entries must be an array")
+    upper = index["upper_ordinal"]
+    if upper is None:
+        if raw_entries:
+            raise HistoryContractError("empty EVENT_INDEX upper conflicts with entries")
+    elif type(upper) is not int or upper < 1 or upper != len(raw_entries):
+        raise HistoryContractError("EVENT_INDEX upper differs from enrollment")
+    entries: list[dict[str, object]] = []
+    ids: set[str] = set()
+    next_admission_by_origin: dict[str, int] = {}
+    bindings_by_origin: dict[str, dict[str, object]] = {}
+    for ordinal, raw in enumerate(raw_entries, 1):
+        entry = _normalize_event_index_entry(raw, ordinal)
+        event_id = entry["event_id"]
+        source_origin = entry["source_origin"]
+        admission_ordinal = entry["admission_ordinal"]
+        if event_id in ids:
+            raise HistoryContractError("EVENT_INDEX event identities are duplicated")
+        expected_admission = next_admission_by_origin.get(source_origin, 1)
+        if admission_ordinal != expected_admission:
+            raise HistoryContractError(
+                "EVENT_INDEX source-local admission coordinates are not contiguous"
+            )
+        next_admission_by_origin[source_origin] = expected_admission + 1
+        if source_origin != "LOCAL":
+            normalized_binding = entry["native_source_binding"]
+            previous_binding = bindings_by_origin.get(source_origin)
+            if previous_binding is not None and previous_binding != normalized_binding:
+                raise HistoryContractError(
+                    "LIVE EVENT_INDEX origin has contradictory source bindings"
+                )
+            bindings_by_origin[source_origin] = normalized_binding
+        ids.add(event_id)
+        entries.append(entry)
+    return {
+        "schema_version": 2,
+        "entity_type": "EVENT",
+        "complete": True,
+        "upper_ordinal": upper,
+        "entries": entries,
+    }
+
+
+def event_index_after_image(index: object, event: object) -> dict[str, object]:
+    """Append a LOCAL lane event at the next campaign route position."""
+    from .native_storage import route_native_record
+
+    result = validate_event_index(index)
+    record = validate_semantic_event_draft(event)
+    entries = result["entries"]
+    if any(entry["event_id"] == record["event_id"] for entry in entries):
+        raise HistoryContractError(
+            "existing event enrollment requires exact native reconciliation"
+        )
+    ordinal = len(entries) + 1
+    next_local_admission = (
+        sum(1 for entry in entries if entry["source_origin"] == "LOCAL") + 1
+    )
+    if record["semantic_order"] != next_local_admission:
+        raise HistoryContractError(
+            "LOCAL event semantic_order differs from its source-local admission ordinal"
+        )
+    entry = {
+        "ordinal": ordinal,
+        "event_id": record["event_id"],
+        "path": route_native_record(
+            "runtime.semantic_event", (record["event_id"],)
+        ).relative_path,
+        "source_origin": "LOCAL",
+        "admission_ordinal": record["semantic_order"],
+    }
+    refs = record["semantic_delta"].get("discovery_refs")
+    if refs is not None:
+        entry["discovery_refs"] = _discovery_ref_mappings(validate_discovery_refs(refs))
+    entries.append(entry)
+    result["upper_ordinal"] = ordinal
+    return result
+
+
+@dataclass(frozen=True, slots=True)
+class HistoryDiscoveryRequest:
+    """Finite structured routing request. Owner/source refs do not grant eligibility."""
+
+    selector: str
+    max_candidates: int
+    owner_ref: NativeOwnerRef | None = None
+    event_id: str | None = None
+    origin: str | None = None
+
+    def __post_init__(self) -> None:
+        from .current_owner import NativeOwnerRef
+
+        if self.selector not in {"EXACT_EVENT", "OWNER", "SESSION", "SOURCE_REF", "RECENT_TAIL"}:
+            raise HistoryContractError("History selector is not admitted")
+        if type(self.max_candidates) is not int or not 1 <= self.max_candidates <= 1000:
+            raise HistoryContractError("max_candidates must be a finite positive resource bound")
+        if self.origin is not None:
+            _history_origin(self.origin)
+        if self.selector == "EXACT_EVENT":
+            _nonempty_string(self.event_id, "exact event_id")
+            if self.owner_ref is not None:
+                raise HistoryContractError("exact event selector cannot carry owner_ref")
+        elif self.event_id is not None:
+            raise HistoryContractError("event_id requires exact event selector")
+        if self.selector in {"OWNER", "SESSION", "SOURCE_REF"}:
+            if not isinstance(self.owner_ref, NativeOwnerRef):
+                raise HistoryContractError("selector requires a typed native owner ref")
+            validate_discovery_refs(_discovery_ref_mappings((self.owner_ref,)))
+            if self.selector == "SESSION" and self.owner_ref.family_key != "runtime.session":
+                raise HistoryContractError("session selector requires native session ref")
+        elif self.owner_ref is not None:
+            raise HistoryContractError("owner_ref requires a typed ref selector")
+
+
+@dataclass(frozen=True, slots=True)
+class HistoryDiscoverySourceBasis:
+    campaign_id: str
+    origin: str
+    source_ref: str
+    source_revision: str
+    campaign_revision: str
+    campaign_tree: str
+    metadata_fingerprint: str
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class NativeHistoryCandidate:
+    event_id: str
+    origin: str
+    source_ref: str
+    source_revision: str
+    admission_ordinal: int
+    serving_ordinal: int
+    path: str
+    discovery_refs: tuple[NativeOwnerRef, ...]
+    source_basis: HistoryDiscoverySourceBasis
+    native_source_binding: Mapping[str, object] | None
+    event_fingerprint: str | None
+    exact_bypass: bool = False
+
+
+@dataclass(frozen=True, slots=True, weakref_slot=True, eq=False, init=False)
+class HistoryDiscoveryResult:
+    operation_token: object
+    candidates: tuple[NativeHistoryCandidate, ...]
+    contributing_source_bases: tuple[HistoryDiscoverySourceBasis, ...]
+    status: str
+    limit_applied: bool
+    reason: str
+
+    def __init__(self, **_values: object) -> None:
+        raise HistoryContractError("History discovery results must be host-issued")
+
+
+@dataclass(frozen=True, slots=True)
+class _HistoryDiscoveryIssuance:
+    host: RuntimeHost
+    basis: _OperationBasis
+    request: HistoryDiscoveryRequest
+    adapter: object
+    live_transport: object
+    candidates: tuple[NativeHistoryCandidate, ...]
+    candidate_fingerprints: tuple[str, ...]
+    source_bases: tuple[HistoryDiscoverySourceBasis, ...]
+    status: str
+    limit_applied: bool
+    reason: str
+
+
+_DISCOVERY_OPERATIONS: weakref.WeakKeyDictionary[
+    HistoryDiscoveryResult, _HistoryDiscoveryIssuance
+] = weakref.WeakKeyDictionary()
+
+
+def _native_source_binding(source: object) -> dict[str, object]:
+    from .live_state import LiveEnvelope
+
+    if not isinstance(source, LiveEnvelope):
+        raise HistoryContractError("LIVE source binding requires an owner-typed source")
+    return {
+        "source_key": list(source.source_key),
+        "source_ref": source.source_ref,
+        "source_revision": source.source_revision,
+    }
+
+
+def _candidate_fingerprint(candidate: NativeHistoryCandidate) -> str:
+    binding = candidate.native_source_binding
+    return _semantic_event_fingerprint(
+        {
+            "event_id": candidate.event_id,
+            "origin": candidate.origin,
+            "source_ref": candidate.source_ref,
+            "source_revision": candidate.source_revision,
+            "admission_ordinal": candidate.admission_ordinal,
+            "serving_ordinal": candidate.serving_ordinal,
+            "path": candidate.path,
+            "discovery_refs": _discovery_ref_mappings(candidate.discovery_refs),
+            "source_basis": {
+                "campaign_id": candidate.source_basis.campaign_id,
+                "origin": candidate.source_basis.origin,
+                "source_ref": candidate.source_basis.source_ref,
+                "source_revision": candidate.source_basis.source_revision,
+                "campaign_revision": candidate.source_basis.campaign_revision,
+                "campaign_tree": candidate.source_basis.campaign_tree,
+                "metadata_fingerprint": candidate.source_basis.metadata_fingerprint,
+            },
+            "native_source_binding": (
+                None if binding is None else _thaw_history_value(binding)
+            ),
+            "event_fingerprint": candidate.event_fingerprint,
+            "exact_bypass": candidate.exact_bypass,
+        }
+    )
+
+
+def _discover_bound_history(
+    host: RuntimeHost, request: HistoryDiscoveryRequest
+) -> HistoryDiscoveryResult:
+    """Prepare campaign/selected-LIVE routes; SP04 HOT acceptance remains held."""
+    from .live_state import select_live_source
+    from .native_storage import route_native_record
+    from .runtime_host import RuntimeHost, SemanticEventSourceAdapter
+
+    if not isinstance(host, RuntimeHost) or not isinstance(
+        request, HistoryDiscoveryRequest
+    ):
+        raise HistoryContractError("discovery requires a bound Host and typed request")
+    basis = host._begin_operation()
+    adapter = host.semantic_events
+    if (
+        not isinstance(adapter, SemanticEventSourceAdapter)
+        or adapter._host is not host
+    ):
+        raise HistoryContractError("discovery requires the Host-bound event source adapter")
+    candidates: list[NativeHistoryCandidate] = []
+    sources: list[HistoryDiscoverySourceBasis] = []
+    failures: list[str] = []
+    # The campaign index is a serving route for both original LOCAL events and
+    # positively anchored LIVE events already absorbed into the campaign.
+    origins: list[tuple[str, object | None]] = [("LOCAL", None)]
+    route = basis.selected_live
+    active_live_origins: set[str] = set()
+    if route is not None:
+        if len(route.entries) > 1000:
+            failures.append("LIVE_SOURCE_BOUND_EXCEEDED")
+        else:
+            for entry in route.entries:
+                origin = f"LIVE:{entry.epoch_id}"
+                if request.origin is None or request.origin == origin:
+                    source = select_live_source(route, entry.source_key)
+                    if source is not None:
+                        origins.append((origin, source))
+                        active_live_origins.add(origin)
+    for origin, source in origins:
+        try:
+            if origin == "LOCAL":
+                manifest = adapter._read_exact_path(
+                    basis.pinned_campaign, "MANIFEST.yaml"
+                )
+                serving_ref = _history_source_ref(manifest.get("branch"))
+                serving_revision = basis.pinned_campaign.revision
+                raw_index = adapter._read_exact_path(
+                    basis.pinned_campaign, "INDEX/EVENT_INDEX.yaml"
+                )
+                metadata_fingerprint = _semantic_event_fingerprint(raw_index)
+                exact_bypass = False
+                try:
+                    checked_index = validate_event_index(raw_index)
+                    entries = checked_index["entries"]
+                except (TypeError, ValueError):
+                    if request.selector != "EXACT_EVENT":
+                        raise
+                    anchor = _exact_event_index_anchor(raw_index, request.event_id)
+                    if anchor is None:
+                        raise HistoryContractError(
+                            "exact event has no surviving positive source-origin anchor"
+                        )
+                    entries = [anchor]
+                    exact_bypass = True
+                for entry in entries:
+                    binding = entry.get("native_source_binding")
+                    if (
+                        binding is not None
+                        and binding["source_key"][0] != host.campaign_id
+                    ):
+                        raise HistoryContractError(
+                            "absorbed LIVE source binding belongs to another campaign"
+                        )
+            else:
+                source_ref = source.source_ref
+                source_revision = source.source_revision
+                native_binding = _native_source_binding(source)
+                reader = getattr(
+                    host._live_transport, "read_selected_live_source", None
+                )
+                if not callable(reader):
+                    raise HistoryContractError("selected LIVE source read unavailable")
+                pack = reader(route, source)
+                selected = adapter._live_entries(pack, source, None, 1000)
+                owner_states = (
+                    pack.native_owner_states
+                    if hasattr(pack, "native_owner_states")
+                    else pack.get("native_owner_states", {})
+                )
+                enrollment = owner_states.get("runtime.semantic_event")
+                if enrollment["upper_ordinal"] > 1000:
+                    raise HistoryContractError(
+                        "selected LIVE discovery metadata exceeds bound"
+                    )
+                entries = []
+                for ordinal, event_id, raw_record in selected:
+                    event = validate_semantic_event_draft(raw_record)
+                    if (
+                        event["event_id"] != event_id
+                        or event["semantic_order"] != ordinal
+                    ):
+                        raise HistoryContractError(
+                            "selected LIVE event differs from its source-local enrollment"
+                        )
+                    refs = validate_discovery_refs(
+                        event["semantic_delta"].get("discovery_refs", [])
+                    )
+                    entries.append(
+                        {
+                            "ordinal": ordinal,
+                            "event_id": event_id,
+                            "path": route_native_record(
+                                "runtime.semantic_event", (event_id,)
+                            ).relative_path,
+                            "discovery_refs": _discovery_ref_mappings(refs),
+                            "event_record": event,
+                        }
+                    )
+                fingerprint_entries = [
+                    {
+                        key: value
+                        for key, value in entry.items()
+                        if key != "event_record"
+                    }
+                    for entry in entries
+                ]
+                metadata_fingerprint = _semantic_event_fingerprint(
+                    {
+                        "native_source_binding": native_binding,
+                        "entries": fingerprint_entries,
+                    }
+                )
+                source_basis = HistoryDiscoverySourceBasis(
+                    host.campaign_id,
+                    origin,
+                    source_ref,
+                    source_revision,
+                    basis.pinned_campaign.revision,
+                    basis.pinned_campaign.tree_sha,
+                    metadata_fingerprint,
+                )
+                source_candidates: list[NativeHistoryCandidate] = []
+                for entry in entries:
+                    if (
+                        request.selector == "EXACT_EVENT"
+                        and entry["event_id"] != request.event_id
+                    ):
+                        continue
+                    if request.origin is not None and request.origin != origin:
+                        continue
+                    event = validate_semantic_event_draft(entry["event_record"])
+                    if event["semantic_order"] != entry["ordinal"]:
+                        raise HistoryContractError(
+                            "selected LIVE event semantic_order differs from its native coordinate"
+                        )
+                    refs = validate_discovery_refs(entry["discovery_refs"])
+                    if request.owner_ref is not None and request.owner_ref not in refs:
+                        continue
+                    source_candidates.append(
+                        NativeHistoryCandidate(
+                            event_id=entry["event_id"],
+                            origin=origin,
+                            source_ref=source_ref,
+                            source_revision=source_revision,
+                            admission_ordinal=entry["ordinal"],
+                            serving_ordinal=entry["ordinal"],
+                            path=entry["path"],
+                            discovery_refs=refs,
+                            source_basis=source_basis,
+                            native_source_binding=_freeze_history_value(native_binding),
+                            event_fingerprint=(
+                                _semantic_event_fingerprint(event)
+                                if request.selector == "EXACT_EVENT"
+                                else None
+                            ),
+                        )
+                    )
+                if request.selector == "RECENT_TAIL":
+                    source_candidates.reverse()
+                candidates.extend(source_candidates[: request.max_candidates])
+                sources.append(source_basis)
+                if len(source_candidates) > request.max_candidates:
+                    failures.append("LIMIT_APPLIED")
+                continue
+
+            source_basis = HistoryDiscoverySourceBasis(
+                host.campaign_id,
+                "LOCAL",
+                serving_ref,
+                serving_revision,
+                basis.pinned_campaign.revision,
+                basis.pinned_campaign.tree_sha,
+                metadata_fingerprint,
+            )
+            source_candidates: list[NativeHistoryCandidate] = []
+            for entry in entries:
+                if (
+                    request.origin is not None
+                    and entry["source_origin"] != request.origin
+                ):
+                    continue
+                refs = validate_discovery_refs(entry.get("discovery_refs", []))
+                if (
+                    request.selector == "EXACT_EVENT"
+                    and entry["event_id"] != request.event_id
+                ):
+                    continue
+                if request.owner_ref is not None and request.owner_ref not in refs:
+                    continue
+                binding = entry.get("native_source_binding")
+                candidate_origin = entry["source_origin"]
+                candidate_ref = (
+                    serving_ref if binding is None else binding["source_ref"]
+                )
+                candidate_revision = (
+                    serving_revision if binding is None else binding["source_revision"]
+                )
+                candidate_binding = (
+                    None if binding is None else _freeze_history_value(binding)
+                )
+                event_fingerprint = None
+                if request.selector == "EXACT_EVENT":
+                    event = validate_semantic_event_draft(
+                        adapter._read_exact_path(basis.pinned_campaign, entry["path"])
+                    )
+                    if (
+                        event["event_id"] != entry["event_id"]
+                        or event["semantic_order"] != entry["admission_ordinal"]
+                        or validate_discovery_refs(
+                            event["semantic_delta"].get("discovery_refs", [])
+                        )
+                        != refs
+                    ):
+                        raise HistoryContractError(
+                            "exact event differs from its source-origin anchor"
+                        )
+                    event_fingerprint = _semantic_event_fingerprint(event)
+                source_candidates.append(
+                    NativeHistoryCandidate(
+                        event_id=entry["event_id"],
+                        origin=candidate_origin,
+                        source_ref=candidate_ref,
+                        source_revision=candidate_revision,
+                        admission_ordinal=entry["admission_ordinal"],
+                        serving_ordinal=entry["ordinal"],
+                        path=entry["path"],
+                        discovery_refs=refs,
+                        source_basis=source_basis,
+                        native_source_binding=candidate_binding,
+                        event_fingerprint=event_fingerprint,
+                        exact_bypass=exact_bypass,
+                    )
+                )
+            if request.selector == "RECENT_TAIL":
+                source_candidates.sort(
+                    key=lambda item: (
+                        item.origin,
+                        -item.admission_ordinal,
+                        item.event_id,
+                    )
+                )
+            candidates.extend(source_candidates[: request.max_candidates])
+            sources.append(source_basis)
+            if len(source_candidates) > request.max_candidates:
+                failures.append("LIMIT_APPLIED")
+        except (AttributeError, KeyError, OSError, TypeError, ValueError):
+            failures.append(f"SOURCE_DISCOVERY_INCOMPLETE:{origin}")
+    if (
+        request.origin is not None
+        and request.origin.startswith("LIVE:")
+        and not any(candidate.origin == request.origin for candidate in candidates)
+        and request.origin not in active_live_origins
+    ):
+        failures.append("SELECTED_SOURCE_UNAVAILABLE")
+    result = object.__new__(HistoryDiscoveryResult)
+    issued_candidates = tuple(candidates[: request.max_candidates])
+    issued_sources = tuple(sources)
+    status = "TYPED_INCOMPLETE"
+    limit_applied = (
+        len(candidates) > request.max_candidates or "LIMIT_APPLIED" in failures
+    )
+    reason = ";".join(
+        [
+            "HOT_ACCEPTANCE_DEPENDENCY_HOLD",
+            *[f for f in failures if f != "LIMIT_APPLIED"],
+        ]
+    )
+    for name, value in {
+        "operation_token": basis,
+        "candidates": issued_candidates,
+        "contributing_source_bases": issued_sources,
+        "status": status,
+        "limit_applied": limit_applied,
+        "reason": reason,
+    }.items():
+        object.__setattr__(result, name, value)
+    _DISCOVERY_OPERATIONS[result] = _HistoryDiscoveryIssuance(
+        host=host,
+        basis=basis,
+        request=request,
+        adapter=adapter,
+        live_transport=host._live_transport,
+        candidates=issued_candidates,
+        candidate_fingerprints=tuple(
+            _candidate_fingerprint(candidate) for candidate in issued_candidates
+        ),
+        source_bases=issued_sources,
+        status=status,
+        limit_applied=limit_applied,
+        reason=reason,
+    )
+    return result
+
+
+def _read_discovery_candidate(
+    host: RuntimeHost,
+    result: HistoryDiscoveryResult,
+    candidate: NativeHistoryCandidate,
+) -> NativeSemanticEvent:
+    from .live_state import select_live_source
+    from .native_storage import route_native_record
+    from .runtime_host import RuntimeHost, SemanticEventSourceAdapter
+
+    issuance = (
+        _DISCOVERY_OPERATIONS.get(result)
+        if isinstance(result, HistoryDiscoveryResult)
+        else None
+    )
+    if (
+        issuance is None
+        or issuance.host is not host
+        or not isinstance(host, RuntimeHost)
+    ):
+        raise HistoryContractError(
+            "candidate is not from this Host discovery operation"
+        )
+    adapter = host.semantic_events
+    if (
+        adapter is not issuance.adapter
+        or not isinstance(adapter, SemanticEventSourceAdapter)
+        or adapter._host is not host
+        or host._live_transport is not issuance.live_transport
+    ):
+        raise HistoryContractError("History event source adapter binding changed")
+    if (
+        result.operation_token is not issuance.basis
+        or tuple(result.candidates) != issuance.candidates
+        or tuple(result.contributing_source_bases) != issuance.source_bases
+        or result.status != issuance.status
+        or result.limit_applied is not issuance.limit_applied
+        or result.reason != issuance.reason
+    ):
+        raise HistoryContractError(
+            "History discovery carrier differs from its Host issuance"
+        )
+    candidate_index = next(
+        (
+            index
+            for index, issued in enumerate(issuance.candidates)
+            if issued is candidate
+        ),
+        None,
+    )
+    if (
+        candidate_index is None
+        or _candidate_fingerprint(candidate)
+        != issuance.candidate_fingerprints[candidate_index]
+    ):
+        raise HistoryContractError(
+            "candidate differs from its Host-issued shortlist carrier"
+        )
+    basis = issuance.basis
+    fresh = host._begin_operation()
+    if (
+        fresh.pinned_campaign != basis.pinned_campaign
+        or fresh.selected_live != basis.selected_live
+    ):
+        raise HistoryContractError("History discovery source requires revalidation")
+    if candidate.source_basis.origin == "LOCAL":
+        raw_index = adapter._read_exact_path(
+            basis.pinned_campaign, "INDEX/EVENT_INDEX.yaml"
+        )
+        if (
+            _semantic_event_fingerprint(raw_index)
+            != candidate.source_basis.metadata_fingerprint
+        ):
+            raise HistoryContractError(
+                "campaign source nomination metadata changed under retained basis"
+            )
+        if candidate.exact_bypass:
+            enrolled = _exact_event_index_anchor(raw_index, candidate.event_id)
+            if enrolled is None:
+                raise HistoryContractError("exact event origin anchor no longer exists")
+        else:
+            checked_index = validate_event_index(raw_index)
+            enrolled = next(
+                (
+                    entry
+                    for entry in checked_index["entries"]
+                    if entry["event_id"] == candidate.event_id
+                ),
+                None,
+            )
+            if enrolled is None:
+                raise HistoryContractError("campaign nomination no longer exists")
+        if (
+            enrolled["ordinal"] != candidate.serving_ordinal
+            or enrolled["event_id"] != candidate.event_id
+            or enrolled["path"] != candidate.path
+            or enrolled["source_origin"] != candidate.origin
+            or enrolled["admission_ordinal"] != candidate.admission_ordinal
+            or enrolled.get("native_source_binding")
+            != (
+                None
+                if candidate.native_source_binding is None
+                else _thaw_history_value(candidate.native_source_binding)
+            )
+            or validate_discovery_refs(enrolled.get("discovery_refs", []))
+            != candidate.discovery_refs
+        ):
+            raise HistoryContractError(
+                "campaign nomination differs from retained source basis"
+            )
+        record = adapter._read_exact_path(basis.pinned_campaign, candidate.path)
+    elif candidate.source_basis.origin == candidate.origin:
+        window = adapter.read_selected_live_evt_window(
+            origin=candidate.origin,
+            lower_exclusive_ordinal=None,
+            max_items=1000,
+            _basis=basis,
+            require_complete_source=True,
+        )
+        route = basis.selected_live
+        matches = (
+            ()
+            if route is None
+            else tuple(
+                entry
+                for entry in route.entries
+                if f"LIVE:{entry.epoch_id}" == candidate.origin
+            )
+        )
+        if len(matches) != 1:
+            raise HistoryContractError("selected LIVE source is missing or ambiguous")
+        source = select_live_source(route, matches[0].source_key)
+        if source is None:
+            raise HistoryContractError("selected LIVE source is no longer current")
+        binding = _native_source_binding(source)
+        metadata_entries: list[dict[str, object]] = []
+        selected_record: Mapping[str, object] | None = None
+        for item in window.entries:
+            event_record = validate_semantic_event_draft(item["event_record"])
+            if event_record["semantic_order"] != item["ordinal"]:
+                raise HistoryContractError("selected LIVE event coordinate changed")
+            refs = validate_discovery_refs(
+                event_record["semantic_delta"].get("discovery_refs", [])
+            )
+            metadata_entries.append(
+                {
+                    "ordinal": item["ordinal"],
+                    "event_id": item["event_id"],
+                    "path": route_native_record(
+                        "runtime.semantic_event", (item["event_id"],)
+                    ).relative_path,
+                    "discovery_refs": _discovery_ref_mappings(refs),
+                }
+            )
+            if item["ordinal"] == candidate.serving_ordinal:
+                if item["event_id"] != candidate.event_id:
+                    raise HistoryContractError(
+                        "selected LIVE source-local route differs"
+                    )
+                selected_record = event_record
+        if (
+            _semantic_event_fingerprint(
+                {"native_source_binding": binding, "entries": metadata_entries}
+            )
+            != candidate.source_basis.metadata_fingerprint
+        ):
+            raise HistoryContractError("selected LIVE nomination metadata changed")
+        if (
+            binding != _thaw_history_value(candidate.native_source_binding)
+            or window.source_ref != candidate.source_basis.source_ref
+            or window.source_revision != candidate.source_basis.source_revision
+            or source.source_ref != candidate.source_ref
+            or source.source_revision != candidate.source_revision
+        ):
+            raise HistoryContractError(
+                "selected LIVE source binding differs from nomination"
+            )
+        if selected_record is None:
+            raise HistoryContractError("selected LIVE exact event no longer exists")
+        record = selected_record
+    else:
+        raise HistoryContractError(
+            "candidate serving basis is not an admitted source route"
+        )
+    event = validate_semantic_event_draft(record)
+    refs = validate_discovery_refs(event["semantic_delta"].get("discovery_refs", []))
+    if (
+        candidate.event_fingerprint is not None
+        and _semantic_event_fingerprint(event) != candidate.event_fingerprint
+    ):
+        raise HistoryContractError(
+            "exact event fingerprint differs from retained nomination"
+        )
+    if (
+        event["event_id"] != candidate.event_id
+        or event["semantic_order"] != candidate.admission_ordinal
+        or refs != candidate.discovery_refs
+    ):
+        raise HistoryContractError("exact event differs from nomination/enrollment")
+    currentness = _issue_history_currentness(
+        campaign_id=host.campaign_id,
+        origin=candidate.origin,
+        source_ref=candidate.source_ref,
+        source_revision=candidate.source_revision,
+        lower_exclusive_ordinal=candidate.admission_ordinal - 1 or None,
+        upper_ordinal=candidate.admission_ordinal,
+        events=(event,),
+    )
+    return _issue_native_event(
+        event,
+        currentness=currentness,
+        admission_ordinal=candidate.admission_ordinal,
+    )
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True, init=False)
@@ -624,15 +1580,38 @@ def _read_bound_native_history(
         matches = tuple(
             entry for entry in routing.entries if entry.epoch_id == epoch_id
         )
-        if len(matches) != 1:
-            raise HistoryContractError("selected LIVE origin is missing or ambiguous")
-        from .live_state import select_live_source
+        if len(matches) > 1:
+            raise HistoryContractError("selected LIVE origin is ambiguous")
+        if matches:
+            from .live_state import select_live_source
 
-        source = select_live_source(routing, matches[0].source_key)
-        if source is None or source.epoch_id != epoch_id:
-            raise HistoryContractError("selected LIVE source is no longer current")
-        expected_source_ref = source.source_ref
-        expected_source_revision = source.source_revision
+            source = select_live_source(routing, matches[0].source_key)
+            if source is None or source.epoch_id != epoch_id:
+                raise HistoryContractError("selected LIVE source is no longer current")
+            expected_source_ref = source.source_ref
+            expected_source_revision = source.source_revision
+        else:
+            index = validate_event_index(
+                source_adapter._read_exact_path(
+                    basis.pinned_campaign, "INDEX/EVENT_INDEX.yaml"
+                )
+            )
+            anchors = tuple(
+                entry
+                for entry in index["entries"]
+                if entry["source_origin"] == checked_origin
+            )
+            if not anchors:
+                raise HistoryContractError(
+                    "selected LIVE origin has no positively anchored absorbed history"
+                )
+            binding = anchors[0]["native_source_binding"]
+            if binding["source_key"][0] != host.campaign_id:
+                raise HistoryContractError(
+                    "selected LIVE origin anchor belongs to another campaign"
+                )
+            expected_source_ref = binding["source_ref"]
+            expected_source_revision = binding["source_revision"]
 
     return _issue_native_history_from_window(
         raw_window,
@@ -1219,6 +2198,8 @@ def validate_semantic_event_draft(value: object) -> dict[str, object]:
     semantic_delta = _thaw_history_value(event["semantic_delta"])
     if not isinstance(semantic_delta, dict):
         raise HistoryContractError("semantic_delta must be a JSON object")
+    if "discovery_refs" in semantic_delta:
+        semantic_delta["discovery_refs"] = _discovery_ref_mappings(validate_discovery_refs(semantic_delta["discovery_refs"]))
     normalized = {
         "schema_version": _schema_version(event["schema_version"]),
         "event_id": _nonempty_string(event["event_id"], "event_id"),

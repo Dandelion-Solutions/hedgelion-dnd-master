@@ -53,6 +53,10 @@ _BLANK_COMPANION_TEMPLATES = {
     ),
 }
 _IDENTITY_COMPANIONS = tuple(_BLANK_COMPANION_TEMPLATES)
+_BLANK_EVENT_INDEX = (
+    "schema_version: 2\nentity_type: EVENT\ncomplete: true\n"
+    "upper_ordinal: null\nentries: []\n"
+)
 _INDEX_FILES = frozenset(
     {
         "EVENT_INDEX.yaml",
@@ -177,6 +181,8 @@ def _validate_campaign_template(
     files: dict[str, bytes], directories: frozenset[str]
 ) -> None:
     _validate_campaign_structure(files, directories)
+    if _decode_campaign_file(files, "INDEX/EVENT_INDEX.yaml") != _BLANK_EVENT_INDEX:
+        raise RuntimeError("EVENT_INDEX must remain complete empty native enrollment")
 
     manifest = _decode_campaign_file(files, "MANIFEST.yaml")
     if (

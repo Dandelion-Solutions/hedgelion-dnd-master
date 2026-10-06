@@ -65,6 +65,15 @@ class HotOwnerAdmissionBasis:
     source_fingerprint: str
 
 
+@dataclass(frozen=True, slots=True)
+class HotEventDiscoverySnapshot:
+    """Derived nominations only; native kernel acceptance integration is pending."""
+
+    entries: tuple[Mapping[str, object], ...]
+    snapshot_fingerprint: str
+    acceptance_integrated: bool = False
+
+
 class HotOwnerStorePort(Protocol):
     """Infrastructure-only HOT read and native Actor establishment capability."""
 
@@ -134,6 +143,19 @@ class NativeHotStore:
             )
             """
         )
+        self._connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS derived_event_discovery (
+                campaign_id TEXT NOT NULL,
+                event_id TEXT NOT NULL,
+                source_basis TEXT NOT NULL,
+                ordinal INTEGER NOT NULL,
+                refs_json TEXT NOT NULL,
+                event_fingerprint TEXT NOT NULL,
+                PRIMARY KEY (campaign_id, event_id)
+            )
+            """
+        )
 
     def __enter__(self) -> Self:
         return self
@@ -144,6 +166,110 @@ class NativeHotStore:
     def close(self) -> None:
         with self._lock:
             self._connection.close()
+
+    def _stage_event_discovery_helper(
+        self, campaign_id: str, event: Mapping[str, object], source_basis: str
+    ) -> None:
+        """Stage derived metadata in an existing local transaction, never acceptance.
+
+        The SP04 kernel join must later call this from its accepted event edge.
+        This helper neither stages a native owner nor issues an admission marker.
+        """
+        from .history import _semantic_event_fingerprint, validate_semantic_event_draft
+
+        if (
+            not isinstance(campaign_id, str)
+            or not campaign_id
+            or not isinstance(source_basis, str)
+            or not re.fullmatch(r"[a-f0-9]{40}(?:[a-f0-9]{24})?", source_basis)
+        ):
+            raise NativeStorageError("event helper requires exact campaign/source basis")
+        record = validate_semantic_event_draft(event)
+        with self._lock:
+            if not self._connection.in_transaction:
+                raise NativeStorageError("event helper requires the existing owner transaction")
+            self._connection.execute(
+                """INSERT INTO derived_event_discovery
+                    (campaign_id, event_id, source_basis, ordinal, refs_json, event_fingerprint)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    ON CONFLICT(campaign_id, event_id) DO UPDATE SET
+                      source_basis=excluded.source_basis, ordinal=excluded.ordinal,
+                      refs_json=excluded.refs_json, event_fingerprint=excluded.event_fingerprint""",
+                (campaign_id, record["event_id"], source_basis, record["semantic_order"],
+                 json.dumps(record["semantic_delta"].get("discovery_refs", []), sort_keys=True),
+                 _semantic_event_fingerprint(record)),
+            )
+
+    def read_admitted_event_discovery(
+        self, campaign_id: str, max_candidates: int
+    ) -> HotEventDiscoverySnapshot:
+        """Read a finite helper snapshot; raw/stale surviving rows are excluded.
+
+        No SemanticEvent acceptance producer exists here. Until the native SP04
+        join is integrated the result explicitly cannot prove discovery completeness.
+        """
+        from .history import _semantic_event_fingerprint, validate_semantic_event_draft
+
+        if not isinstance(campaign_id, str) or not campaign_id:
+            raise NativeStorageError("event discovery campaign is required")
+        if type(max_candidates) is not int or not 1 <= max_candidates <= 1000:
+            raise NativeStorageError("event discovery requires a finite positive bound")
+        entries: list[Mapping[str, object]] = []
+        with self._lock:
+            self._connection.execute("BEGIN")
+            try:
+                # Query only a bounded narrow helper, never the owner table or
+                # the complete admitted-owner set. Each nomination must still
+                # match a native producer's process-local admission marker.
+                rows = self._connection.execute(
+                    "SELECT event_id, source_basis, ordinal, refs_json, event_fingerprint "
+                    "FROM derived_event_discovery WHERE campaign_id=? LIMIT ?",
+                    (campaign_id, max_candidates),
+                ).fetchall()
+                for event_id, source_basis, ordinal, refs_json, event_fingerprint in rows:
+                    identity = (event_id,)
+                    family = "runtime.semantic_event"
+                    admission = self._admitted_rows.get(
+                        _store_key(campaign_id, family, identity)
+                    )
+                    if admission is None:
+                        continue
+                    native_row = self._connection.execute(
+                        "SELECT payload_json, source_basis, generation FROM current_native_owner "
+                        "WHERE campaign_id=? AND family_key=? AND identity_json=?",
+                        (campaign_id, family, _canonical_identity(identity)),
+                    ).fetchone()
+                    if native_row is None:
+                        continue
+                    # Same native adapter convention as the History source reader:
+                    # event_id + semantic kind, never synthetic generic id/kind.
+                    payload = validate_semantic_event_draft(json.loads(native_row[0]))
+                    if payload["event_id"] != event_id:
+                        raise IdentityMismatch("HOT event identity differs from helper route")
+                    document = OwnerDocument(
+                        campaign_id, family, identity, payload,
+                        native_row[1], native_row[2],
+                    )
+                    if (
+                        _owner_fingerprint(document) != admission[0]
+                        or source_basis != document.source_basis
+                        or event_fingerprint != _semantic_event_fingerprint(document.payload)
+                    ):
+                        continue
+                    entries.append(MappingProxyType({
+                        "event_id": event_id,
+                        "source_basis": source_basis,
+                        "ordinal": ordinal,
+                        "discovery_refs": tuple(
+                            _freeze_helper_ref(ref) for ref in json.loads(refs_json)
+                        ),
+                    }))
+                self._connection.execute("COMMIT")
+            except BaseException:
+                self._connection.execute("ROLLBACK")
+                raise
+        fingerprint = _semantic_event_fingerprint({"entries": entries})
+        return HotEventDiscoverySnapshot(tuple(entries), fingerprint)
 
     def stage_owner_document(self, document: OwnerDocument) -> None:
         """Establish one validated owner row as local dirty working state."""
@@ -524,6 +650,10 @@ def _canonical_identity(identity: Sequence[str]) -> str:
     if not identity or any(not isinstance(component, str) or not component for component in identity):
         raise ValueError("owner identity must contain non-empty strings")
     return json.dumps(list(identity), ensure_ascii=False, separators=(",", ":"))
+
+
+def _freeze_helper_ref(ref: Mapping[str, object]) -> Mapping[str, object]:
+    return MappingProxyType({"family_key": ref["family_key"], "identity": tuple(ref["identity"])})
 
 
 def _store_key(
