@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: INDEPENDENT COMPLETE32-TASK SENIOR PLAN GO / OTHER-WORKER AUTONOMOUS DEPENDENCY-DRIVEN IMPLEMENTATION AUTHORIZED; task inputs/technical reviews/original integration gates remain.
-CURRENT_TASK: otherworker fresh SP00/SP01 own-entry preparation and original independent P2 after its exact inputs/envelope; approved32-task realization then original eligible continuation. No production task is marked complete by this GO.
+CURRENT_TASK: SP01 reviewed candidate integration; parallel SP00 partial source-census review and P2 non-HOT preparation integration. SP00/P2 full outputs remain held on their exact remaining inputs; no full339 support claim.
 LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
 LAST_SAFE_SHA: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` — exact independently reviewed repaired plan, maintenance PASS /1526 DEV tests OK; canonical Stop2 GO and original P0/accepted task evidence below preserved. Fresh current ref and own task inputs govern resumption.
 
@@ -2966,3 +2966,45 @@ GATE_STATE: architecture Stop2 and complete-plan Senior GO CLOSED; NEEDS_PO NONE
 NEXT_EXACT_TASK: otherworker fresh bootstrap then eligible SP00/SP01; preserve independently eligible original P2 after its own inputs. Continue through satisfied task dependencies without stopping at ordinary checkpoints; one shared integrator/publisher.
 UNPUBLISHED_WORK: NONE after this coherent GO/control publication and exact remote readback.
 VERSION_IMPACT: NONE — review/control/handoff only.
+
+## Worker recovery and PDF tooling prerequisite — 2026-10-06
+
+COORDINATOR_BASE: `81fda272414bad295177b127b350ed035a1dbee1` — fresh remote
+fetch confirmed the approved plan plus worker-model configuration change.
+STALLED_SP01_ASSIGNMENT: cancelled through the native task session; old worker
+acknowledged STOPPED with clean saved commit
+`651c70d5989286da94c21da5520a25c0b6442a29`. No completed source was discarded.
+Replacement used a separate isolated checkout of that saved commit.
+CONCURRENCY_BOUND: up to five bounded tasks; isolated physical writers,
+frozen read-only reviews, one coordinator for integration/index/cursor/publication.
+
+TOOLING_IMPLEMENTATION: `8f8aaec75856fd39e25bf443e8bf171773eecc0f` — pinned
+`pypdf==6.19.0` in the existing DEV requirements owner. Independent prerequisite
+review PASS; primary PyPI and vendor versioned documentation/LICENSE establish
+BSD-3-Clause, pure-Python extraction and page-subset capability. It is not OCR
+and does not prove source meaning; visual/qualified source evidence is separate.
+The declared requirements fingerprint rebuilds only `.hdm-devtools/venv`.
+Trade-off: one additional DEV dependency/download for all DEV environment setup;
+GAME package/runtime gains no dependency or network operation.
+
+TOOLING_VERIFICATION: `test_dev_tool_environment.py` 3 passed; declared
+`ensure_environment(Path.cwd())` succeeded; pypdf 6.19.0 in-memory read/write/
+page-subset smoke PASS; `python -m pip check` PASS. Exact clean detached source
+at the tooling commit: full pytest 1551 passed (24 existing RD09 warnings),
+canonical `DEV/TOOLS/run_maintenance_audit.py` PASS. Hosted CI not inspected.
+VERSION_IMPACT: NONE — external dependency version, no HDM namespace change;
+requirements fingerprint algorithm/inputs contract is unchanged.
+
+RECOVERED_CANDIDATES: SP01 `1cea6ddb3be82d47eff0b807bd048255b949374e`
+independent final spec/quality review PASS; P2 non-HOT preparation
+`0e95fcbcf168ee948be5bb6c2031e6755955ac5a` independent preparation review PASS.
+These remain isolated inputs pending coordinator integration verification and
+publication. Full P2 remains held on actual SP04 native event producer.
+SP00 partial census `85479b8ae5088dc3c9311c98b399c5d2e297df27` awaits
+review; 337 entries still lack explicit mode/branch qualification, so no SP00
+source-ready or full339 claim is issued.
+NEXT_EXACT_TASK: integrate/verify/publish SP01; continue SP02 from that accepted
+input. Independently review/publish coherent P2 and SP00 preparatory slices,
+then continue their exact remaining obligations. Existing activation gates stay.
+UNPUBLISHED_WORK: this tooling/recovery evidence synchronization until published
+and freshly read back; no hidden main-checkout production edits.

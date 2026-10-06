@@ -4,14 +4,14 @@ Status: **CANONICAL GLOBAL CURRENT-PROGRESS AUTHORITY**
 
 GLOBAL_PROGRAM: HDM engine development
 GLOBAL_STATE: R2.7 CLOSED — WAVES01-04 COMPLETE / SENIOR PASS — WAVE05 LOCAL-SPELL CANONICAL ARCHITECTURE AND COMPLETE32-TASK PLAN / INDEPENDENT SENIOR GO; OTHER-WORKER DEPENDENCY-DRIVEN IMPLEMENTATION AUTHORIZED
-CURRENT_WORKSTREAM: other paused OpenCode/VPS worker executes the approved stable Wave05/Wave06 plan; Architect design/spec/task handoff complete, accepted outputs preserved
-CURRENT_SLICE: eligible SP00/SP01 exact entry checks and original independent P2 own-input lane; then approved native/source/lifecycle/content/acquisition/offline/performance DAG
+CURRENT_WORKSTREAM: OpenCode coordinator integrates independently reviewed isolated task candidates; accepted prior outputs preserved, autonomous dependency-driven implementation continues
+CURRENT_SLICE: recovered SP01 final candidate integration; independent SP00 source-census and P2 non-HOT preparatory lanes; then eligible compiler/native DAG
 LAST_CLOSED_UNIT: W05.T06-P0 -> **PASS / ACCEPTED**; output `W05_T06_CURRENT_OWNER_VIEW_READY` accepted/read back at `8f7098c23521237363bca84879485a18f5b7aa25`.
-NEXT_AUTHORIZED_UNIT: otherworker fresh bootstrap and eligible SP00/SP01; original P2 after its own published inputs/envelope, then autonomously execute approved dependency-eligible tasks through task reviews/publication and original integration gates
+NEXT_AUTHORIZED_UNIT: verify/publish recovered SP01 candidate and release SP02 only from its accepted read-back; continue independent SP00/P2 preparation within their actual source/kernel holds
 REQUIRED_GATE: architecture Stop2 GO CLOSED; complete stable-plan independent Senior GO CLOSED at d84c9a367d46f2f6e70bfa4baadac0914a2d19a9; actual task inputs/TDD/spec-quality reviews/publication remain required; original T06 independent integration and eligible T07/T08/W06 remain. P1A needs actual SP29 package/acquisition; P0->P2->P3 stays independent.
 SENIOR_SYSTEM_IMPACT_FOLLOWUP: `DEV/docs/superpowers/design/2026-10-03-w05-t06-p0-actor-producer-senior-ruling.md` — source gap confirmed; bounded accepted-owner producer realization authorized, no new semantic/evidence authority.
 TASK_LOCAL_CURSOR: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integration-execution-status.md` — authoritative Wave-05 cursor; W05.T01-T05 and T06 S1/S2 preserved; T06-A1 Review Stop 2 GO; P1A System-Impact brief is recorded there.
-KNOWN_BLOCKERS: NEEDS_PO NONE; SS2-01/02/03 and SPPR-01/02 CLOSED. No current plan-review hold. Only actual named task dependencies, technical proof/review and existing integration/activation gates; no repeated human permission at ordinary checkpoints.
+KNOWN_BLOCKERS: NEEDS_PO NONE; SP01 review findings closed on isolated candidate, integration proof/publication pending. SP00 has 337 explicit mode/branch mapping gaps; full P2 HOT producer waits for actual SP04. Holds do not block independent eligible tasks. Original integration/activation gates remain.
 INSTRUCTION_CHECKPOINT_ACCEPTED: `f7399294e85fe0d03d8cb3ba8073c7918d7b29e7`; independent DEV/GAME review and exact 22-file read-back PASS; hosted Validate run `37160553540` maintenance PASS / 1526 DEV tests OK. Evidence owner: `DEV/docs/superpowers/design/2026-10-03-hdm-dev-game-instruction-efficiency.md`.
 STATUS_SYNCHRONIZATION_VERSION_IMPACT: control headers alone NONE; the separately authorized instruction checkpoint changes AI_REASONING 0.1.3 -> 1.0.4, PLAY_POLICY 0.8.4 -> 1.0.5, RUNTIME 1.0.2 -> 1.0.3 and DEV ai_reasoning_revision/runtime_scope_revision 3 -> 4. No campaign/storage/catalog generation or engine identity change.
 
