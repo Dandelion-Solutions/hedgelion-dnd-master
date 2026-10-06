@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://hedgelion.invalid/schemas/spell-support-row.schema.json",
+  "title":"HDM spell support requirement evidence row",
+  "type":"object","additionalProperties":false,
+  "required":["spell_id","mode_id","requirement_key","source_witness_ref","activity_id","compiled_consumer_ids","dependency_ids","contract_refs","source_closure","definition_closure","machine_admission","production_realization","scenario_verification","target_performance"],
+  "properties":{
+    "spell_id":{"$ref":"#/$defs/id"},"mode_id":{"$ref":"#/$defs/id"},"requirement_key":{"$ref":"#/$defs/id"},"source_witness_ref":{"$ref":"#/$defs/id"},"activity_id":{"$ref":"#/$defs/id"},"compiled_consumer_ids":{"$ref":"#/$defs/ids"},"dependency_ids":{"$ref":"#/$defs/ids"},"contract_refs":{"$ref":"#/$defs/ids"},
+    "source_closure":{"$ref":"#/$defs/dimension"},"definition_closure":{"$ref":"#/$defs/dimension"},"machine_admission":{"$ref":"#/$defs/dimension"},"production_realization":{"$ref":"#/$defs/dimension"},"scenario_verification":{"$ref":"#/$defs/dimension"},
+    "target_performance":{"allOf":[{"$ref":"#/$defs/dimension"},{"if":{"properties":{"status":{"const":"PASS"}}},"then":{"required":["environment_ref"]}}]}
+  },
+  "$defs":{
+    "id":{"type":"string","minLength":1},"ids":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/id"}},
+    "dimension":{"type":"object","additionalProperties":false,"required":["status","proof_refs"],"default":{"status":"NOT_ESTABLISHED","proof_refs":[]},"properties":{"status":{"enum":["NOT_ESTABLISHED","PASS","FAIL"]},"proof_refs":{"$ref":"#/$defs/ids"},"environment_ref":{"$ref":"#/$defs/id"}},"allOf":[{"if":{"properties":{"status":{"const":"PASS"}}},"then":{"properties":{"proof_refs":{"minItems":1}}}}]}
+  }
+}

@@ -26,7 +26,8 @@
       "minItems": 1,
       "items": {"$ref": "#/$defs/step"}
     },
-    "details": {"type": "object"}
+    "profile_bindings": {"type":"array","uniqueItems":true,"items":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/profileBinding"}},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "$defs": {
     "machineId": {

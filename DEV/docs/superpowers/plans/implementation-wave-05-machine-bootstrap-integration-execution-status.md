@@ -3008,3 +3008,39 @@ input. Independently review/publish coherent P2 and SP00 preparatory slices,
 then continue their exact remaining obligations. Existing activation gates stay.
 UNPUBLISHED_WORK: this tooling/recovery evidence synchronization until published
 and freshly read back; no hidden main-checkout production edits.
+
+## SP01 recovered structural-foundation integration — 2026-10-06
+
+TASK: W05.SP01; IMPLEMENTATION_START_HEAD:
+`565b7625c2f04e937cfca4425507af61a366bc01`.
+APPROVED DESIGN: stable SP01/common ABI, six accepted local-spell specs, current
+native/schema/value/version owners and complete-plan Senior GO.
+PRIMARY OWNER ARTIFACTS / ALLOWED DELTA: activity_contracts and runtime-owned
+structural projection/checker, listed SP01 schemas/native projections and bounded
+Actor structural validator; only exact affected DEV conformance consumers.
+PROTECTED: no compiler/native acceptance/profile activation, one state owner,
+no GAME->DEV dependency, no NPC physical-transition permission, P0 API and seed
+package bytes preserved. No host/kernel/current_owner/package/catalog mutation.
+EXPECTED CONSUMERS / VERIFICATION: SP02/SP04/lifecycle typed inputs; exact branch
+positive/negative SP01 suites, current seed/P0 and native schema consumers.
+PERSISTENCE/CURRENTNESS: conditional shape synchronization only; no new storage,
+source selection, transaction, compatibility policy or recovery promise.
+HG-01: no latent activation, no additional GAME model/network/RNG operation.
+
+FROZEN REVIEW INPUT: `1cea6ddb3be82d47eff0b807bd048255b949374e`; independent
+spec/quality PASS recorded at `DEV/docs/superpowers/design/2026-10-06-sp01-independent-task-review.md`.
+Coordinator integrated the four recovered implementation/repair commits as one
+coherent owner delta. Exact SP01 bytes match the reviewed candidate; remaining
+tree differences are pre-existing worker configuration and coordinator
+requirements/status projections. Accepted prior inputs are retained.
+COORDINATOR_FOCUSED: exact five-module SP01 command plus repair suite 130 passed;
+`build_activity_contract_shapes.py --check` PASS; staged diff check PASS.
+FULL_INTEGRATED_VERIFICATION: pending exact committed clean-source execution.
+VERSION_IMPACT: Activity contracts new 1.0.4 (initial plus three material review
+repairs); structural_contracts new 1.0.2; Effect schema 1 -> 2 synchronized.
+New capability/structural protocols schema 1; no engine/catalog/campaign/storage/
+digest-generation bump or migration. Schema restrictions/optional shapes are
+qualified in the independent review, not a generic no-bump-by-filetype rule.
+SYSTEM_IMPACT: NONE — all repairs close the authorized SP01 ABI and consumers.
+OUTPUT: W05_SPELL_CLOSED_MACHINE_SHAPES_READY pending integrated proof,
+publication/read-back; SP02 must wait for that actual accepted checkpoint.

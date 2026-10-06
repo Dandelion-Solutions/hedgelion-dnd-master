@@ -1,5 +1,5 @@
 schema_name: world_effect
-schema_version: 1
+schema_version: 2
 strict: true
 required: [schema_version, id, kind, definition_id, state]
 fields:
@@ -12,3 +12,5 @@ invariants:
   - one record is one target-local Effect application
   - Condition aggregation and remaining duration are derived, not writable Effect-state aliases
   - terminal Effects cannot retain armed scheduled-trigger state
+  - scheduled_trigger_state values are closed generation/phase occurrences with binding only when armed and accepted_execution_ref only when claimed
+  - form, concentration, identity, conversion, control, subject binding and spell progress use exact native-profile unions; no copied HP, resource amount or knowledge owner

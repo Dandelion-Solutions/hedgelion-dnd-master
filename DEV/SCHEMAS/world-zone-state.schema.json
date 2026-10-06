@@ -10,9 +10,10 @@
     "name": {"type": "string", "minLength": 1},
     "participant_ids": {"$ref": "#/$defs/idSet"},
     "effect_ids": {"$ref": "#/$defs/idSet"},
-    "geometry": {"type": "object"},
+    "geometry": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/geometry"},
+    "participation_state": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/participationState"},
     "status": {"type": "object"},
-    "details": {"type": "object"}
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},

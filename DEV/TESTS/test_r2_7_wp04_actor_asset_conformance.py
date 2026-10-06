@@ -113,7 +113,11 @@ class R27WP04ActorAssetConformanceTests(unittest.TestCase):
     def test_hp_resource_effect_authority_separation_is_preserved(self):
         actor = self.load_json("DEV/SCHEMAS/world-actor-state.schema.json")
         hp = actor["$defs"]["hp"]["properties"]
-        self.assertEqual(set(hp), {"current", "maximum_base", "maximum_adjustment", "temporary"})
+        self.assertEqual(set(hp), {"current", "maximum_base", "maximum_adjustment", "temporary", "temporary_source"})
+        provenance = actor["$defs"]["temporarySource"]
+        self.assertFalse(provenance["additionalProperties"])
+        self.assertEqual(set(provenance["properties"]), {"grant_occurrence_id", "source_effect_id"})
+        self.assertEqual(provenance["required"], ["grant_occurrence_id"])
         resource = actor["$defs"]["resourceState"]["properties"]
         self.assertNotIn("hp", resource)
         self.assertNotIn("temporary_hp", resource)

@@ -19,9 +19,13 @@
       }
     },
     "world_context_id": {"type": "string", "minLength": 1},
-    "details": {"type": "object"}
+    "casting_state": {"allOf":[{"$ref":"#/$defs/castingState"},{"properties":{"execution_ref":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/castExecutionRef"}}}]},
+    "spell_progress": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/progressMap"},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
+  "allOf":[{"if":{"required":["casting_state"],"properties":{"lifecycle":{"const":"TERMINAL"}}},"then":{"properties":{"casting_state":{"properties":{"phase":{"enum":["COMPLETED","INTERRUPTED","COUNTERED"]}}}}},"else":{"properties":{"casting_state":{"properties":{"phase":{"enum":["STARTED","CASTING","COMPLETION_PENDING"]}}}}}}],
   "$defs": {
+    "castingState": {"type":"object","additionalProperties":false,"required":["profile_id","activity_id","execution_ref","subject_binding","phase","temporal_binding"],"properties":{"profile_id":{"enum":["execution.spell_cast.srd521","execution.spell_cast.long","execution.spell_cast.ritual"]},"activity_id":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/id"},"execution_ref":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/executionRef"},"subject_binding":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/subjectBinding"},"phase":{"enum":["STARTED","CASTING","COMPLETION_PENDING","COMPLETED","INTERRUPTED","COUNTERED"]},"temporal_binding":{"$ref":"https://hedgelion.invalid/schemas/temporal-binding.schema.json"},"accepted_execution_ref":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/executionRef"},"concentration_effect_id":{"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/id"}},"allOf":[{"if":{"properties":{"profile_id":{"const":"execution.spell_cast.long"},"phase":{"enum":["STARTED","CASTING","COMPLETION_PENDING"]}}},"then":{"required":["concentration_effect_id"]}},{"if":{"properties":{"phase":{"enum":["COMPLETED","INTERRUPTED","COUNTERED"]}}},"then":{"required":["accepted_execution_ref"]}}]},
     "spentResourceState": {
       "type": "object",
       "additionalProperties": false,

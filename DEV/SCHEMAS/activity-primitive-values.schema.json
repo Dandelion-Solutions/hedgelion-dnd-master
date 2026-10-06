@@ -3,6 +3,11 @@
   "$id": "https://hedgelion.invalid/schemas/activity-primitive-values.schema.json",
   "title": "HDM closed Activity primitive value fragments",
   "$defs": {
+    "subjectBinding": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/subjectBinding"},
+    "objectSubjectBinding": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/objectSubjectBinding"},
+    "stochasticState": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/stochasticState"},
+    "reconciliationState": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/wishReconciliationState"},
+    "objectReturnAdjudication": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/objectReturnAdjudication"},
     "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "role": {"type": "string", "minLength": 1, "pattern": "^[a-z][a-z0-9_]*$"},
     "entityRef": {"$ref": "#/$defs/machineId"},

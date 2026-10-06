@@ -14,3 +14,8 @@ invariants:
   - state_revision is the explicit Actor-local currentness ordinal
   - knowledge, inventory, active effects and Conditions remain with their native owners
   - provisional or projected data cannot silently become native Actor authority
+  - optional embodiment is exactly principal, body, astral_proxy or object_suspension with the closed world-actor-state fields
+  - neutral principal and object_suspension have no physical HP, location or death-save/recovery progress; their exact spell policy describes only active/dead survival
+  - body and astral_proxy have no copied principal build or private continuity
+  - hp.temporary is the sole temporary HP amount; optional temporary_source requires a positive pool and only grant_occurrence_id and optional source_effect_id
+  - structural embodiment validation grants no NPC phase permission to change physical relations; native source, resource-domain and relation closure remain required

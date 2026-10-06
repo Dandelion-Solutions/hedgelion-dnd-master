@@ -12,7 +12,9 @@
     "traversal_activity_id": {"$ref": "#/$defs/id"},
     "status": {"type": "object"},
     "requirements": {"type": "object"},
-    "details": {"type": "object"}
+    "portal_state": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/portalState"},
+    "traversal_profile": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/traversalProfile"},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}

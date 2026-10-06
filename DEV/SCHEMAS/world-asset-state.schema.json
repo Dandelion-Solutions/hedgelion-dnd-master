@@ -18,7 +18,11 @@
     },
     "durability": {"$ref": "#/$defs/durabilityState"},
     "access": {"const": "blocked"},
-    "details": {"type": "object"}
+    "equipment_transform": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/equipmentTransform"},
+    "replica_origin": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/replicaOrigin"},
+    "conversion_membership": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/conversionMembership"},
+    "spell_progress": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/progressMap"},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "allOf": [
     {"not": {"required": ["owner_actor_id", "container_asset_id"]}},

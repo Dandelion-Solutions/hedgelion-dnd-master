@@ -7,6 +7,8 @@ fields:
   parent_location_id: native_identifier
   organization_id: native_identifier
   environment_ids: unique_array[native_identifier]
+  spell_place: closed_spell_place
+  spell_progress: closed_owner_local_spell_progress_map
   status: object
   details: object
 invariants:
@@ -17,3 +19,4 @@ invariants:
   - objective truth, fictional knowledge and player disclosure remain with their native owners; Location has no known-fact or Secret collection
   - details are descriptive and do not create mechanics, references, currentness, authorization, or index authority
   - LOCATION_INDEX is a discovery projection; known-ID reads derive and validate the exact native route
+  - optional spell_place and spell_progress reference exact native spatial and progress profiles; they do not duplicate parent placement or a chronology provider

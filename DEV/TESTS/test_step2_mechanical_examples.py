@@ -181,6 +181,7 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
         validator = self.validator("world-record.schema.json")
         validator.validate({
             "id": "effect-00001",
+            "schema_version": 2,
             "kind": "world.effect",
             "definition_id": "condition.frightened",
             "state": {
@@ -199,6 +200,7 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validator.validate({
                 "id": "effect-00002",
+                "schema_version": 2,
                 "kind": "world.effect",
                 "definition_id": "condition.poisoned",
                 "state": {
@@ -212,6 +214,7 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
         validator = self.validator("world-record.schema.json")
         validator.validate({
             "id": "effect-00003",
+            "schema_version": 2,
             "kind": "world.effect",
             "definition_id": "condition.poisoned",
             "state": {
@@ -225,6 +228,7 @@ class Step2MechanicalExamplesTest(unittest.TestCase):
         with self.assertRaises(ValidationError):
             validator.validate({
                 "id": "effect-00004",
+                "schema_version": 2,
                 "kind": "world.effect",
                 "definition_id": "condition.poisoned",
                 "state": {

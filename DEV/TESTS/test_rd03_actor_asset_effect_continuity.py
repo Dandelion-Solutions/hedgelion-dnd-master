@@ -126,7 +126,7 @@ class NativeActorShapeTests(unittest.TestCase):
                 {
                     "target_id": "actor.mara",
                     "lifecycle": {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.expired"},
-                    "scheduled_trigger_state": {"daily_save": {"basis_id": "temporal.metric_deadline"}},
+                    "scheduled_trigger_state": {"daily_save": {"generation": 1, "phase": "armed", "binding": {"basis_id": "temporal.metric_deadline", "context_id": "scene.one", "anchor_value": 0, "deadline_value": 1, "unit_id": "unit.hour"}}},
                 }
             )
 
@@ -163,7 +163,7 @@ class NativeActorShapeTests(unittest.TestCase):
             text = (ROOT / "GAME" / "SCHEMA" / name).read_text(encoding="utf-8")
             self.assertIn(f"schema_name: {schema_name}", text)
             self.assertIn(
-                "schema_version: 2" if name == "actor.schema.yaml" else "schema_version: 1",
+                "schema_version: 1" if name == "asset.schema.yaml" else "schema_version: 2",
                 text,
             )
             self.assertIn("strict: true", text)

@@ -11,7 +11,9 @@
     "organization_id": {"$ref": "#/$defs/id"},
     "environment_ids": {"$ref": "#/$defs/idSet"},
     "status": {"type": "object"},
-    "details": {"type": "object"}
+    "spell_place": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/spellPlace"},
+    "spell_progress": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/progressMap"},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},

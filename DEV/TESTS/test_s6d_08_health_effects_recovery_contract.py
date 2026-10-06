@@ -287,8 +287,8 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
         expired = expire_effect(replaced["effects"], "effect.2", "expiry.1", receipts)
         self.assertEqual(expired["effects"]["effect.2"]["state"]["lifecycle"]["terminal_reason_id"], "effect_end.expired")
         support = {
-            "effect.root": {"id": "effect.root", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
-            "effect.child": {"id": "effect.child", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "support_effect_id": "effect.root", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
+            "effect.root": {"schema_version": 2, "id": "effect.root", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
+            "effect.child": {"schema_version": 2, "id": "effect.child", "kind": "world.effect", "definition_id": "condition.unconscious", "state": {"target_id": "actor.a", "support_effect_id": "effect.root", "lifecycle": {"state_id": "effect_lifecycle.active"}}},
         }
         ended = terminate_support_tree(support, "effect.root", "support.1", {})
         self.assertEqual(ended["effects"]["effect.child"]["state"]["lifecycle"]["terminal_reason_id"], "effect_end.support_lost")
@@ -306,6 +306,7 @@ class S6D08HealthEffectsRecoveryContractTest(unittest.TestCase):
     def test_recovery_rebuilds_derivatives_and_fails_on_missing_binding(self):
         effects = {
             "effect.1": {
+                "schema_version": 2,
                 "id": "effect.1",
                 "kind": "world.effect",
                 "definition_id": "effect.innate_sorcery",

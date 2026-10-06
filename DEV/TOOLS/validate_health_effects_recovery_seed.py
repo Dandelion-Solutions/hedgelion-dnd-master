@@ -103,6 +103,7 @@ def _unconscious_changes(actor, present):
         return {"create": [], "terminate": [effect_id]}
     return {
         "create": [{
+            "schema_version": 2,
             "id": effect_id,
             "kind": "world.effect",
             "definition_id": "condition.unconscious",
@@ -364,6 +365,7 @@ def apply_effect(effects, definition_id, target_id, source_id, key, receipts):
                 state["lifecycle"] = {"state_id": "effect_lifecycle.terminal", "terminal_reason_id": "effect_end.replaced"}
                 state.pop("temporal_binding", None)
         result[key] = {
+            "schema_version": 2,
             "id": key,
             "kind": "world.effect",
             "definition_id": definition_id,

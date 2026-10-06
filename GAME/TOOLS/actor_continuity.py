@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
 """Deterministic validation and application of source-Actor continuity deltas."""
 
 from __future__ import annotations
 
+import math
 import re
 from collections.abc import Mapping, Sequence
 from copy import deepcopy
@@ -36,6 +36,8 @@ ACTOR_STATE_FIELDS = frozenset(
         "resources",
         "continuity",
         "details",
+        "embodiment",
+        "spell_progress",
     }
 )
 FOUNDATION_FIELDS = frozenset({"values", "temperament", "identity"})
@@ -266,16 +268,145 @@ def _abilities(value: object) -> dict[str, object]:
 
 def _hp(value: object) -> dict[str, object]:
     hp = _mapping(value, "actor hp")
-    if set(hp) - {"current", "maximum_base", "maximum_adjustment", "temporary"} or {"current", "maximum_base"} - set(hp):
+    if set(hp) - {"current", "maximum_base", "maximum_adjustment", "temporary", "temporary_source"} or {"current", "maximum_base"} - set(hp):
         raise ActorContinuityError("actor hp contains an unsupported field")
     result: dict[str, object] = {}
     for field, amount in hp.items():
+        if field == "temporary_source":
+            source = _mapping(amount, "actor temporary HP source")
+            if set(source) - {"grant_occurrence_id", "source_effect_id"} or "grant_occurrence_id" not in source:
+                raise ActorContinuityError("actor temporary HP source contains an unsupported field")
+            temporary = hp.get("temporary")
+            if not isinstance(temporary, int) or isinstance(temporary, bool) or temporary <= 0:
+                raise ActorContinuityError("actor temporary HP source requires a positive pool")
+            result[field] = {
+                key: _id(item, f"actor temporary HP source {key}")
+                for key, item in source.items()
+            }
+            continue
         if not isinstance(amount, int) or isinstance(amount, bool):
             raise ActorContinuityError(f"actor hp {field} must be an integer")
         if field != "maximum_adjustment" and amount < 0:
             raise ActorContinuityError(f"actor hp {field} must be nonnegative")
         result[field] = amount
     return result
+
+
+PHYSICAL_LIFE_POLICIES = frozenset({
+    "life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default",
+})
+PRINCIPAL_LIFE_POLICIES = frozenset({
+    "life_policy.spell.magic_jar_principal", "life_policy.spell.astral_principal",
+})
+OBJECT_PRINCIPAL_LIFE_POLICY = "life_policy.spell.true_polymorph_object_principal"
+
+
+def _embodiment(value: object) -> dict[str, object]:
+    """Validate a structural relation reference, never establish that relation."""
+    embodiment = _mapping(value, "actor embodiment")
+    profile = embodiment.get("profile_id")
+    fields = {
+        "actor.embodiment.principal": {"relation_effect_id"},
+        "actor.embodiment.body": {
+            "principal_subject_id", "relation_effect_id", "construction_basis_ref",
+        },
+        "actor.embodiment.astral_proxy": {
+            "principal_subject_id", "relation_effect_id", "construction_basis_ref", "replica_group_ref",
+        },
+        "actor.embodiment.object_suspension": {
+            "relation_effect_id", "object_asset_id", "restoration_basis_ref", "binding_generation",
+        },
+    }
+    if not isinstance(profile, str) or profile not in fields:
+        raise ActorContinuityError("actor embodiment profile is unsupported")
+    if set(embodiment) != fields[profile] | {"profile_id"}:
+        raise ActorContinuityError("actor embodiment contains missing or unsupported fields")
+    result: dict[str, object] = {"profile_id": profile}
+    for key in fields[profile]:
+        if key == "binding_generation":
+            generation = _nonnegative_integer(embodiment[key], "actor binding_generation")
+            if generation < 1:
+                raise ActorContinuityError("actor binding_generation must be positive")
+            result[key] = generation
+        else:
+            result[key] = _id(embodiment[key], f"actor embodiment {key}")
+    return result
+
+
+def _validate_embodiment_ownership(state: Mapping[str, object]) -> None:
+    embodiment = state.get("embodiment")
+    profile = embodiment["profile_id"] if isinstance(embodiment, Mapping) else None
+    policy = state.get("life_state_policy_id")
+    if profile in {"actor.embodiment.principal", "actor.embodiment.object_suspension"}:
+        if {"hp", "location_id", "life_state_progress"}.intersection(state):
+            raise ActorContinuityError("neutral principal cannot own physical health or location")
+        allowed = (
+            {OBJECT_PRINCIPAL_LIFE_POLICY}
+            if profile == "actor.embodiment.object_suspension"
+            else PRINCIPAL_LIFE_POLICIES
+        )
+        if policy not in allowed or state.get("life_state_id") not in {"life.active", "life.dead"}:
+            raise ActorContinuityError("neutral principal requires its exact survival policy")
+    elif policy is not None and policy not in PHYSICAL_LIFE_POLICIES:
+        raise ActorContinuityError("physical Actor cannot use a principal survival policy")
+    if (
+        profile in {"actor.embodiment.body", "actor.embodiment.astral_proxy"}
+        and {"build", "continuity"}.intersection(state)
+    ):
+        raise ActorContinuityError("physical body cannot copy principal build or continuity")
+
+
+def _spell_progress(value: object) -> None:
+    progress = _mapping(value, "actor progress value")
+    variants = {
+        "lifecycle.progress.turn_gate": {"turn_occurrence_key", "consumed"},
+        "lifecycle.progress.rest_gate": {"consumed", "reset_boundary_id", "last_transition_occurrence"},
+        "lifecycle.progress.day_gate": {"window_ref", "count", "last_transition_occurrence"},
+        "lifecycle.progress.progressive_save": {"phase", "successes", "failures", "last_transition_occurrence"},
+        "lifecycle.progress.maturity": {"phase", "maturity_occurrence_ref"},
+        "lifecycle.progress.repeated_place": {"series_key", "qualifying_count", "last_qualifying_period_ref", "last_transition_occurrence"},
+        "lifecycle.progress.observable_release": {"predicate_id", "accepted_predicate_basis_ref", "enrollment_generation", "phase"},
+    }
+    profile = progress.get("profile_id")
+    if not isinstance(profile, str) or profile not in variants or set(progress) != variants[profile] | {"profile_id"}:
+        raise ActorContinuityError("actor progress has missing/foreign profile fields")
+    phases = {
+        "lifecycle.progress.progressive_save": {"testing", "established"},
+        "lifecycle.progress.maturity": {"growing", "ready", "consumed", "invalid"},
+        "lifecycle.progress.observable_release": {"armed", "claimed", "released"},
+    }
+    for key in variants[profile]:
+        item = progress[key]
+        if key == "consumed":
+            if type(item) is not bool:
+                raise ActorContinuityError("actor progress consumed must be boolean")
+        elif key == "phase":
+            if not isinstance(item, str) or item not in phases[profile]:
+                raise ActorContinuityError("actor progress phase is illegal")
+        elif key in {"count", "successes", "failures", "qualifying_count", "enrollment_generation"}:
+            amount = _nonnegative_integer(item, f"actor progress {key}")
+            if key in {"successes", "failures"} and amount > 2 or key == "enrollment_generation" and amount < 1:
+                raise ActorContinuityError("actor progress ordinal is illegal")
+        else:
+            _id(item, f"actor progress {key}")
+
+
+def _descriptive_value(value: object) -> None:
+    if isinstance(value, Mapping):
+        forbidden = {"profile_bindings", "profile_args", "stochastic_state", "reconciliation_state", "cause", "geometry",
+                     "restoration_basis", "restoration_basis_ref", "progress", "spell_progress", "prospective_delta", "state_delta",
+                     "patch", "script", "code", "form_state", "identity_state", "conversion_state", "concentration_state",
+                     "control_state", "subject_binding", "return_adjudication_basis_ref", "object_suspension_basis", "spell_place",
+                     "portal_state", "equipment_transform"}
+        if forbidden.intersection(value):
+            raise ActorContinuityError("actor details cannot carry executable spell state")
+        for item in value.values():
+            _descriptive_value(item)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _descriptive_value(item)
+    elif not isinstance(value, (str, int, float, bool, type(None))) or isinstance(value, float) and not math.isfinite(value):
+        raise ActorContinuityError("actor details must be descriptive portable JSON")
 
 
 def _temporal_binding(value: object, label: str) -> dict[str, object]:
@@ -480,17 +611,25 @@ def _validated_actor_state(value: object) -> dict[str, object]:
         normalized["abilities"] = _abilities(state["abilities"])
     if "hp" in state:
         normalized["hp"] = _hp(state["hp"])
-    if "life_state_id" in state:
-        if (
-            not isinstance(state["life_state_id"], str)
-            or state["life_state_id"] not in {"life.active", "life.dying", "life.stable", "life.dead"}
-        ):
-            raise ActorContinuityError("actor life_state_id is unsupported")
-    if "life_state_policy_id" in state:
-        if not isinstance(state["life_state_policy_id"], str) or state[
+    if "embodiment" in state:
+        normalized["embodiment"] = _embodiment(state["embodiment"])
+    if "spell_progress" in state:
+        progress_map = _mapping(state["spell_progress"], "actor spell progress")
+        if not progress_map:
+            raise ActorContinuityError("actor spell progress must not be empty")
+        for key, progress in progress_map.items():
+            _id(key, "actor progress definition")
+            _spell_progress(progress)
+    if "life_state_id" in state and (
+        not isinstance(state["life_state_id"], str)
+        or state["life_state_id"] not in {"life.active", "life.dying", "life.stable", "life.dead"}
+    ):
+        raise ActorContinuityError("actor life_state_id is unsupported")
+    if "life_state_policy_id" in state and (not isinstance(state["life_state_policy_id"], str) or state[
             "life_state_policy_id"
-        ] not in {"life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default"}:
-            raise ActorContinuityError("actor life_state_policy_id is unsupported")
+        ] not in PHYSICAL_LIFE_POLICIES | PRINCIPAL_LIFE_POLICIES | {OBJECT_PRINCIPAL_LIFE_POLICY}):
+        raise ActorContinuityError("actor life_state_policy_id is unsupported")
+    _validate_embodiment_ownership(normalized)
     if "life_state_progress" in state:
         if "life_state_id" not in state:
             raise ActorContinuityError("actor life_state_progress requires life_state_id")
@@ -517,6 +656,7 @@ def _validated_actor_state(value: object) -> dict[str, object]:
         raise ActorContinuityError("actor life_state_progress is not allowed for this life state")
     if "details" in state:
         normalized["details"] = deepcopy(dict(_mapping(state["details"], "actor details")))
+        _descriptive_value(normalized["details"])
     if "continuity" in state:
         normalized["continuity"] = _validated_continuity(state["continuity"])
     return normalized

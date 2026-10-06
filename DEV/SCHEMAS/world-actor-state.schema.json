@@ -13,14 +13,21 @@
     "build": {"$ref": "#/$defs/build"},
     "abilities": {"type": "object", "propertyNames": {"$ref": "#/$defs/id"}, "additionalProperties": {"$ref": "#/$defs/abilityComponents"}},
     "hp": {"$ref": "#/$defs/hp"},
+    "embodiment": {"$ref": "#/$defs/embodiment"},
+    "spell_progress": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/progressMap"},
     "life_state_id": {"$ref": "#/$defs/lifeStateId"},
     "life_state_policy_id": {"$ref": "#/$defs/lifePolicyId"},
     "life_state_progress": {"$ref": "#/$defs/lifeStateProgress"},
     "resources": {"type": "object", "propertyNames": {"$ref": "#/$defs/id"}, "additionalProperties": {"$ref": "#/$defs/resourceState"}},
     "continuity": {"$ref": "#/$defs/continuity"},
-    "details": {"type": "object"}
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "allOf": [
+    {"if": {"required": ["embodiment"], "properties": {"embodiment": {"properties": {"profile_id": {"const": "actor.embodiment.principal"}}}}}, "then": {"required": ["life_state_id", "life_state_policy_id"], "properties": {"life_state_id": {"enum": ["life.active", "life.dead"]}, "life_state_policy_id": {"enum": ["life_policy.spell.magic_jar_principal", "life_policy.spell.astral_principal"]}}, "not": {"anyOf": [{"required": ["hp"]}, {"required": ["location_id"]}, {"required": ["life_state_progress"]}]}}},
+    {"if": {"required": ["embodiment"], "properties": {"embodiment": {"properties": {"profile_id": {"const": "actor.embodiment.object_suspension"}}}}}, "then": {"required": ["life_state_id", "life_state_policy_id"], "properties": {"life_state_id": {"enum": ["life.active", "life.dead"]}, "life_state_policy_id": {"const": "life_policy.spell.true_polymorph_object_principal"}}, "not": {"anyOf": [{"required": ["hp"]}, {"required": ["location_id"]}, {"required": ["life_state_progress"]}]}}},
+    {"if": {"required": ["embodiment"], "properties": {"embodiment": {"properties": {"profile_id": {"enum": ["actor.embodiment.body", "actor.embodiment.astral_proxy"]}}}}}, "then": {"not": {"anyOf": [{"required": ["build"]}, {"required": ["continuity"]}]}}},
+    {"if": {"required": ["life_state_policy_id"], "properties": {"life_state_policy_id": {"enum": ["life_policy.spell.magic_jar_principal", "life_policy.spell.astral_principal"]}}}, "then": {"required": ["embodiment"], "properties": {"embodiment": {"properties": {"profile_id": {"const": "actor.embodiment.principal"}}}}}},
+    {"if": {"required": ["life_state_policy_id"], "properties": {"life_state_policy_id": {"const": "life_policy.spell.true_polymorph_object_principal"}}}, "then": {"required": ["embodiment"], "properties": {"embodiment": {"properties": {"profile_id": {"const": "actor.embodiment.object_suspension"}}}}}},
     {"if": {"properties": {"life_state_id": {"const": "life.dying"}}, "required": ["life_state_id"]}, "then": {"required": ["life_state_progress"], "properties": {"life_state_progress": {"$ref": "#/$defs/dyingProgress"}}}},
     {"if": {"properties": {"life_state_id": {"const": "life.stable"}}, "required": ["life_state_id"]}, "then": {"required": ["life_state_progress"], "properties": {"life_state_progress": {"$ref": "#/$defs/stableProgress"}}}},
     {"if": {"properties": {"life_state_id": {"enum": ["life.active", "life.dead"]}}, "required": ["life_state_id"]}, "then": {"not": {"required": ["life_state_progress"]}}}
@@ -28,7 +35,13 @@
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "lifeStateId": {"enum": ["life.active", "life.dying", "life.stable", "life.dead"]},
-    "lifePolicyId": {"enum": ["life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default"]},
+    "lifePolicyId": {"enum": ["life_policy.dnd2024.character_like", "life_policy.dnd2024.monster_default", "life_policy.spell.magic_jar_principal", "life_policy.spell.astral_principal", "life_policy.spell.true_polymorph_object_principal"]},
+    "embodiment": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["profile_id", "relation_effect_id"], "properties": {"profile_id": {"const": "actor.embodiment.principal"}, "relation_effect_id": {"$ref": "#/$defs/id"}}},
+      {"type": "object", "additionalProperties": false, "required": ["profile_id", "principal_subject_id", "relation_effect_id", "construction_basis_ref"], "properties": {"profile_id": {"const": "actor.embodiment.body"}, "principal_subject_id": {"$ref": "#/$defs/id"}, "relation_effect_id": {"$ref": "#/$defs/id"}, "construction_basis_ref": {"$ref": "#/$defs/id"}}},
+      {"type": "object", "additionalProperties": false, "required": ["profile_id", "principal_subject_id", "relation_effect_id", "construction_basis_ref", "replica_group_ref"], "properties": {"profile_id": {"const": "actor.embodiment.astral_proxy"}, "principal_subject_id": {"$ref": "#/$defs/id"}, "relation_effect_id": {"$ref": "#/$defs/id"}, "construction_basis_ref": {"$ref": "#/$defs/id"}, "replica_group_ref": {"$ref": "#/$defs/id"}}},
+      {"type": "object", "additionalProperties": false, "required": ["profile_id", "relation_effect_id", "object_asset_id", "restoration_basis_ref", "binding_generation"], "properties": {"profile_id": {"const": "actor.embodiment.object_suspension"}, "relation_effect_id": {"$ref": "#/$defs/id"}, "object_asset_id": {"$ref": "#/$defs/id"}, "restoration_basis_ref": {"$ref": "#/$defs/id"}, "binding_generation": {"type": "integer", "minimum": 1}}}
+    ]},
     "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
     "localizedText": {"type": "object", "minProperties": 1, "maxProperties": 4, "propertyNames": {"pattern": "^[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*$"}, "additionalProperties": {"type": "string", "minLength": 1}},
     "classProgressionEntry": {
@@ -58,7 +71,8 @@
       "properties": {"species_id": {"$ref": "#/$defs/id"}, "background_id": {"$ref": "#/$defs/id"}, "class_progression": {"$ref": "#/$defs/classProgression"}, "choice_bindings": {"$ref": "#/$defs/choiceBindings"}, "spellcasting": {"$ref": "#/$defs/spellcastingState"}}
     },
     "abilityComponents": {"type": "object", "additionalProperties": false, "minProperties": 1, "properties": {"base": {"type": "integer", "minimum": 0}, "adjustment": {"type": "integer"}}},
-    "hp": {"type": "object", "additionalProperties": false, "required": ["current", "maximum_base"], "properties": {"current": {"type": "integer", "minimum": 0}, "maximum_base": {"type": "integer", "minimum": 0}, "maximum_adjustment": {"type": "integer"}, "temporary": {"type": "integer", "minimum": 0}}},
+    "temporarySource": {"type": "object", "additionalProperties": false, "required": ["grant_occurrence_id"], "properties": {"grant_occurrence_id": {"$ref": "#/$defs/id"}, "source_effect_id": {"$ref": "#/$defs/id"}}},
+    "hp": {"type": "object", "additionalProperties": false, "required": ["current", "maximum_base"], "properties": {"current": {"type": "integer", "minimum": 0}, "maximum_base": {"type": "integer", "minimum": 0}, "maximum_adjustment": {"type": "integer"}, "temporary": {"type": "integer", "minimum": 0}, "temporary_source": {"$ref": "#/$defs/temporarySource"}}, "allOf": [{"if": {"required": ["temporary_source"]}, "then": {"required": ["temporary"], "properties": {"temporary": {"type": "integer", "minimum": 1}}}}]},
     "deathSaves": {"type": "object", "additionalProperties": false, "required": ["successes", "failures"], "properties": {"successes": {"type": "integer", "minimum": 0, "maximum": 2}, "failures": {"type": "integer", "minimum": 0, "maximum": 2}}},
     "dyingProgress": {"type": "object", "additionalProperties": false, "required": ["death_saves"], "properties": {"death_saves": {"$ref": "#/$defs/deathSaves"}}},
     "stableProgress": {"type": "object", "additionalProperties": false, "required": ["recovery_binding"], "properties": {"recovery_binding": {"$ref": "https://hedgelion.invalid/schemas/temporal-binding.schema.json"}}},

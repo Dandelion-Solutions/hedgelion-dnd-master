@@ -112,8 +112,9 @@
         {
           "if": {"required": ["kind"], "properties": {"kind": {"const": "world.effect"}}},
           "then": {
-            "required": ["definition_id"],
-            "properties": {"state": {"$ref": "https://hedgelion.invalid/schemas/world-effect-state.schema.json"}}
+            "required": ["definition_id", "schema_version"],
+            "properties": {"schema_version":{"const":2},"state": {"$ref": "https://hedgelion.invalid/schemas/world-effect-state.schema.json"}},
+            "not": {"required":["state_revision"]}
           }
         },
         {
@@ -140,7 +141,7 @@
         {
           "if": {
             "required": ["kind"],
-            "properties": {"kind": {"not": {"const": "world.actor"}}}
+            "properties": {"kind": {"not": {"enum": ["world.actor", "world.effect"]}}}
           },
           "then": {
             "not": {

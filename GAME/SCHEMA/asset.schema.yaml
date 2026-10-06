@@ -12,3 +12,4 @@ invariants:
   - state has at most one direct placement: owner_actor_id, container_asset_id or location_id
   - current asset knowledge and legal ownership are not Asset-state aliases
   - current durability and resources remain distinct native state
+  - optional equipment_transform, replica_origin and conversion_membership are closed source/occurrence references, not snapshots or copied integrity

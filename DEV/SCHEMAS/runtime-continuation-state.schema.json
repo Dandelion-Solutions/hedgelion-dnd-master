@@ -80,7 +80,9 @@
         "context_id": {"type": "string", "minLength": 1}
       }
     },
-    "details": {"type": "object"}
+    "stochastic_state": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/stochasticState"},
+    "reconciliation_state": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/wishReconciliationState"},
+    "details": {"$ref":"https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/nonExecutableDetails"}
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},

@@ -62,11 +62,10 @@ class SchemaViolation(ValueError):
 
 
 class CanonicalSchemaValidator:
-    """Small fail-closed Draft-2020-12 subset used by the conformance compiler.
+    """Repository-local Draft-2020-12 validation for conformance consumers.
 
-    It resolves the repository's real schema IDs/$refs and implements every
-    assertion keyword used by the definition schemas exercised by this seed.
-    Unsupported assertion keywords fail rather than being silently ignored.
+    The declared jsonschema/referencing toolchain owns assertion semantics;
+    local registry resources resolve actual canonical IDs without network IO.
     """
 
     def __init__(self, schema_dir):
@@ -106,62 +105,25 @@ class CanonicalSchemaValidator:
         return target, target
 
     def validate(self, value, schema, root=None, path="$", probe=False):
-        root = root or schema
+        # Use the repository-declared draft implementation. In particular,
+        # allOf/oneOf annotation scope for unevaluatedProperties cannot be
+        # approximated by checking only the immediate properties dictionary.
+        from jsonschema import Draft202012Validator, ValidationError
+        from referencing import Registry, Resource
+        from referencing.exceptions import Unresolvable
+
+        registry = Registry().with_resources(
+            (identifier, Resource.from_contents(owner))
+            for identifier, owner in self.schemas.items()
+        )
         try:
-            if "$ref" in schema:
-                target, target_root = self._resolve(schema["$ref"], root)
-                self.validate(value, target, target_root, path)
-            for sub in schema.get("allOf", []): self.validate(value, sub, root, path)
-            if "anyOf" in schema and not any(self.validate(value, sub, root, path, True) for sub in schema["anyOf"]):
-                raise SchemaViolation(f"{path}: no anyOf branch matched")
-            if "oneOf" in schema and sum(bool(self.validate(value, sub, root, path, True)) for sub in schema["oneOf"]) != 1:
-                raise SchemaViolation(f"{path}: expected exactly one oneOf branch")
-            if "if" in schema:
-                branch = "then" if self.validate(value, schema["if"], root, path, True) else "else"
-                if branch in schema: self.validate(value, schema[branch], root, path)
-            if "not" in schema and self.validate(value, schema["not"], root, path, True):
-                raise SchemaViolation(f"{path}: forbidden schema matched")
-            if "type" in schema and not self._type_matches(value, schema["type"]): raise SchemaViolation(f"{path}: wrong type")
-            if "const" in schema and value != schema["const"]: raise SchemaViolation(f"{path}: const mismatch")
-            if "enum" in schema and value not in schema["enum"]: raise SchemaViolation(f"{path}: enum mismatch")
-            if isinstance(value, dict):
-                missing = set(schema.get("required", [])) - set(value)
-                if missing: raise SchemaViolation(f"{path}: missing {sorted(missing)}")
-                for trigger, dependencies in schema.get("dependentRequired", {}).items():
-                    if trigger in value:
-                        dependency_missing = set(dependencies) - set(value)
-                        if dependency_missing: raise SchemaViolation(f"{path}: {trigger} requires {sorted(dependency_missing)}")
-                props = schema.get("properties", {})
-                if schema.get("additionalProperties") is False:
-                    extra = set(value) - set(props)
-                    if extra: raise SchemaViolation(f"{path}: additional properties {sorted(extra)}")
-                for key, item in value.items():
-                    if key in props: self.validate(item, props[key], root, f"{path}.{key}")
-                    elif isinstance(schema.get("additionalProperties"), dict):
-                        self.validate(item, schema["additionalProperties"], root, f"{path}.{key}")
-                    if "propertyNames" in schema: self.validate(key, schema["propertyNames"], root, f"{path}.<key>")
-                if len(value) < schema.get("minProperties", 0): raise SchemaViolation(f"{path}: too few properties")
-                if "maxProperties" in schema and len(value) > schema["maxProperties"]: raise SchemaViolation(f"{path}: too many properties")
-            if isinstance(value, list):
-                if len(value) < schema.get("minItems", 0): raise SchemaViolation(f"{path}: too few items")
-                if "maxItems" in schema and len(value) > schema["maxItems"]: raise SchemaViolation(f"{path}: too many items")
-                if schema.get("uniqueItems") and len({json.dumps(x, sort_keys=True) for x in value}) != len(value): raise SchemaViolation(f"{path}: duplicate items")
-                if "items" in schema:
-                    for index, item in enumerate(value): self.validate(item, schema["items"], root, f"{path}[{index}]")
-                if "contains" in schema:
-                    count = sum(bool(self.validate(item, schema["contains"], root, path, True)) for item in value)
-                    if count < schema.get("minContains", 1) or count > schema.get("maxContains", len(value)): raise SchemaViolation(f"{path}: contains cardinality")
-            if isinstance(value, str):
-                if len(value) < schema.get("minLength", 0): raise SchemaViolation(f"{path}: string too short")
-                if "pattern" in schema and not re.search(schema["pattern"], value): raise SchemaViolation(f"{path}: pattern mismatch")
-            if isinstance(value, (int, float)) and not isinstance(value, bool):
-                if "minimum" in schema and value < schema["minimum"]: raise SchemaViolation(f"{path}: below minimum")
-                if "maximum" in schema and value > schema["maximum"]: raise SchemaViolation(f"{path}: above maximum")
-                if "exclusiveMinimum" in schema and value <= schema["exclusiveMinimum"]: raise SchemaViolation(f"{path}: below exclusive minimum")
+            validator = Draft202012Validator(root if root is not None else schema, registry=registry)
+            validator.evolve(schema=schema).validate(value)
             return True
-        except (SchemaViolation, KeyError):
-            if probe: return False
-            raise
+        except (ValidationError, Unresolvable) as error:
+            if probe:
+                return False
+            raise SchemaViolation(f"{path}: {error}") from error
 
 
 def resolve_package(package_dir, primitive_catalog):
@@ -193,6 +155,11 @@ def resolve_package(package_dir, primitive_catalog):
     for record in records:
         if "data" not in record:
             raise ValueError(f"definition data missing for {record['id']}")
+        # Closed optional SP01 shapes do not add an admitted consumer to this
+        # unchanged bounded seed. New-profile admission belongs to its actual
+        # compiler/inventory/native-consumer join, never this legacy seed route.
+        if record["kind"] == "definition.activity" and record["data"].get("profile_bindings"):
+            raise ValueError("native profile is not admitted by the current bounded seed")
         envelope = {"id": record["id"], "kind": record["kind"], "name": {"en": record["id"]}, "data": deepcopy(record["data"])}
         if record.get("choice_slots"):
             if record["kind"] == "definition.advancement":

@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://hedgelion.invalid/schemas/spell-capabilities.schema.json",
+  "title":"HDM exact spell capability promise (not admission)",
+  "type":"object","additionalProperties":false,
+  "required":["schema_version","identity_source","profile_id","content_basis","coverage_stage","supported_srd_spell_ids","existing_extra_spell_ids","mode_bindings","unsupported_content_policy","notice"],
+  "properties":{
+    "schema_version":{"const":1},"identity_source":{"const":"ruleset-package-manifest.json"},"profile_id":{"const":"spell.srd52.local"},"content_basis":{"const":"SRD_5_2_1"},"coverage_stage":{"enum":["PARTIAL","MECHANICALLY_COMPLETE"]},
+    "supported_srd_spell_ids":{"$ref":"#/$defs/spellIds"},"existing_extra_spell_ids":{"$ref":"#/$defs/spellIds"},
+    "mode_bindings":{"type":"array","uniqueItems":true,"items":{"type":"object","additionalProperties":false,"required":["spell_id","mode_id","activity_id"],"properties":{"spell_id":{"$ref":"#/$defs/spellId"},"mode_id":{"$ref":"#/$defs/id"},"activity_id":{"type":"string","pattern":"^activity\\.[A-Za-z0-9_.:-]+$"}}}},
+    "unsupported_content_policy":{"const":"ABSENT_NONSELECTABLE"},"notice":{"const":"NOTICE.md"}
+  },
+  "$comment":"Sortedness, disjointness and exact source/mode/native-proof roster equality are relational checks, not expressible by JSON Schema; foundation validator checks supplied exact rosters and never issues admission.",
+  "$defs":{"id":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_.:-]*$"},"spellId":{"type":"string","pattern":"^spell\\.[A-Za-z0-9_.:-]+$"},"spellIds":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/spellId"}}}
+}

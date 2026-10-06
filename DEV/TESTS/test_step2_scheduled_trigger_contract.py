@@ -64,6 +64,7 @@ class Step2ScheduledTriggerContractTest(unittest.TestCase):
     def active_effect(self):
         return {
             "id": "effect-00001",
+            "schema_version": 2,
             "kind": "world.effect",
             "definition_id": "effect.periodic_disease",
             "state": {
@@ -77,11 +78,15 @@ class Step2ScheduledTriggerContractTest(unittest.TestCase):
                 },
                 "scheduled_trigger_state": {
                     "daily_save": {
+                        "generation": 1,
+                        "phase": "armed",
+                        "binding": {
                         "basis_id": "temporal.metric_deadline",
                         "context_id": "scene-00001",
                         "anchor_value": 0,
                         "deadline_value": 24,
                         "unit_id": "unit.hour",
+                        },
                     }
                 },
                 "lifecycle": {"state_id": "effect_lifecycle.active"},
