@@ -41,6 +41,7 @@
   },
   "$defs": {
     "machineId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "calculationPolicyId": {"enum": ["calculation.roll_advantage_srd521", "calculation.damage_defense_srd521", "calculation.armor_class_srd521", "calculation.capability_projection_srd521"]},
     "idSet": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/machineId"}},
     "dependencyRef": {"type": "string", "pattern": "^(?:selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"},
     "dependencyKindSet": {"type": "array", "uniqueItems": true, "items": {"enum": ["selector", "accessor", "derived"]}},
@@ -95,8 +96,8 @@
       "properties": {
         "allowed_operations": {"$ref": "#/$defs/idSet"},
         "operation_contracts": {"type": "object", "propertyNames": {"$ref": "#/$defs/machineId"}, "additionalProperties": {"$ref": "#/$defs/operationContract"}},
-        "contribution_type": {"enum": ["numeric", "applicability", "roll_modifier"]},
-        "result_type": {"enum": ["integer", "boolean", "roll_modifier_set"]},
+        "contribution_type": {"enum": ["numeric", "applicability", "roll_modifier", "damage_defense", "armor_class_base", "capability_projection"]},
+        "result_type": {"enum": ["integer", "boolean", "roll_modifier_set", "damage_result", "capability_projection"]},
         "result_constraints": {"type": "object", "additionalProperties": false, "properties": {"minimum": {"type": "integer"}}},
         "subject_kinds": {"$ref": "#/$defs/idSet"},
         "binding_kinds": {"type": "array", "items": {"enum": ["subject", "ability_definition", "activity_definition", "condition_definition", "damage_definition", "resource_definition", "spellcasting_definition"]}, "minItems": 1, "uniqueItems": true},
@@ -104,10 +105,19 @@
         "allowed_input_classes": {"$ref": "#/$defs/inputClassSet"},
         "permitted_context_fact_ids": {"type": "array", "items": {"$ref": "#/$defs/machineId"}, "uniqueItems": true},
         "static_dependencies": {"type": "array", "items": {"$ref": "#/$defs/dependencyRef"}, "uniqueItems": true},
-        "combination_policy": {"enum": ["integer_additive_v1", "immunity_any_true_v1", "roll_advantage_cancellation_v1"]},
+        "combination_policy": {"enum": ["integer_additive_v1", "immunity_any_true_v1", "roll_advantage_cancellation_v1", "damage_defense_source_ordered_v1", "armor_class_nonadditive_base_v1", "capability_native_projection_v1"]},
+        "calculation_policy_id": {"$ref": "#/$defs/calculationPolicyId"},
+        "calculation_policy_generation": {"const": 1},
         "resolution_owner": {"const": "SELECTOR_METADATA"},
         "trace_policy": {"const": "RETAIN_ACCEPTED_REJECTED_PROVENANCE"}
-      }
+      },
+      "dependentRequired": {"calculation_policy_id": ["calculation_policy_generation"], "calculation_policy_generation": ["calculation_policy_id"]},
+      "allOf": [
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.roll_advantage_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"contribution_type": {"const": "roll_modifier"}, "result_type": {"const": "roll_modifier_set"}, "combination_policy": {"const": "roll_advantage_cancellation_v1"}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.damage_defense_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"contribution_type": {"const": "damage_defense"}, "result_type": {"const": "damage_result"}, "combination_policy": {"const": "damage_defense_source_ordered_v1"}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.armor_class_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"contribution_type": {"const": "armor_class_base"}, "result_type": {"const": "integer"}, "combination_policy": {"const": "armor_class_nonadditive_base_v1"}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.capability_projection_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"contribution_type": {"const": "capability_projection"}, "result_type": {"const": "capability_projection"}, "combination_policy": {"const": "capability_native_projection_v1"}}}}
+      ]
     },
     "derivedNodeMetadata": {
       "type": "object",
@@ -131,11 +141,20 @@
       "additionalProperties": false,
       "required": ["value_kind", "normalization", "constraints"],
       "properties": {
-        "value_kind": {"enum": ["numeric_scalar", "boolean_constant"]},
-        "normalization": {"enum": ["SUM", "ANY_TRUE"]},
-        "constraints": {"type": "array", "items": {"enum": ["finite_integer", "literal_true", "effect.innate_sorcery_source_only", "bound_activity_family.activity.spell_attack_only"]}, "minItems": 1, "uniqueItems": true},
-        "fixed_value": {"type": ["string", "number", "integer", "boolean"]}
-      }
+        "value_kind": {"enum": ["numeric_scalar", "boolean_constant", "roll_modifier", "damage_defense", "armor_class_base", "capability_change"]},
+        "normalization": {"enum": ["SUM", "ANY_TRUE", "CANCEL_APPLICABLE_OPPOSITES", "SOURCE_DEFINED_ORDER", "SELECT_ONE_LEGAL_BASE", "NATIVE_GRANTS_AND_RESTRICTIONS"]},
+        "constraints": {"type": "array", "items": {"enum": ["finite_integer", "literal_true", "effect.innate_sorcery_source_only", "bound_activity_family.activity.spell_attack_only", "stable_raw_dice_identity_and_contribution_provenance", "damage_type_origin_bypass_order_and_rounding", "eligible_nonadditive_ac_base", "native_role_form_equipment_movement_sense_projection"]}, "minItems": 1, "uniqueItems": true},
+        "fixed_value": {"type": ["string", "number", "integer", "boolean"]},
+        "calculation_policy_id": {"$ref": "#/$defs/calculationPolicyId"},
+        "calculation_policy_generation": {"const": 1}
+      },
+      "dependentRequired": {"calculation_policy_id": ["calculation_policy_generation"], "calculation_policy_generation": ["calculation_policy_id"]},
+      "allOf": [
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.roll_advantage_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "roll_modifier"}, "normalization": {"const": "CANCEL_APPLICABLE_OPPOSITES"}, "constraints": {"contains": {"const": "stable_raw_dice_identity_and_contribution_provenance"}}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.damage_defense_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "damage_defense"}, "normalization": {"const": "SOURCE_DEFINED_ORDER"}, "constraints": {"contains": {"const": "damage_type_origin_bypass_order_and_rounding"}}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.armor_class_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "armor_class_base"}, "normalization": {"const": "SELECT_ONE_LEGAL_BASE"}, "constraints": {"contains": {"const": "eligible_nonadditive_ac_base"}}}}},
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.capability_projection_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "capability_change"}, "normalization": {"const": "NATIVE_GRANTS_AND_RESTRICTIONS"}, "constraints": {"contains": {"const": "native_role_form_equipment_movement_sense_projection"}}}}}
+      ]
     },
     "dependencyGraphContract": {
       "type": "object",

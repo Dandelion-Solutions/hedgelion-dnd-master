@@ -18,7 +18,7 @@ from activity_primitive_contracts import load_activity_primitive_contracts
 DESTINATION = ROOT / "GAME/TOOLS/activity_contract_shapes.json"
 BASE = "https://hedgelion.invalid/schemas/"
 COMPILED_VALUES = BASE + "compiled-activity-values.schema.json"
-ROOTS = ("spell-native-profile-values", "runtime-command-state", "runtime-resolution-state",
+ROOTS = ("spell-native-profile-values", "mechanical-surfaces", "runtime-command-state", "runtime-resolution-state",
          "resolution-receipt", "execution-segment", "activity-parameter-spec", "catalog-definition",
          "roll-result", "activity-primitive-values", "runtime-mechanical-event-state",
           "runtime-procedure-state", "runtime-continuation-state", "activity-compiler-declaration")
@@ -131,6 +131,11 @@ def build_projection(root=ROOT):
                                      "value_kind": {"enum": sorted(catalog["value_contracts"])},
                                      "family_key": {"enum": ["world.actor", "world.asset", "runtime.procedure"]}}}
     named = {
+        "calculation_policy_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/calculationPolicyBinding"),
+        "cast_profile_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castProfileBinding"),
+        "cast_preflight_input": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castPreflightInput"),
+        "compiled_calculation_policy": reference(BASE + "spell-native-profile-values.schema.json#/$defs/compiledCalculationPolicy"),
+        "compiler_context_fact_metadata": reference(BASE + "spell-native-profile-values.schema.json#/$defs/compilerContextFactMetadata"),
         "definition_dependency_graph": {"type": "object", "propertyNames": ID,
             "additionalProperties": {"type": "array", "uniqueItems": True, "items": ID}},
         "compiler_symbol_contracts": {"type": "object", "additionalProperties": reference(BASE + "activity-compiler-declaration.schema.json#/$defs/symbol")},

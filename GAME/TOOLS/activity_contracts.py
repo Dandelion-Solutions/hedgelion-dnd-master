@@ -36,8 +36,8 @@ from .hot_store import OwnerDocument
 from .policy_basis import AcceptedAdjudicationBasis
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -480,6 +480,174 @@ class ProfileBinding(ContractValue):
         ContractValue.__post_init__(self)
         if self.profile_id not in SELECTED_PROFILE_IDS:
             raise ActivityContractError("unknown selected profile")
+
+
+CALCULATION_PROFILE_IDS: Final = frozenset(
+    {
+        "calculation.roll_advantage_srd521",
+        "calculation.damage_defense_srd521",
+        "calculation.armor_class_srd521",
+        "calculation.capability_projection_srd521",
+    }
+)
+CAST_PROFILE_IDS: Final = frozenset(
+    {
+        "execution.spell_cast.srd521",
+        "execution.spell_cast.ritual",
+        "execution.spell_cast.long",
+        "execution.spell_cast.invalid_target",
+        "execution.spell_cast.countered",
+    }
+)
+
+
+@dataclass(frozen=True, slots=True)
+class CastProfileBinding(ContractValue):
+    """One exact common-cast policy bound to its compiled Activity occurrence."""
+
+    consumer_id: NativeId
+    profile_id: Literal[
+        "execution.spell_cast.srd521",
+        "execution.spell_cast.ritual",
+        "execution.spell_cast.long",
+        "execution.spell_cast.invalid_target",
+        "execution.spell_cast.countered",
+    ]
+    profile_generation: Literal[1]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "cast_profile_binding",
+            {
+                "consumer_id": self.consumer_id,
+                "profile_id": self.profile_id,
+                "profile_generation": self.profile_generation,
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SelectorOperationPair(ContractValue):
+    selector_id: NativeId
+    operation_ids: tuple[NativeId, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class NativeRoleBinding(ContractValue):
+    read_ref: NativeId
+    role_names: tuple[NativeId, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ContextFactBinding(ContractValue):
+    consumer_ref: NativeId
+    fact_ids: tuple[NativeId, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class CalculationPolicyBinding(ContractValue):
+    """Exact occurrence and read/pair references; never a policy argument bag."""
+
+    consumer_id: NativeId
+    profile_id: Literal[
+        "calculation.roll_advantage_srd521",
+        "calculation.damage_defense_srd521",
+        "calculation.armor_class_srd521",
+        "calculation.capability_projection_srd521",
+    ]
+    profile_generation: Literal[1]
+    reads: tuple[str, ...]
+    selector_operation_pairs: tuple[SelectorOperationPair, ...]
+    context_fact_bindings: tuple[ContextFactBinding, ...]
+    native_role_bindings: tuple[NativeRoleBinding, ...]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "calculation_policy_binding",
+            {
+                "consumer_id": self.consumer_id,
+                "profile_id": self.profile_id,
+                "profile_generation": self.profile_generation,
+                "reads": self.reads,
+                "selector_operation_pairs": tuple(
+                    {
+                        "selector_id": pair.selector_id,
+                        "operation_ids": pair.operation_ids,
+                    }
+                    for pair in self.selector_operation_pairs
+                ),
+                "context_fact_bindings": tuple(
+                    {
+                        "consumer_ref": binding.consumer_ref,
+                        "fact_ids": binding.fact_ids,
+                    }
+                    for binding in self.context_fact_bindings
+                ),
+                "native_role_bindings": tuple(
+                    {
+                        "read_ref": binding.read_ref,
+                        "role_names": binding.role_names,
+                    }
+                    for binding in self.native_role_bindings
+                ),
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class CompiledCalculationPolicy(ContractValue):
+    """Retained exact policy binding plus the source contracts it closes over."""
+
+    binding: CalculationPolicyBinding
+    selector_contracts: Mapping[str, object]
+    accessor_contracts: Mapping[str, object]
+    derived_node_contracts: Mapping[str, object]
+    context_fact_contracts: Mapping[str, object]
+    role_contracts: Mapping[str, object]
+    dependency_read_refs: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "compiled_calculation_policy",
+            {
+                "binding": {
+                    "consumer_id": self.binding.consumer_id,
+                    "profile_id": self.binding.profile_id,
+                    "profile_generation": self.binding.profile_generation,
+                    "reads": self.binding.reads,
+                    "selector_operation_pairs": tuple(
+                        {
+                            "selector_id": pair.selector_id,
+                            "operation_ids": pair.operation_ids,
+                        }
+                        for pair in self.binding.selector_operation_pairs
+                    ),
+                    "context_fact_bindings": tuple(
+                        {
+                            "consumer_ref": binding.consumer_ref,
+                            "fact_ids": binding.fact_ids,
+                        }
+                        for binding in self.binding.context_fact_bindings
+                    ),
+                    "native_role_bindings": tuple(
+                        {
+                            "read_ref": binding.read_ref,
+                            "role_names": binding.role_names,
+                        }
+                        for binding in self.binding.native_role_bindings
+                    ),
+                },
+                "selector_contracts": self.selector_contracts,
+                "accessor_contracts": self.accessor_contracts,
+                "derived_node_contracts": self.derived_node_contracts,
+                "context_fact_contracts": self.context_fact_contracts,
+                "role_contracts": self.role_contracts,
+                "dependency_read_refs": self.dependency_read_refs,
+            },
+        )
 
 
 SELECTED_PROFILE_IDS: Final = frozenset(
@@ -1111,6 +1279,49 @@ class CastPreflightInput(ContractValue):
     slot_resource_definition_id: NativeId | None = None
     control_effect_id: NativeId | None = None
 
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+
+        def subject_wire(value: SubjectBinding | ObjectSubjectBinding) -> dict[str, object]:
+            if isinstance(value, SubjectBinding):
+                wire: dict[str, object] = {
+                    "principal_subject_id": value.principal_subject_id,
+                    "physical_actor_id": value.physical_actor_id,
+                    "binding_generation": value.binding_generation,
+                }
+                for name in ("relation_effect_id", "control_effect_id"):
+                    member = getattr(value, name)
+                    if member is not None:
+                        wire[name] = member
+                return wire
+            return {
+                "principal_subject_id": value.principal_subject_id,
+                "object_asset_id": value.object_asset_id,
+                "relation_effect_id": value.relation_effect_id,
+                "binding_generation": value.binding_generation,
+            }
+
+        wire: dict[str, object] = {
+            "consumer_id": self.consumer_id,
+            "subject_binding": subject_wire(self.subject_binding),
+            "source_actor_id": self.source_actor_id,
+            "origin_subject_id": self.origin_subject_id,
+            "cost_payer_actor_id": self.cost_payer_actor_id,
+            "acquisition_binding_ref": self.acquisition_binding_ref,
+            "component_owner_refs": tuple(
+                {"family_key": owner.family_key, "identity": owner.identity}
+                for owner in self.component_owner_refs
+            ),
+            "target_bindings": tuple(
+                subject_wire(binding) for binding in self.target_bindings
+            ),
+        }
+        if self.slot_resource_definition_id is not None:
+            wire["slot_resource_definition_id"] = self.slot_resource_definition_id
+        if self.control_effect_id is not None:
+            wire["control_effect_id"] = self.control_effect_id
+        _wire_contract("cast_preflight_input", wire)
+
 
 @dataclass(frozen=True, slots=True)
 class CastTransitionInput(ContractValue):
@@ -1494,6 +1705,8 @@ class CompiledActivity(_SealedValue):
     duration_contract: Mapping[str, object] | None = None
     targeting_contract: Mapping[str, object] | None = None
     symbol_contracts: Mapping[str, object] = field(default_factory=dict)
+    calculation_policy_bindings: tuple[CompiledCalculationPolicy, ...] = ()
+    cast_profile_bindings: tuple[CastProfileBinding, ...] = ()
     _issue_seal: object = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self) -> None:
@@ -1504,6 +1717,12 @@ class CompiledActivity(_SealedValue):
         _wire_contract("roles", self.role_contracts)
         _wire_contract("export_contracts", self.export_contracts)
         _wire_contract("compiler_symbol_contracts", self.symbol_contracts)
+        for policy in self.calculation_policy_bindings:
+            if not isinstance(policy, CompiledCalculationPolicy):
+                raise ActivityContractError("compiled calculation policy is untyped")
+        for binding in self.cast_profile_bindings:
+            if not isinstance(binding, CastProfileBinding):
+                raise ActivityContractError("compiled cast profile is untyped")
         for name, value in (("mechanical-predicate", self.requirements),
                             ("duration-spec", self.duration_contract),
                             ("target-spec", self.targeting_contract)):
@@ -1522,6 +1741,32 @@ class CompiledActivity(_SealedValue):
             pending.extend(instruction.children)
         if any(binding.consumer_id not in consumers for binding in self.profile_bindings):
             raise ActivityContractError("profile binding references a foreign instruction occurrence")
+        policy_keys: set[tuple[str, str]] = set()
+        profile_keys = {
+            (binding.consumer_id, binding.profile_id, binding.profile_generation)
+            for binding in self.profile_bindings
+        }
+        for policy in self.calculation_policy_bindings:
+            binding = policy.binding
+            key = (binding.consumer_id, binding.profile_id)
+            if key in policy_keys or binding.consumer_id not in consumers:
+                raise ActivityContractError("calculation policy references a duplicate/foreign occurrence")
+            if (binding.consumer_id, binding.profile_id, binding.profile_generation) not in profile_keys:
+                raise ActivityContractError("calculation policy has no exact profile binding")
+            if any(
+                self.role_contracts.get(role_name) != role_contract
+                for role_name, role_contract in policy.role_contracts.items()
+            ):
+                raise ActivityContractError("calculation policy role contract differs from the compiled Activity")
+            policy_keys.add(key)
+        cast_keys: set[tuple[str, str]] = set()
+        for binding in self.cast_profile_bindings:
+            key = (binding.consumer_id, binding.profile_id)
+            if key in cast_keys or binding.consumer_id not in consumers:
+                raise ActivityContractError("cast profile references a duplicate/foreign occurrence")
+            if (binding.consumer_id, binding.profile_id, binding.profile_generation) not in profile_keys:
+                raise ActivityContractError("cast profile has no exact profile binding")
+            cast_keys.add(key)
 
 
 @dataclass(frozen=True, slots=True, weakref_slot=True)

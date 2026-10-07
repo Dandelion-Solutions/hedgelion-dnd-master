@@ -7,7 +7,9 @@
     "parameters": {"type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"}, "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-parameter-spec.schema.json"}},
     "roles": {"type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"}, "additionalProperties": {"type": "string", "enum": ["world.actor", "world.asset", "runtime.procedure"]}},
     "symbols": {"type": "object", "propertyNames": {"pattern": "^compiled\\.[a-z][a-z0-9_]*$"}, "additionalProperties": {"$ref": "#/$defs/symbol"}},
-    "profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/profileBinding"}}
+    "profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/profileBinding"}},
+    "calculation_policies": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/calculationPolicyBinding"}},
+    "cast_profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/castProfileBinding"}}
   },
   "$defs": {
     "symbol": {

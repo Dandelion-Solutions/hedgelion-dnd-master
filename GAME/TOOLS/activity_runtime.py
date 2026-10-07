@@ -33,8 +33,8 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
 
@@ -63,6 +63,7 @@ class _LoweredSteps:
     dependencies: tuple[str, ...]
     transitions: tuple[str, ...]
     symbols: Mapping[str, object]
+    calculation_policy_bindings: tuple[contracts.CompiledCalculationPolicy, ...]
 
 
 def _validate_bound_definition_reference(
@@ -181,14 +182,23 @@ def _resolve_compiler_symbol(
 def _validate_accessor_read(
     accessor_id: str, activity_id: str, mechanical: Mapping[str, object],
     ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
+    *,
+    consumer_ref: str | None = None,
 ) -> None:
     accessor = _mapping(mechanical.get("accessors"), "accessors").get(accessor_id)
     admission = ledger_rows.get(("mechanical_accessors", accessor_id))
+    exact_consumer_ref = (
+        f"activity:{activity_id}" if consumer_ref is None else consumer_ref
+    )
     if (not isinstance(accessor, Mapping) or accessor.get("disposition") != "ACTIVE_ADMITTED"
         or admission is None or admission.get("admission_disposition") != "ACTIVE_ADMITTED"
         or admission.get("realization_state") != "COMPLETE"
-        or not _contains_id(accessor.get("permitted_consumer_ids"), activity_id)):
-        raise ActivityRuntimeError(f"accessor is unknown, dormant, or unauthorized: {accessor_id}")
+        or not _contains_id(
+            accessor.get("permitted_consumer_ids"), exact_consumer_ref
+        )):
+        raise ActivityNotSelectable(
+            f"accessor is unknown, dormant, or unauthorized: {accessor_id}"
+        )
 
 
 def _mapping(value: object, label: str) -> Mapping[str, object]:
@@ -500,6 +510,38 @@ def _validate_active_primitive(
     return primitive_rows[primitive_id]
 
 
+def _compiler_declarations_for_activity(
+    primitive_rows: Mapping[str, Mapping[str, object]], activity_id: str
+) -> tuple[Mapping[str, object], ...]:
+    declarations: list[Mapping[str, object]] = []
+    for primitive in primitive_rows.values():
+        raw_declarations = _mapping(
+            primitive.get("compiler_declarations", {}), "compiler declarations"
+        )
+        declaration = raw_declarations.get(activity_id)
+        if isinstance(declaration, Mapping):
+            declarations.append(declaration)
+    return tuple(declarations)
+
+
+def _profile_rows_for_activity(
+    primitive_rows: Mapping[str, Mapping[str, object]], activity_id: str
+) -> tuple[Mapping[str, object], ...]:
+    rows: list[Mapping[str, object]] = []
+    for declaration in _compiler_declarations_for_activity(primitive_rows, activity_id):
+        for member in ("profiles", "cast_profiles", "calculation_policies"):
+            for raw in _sequence(declaration.get(member, ()), f"compiler {member}"):
+                row = _mapping(raw, f"compiler {member} binding")
+                if member == "calculation_policies":
+                    row = {
+                        "consumer_id": row["consumer_id"],
+                        "profile_id": row["profile_id"],
+                        "profile_generation": row["profile_generation"],
+                    }
+                rows.append(row)
+    return tuple(rows)
+
+
 def _validate_selector_read(
     selector_id: str,
     activity_id: str,
@@ -541,6 +583,508 @@ def _validate_selector_read(
         raise ActivityNotSelectable(
             f"selector {selector_id} is not admitted for {activity_id}"
         )
+
+
+def _compile_calculation_policy_bindings(
+    raw_bindings: Sequence[object],
+    *,
+    consumer_id: str,
+    activity_id: str,
+    profile_bindings: tuple[contracts.ProfileBinding, ...],
+    mechanical: Mapping[str, object],
+    core: Mapping[str, object],
+    ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
+    role_contracts: Mapping[str, object],
+) -> tuple[contracts.CompiledCalculationPolicy, ...]:
+    """Compile each selected policy's finite source-backed mechanical closure."""
+    schema = "https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json"
+    selectors = _mapping(mechanical.get("selectors"), "selectors")
+    accessors = _mapping(mechanical.get("accessors"), "accessors")
+    derived_nodes = _mapping(mechanical.get("derived_nodes"), "derived nodes")
+    context_facts = _mapping(mechanical.get("context_facts"), "context facts")
+    source_edges = {
+        (binding.consumer_id, binding.profile_id, binding.profile_generation)
+        for binding in profile_bindings
+    }
+    compiled: list[contracts.CompiledCalculationPolicy] = []
+    seen_profiles: set[tuple[str, str]] = set()
+    for raw in raw_bindings:
+        _validate_shape("calculation_policy_binding", raw)
+        value = _mapping(raw, "calculation policy binding")
+        pairs: list[contracts.SelectorOperationPair] = []
+        for raw_pair in _sequence(
+            value.get("selector_operation_pairs"), "calculation selector-operation pairs"
+        ):
+            pair = _mapping(raw_pair, "calculation selector-operation pair")
+            pairs.append(
+                contracts.SelectorOperationPair(
+                    str(pair["selector_id"]),
+                    tuple(str(item) for item in _sequence(pair["operation_ids"], "policy operations")),
+                )
+            )
+        fact_bindings = tuple(
+            contracts.ContextFactBinding(
+                str(fact_binding["consumer_ref"]),
+                tuple(
+                    str(fact_id)
+                    for fact_id in _sequence(
+                        fact_binding["fact_ids"], "calculation fact bindings"
+                    )
+                ),
+            )
+            for fact_binding in (
+                _mapping(raw_fact, "calculation fact binding")
+                for raw_fact in _sequence(
+                    value.get("context_fact_bindings"),
+                    "calculation context fact bindings",
+                )
+            )
+        )
+        native_role_bindings = tuple(
+            contracts.NativeRoleBinding(
+                str(role_binding["read_ref"]),
+                tuple(
+                    str(role_name)
+                    for role_name in _sequence(
+                        role_binding["role_names"], "calculation role names"
+                    )
+                ),
+            )
+            for role_binding in (
+                _mapping(raw_role, "calculation native role binding")
+                for raw_role in _sequence(
+                    value.get("native_role_bindings"),
+                    "calculation native role bindings",
+                )
+            )
+        )
+        try:
+            binding = contracts.CalculationPolicyBinding(
+                str(value["consumer_id"]),
+                str(value["profile_id"]),
+                value["profile_generation"],
+                tuple(str(item) for item in _sequence(value["reads"], "calculation policy reads")),
+                tuple(pairs),
+                fact_bindings,
+                native_role_bindings,
+            )
+        except contracts.ActivityContractError as exc:
+            raise ActivityRuntimeError(f"calculation policy binding is invalid: {exc}") from exc
+
+        if binding.consumer_id != consumer_id:
+            raise ActivityNotSelectable("calculation policy references a foreign instruction occurrence")
+        profile_key = (binding.consumer_id, binding.profile_id)
+        if profile_key in seen_profiles:
+            raise ActivityNotSelectable("duplicate calculation policy profile for an occurrence")
+        seen_profiles.add(profile_key)
+        if (binding.consumer_id, binding.profile_id, binding.profile_generation) not in source_edges:
+            raise ActivityNotSelectable("calculation policy has no exact profile binding")
+        direct_selector_ids = {
+            reference.partition(":")[2]
+            for reference in binding.reads
+            if reference.startswith("selector:")
+        }
+        direct_accessor_ids = {
+            reference.partition(":")[2]
+            for reference in binding.reads
+            if reference.startswith("accessor:")
+        }
+        direct_fact_ids = {
+            reference.partition(":")[2]
+            for reference in binding.reads
+            if reference.startswith("fact:")
+        }
+        pair_by_selector: dict[str, contracts.SelectorOperationPair] = {}
+        for pair in binding.selector_operation_pairs:
+            if pair.selector_id in pair_by_selector:
+                raise ActivityNotSelectable("calculation policy repeats a selector pair owner")
+            pair_by_selector[pair.selector_id] = pair
+        if direct_selector_ids != set(pair_by_selector):
+            raise ActivityNotSelectable(
+                "selector reads must equal paired policy roots; dependencies are source-closed"
+            )
+        for selector_id, pair in pair_by_selector.items():
+            selector = selectors.get(selector_id)
+            if not isinstance(selector, Mapping):
+                raise ActivityNotSelectable(f"calculation selector is unavailable: {selector_id}")
+            _validate_shape(schema + "#/$defs/selectorMetadata", selector)
+            if (
+                selector.get("calculation_policy_id") != binding.profile_id
+                or selector.get("calculation_policy_generation")
+                != binding.profile_generation
+            ):
+                raise ActivityNotSelectable("calculation selector root has a foreign policy profile")
+            allowed = set(
+                _sequence(selector.get("allowed_operations"), "selector operations")
+            )
+            operation_contracts = _mapping(
+                selector.get("operation_contracts"), "selector operation contracts"
+            )
+            if not pair.operation_ids or not set(pair.operation_ids) <= allowed:
+                raise ActivityNotSelectable("calculation policy names an unadmitted selector operation")
+            if set(operation_contracts) != allowed:
+                raise ActivityNotSelectable("calculation selector root has incomplete operation contracts")
+            for operation_id in pair.operation_ids:
+                operation = _mapping(
+                    operation_contracts.get(operation_id), "calculation operation contract"
+                )
+                if (
+                    operation.get("calculation_policy_id") != binding.profile_id
+                    or operation.get("calculation_policy_generation")
+                    != binding.profile_generation
+                ):
+                    raise ActivityNotSelectable("calculation operation pair has a foreign policy profile")
+                _selector_operation_pair_is_admitted(
+                    selector_id,
+                    operation_id,
+                    mechanical=mechanical,
+                    core=core,
+                    ledger_rows=ledger_rows,
+                )
+
+        native_roles_by_root: dict[str, tuple[str, ...]] = {}
+        for role_binding in binding.native_role_bindings:
+            if role_binding.read_ref in native_roles_by_root:
+                raise ActivityNotSelectable("calculation policy repeats a native role root")
+            native_roles_by_root[role_binding.read_ref] = tuple(role_binding.role_names)
+        direct_roots = {
+            *(f"selector:{selector_id}" for selector_id in direct_selector_ids),
+            *(f"accessor:{accessor_id}" for accessor_id in direct_accessor_ids),
+        }
+        if set(native_roles_by_root) != direct_roots:
+            raise ActivityNotSelectable("calculation policy native roles differ from its exact read roots")
+
+        fact_bindings_by_node: dict[str, set[str]] = {}
+        fact_binding_edges: set[tuple[str, str]] = set()
+        for fact_binding in binding.context_fact_bindings:
+            for fact_id in fact_binding.fact_ids:
+                edge = (fact_binding.consumer_ref, fact_id)
+                if edge in fact_binding_edges:
+                    raise ActivityNotSelectable("calculation policy repeats a fact consumer edge")
+                fact_binding_edges.add(edge)
+                fact_bindings_by_node.setdefault(fact_binding.consumer_ref, set()).add(fact_id)
+        if direct_fact_ids != {
+            fact_id for _consumer_ref, fact_id in fact_binding_edges
+        }:
+            raise ActivityNotSelectable(
+                "calculation policy fact reads differ from exact consumer bindings"
+            )
+        bound_fact_ids = {fact_id for _consumer_ref, fact_id in fact_binding_edges}
+        if direct_fact_ids != bound_fact_ids:
+            raise ActivityNotSelectable("calculation policy fact reads differ from exact consumer bindings")
+
+        selector_contracts: dict[str, object] = {}
+        accessor_contracts: dict[str, object] = {}
+        derived_contracts: dict[str, object] = {}
+        context_fact_contracts: dict[str, object] = {}
+        retained_role_contracts: dict[str, object] = {}
+        dependency_nodes: set[str] = set()
+
+        def node_metadata(
+            node_ref: str,
+            parent_ref: str | None,
+            *,
+            selector_sink: dict[str, object] = selector_contracts,
+            accessor_sink: dict[str, object] = accessor_contracts,
+            derived_sink: dict[str, object] = derived_contracts,
+        ) -> tuple[str, str, Mapping[str, object]]:
+            kind, separator, node_id = node_ref.partition(":")
+            if not separator or kind not in {"selector", "accessor", "derived"}:
+                raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
+            if kind == "selector":
+                raw = selectors.get(node_id)
+                if not isinstance(raw, Mapping):
+                    raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
+                _validate_shape(schema + "#/$defs/selectorMetadata", raw)
+                if parent_ref is None:
+                    _validate_selector_read(
+                        node_id,
+                        activity_id,
+                        mechanical=mechanical,
+                        core=core,
+                        ledger_rows=ledger_rows,
+                    )
+                else:
+                    if node_id not in _sequence(
+                        _mapping(core.get("registries"), "core registries").get(
+                            "rule_selectors"
+                        ),
+                        "rule selector registry",
+                    ):
+                        raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
+                    admission = ledger_rows.get(("rule_selectors", node_id))
+                    if (
+                        admission is None
+                        or admission.get("admission_disposition") != "ACTIVE_ADMITTED"
+                        or admission.get("realization_state") != "COMPLETE"
+                    ):
+                        raise ActivityNotSelectable(f"selector dependency is dormant: {node_ref}")
+                    allowed = _sequence(raw.get("allowed_operations"), "selector operations")
+                    pair_contracts = _mapping(
+                        raw.get("operation_contracts"), "selector operation contracts"
+                    )
+                    if not allowed or set(allowed) != set(pair_contracts):
+                        raise ActivityNotSelectable(f"selector dependency has incomplete pairs: {node_ref}")
+                    for operation_id in allowed:
+                        _selector_operation_pair_is_admitted(
+                            node_id,
+                            str(operation_id),
+                            mechanical=mechanical,
+                            core=core,
+                            ledger_rows=ledger_rows,
+                        )
+                selector_sink[node_id] = raw
+                return kind, node_id, raw
+            if kind == "accessor":
+                raw = accessors.get(node_id)
+                if not isinstance(raw, Mapping):
+                    raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
+                _validate_shape(schema + "#/$defs/accessorMetadata", raw)
+                _validate_accessor_read(
+                    node_id,
+                    activity_id,
+                    mechanical,
+                    ledger_rows,
+                    consumer_ref=parent_ref,
+                )
+                accessor_sink[node_id] = raw
+                return kind, node_id, raw
+            raw = derived_nodes.get(node_id)
+            if not isinstance(raw, Mapping):
+                    raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
+            _validate_shape(schema + "#/$defs/derivedNodeMetadata", raw)
+            if raw.get("disposition") != "ACTIVE_INTERNAL":
+                raise ActivityNotSelectable(f"derived dependency is dormant: {node_ref}")
+            if parent_ref is not None and not _contains_id(
+                raw.get("permitted_consumer_ids"), parent_ref
+            ):
+                raise ActivityNotSelectable(f"unauthorized derived edge: {parent_ref} -> {node_ref}")
+            derived_sink[node_id] = raw
+            return kind, node_id, raw
+
+        def walk_root(
+            root_ref: str,
+            root_roles: set[str],
+            *,
+            fact_edges: dict[str, set[str]] = fact_bindings_by_node,
+            fact_sink: dict[str, object] = context_fact_contracts,
+            closure_sink: set[str] = dependency_nodes,
+        ) -> tuple[set[str], set[str]]:
+            visiting: set[str] = set()
+            visited: set[str] = set()
+            memo_facts: dict[str, set[str]] = {}
+            memo_classes: dict[str, set[str]] = {}
+
+            def visit(node_ref: str, parent_ref: str | None = None) -> tuple[set[str], set[str]]:
+                if node_ref in visiting:
+                    raise ActivityNotSelectable(f"mechanical dependency cycle at {node_ref}")
+                if node_ref in visited:
+                    return memo_facts[node_ref], memo_classes[node_ref]
+                kind, _node_id, metadata = node_metadata(node_ref, parent_ref)
+                visiting.add(node_ref)
+                if kind in {"selector", "accessor"}:
+                    subject_kinds = set(_sequence(metadata.get("subject_kinds"), "subject kinds"))
+                    if not root_roles <= subject_kinds:
+                        raise ActivityNotSelectable(
+                            f"incompatible subject/binding roles at {node_ref}"
+                        )
+                    binding_kinds = (
+                        set(_sequence(metadata.get("binding_kinds"), "selector bindings"))
+                        if kind == "selector"
+                        else set(_sequence(metadata.get("argument_kinds"), "accessor arguments"))
+                    )
+                    if "subject" not in binding_kinds:
+                        raise ActivityNotSelectable(
+                            f"incompatible subject/binding roles at {node_ref}"
+                        )
+
+                dependency_refs = (
+                    _sequence(metadata.get("static_dependencies", ()), "selector dependencies")
+                    if kind == "selector"
+                    else _sequence(metadata.get("dependencies", ()), f"{kind} dependencies")
+                )
+                if kind in {"selector", "derived"}:
+                    allowed_kinds = set(
+                        _sequence(metadata.get("allowed_dependency_kinds"), "allowed dependency kinds")
+                    )
+                else:
+                    allowed_kinds = {"selector", "accessor", "derived"}
+                direct_facts = set(fact_edges.get(node_ref, set()))
+                reached_facts = set(direct_facts)
+                reached_classes = {"ENGINE_STATE"}
+                for fact_id in direct_facts:
+                    fact = context_facts.get(fact_id)
+                    if not isinstance(fact, Mapping):
+                        raise ActivityNotSelectable(f"policy fact is unregistered: {fact_id}")
+                    _validate_shape("compiler_context_fact_metadata", fact)
+                    if (
+                        fact.get("disposition") != "ACTIVE_ADMITTED"
+                        or not _contains_id(fact.get("permitted_consumer_ids"), activity_id)
+                    ):
+                        raise ActivityNotSelectable(f"policy fact is dormant or unauthorized: {fact_id}")
+                    fact_sink[fact_id] = fact
+                    reached_classes.add(str(fact["source_class"]))
+                for raw_dependency in dependency_refs:
+                    dependency = str(raw_dependency)
+                    dependency_kind, separator, _dependency_id = dependency.partition(":")
+                    if not separator or dependency_kind not in allowed_kinds:
+                        raise ActivityNotSelectable(
+                            f"illegal mechanical dependency kind from {node_ref}: {dependency}"
+                        )
+                    if dependency_kind in {"accessor", "derived"}:
+                        target = (
+                            accessors.get(_dependency_id)
+                            if dependency_kind == "accessor"
+                            else derived_nodes.get(_dependency_id)
+                        )
+                        if not isinstance(target, Mapping):
+                            raise ActivityNotSelectable(f"unproven dependency: {dependency}")
+                        consumer_ref = node_ref
+                        if not _contains_id(target.get("permitted_consumer_ids"), consumer_ref):
+                            noun = "accessor" if dependency_kind == "accessor" else "derived"
+                            raise ActivityNotSelectable(
+                                f"unauthorized {noun} edge: {consumer_ref} -> {dependency}"
+                            )
+                    child_facts, child_classes = visit(dependency, node_ref)
+                    reached_facts.update(child_facts)
+                    reached_classes.update(child_classes)
+
+                permitted_facts = set(
+                    _sequence(
+                        metadata.get("permitted_context_fact_ids", ()),
+                        f"{kind} fact permissions",
+                    )
+                ) if kind in {"selector", "derived"} else set()
+                if not reached_facts <= permitted_facts:
+                    raise ActivityNotSelectable(
+                        f"fact permission exceeds exact path allowlist at {node_ref}"
+                    )
+                allowed_classes = set(
+                    _sequence(
+                        metadata.get("allowed_input_classes", ()),
+                        f"{kind} input classes",
+                    )
+                ) if kind in {"selector", "derived"} else {str(metadata.get("input_class"))}
+                if not reached_classes <= allowed_classes:
+                    raise ActivityNotSelectable(
+                        f"input class exceeds exact path allowlist at {node_ref}"
+                    )
+                visiting.remove(node_ref)
+                visited.add(node_ref)
+                memo_facts[node_ref] = reached_facts
+                memo_classes[node_ref] = reached_classes
+                closure_sink.add(node_ref)
+                return reached_facts, reached_classes
+
+            root_facts, _root_classes = visit(root_ref)
+            return root_facts, visited.copy()
+
+        root_fact_closures: dict[str, set[str]] = {}
+        root_node_closures: dict[str, set[str]] = {}
+        for kind, root_id in (
+            *(('selector', selector_id) for selector_id in sorted(direct_selector_ids)),
+            *(('accessor', accessor_id) for accessor_id in sorted(direct_accessor_ids)),
+        ):
+            root_ref = f"{kind}:{root_id}"
+            role_binding = next(
+                item for item in binding.native_role_bindings if item.read_ref == root_ref
+            )
+            root_roles: set[str] = set()
+            for role_name in role_binding.role_names:
+                role = role_contracts.get(role_name)
+                if not isinstance(role, Mapping) or not isinstance(role.get("family_key"), str):
+                    raise ActivityNotSelectable(f"calculation policy has an unavailable native role: {role_name}")
+                root_roles.add(str(role["family_key"]))
+                retained_role_contracts[str(role_name)] = role
+            root_facts, root_nodes = walk_root(root_ref, root_roles)
+            root_fact_closures[root_ref] = root_facts
+            root_node_closures[root_ref] = root_nodes
+
+        for fact_binding in binding.context_fact_bindings:
+            users = [
+                root_ref
+                for root_ref, nodes in root_node_closures.items()
+                if fact_binding.consumer_ref in nodes
+                and set(fact_binding.fact_ids) <= root_fact_closures[root_ref]
+            ]
+            if not users:
+                raise ActivityNotSelectable(
+                    f"fact consumer has no permitted policy root: {fact_binding.consumer_ref}"
+                )
+
+        dependency_read_refs = tuple(sorted(dependency_nodes - direct_roots))
+        try:
+            compiled.append(
+                contracts.CompiledCalculationPolicy(
+                    binding,
+                    selector_contracts,
+                    accessor_contracts,
+                    derived_contracts,
+                    context_fact_contracts,
+                    retained_role_contracts,
+                    dependency_read_refs,
+                )
+            )
+        except contracts.ActivityContractError as exc:
+            raise ActivityRuntimeError(f"compiled calculation policy is invalid: {exc}") from exc
+    return tuple(compiled)
+
+def _compile_cast_profile_bindings(
+    raw_bindings: Sequence[object],
+    *,
+    profile_bindings: tuple[contracts.ProfileBinding, ...],
+    occurrence_ids: tuple[str, ...],
+) -> tuple[contracts.CastProfileBinding, ...]:
+    """Retain only the declared common-cast profile occurrences actually bound."""
+    declared: list[contracts.CastProfileBinding] = []
+    seen: set[tuple[str, str]] = set()
+    for raw in raw_bindings:
+        _validate_shape("cast_profile_binding", raw)
+        value = _mapping(raw, "cast profile binding")
+        try:
+            binding = contracts.CastProfileBinding(
+                str(value["consumer_id"]),
+                str(value["profile_id"]),
+                value["profile_generation"],
+            )
+        except contracts.ActivityContractError as exc:
+            raise ActivityRuntimeError(f"cast profile binding is invalid: {exc}") from exc
+        key = (binding.consumer_id, binding.profile_id)
+        if key in seen:
+            raise ActivityNotSelectable("duplicate cast profile for an occurrence")
+        if binding.consumer_id not in occurrence_ids:
+            raise ActivityNotSelectable("cast profile references a foreign instruction occurrence")
+        if not any(
+            source.consumer_id == binding.consumer_id
+            and source.profile_id == binding.profile_id
+            and source.profile_generation == binding.profile_generation
+            for source in profile_bindings
+        ):
+            raise ActivityNotSelectable("cast profile has no exact Activity profile binding")
+        seen.add(key)
+        declared.append(binding)
+
+    actual = {
+        (binding.consumer_id, binding.profile_id, binding.profile_generation)
+        for binding in profile_bindings
+        if binding.profile_id in contracts.CAST_PROFILE_IDS
+    }
+    retained = {
+        (binding.consumer_id, binding.profile_id, binding.profile_generation)
+        for binding in declared
+    }
+    if declared and retained != actual:
+        raise ActivityNotSelectable(
+            "cast profile bindings differ from their exact compiler occurrences"
+        )
+    if not declared:
+        if any(consumer_id not in occurrence_ids for consumer_id, _profile_id, _generation in actual):
+            raise ActivityNotSelectable("cast profile references a foreign instruction occurrence")
+        return tuple(
+            contracts.CastProfileBinding(consumer_id, profile_id, generation)
+            for consumer_id, profile_id, generation in sorted(actual)
+        )
+    return tuple(declared)
 
 
 def _selector_operation_pair_is_admitted(
@@ -817,11 +1361,15 @@ def _compile_predicate_reads(
     predicate: object,
     *,
     activity_id: str,
+    consumer_ref: str | None = None,
     mechanical: Mapping[str, object],
     core: Mapping[str, object],
     ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
     reads: list[str],
 ) -> None:
+    exact_consumer_ref = (
+        f"predicate:{activity_id}" if consumer_ref is None else consumer_ref
+    )
     _validate_shape("mechanical-predicate", predicate)
     node = _mapping(predicate, "mechanical predicate")
     if "fact" in node:
@@ -834,6 +1382,7 @@ def _compile_predicate_reads(
             _compile_predicate_reads(
                 child,
                 activity_id=activity_id,
+                consumer_ref=exact_consumer_ref,
                 mechanical=mechanical,
                 core=core,
                 ledger_rows=ledger_rows,
@@ -843,6 +1392,7 @@ def _compile_predicate_reads(
         _compile_predicate_reads(
             node["not"],
             activity_id=activity_id,
+            consumer_ref=exact_consumer_ref,
             mechanical=mechanical,
             core=core,
             ledger_rows=ledger_rows,
@@ -863,10 +1413,10 @@ def _compile_predicate_reads(
                     or admission is None
                     or admission.get("admission_disposition") != "ACTIVE_ADMITTED"
                     or not _contains_id(
-                        accessor.get("permitted_consumer_ids"), activity_id
+                        accessor.get("permitted_consumer_ids"), exact_consumer_ref
                     )
                 ):
-                    raise ActivityRuntimeError(
+                    raise ActivityNotSelectable(
                         f"accessor is unknown, dormant, or unauthorized: {accessor_id}"
                     )
                 reads.append(f"accessor:{accessor_id}")
@@ -896,6 +1446,7 @@ def _compile_activity_definition(
     _inherited_exports: Mapping[str, Mapping[str, object]] | None = None,
     _scopes: Mapping[str, object] | None = None,
     _inherited_export_guards: Mapping[str, tuple[Mapping[str, object], ...]] | None = None,
+    _inherited_profile_bindings: tuple[contracts.ProfileBinding, ...] = (),
     _enclosing_guards: tuple[Mapping[str, object], ...] = (),
     _definition_dependency_graph: Mapping[str, tuple[str, ...]] | None = None,
 ) -> contracts.CompiledActivity | _LoweredSteps:
@@ -930,9 +1481,10 @@ def _compile_activity_definition(
 
     raw_profile_bindings = data.get("profile_bindings", ())
     profile_binding_values = _sequence(raw_profile_bindings, "profile_bindings")
+    bindings = _inherited_profile_bindings
     if profile_binding_values:
         try:
-            bindings = tuple(
+            local_bindings = tuple(
                 contracts.ProfileBinding(
                     str(_mapping(item, "profile binding")["consumer_id"]),
                     str(_mapping(item, "profile binding")["profile_id"]),
@@ -940,12 +1492,10 @@ def _compile_activity_definition(
                 )
                 for item in profile_binding_values
             )
+            bindings = (*_inherited_profile_bindings, *local_bindings)
             declared_edges = tuple(
-                (profile["profile_id"], profile["profile_generation"], profile["consumer_id"])
-                for primitive in primitive_rows.values()
-                for declaration in (primitive.get("compiler_declarations", {}).get(activity_id),)
-                if declaration is not None
-                for profile in declaration["profiles"]
+                (row["profile_id"], row["profile_generation"], row["consumer_id"])
+                for row in _profile_rows_for_activity(primitive_rows, activity_id)
             )
             contracts.validate_profile_bindings(bindings,
                 occurrence_ids=tuple(edge[2] for edge in declared_edges), admitted_contracts=declared_edges)
@@ -965,6 +1515,7 @@ def _compile_activity_definition(
     transition_refs: list[str] = []
     role_contracts: dict[str, Mapping[str, object]] = {}
     profile_bindings: list[contracts.ProfileBinding] = []
+    calculation_policy_bindings: list[contracts.CompiledCalculationPolicy] = []
     export_contracts: dict[str, object] = {}
     prior_results: Mapping[str, object] = {}
     retained_symbols: dict[str, object] = {}
@@ -1074,7 +1625,8 @@ def _compile_activity_definition(
                     catalog_context=catalog_context, source=source, source_definitions=source_definitions,
                     compiler_generation=compiler_generation, mode_policy_profile_id=mode_policy_profile_id,
                     _occurrence_prefix=f"{occurrence_id}.{argument_name}", _inherited_exports=exports, _scopes=child_scopes,
-                    _inherited_export_guards=export_guards, _enclosing_guards=active_guards)
+                    _inherited_export_guards=export_guards,
+                    _inherited_profile_bindings=bindings, _enclosing_guards=active_guards)
                 children.extend(lowered.instructions)
                 compiled_args[argument_name] = tuple(child.consumer_id for child in lowered.instructions)
                 read_plan.extend(lowered.reads)
@@ -1087,9 +1639,11 @@ def _compile_activity_definition(
                     if symbol_id in retained_symbols and retained_symbols[symbol_id] != descriptor:
                         raise ActivityRuntimeError(f"conflicting source producer contracts: {symbol_id}")
                     retained_symbols[symbol_id] = descriptor
+                calculation_policy_bindings.extend(lowered.calculation_policy_bindings)
                 continue
             if value_kind == "mechanical_predicate" and isinstance(raw_value, Mapping):
                 _compile_predicate_reads(raw_value, activity_id=activity_id,
+                    consumer_ref=f"predicate:{occurrence_id}",
                     mechanical=mechanical, core=core, ledger_rows=ledger_rows, reads=step_reads)
             if primitive_id == "op.for_each_target" and argument_name == "targets":
                 compiled_args[argument_name] = {"symbol_ref" if str(raw_value).startswith("compiled.") else "export_ref": target_export, "value_kind": "prior_export_ref"}
@@ -1254,6 +1808,7 @@ def _compile_activity_definition(
                 _compile_predicate_reads(
                     when,
                     activity_id=activity_id,
+                    consumer_ref=f"predicate:{occurrence_id}",
                     mechanical=mechanical,
                     core=core,
                     ledger_rows=ledger_rows,
@@ -1265,6 +1820,32 @@ def _compile_activity_definition(
             f"value.{_require_id(_mapping(spec, 'result contract').get('value_kind'), 'result value kind')}"
             for spec in results.values()
         )
+        if declaration is not None:
+            policy_rows = tuple(
+                raw_policy
+                for raw_policy in _sequence(
+                    declaration.get("calculation_policies", ()),
+                    "calculation policy declarations",
+                )
+                if _mapping(raw_policy, "calculation policy declaration").get(
+                    "consumer_id"
+                )
+                == occurrence_id
+            )
+            compiled_policies = _compile_calculation_policy_bindings(
+                policy_rows,
+                consumer_id=occurrence_id,
+                activity_id=activity_id,
+                profile_bindings=bindings,
+                mechanical=mechanical,
+                core=core,
+                ledger_rows=ledger_rows,
+                role_contracts=role_contracts,
+            )
+            calculation_policy_bindings.extend(compiled_policies)
+            for policy in compiled_policies:
+                step_reads.extend(policy.binding.reads)
+                step_reads.extend(policy.dependency_read_refs)
         instruction = contracts.CompiledInstruction(
             consumer_id=occurrence_id,
             primitive_id=primitive_id,
@@ -1283,7 +1864,7 @@ def _compile_activity_definition(
             dependency_ids.update(
                 ref.split(":", 1)[1]
                 for ref in step_reads
-                if ref.startswith(("selector:", "accessor:", "fact:"))
+                if ref.startswith(("selector:", "accessor:", "derived:", "fact:"))
             )
         export_name = step.get("export")
         if export_name is not None:
@@ -1323,7 +1904,8 @@ def _compile_activity_definition(
 
     if _occurrence_prefix is not None:
         return _LoweredSteps(tuple(instructions), role_contracts, export_contracts, tuple(read_plan),
-            tuple(sorted(dependency_ids)), tuple(dict.fromkeys(transition_refs)), retained_symbols)
+            tuple(sorted(dependency_ids)), tuple(dict.fromkeys(transition_refs)), retained_symbols,
+            tuple(calculation_policy_bindings))
     pending = list(instructions)
     occurrences: list[str] = []
     admitted_profiles: list[tuple[str, int, str]] = []
@@ -1333,9 +1915,62 @@ def _compile_activity_definition(
         pending.extend(instruction.children)
         declaration = primitive_rows[instruction.primitive_id].get("compiler_declarations", {}).get(activity_id)
         if declaration is not None:
-            for profile in declaration["profiles"]:
-                if profile["consumer_id"] == instruction.consumer_id:
-                    admitted_profiles.append((profile["profile_id"], profile["profile_generation"], profile["consumer_id"]))
+            for member in ("profiles", "cast_profiles"):
+                for raw_profile in _sequence(declaration.get(member, ()), f"compiler {member}"):
+                    profile = _mapping(raw_profile, f"compiler {member} binding")
+                    if profile["consumer_id"] == instruction.consumer_id:
+                        admitted_profiles.append((profile["profile_id"], profile["profile_generation"], profile["consumer_id"]))
+            for raw_policy in _sequence(
+                declaration.get("calculation_policies", ()),
+                "calculation policy declarations",
+            ):
+                policy = _mapping(raw_policy, "calculation policy declaration")
+                if policy["consumer_id"] == instruction.consumer_id:
+                    admitted_profiles.append((policy["profile_id"], policy["profile_generation"], policy["consumer_id"]))
+
+    source_declarations = _compiler_declarations_for_activity(primitive_rows, activity_id)
+    declared_calculation_policies = tuple(
+        _mapping(raw, "calculation policy declaration")
+        for declaration in source_declarations
+        for raw in _sequence(
+            declaration.get("calculation_policies", ()),
+            "calculation policy declarations",
+        )
+    )
+    declared_calculation_keys = tuple(
+        (
+            str(row["consumer_id"]),
+            str(row["profile_id"]),
+            row["profile_generation"],
+            tuple(row["reads"]),
+            tuple(
+                (str(pair["selector_id"]), tuple(pair["operation_ids"]))
+                for pair in row["selector_operation_pairs"]
+            ),
+        )
+        for row in declared_calculation_policies
+    )
+    compiled_calculation_keys = tuple(
+        (
+            str(item.binding.consumer_id),
+            str(item.binding.profile_id),
+            item.binding.profile_generation,
+            item.binding.reads,
+            tuple(
+                (str(pair.selector_id), pair.operation_ids)
+                for pair in item.binding.selector_operation_pairs
+            ),
+        )
+        for item in calculation_policy_bindings
+    )
+    if (
+        len({(key[0], key[1]) for key in declared_calculation_keys})
+        != len(declared_calculation_keys)
+        or sorted(declared_calculation_keys) != sorted(compiled_calculation_keys)
+    ):
+        raise ActivityNotSelectable(
+            "calculation policy declaration is not retained by its exact compiled occurrence"
+        )
     try:
         contracts.validate_profile_bindings(
             bindings if profile_binding_values else (), occurrence_ids=tuple(occurrences),
@@ -1343,6 +1978,17 @@ def _compile_activity_definition(
     except contracts.ActivityContractError as exc:
         raise ActivityNotSelectable(f"Activity profile binding is not admitted: {exc}") from exc
     profile_bindings.extend(bindings if profile_binding_values else ())
+    cast_profile_bindings = _compile_cast_profile_bindings(
+        tuple(
+            raw
+            for declaration in source_declarations
+            for raw in _sequence(
+                declaration.get("cast_profiles", ()), "cast profile declarations"
+            )
+        ),
+        profile_bindings=bindings,
+        occurrence_ids=tuple(occurrences),
+    )
     activation = data.get("activation")
     timing_refs: list[str] = []
     if activation is not None and "economy_id" in activation:
@@ -1389,6 +2035,7 @@ def _compile_activity_definition(
         _compile_predicate_reads(
             data["requirements"],
             activity_id=activity_id,
+            consumer_ref=f"predicate:{activity_id}",
             mechanical=mechanical,
             core=core,
             ledger_rows=ledger_rows,
@@ -1446,6 +2093,8 @@ def _compile_activity_definition(
             duration_contract=data.get("duration"),
             targeting_contract=data.get("targeting"),
             symbol_contracts=retained_symbols,
+            calculation_policy_bindings=tuple(calculation_policy_bindings),
+            cast_profile_bindings=cast_profile_bindings,
             _issue_seal=contracts._CONTRACT_SEAL,
         )
     except contracts.ActivityContractError as exc:
