@@ -26,18 +26,23 @@ from typing import (
     get_type_hints,
 )
 
-from .catalog_runtime import ActivityCompilerContractSource, BoundCatalogContext
+from .catalog_runtime import ActivityCompilerContractSource, BoundCatalogContext, _thaw
 from .current_owner import (
     CurrentOwnerObservation,
     CurrentOwnerReadSession,
+    CurrentOwnerStatus,
     NativeOwnerRef,
 )
 from .hot_store import OwnerDocument
-from .policy_basis import AcceptedAdjudicationBasis
+from .policy_basis import (
+    AcceptedAdjudicationBasis,
+    is_accepted_basis_issued,
+    validate_policy_applicability_witnesses,
+)
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -54,6 +59,24 @@ _COMPILER_ISSUANCES: dict[
         tuple[tuple[str, object, object], ...],
     ],
 ] = {}
+
+
+@dataclass(frozen=True, slots=True)
+class _PreparationContextIssuance:
+    reference: weakref.ReferenceType[object]
+    issuer: object
+    owner_session: CurrentOwnerReadSession
+    observation: CurrentOwnerObservation
+    command_ref: NativeOwnerRef
+    resolution_ref: NativeOwnerRef
+    operation_token: object
+    source_basis: tuple[object, ...]
+    session_snapshot: object
+    context_snapshot: object
+
+
+_PREPARATION_CONTEXT_LOCK = threading.RLock()
+_PREPARATION_CONTEXTS: dict[int, list[_PreparationContextIssuance]] = {}
 NON_EXECUTABLE_DETAILS_FIELDS: Final = frozenset({
     "profile_bindings", "profile_args", "stochastic_state", "reconciliation_state", "cause", "geometry",
     "restoration_basis", "restoration_basis_ref", "progress", "spell_progress", "prospective_delta", "state_delta",
@@ -350,6 +373,479 @@ def _compiler_value_lineage(value: object, *, kind: Literal["catalog", "compiled
     with _COMPILER_ISSUANCE_LOCK:
         record = _COMPILER_ISSUANCES.get(id(value))
     return None if record is None else record[2]
+
+
+def _root_preparation_occurrence_id(resolution_id: str, consumer_id: str) -> str:
+    return f"{resolution_id}:{consumer_id}"
+
+
+def _derive_root_role_bindings(
+    compiled: CompiledActivity, accepted_command: Mapping[str, object]
+) -> dict[str, NativeOwnerRef]:
+    """Derive the narrow Actor/one-target role map from accepted root inputs."""
+    if not _compiler_value_is_issued(compiled, kind="compiled"):
+        raise ActivityContractError("root preparation requires a compiler-issued Activity")
+    request = accepted_command.get("action_request")
+    if not isinstance(request, Mapping):
+        raise ActivityContractError("root preparation requires an accepted action request")
+    role_bindings: dict[str, NativeOwnerRef] = {}
+    role_contracts = compiled.role_contracts
+    actor_contract = role_contracts.get("actor")
+    actor_id = request.get("actor_id")
+    if (
+        not isinstance(actor_contract, Mapping)
+        or actor_contract.get("family_key") != "world.actor"
+        or not isinstance(actor_id, str)
+        or not actor_id
+    ):
+        raise ActivityContractError("root preparation has no exact accepted Actor role")
+    role_bindings["actor"] = NativeOwnerRef("world.actor", (actor_id,))
+
+    target_contract = role_contracts.get("target")
+    target_ids = request.get("target_ids", ())
+    if not isinstance(target_ids, (list, tuple)) or any(
+        not isinstance(target_id, str) or not target_id for target_id in target_ids
+    ):
+        raise ActivityContractError("root preparation target IDs are malformed")
+    if target_contract is not None:
+        if (
+            not isinstance(target_contract, Mapping)
+            or target_contract.get("family_key") != "world.actor"
+        ):
+            raise ActivityContractError(
+                "root preparation target binding is ambiguous or unsupported"
+            )
+        if len(target_ids) == 1:
+            role_bindings["target"] = NativeOwnerRef(
+                "world.actor", (target_ids[0],)
+            )
+        elif target_ids or target_contract.get("required"):
+            raise ActivityContractError(
+                "root preparation target binding is ambiguous or unsupported"
+            )
+    elif target_ids:
+        raise ActivityContractError(
+            "accepted targets have no exact compiled native role binding"
+        )
+
+    for role_name, role_contract in role_contracts.items():
+        if role_name in {"actor", "target"}:
+            continue
+        if not isinstance(role_contract, Mapping):
+            raise ActivityContractError("compiled native role contract is malformed")
+        if role_contract.get("required"):
+            raise ActivityContractError(
+                f"root preparation cannot derive required native role: {role_name}"
+            )
+    return role_bindings
+
+
+def _preparation_context_snapshot(value: NativePreparationContext) -> object:
+    snapshots: list[tuple[str, object]] = []
+    for member in fields(value):
+        field_value = getattr(value, member.name)
+        if member.name == "catalog":
+            # The catalog's compiled_activities member is a disposable cache.
+            # Preserve exact catalog/admission authority through its issuance
+            # fields, while selected compiled identity is bound separately.
+            field_snapshot = (
+                "issued-catalog",
+                id(field_value),
+                tuple(
+                    (name, _compiler_value_snapshot(source_value))
+                    for name, source_value in _compiler_issuance_fields(
+                        field_value, "catalog"
+                    )
+                ),
+            )
+        else:
+            field_snapshot = _compiler_value_snapshot(field_value)
+        snapshots.append((member.name, field_snapshot))
+    return tuple(snapshots)
+
+
+def _preparation_session_snapshot(session: CurrentOwnerReadSession) -> object:
+    return (
+        session._campaign_id,
+        _compiler_value_snapshot(session.operation_token),
+        _compiler_value_snapshot(session._pinned_campaign),
+        _compiler_value_snapshot(session._selected_live),
+        id(session._hot_store),
+        id(session._reader),
+        id(session._source_basis_reader),
+        id(session._live_reader),
+    )
+
+
+def _preparation_source_basis(
+    observation: CurrentOwnerObservation,
+    command_ref: NativeOwnerRef,
+    resolution_ref: NativeOwnerRef,
+    role_bindings: Mapping[str, NativeOwnerRef],
+) -> tuple[object, ...]:
+    refs = tuple(
+        dict.fromkeys(
+            (command_ref, resolution_ref, *role_bindings.values())
+        )
+    )
+    return tuple(
+        (
+            owner.family_key,
+            owner.identity,
+            observation.require(owner).status.value,
+            observation.require(owner).source.value,
+            observation.require(owner).source_basis,
+            observation.require(owner).generation,
+            observation.require(owner).fingerprint,
+        )
+        for owner in refs
+    )
+
+
+def _preparation_owner_state(
+    payload: Mapping[str, object],
+    *,
+    family: str,
+    owner_id: str,
+    campaign_id: str,
+) -> dict[str, object]:
+    if payload.get("kind") != family:
+        raise ActivityContractError("root preparation native owner family is foreign")
+    if payload.get("campaign_id") not in {None, campaign_id}:
+        raise ActivityContractError("root preparation native owner campaign is foreign")
+    if family == "runtime.command":
+        if payload.get("id") != owner_id or payload.get("command_id") != owner_id:
+            raise ActivityContractError("native command identity differs from its source route")
+        envelope_fields = {"kind", "id", "campaign_id"}
+    else:
+        if payload.get("id") != owner_id or "resolution_id" in payload:
+            raise ActivityContractError("native Resolution identity differs from its source route")
+        envelope_fields = {"kind", "id", "campaign_id"}
+    return {key: value for key, value in payload.items() if key not in envelope_fields}
+
+
+def _root_preparation_fields_are_valid(
+    value: NativePreparationContext,
+    *,
+    issuer: object,
+    observation: CurrentOwnerObservation,
+) -> bool:
+    try:
+        from .runtime_execution import (
+            CommandAcceptanceError,
+            validate_execution_proposal,
+        )
+        from .runtime_host import CurrentOwnerView
+
+        if type(issuer) is not CurrentOwnerView:
+            return False
+        if (
+            not _compiler_value_is_issued(value.catalog, kind="catalog")
+            or not _compiler_value_is_issued(
+                value.compiled,
+                kind="compiled",
+                parent=value.catalog.catalog_context,
+            )
+            or value.catalog.compiled_activities.get(value.compiled.activity_id)
+            is not value.compiled
+        ):
+            return False
+        host = issuer._host
+        if getattr(host, "_current_owner", None) is not issuer:
+            return False
+        session = value.owner_session
+        operation = session.operation_token
+        if (
+            type(session) is not CurrentOwnerReadSession
+            or session is not value.owner_session
+            or observation is not value.observation
+            or observation.operation_token is not operation
+            or value._builder_token is not operation
+            or getattr(operation, "host_token", None)
+            is not getattr(host, "_basis_token", None)
+            or getattr(session._reader, "__self__", None) is not host
+            or getattr(session._source_basis_reader, "__self__", None) is not host
+            or getattr(session._live_reader, "__self__", None) is not host
+            or session._campaign_id != host._campaign_id
+            or value.execution_ref.resolution_id
+            != value.accepted_command.get("root_resolution_id")
+        ):
+            return False
+        command_id = value.execution_ref.command_id
+        resolution_id = value.execution_ref.resolution_id
+        command_ref = NativeOwnerRef("runtime.command", (command_id,))
+        resolution_ref = NativeOwnerRef("runtime.resolution", (resolution_id,))
+        expected_roles = _derive_root_role_bindings(
+            value.compiled, value.accepted_command
+        )
+        if dict(value.role_bindings) != expected_roles:
+            return False
+        if value.occurrence_id != _root_preparation_occurrence_id(
+            resolution_id, value.consumer_id
+        ):
+            return False
+        expected_refs = set(expected_roles.values()) | {command_ref, resolution_ref}
+        if (
+            set(observation.key_union) != expected_refs
+            or not expected_refs <= set(session._requested.values())
+        ):
+            return False
+        if any(
+            observation.require(owner).status is not CurrentOwnerStatus.RESOLVED
+            or observation.require(owner).payload is None
+            for owner in expected_refs
+        ):
+            return False
+
+        command_payload = observation.require(command_ref).payload
+        resolution_payload = observation.require(resolution_ref).payload
+        if not isinstance(command_payload, Mapping) or not isinstance(
+            resolution_payload, Mapping
+        ):
+            return False
+        command_state = _preparation_owner_state(
+            command_payload,
+            family="runtime.command",
+            owner_id=command_id,
+            campaign_id=host._campaign_id,
+        )
+        resolution_state = _preparation_owner_state(
+            resolution_payload,
+            family="runtime.resolution",
+            owner_id=resolution_id,
+            campaign_id=host._campaign_id,
+        )
+        if command_state != _thaw(value.accepted_command) or resolution_state != _thaw(
+            value.resolution
+        ):
+            return False
+        candidate = {
+            "definition_id": value.compiled.activity_id,
+            "kind": "definition.activity",
+        }
+        try:
+            validate_execution_proposal(
+                command_state, value.catalog.catalog_context, candidate
+            )
+        except (CommandAcceptanceError, KeyError, TypeError, ValueError):
+            return False
+        if (
+            command_state.get("command_kind") != "action"
+            or command_state.get("disposition") != "command.accepted"
+            or command_state.get("pending_child_invocations")
+            or command_state.get("candidate_binding", {}).get("definition_id")
+            != value.compiled.activity_id
+        ):
+            return False
+
+        action = command_state["action_request"]
+        if (
+            resolution_state.get("root_command_id") != command_id
+            or resolution_state.get("initiating_command_id") != command_id
+            or resolution_state.get("activity_id") != value.compiled.activity_id
+            or resolution_state.get("actor_id") != action.get("actor_id")
+            or resolution_state.get("target_ids", []) != action.get("target_ids", [])
+            or resolution_state.get("parameter_bindings", {})
+            != action.get("parameter_bindings", {})
+            or resolution_state.get("invocation_facts", [])
+            != command_state.get("invocation_facts", [])
+            or resolution_state.get("ruleset_set_digest_generation")
+            != value.compiled.ruleset_set_digest_generation
+            or resolution_state.get("ruleset_set_sha256")
+            != value.compiled.ruleset_set_sha256
+            or resolution_state.get("catalog_context_fingerprint_generation")
+            != value.compiled.catalog_context_fingerprint_generation
+            or resolution_state.get("catalog_context_fingerprint")
+            != value.compiled.catalog_context_fingerprint
+            or resolution_state.get("status") != "RUNNING"
+            or resolution_state.get("next_segment_sequence") != 1
+            or resolution_state.get("segments")
+            or resolution_state.get("fixed_rng_results")
+            or resolution_state.get("prior_step_exports")
+            or resolution_state.get("child_resolution_ids")
+            or resolution_state.get("causal_invocation_key") is not None
+            or resolution_state.get("procedure_id") is not None
+            or resolution_state.get("continuation_id") is not None
+            or resolution_state.get("trace_id") is not None
+            or resolution_state.get("stochastic_state") is not None
+            or resolution_state.get("reconciliation_state") is not None
+        ):
+            return False
+
+        if value.prospective_owner_documents or value.allocation_handles or value.fixed_roll_refs:
+            return False
+        if len(value.accepted_adjudication) > 1:
+            return False
+        request_parameters = action.get("parameter_bindings", {})
+        command_facts = command_state.get("invocation_facts", [])
+        if value.accepted_adjudication:
+            basis = value.accepted_adjudication[0]
+            if not is_accepted_basis_issued(basis):
+                return False
+            if (
+                basis.runtime_parameter_bindings() != request_parameters
+                or _thaw(basis.runtime_invocation_facts())
+                != _thaw(command_facts)
+            ):
+                return False
+            validate_policy_applicability_witnesses(
+                basis.verified_policies,
+                value.compiled.activity_id,
+                value.catalog.catalog_context,
+            )
+            expected_policy_refs = tuple(
+                sorted({policy.policy_id for policy in basis.verified_policies})
+            )
+        else:
+            if request_parameters or command_facts:
+                return False
+            expected_policy_refs = ()
+        expected_fact_refs = tuple(
+            sorted(
+                {
+                    str(fact["fact_id"])
+                    for fact in command_facts
+                    if isinstance(fact, Mapping) and isinstance(fact.get("fact_id"), str)
+                }
+            )
+        )
+        return (
+            value.policy_refs == expected_policy_refs
+            and value.accepted_fact_refs == expected_fact_refs
+        )
+    except (
+        ActivityContractError,
+        AttributeError,
+        KeyError,
+        RecursionError,
+        TypeError,
+        ValueError,
+    ):
+        return False
+
+
+def _register_preparation_context(
+    value: NativePreparationContext, *, issuer: object
+) -> None:
+    """Register only a root context issued by the bound CurrentOwnerView."""
+    if type(value) is not NativePreparationContext:
+        raise ActivityContractError("preparation issuer received a foreign context value")
+    if (
+        value.owner_session.observation is not value.observation
+        or not value.owner_session.revalidate(value.observation)
+    ):
+        raise NativePreparationHold(
+            "REVALIDATION_REQUIRED", value.execution_ref, ()
+        )
+    if not _root_preparation_fields_are_valid(
+        value,
+        issuer=issuer,
+        observation=value.observation,
+    ):
+        raise ActivityContractError(
+            "preparation context is not bound to an accepted native root read"
+        )
+
+    observation = value.observation
+    identity = id(observation)
+
+    def forget(reference: weakref.ReferenceType[object]) -> None:
+        with _PREPARATION_CONTEXT_LOCK:
+            records = _PREPARATION_CONTEXTS.get(identity)
+            if records is None:
+                return
+            retained = [item for item in records if item.reference is not reference]
+            if retained:
+                _PREPARATION_CONTEXTS[identity] = retained
+            else:
+                _PREPARATION_CONTEXTS.pop(identity, None)
+
+    reference = weakref.ref(value, forget)
+    source_refs = (
+        NativeOwnerRef("runtime.command", (value.execution_ref.command_id,)),
+        NativeOwnerRef("runtime.resolution", (value.execution_ref.resolution_id,)),
+    )
+    role_refs = dict(value.role_bindings)
+    source_basis = _preparation_source_basis(
+        observation, source_refs[0], source_refs[1], role_refs
+    )
+    issue = _PreparationContextIssuance(
+        reference=reference,
+        issuer=issuer,
+        owner_session=value.owner_session,
+        observation=observation,
+        command_ref=source_refs[0],
+        resolution_ref=source_refs[1],
+        operation_token=value.owner_session.operation_token,
+        source_basis=source_basis,
+        session_snapshot=_preparation_session_snapshot(value.owner_session),
+        context_snapshot=_preparation_context_snapshot(value),
+    )
+    with _PREPARATION_CONTEXT_LOCK:
+        records = [
+            item
+            for item in _PREPARATION_CONTEXTS.get(identity, ())
+            if item.reference() is not None
+        ]
+        if any(item.reference() is value for item in records):
+            raise ActivityContractError("preparation context was already issued")
+        records.append(issue)
+        _PREPARATION_CONTEXTS[identity] = records
+
+
+def _preparation_context_is_issued(value: object) -> bool:
+    if type(value) is not NativePreparationContext:
+        return False
+    with _PREPARATION_CONTEXT_LOCK:
+        records = tuple(_PREPARATION_CONTEXTS.get(id(value.observation), ()))
+    issue = next(
+        (
+            item
+            for item in records
+            if item.reference() is value
+            and item.owner_session is value.owner_session
+            and item.observation is value.observation
+        ),
+        None,
+    )
+    if issue is None:
+        return False
+    try:
+        return (
+            _root_preparation_fields_are_valid(
+                value, issuer=issue.issuer, observation=issue.observation
+            )
+            and value.owner_session.operation_token is issue.operation_token
+            and _preparation_session_snapshot(value.owner_session)
+            == issue.session_snapshot
+            and _preparation_source_basis(
+                value.observation,
+                issue.command_ref,
+                issue.resolution_ref,
+                value.role_bindings,
+            )
+            == issue.source_basis
+            and _preparation_context_snapshot(value) == issue.context_snapshot
+        )
+    except (AttributeError, KeyError, RecursionError, TypeError, ValueError):
+        return False
+
+
+def _preparation_contexts_for_observation(
+    observation: CurrentOwnerObservation,
+) -> tuple[NativePreparationContext, ...]:
+    """Return only unchanged source-bound contexts for this exact observation."""
+    if type(observation) is not CurrentOwnerObservation:
+        return ()
+    with _PREPARATION_CONTEXT_LOCK:
+        records = tuple(_PREPARATION_CONTEXTS.get(id(observation), ()))
+    return tuple(
+        value
+        for record in records
+        if (value := record.reference()) is not None
+        and value.observation is observation
+        and _preparation_context_is_issued(value)
+    )
 
 
 class ContractValue:
@@ -1844,7 +2340,7 @@ class PlannedEventBasis(ContractValue):
     transition_refs: tuple[NativeId, ...]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class NativePreparationContext(_SealedValue):
     catalog: AdmittedActivityCatalog
     compiled: CompiledActivity

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import os
 import pickle
+import tempfile
 import unittest
 from collections.abc import Mapping, Sequence
+from pathlib import Path
 
 import yaml
 
@@ -521,7 +524,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.17")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.18")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -1196,6 +1199,182 @@ class RuntimeHostCompositionTests(unittest.TestCase):
         self.assertEqual(len(window.entries), 1)
         self.assertEqual(window.entries[0]["event_id"], "live-event-1")
         self.assertEqual(live.oversized_entries.accesses, 1)
+
+
+class RootPreparationCompositionTests(unittest.TestCase):
+    def test_source_bound_root_issuer_uses_only_the_read_side_host_route(self) -> None:
+        from DEV.TESTS.sp02_installed_test_support import run_installed_structural_test
+
+        result = run_installed_structural_test(
+            "DEV.TESTS.test_runtime_host_composition."
+            "InstalledRootPreparationCompositionTests"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+
+@unittest.skipUnless("HDM_INSTALLED_STRUCTURAL_TEST" in os.environ, "installed driver")
+class InstalledRootPreparationCompositionTests(unittest.TestCase):
+    def test_issuer_reads_exact_native_root_without_producer_or_write_calls(
+        self,
+    ) -> None:
+        from DEV.TESTS.sp02_installed_test_support import authentic_generic_catalog
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            _interpreter_result,
+            _proposal,
+        )
+        from DEV.TESTS.test_sp03_native_membership import (
+            ACTOR_ID,
+            CAMPAIGN_ID,
+            GitCampaignRepository,
+            _actor_record,
+            _write_routed,
+        )
+        from DEV.TESTS.test_w05_t06_p0_actor_producer import _selected_host
+        from GAME.TOOLS.activity_runtime import compile_activity
+        from GAME.TOOLS.hot_store import NativeHotStore
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.runtime_execution import accept_command
+
+        class TrackingRepository(GitCampaignRepository):
+            def __init__(self, root: Path) -> None:
+                super().__init__(root)
+                self.write_calls = 0
+                self.commit_calls = 0
+
+            def write(self, relative_path: str, value: object) -> None:
+                self.write_calls += 1
+                super().write(relative_path, value)
+
+            def commit(self, message: str = "campaign fixture") -> tuple[str, str]:
+                self.commit_calls += 1
+                return super().commit(message)
+
+        catalog = authentic_generic_catalog()
+        compiled = compile_activity(catalog, "activity.check.generic")
+        with tempfile.TemporaryDirectory(prefix="sp03-root-issuer-host-") as temporary:
+            repository = TrackingRepository(Path(temporary) / "campaign.git")
+            repository.write("MANIFEST.yaml", {"campaign_id": CAMPAIGN_ID})
+            repository.write("WORLD/EFFECTS/INDEX.yaml", {"entries": []})
+            repository.write("WORLD/ITEMS/INDEX.yaml", {"entries": []})
+            actor = _actor_record()
+            actor["id"] = ACTOR_ID
+            _write_routed(repository, "world.actor", actor)
+
+            proposal = _proposal(compiled.activity_id)
+            proposal["action_request"]["actor_id"] = ACTOR_ID
+            proposal["action_request"]["target_ids"] = []
+            accepted = accept_command(
+                _interpreter_result(),
+                catalog.catalog_context,
+                {
+                    "definition_id": compiled.activity_id,
+                    "kind": "definition.activity",
+                },
+                proposal,
+            )
+            resolution = {
+                "root_command_id": accepted["command_id"],
+                "initiating_command_id": accepted["command_id"],
+                "activity_id": compiled.activity_id,
+                "actor_id": ACTOR_ID,
+                "target_ids": [],
+                "parameter_bindings": {},
+                "ruleset_set_digest_generation": 1,
+                "ruleset_set_sha256": compiled.ruleset_set_sha256,
+                "catalog_context_fingerprint_generation": 1,
+                "catalog_context_fingerprint": catalog.catalog_context.fingerprint,
+                "status": "RUNNING",
+                "next_segment_sequence": 1,
+                "invocation_facts": [],
+                "fixed_rng_results": [],
+                "prior_step_exports": {},
+                "child_resolution_ids": [],
+                "segments": [],
+            }
+            repository.write(
+                route_native_record(
+                    "runtime.command", (accepted["command_id"],)
+                ).relative_path,
+                {
+                    "kind": "runtime.command",
+                    "id": accepted["command_id"],
+                    **accepted,
+                },
+            )
+            repository.write(
+                route_native_record(
+                    "runtime.resolution", (accepted["root_resolution_id"],)
+                ).relative_path,
+                {
+                    "kind": "runtime.resolution",
+                    "id": accepted["root_resolution_id"],
+                    "campaign_id": CAMPAIGN_ID,
+                    **resolution,
+                },
+            )
+            repository.commit("seed accepted root preparation inputs")
+            initial_write_counts = (repository.write_calls, repository.commit_calls)
+
+            with NativeHotStore(":memory:") as store:
+                host, _source = _selected_host(store, repository=repository)
+                import inspect
+
+                self.assertEqual(
+                    tuple(
+                        inspect.signature(
+                            host._current_owner._prepare_root_context
+                        ).parameters
+                    ),
+                    (
+                        "catalog",
+                        "compiled",
+                        "command_id",
+                        "consumer_id",
+                        "adjudication_basis",
+                    ),
+                )
+                context = host._current_owner._prepare_root_context(
+                    catalog,
+                    compiled,
+                    command_id=accepted["command_id"],
+                    consumer_id=compiled.instructions[0].consumer_id,
+                )
+                from GAME.TOOLS.mechanical_context import context_cache_identity
+
+                context_cache_identity(context)
+                command_path = route_native_record(
+                    "runtime.command", (accepted["command_id"],)
+                ).relative_path
+                resolution_path = route_native_record(
+                    "runtime.resolution", (accepted["root_resolution_id"],)
+                ).relative_path
+                actor_path = route_native_record(
+                    "world.actor", (ACTOR_ID,)
+                ).relative_path
+                allowed_reads = {
+                    "MANIFEST.yaml",
+                    command_path,
+                    resolution_path,
+                    actor_path,
+                }
+
+                self.assertTrue(
+                    {command_path, resolution_path, actor_path}
+                    <= set(repository.read_paths)
+                )
+                self.assertEqual(
+                    set(repository.read_paths) - allowed_reads,
+                    set(),
+                    f"issuer read outside command/Resolution/Actor roots: {repository.read_paths}",
+                )
+                self.assertEqual(
+                    (repository.write_calls, repository.commit_calls),
+                    initial_write_counts,
+                )
+                self.assertEqual(context.fixed_roll_refs, ())
+                self.assertEqual(context.allocation_handles, ())
+                self.assertEqual(context.prospective_owner_documents, ())
+                self.assertFalse(hasattr(host, "execution"))
 
 
 class PostPublicationRevalidationTests(unittest.TestCase):

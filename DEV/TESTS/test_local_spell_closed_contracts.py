@@ -110,7 +110,8 @@ class SpellClosedContractTests(unittest.TestCase):
 
     def test_preparation_contract_uses_real_p0_observation_and_rejects_foreign_session_handles(self):
         from DEV.TESTS.sp02_installed_test_support import (
-            authentic_generic_catalog, run_installed_structural_test,
+            authentic_generic_catalog,
+            run_installed_structural_test,
         )
         if "HDM_INSTALLED_STRUCTURAL_TEST" not in os.environ:
             result = run_installed_structural_test(
@@ -181,6 +182,10 @@ class SpellClosedContractTests(unittest.TestCase):
                 policy_refs=(), fixed_roll_refs=(), prospective_owner_documents=(), allocation_handles=(handle,),
                 _builder_token=token, _issue_seal=contracts._CONTRACT_SEAL,
             )
+            self.assertFalse(contracts._preparation_context_is_issued(preparation))
+            self.assertFalse(
+                contracts._preparation_context_is_issued(replace(preparation))
+            )
             self.assertEqual(preparation.observation.observation_fingerprint, observation.observation_fingerprint)
             for change in ({"accepted_command": {}}, {"resolution": {}}, {"accepted_command": dict(accepted, hp=10)}, {"resolution": dict(resolution, patch={})}):
                 with self.assertRaises(contracts.ActivityContractError):
@@ -234,6 +239,9 @@ class SpellClosedContractTests(unittest.TestCase):
                 allocation_handles=(child_handle,),
                 _builder_token=token,
                 _issue_seal=contracts._CONTRACT_SEAL,
+            )
+            self.assertFalse(
+                contracts._preparation_context_is_issued(child_preparation)
             )
             self.assertEqual(child_preparation.execution_ref.resolution_id, "resolution.child")
             self.assertEqual(child_preparation.compiled.activity_id, "activity.save.generic")

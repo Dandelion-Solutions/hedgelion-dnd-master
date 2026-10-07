@@ -60,6 +60,12 @@ from .publication import (
 )
 
 if TYPE_CHECKING:
+    from .activity_contracts import (
+        AcceptedAdjudicationBasis,
+        AdmittedActivityCatalog,
+        CompiledActivity,
+        NativePreparationContext,
+    )
     from .history import (
         HistoryDiscoveryRequest,
         HistoryDiscoveryResult,
@@ -67,8 +73,8 @@ if TYPE_CHECKING:
         NativeSemanticEvent,
     )
 
-# framework_module_version: 1.0.17
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.17"
+# framework_module_version: 1.0.18
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.18"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -1683,6 +1689,281 @@ class CurrentOwnerView(_BoundService):
             source_basis_reader=self._host._read_current_owner_basis,
             live_reader=self._host._read_current_owner_live,
         )
+
+    def _prepare_root_context(
+        self,
+        catalog: AdmittedActivityCatalog,
+        compiled: CompiledActivity,
+        *,
+        command_id: str,
+        consumer_id: str,
+        adjudication_basis: AcceptedAdjudicationBasis | None = None,
+    ) -> NativePreparationContext:
+        """Issue one read-only preparation from the exact accepted native root."""
+        from . import activity_contracts as contracts
+        from . import mechanical_context
+        from .policy_basis import PolicyBasisResolutionError
+        from .runtime_execution import (
+            CommandAcceptanceError,
+            validate_execution_proposal,
+        )
+
+        if not isinstance(command_id, str) or not command_id:
+            raise RuntimeHostError("root preparation requires a command identity")
+        if (
+            type(catalog) is not contracts.AdmittedActivityCatalog
+            or not contracts._compiler_value_is_issued(catalog, kind="catalog")
+            or type(compiled) is not contracts.CompiledActivity
+            or not contracts._compiler_value_is_issued(
+                compiled, kind="compiled", parent=catalog.catalog_context
+            )
+            or catalog.compiled_activities.get(compiled.activity_id) is not compiled
+        ):
+            raise RuntimeHostError(
+                "root preparation requires exact compiler-issued catalog handles"
+            )
+        try:
+            mechanical_context._instruction(compiled, consumer_id)
+        except mechanical_context.MechanicalContextError as error:
+            raise RuntimeHostError("root preparation consumer is not compiler-issued") from error
+
+        placeholder = contracts.ExecutionRef(command_id, command_id)
+        operation = self._host._begin_operation()
+        session = self.begin(operation)
+        command_ref = NativeOwnerRef("runtime.command", (command_id,))
+        command_read = session.read(command_ref)
+        if command_read.status is not CurrentOwnerStatus.RESOLVED:
+            status = (
+                "REVALIDATION_REQUIRED"
+                if command_read.status is CurrentOwnerStatus.REVALIDATION_REQUIRED
+                else "AUTHORITY_UNAVAILABLE"
+            )
+            raise contracts.NativePreparationHold(status, placeholder, ())
+        command_payload = command_read.payload
+        if not isinstance(command_payload, Mapping):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", placeholder, ()
+            )
+        try:
+            accepted_command = contracts._preparation_owner_state(
+                command_payload,
+                family="runtime.command",
+                owner_id=command_id,
+                campaign_id=self._host._campaign_id,
+            )
+            contracts._wire_contract("runtime-command-state", accepted_command)
+        except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", placeholder, ()
+            ) from error
+        root_resolution_id = accepted_command.get("root_resolution_id")
+        if not isinstance(root_resolution_id, str) or not root_resolution_id:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", placeholder, ()
+            )
+        execution_ref = contracts.ExecutionRef(command_id, root_resolution_id)
+        request = accepted_command.get("action_request")
+        if (
+            accepted_command.get("command_kind") != "action"
+            or accepted_command.get("disposition") != "command.accepted"
+            or accepted_command.get("pending_child_invocations")
+            or not isinstance(request, Mapping)
+            or request.get("activity_id") != compiled.activity_id
+            or request.get("source_id") is not None
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            )
+        try:
+            validate_execution_proposal(
+                accepted_command,
+                catalog.catalog_context,
+                {
+                    "definition_id": compiled.activity_id,
+                    "kind": "definition.activity",
+                },
+            )
+        except (CommandAcceptanceError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            ) from error
+
+        if adjudication_basis is None:
+            if request.get("parameter_bindings", {}) or accepted_command.get(
+                "invocation_facts"
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", execution_ref, ()
+                )
+            accepted_adjudication = ()
+            policy_refs: tuple[str, ...] = ()
+        else:
+            if not contracts.is_accepted_basis_issued(adjudication_basis):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", execution_ref, ()
+                )
+            try:
+                contracts.validate_policy_applicability_witnesses(
+                    adjudication_basis.verified_policies,
+                    compiled.activity_id,
+                    catalog.catalog_context,
+                )
+            except PolicyBasisResolutionError as error:
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", execution_ref, ()
+                ) from error
+            if (
+                adjudication_basis.runtime_parameter_bindings()
+                != request.get("parameter_bindings", {})
+                or contracts._thaw(adjudication_basis.runtime_invocation_facts())
+                != contracts._thaw(accepted_command.get("invocation_facts", []))
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", execution_ref, ()
+                )
+            accepted_adjudication = (adjudication_basis,)
+            policy_refs = tuple(
+                sorted(
+                    {
+                        policy.policy_id
+                        for policy in adjudication_basis.verified_policies
+                    }
+                )
+            )
+        accepted_facts = accepted_command.get("invocation_facts", [])
+        if not isinstance(accepted_facts, (list, tuple)):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            )
+        accepted_fact_refs = tuple(
+            sorted(
+                {
+                    fact["fact_id"]
+                    for fact in accepted_facts
+                    if isinstance(fact, Mapping)
+                    and isinstance(fact.get("fact_id"), str)
+                }
+            )
+        )
+        try:
+            role_bindings = contracts._derive_root_role_bindings(
+                compiled, accepted_command
+            )
+        except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            ) from error
+
+        resolution_ref = NativeOwnerRef(
+            "runtime.resolution", (root_resolution_id,)
+        )
+        observation = session.require(
+            (command_ref, resolution_ref, *role_bindings.values())
+        )
+        for owner_ref in observation.key_union:
+            read = observation.require(owner_ref)
+            if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
+                status = (
+                    "REVALIDATION_REQUIRED"
+                    if read.status is CurrentOwnerStatus.REVALIDATION_REQUIRED
+                    else "AUTHORITY_UNAVAILABLE"
+                )
+                raise contracts.NativePreparationHold(status, execution_ref, ())
+        command_read = observation.require(command_ref)
+        resolution_read = observation.require(resolution_ref)
+        if (
+            command_read.payload is None
+            or command_read.payload.get("kind") != "runtime.command"
+            or command_read.payload.get("command_id") != command_id
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            )
+        try:
+            final_command_state = contracts._preparation_owner_state(
+                command_read.payload,
+                family="runtime.command",
+                owner_id=command_id,
+                campaign_id=self._host._campaign_id,
+            )
+        except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            ) from error
+        if final_command_state != contracts._thaw(accepted_command):
+            raise contracts.NativePreparationHold(
+                "REVALIDATION_REQUIRED", execution_ref, ()
+            )
+        try:
+            resolution = contracts._preparation_owner_state(
+                resolution_read.payload,
+                family="runtime.resolution",
+                owner_id=root_resolution_id,
+                campaign_id=self._host._campaign_id,
+            )
+            contracts._wire_contract("runtime-resolution-state", resolution)
+        except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            ) from error
+
+        if (
+            resolution.get("root_command_id") != command_id
+            or resolution.get("initiating_command_id") != command_id
+            or resolution.get("activity_id") != compiled.activity_id
+            or resolution.get("actor_id") != request.get("actor_id")
+            or resolution.get("target_ids", []) != request.get("target_ids", [])
+            or resolution.get("parameter_bindings", {})
+            != request.get("parameter_bindings", {})
+            or resolution.get("invocation_facts", []) != accepted_facts
+            or resolution.get("ruleset_set_digest_generation")
+            != compiled.ruleset_set_digest_generation
+            or resolution.get("ruleset_set_sha256") != compiled.ruleset_set_sha256
+            or resolution.get("catalog_context_fingerprint_generation")
+            != compiled.catalog_context_fingerprint_generation
+            or resolution.get("catalog_context_fingerprint")
+            != compiled.catalog_context_fingerprint
+            or resolution.get("status") != "RUNNING"
+            or resolution.get("next_segment_sequence") != 1
+            or resolution.get("segments")
+            or resolution.get("fixed_rng_results")
+            or resolution.get("prior_step_exports")
+            or resolution.get("child_resolution_ids")
+            or resolution.get("causal_invocation_key") is not None
+            or resolution.get("procedure_id") is not None
+            or resolution.get("continuation_id") is not None
+            or resolution.get("trace_id") is not None
+            or resolution.get("stochastic_state") is not None
+            or resolution.get("reconciliation_state") is not None
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", execution_ref, ()
+            )
+
+        context = contracts.NativePreparationContext(
+            catalog=catalog,
+            compiled=compiled,
+            consumer_id=consumer_id,
+            occurrence_id=contracts._root_preparation_occurrence_id(
+                root_resolution_id, consumer_id
+            ),
+            execution_ref=execution_ref,
+            observation=observation,
+            owner_session=session,
+            role_bindings=role_bindings,
+            accepted_command=accepted_command,
+            resolution=resolution,
+            accepted_fact_refs=accepted_fact_refs,
+            accepted_adjudication=accepted_adjudication,
+            policy_refs=policy_refs,
+            fixed_roll_refs=(),
+            prospective_owner_documents=(),
+            allocation_handles=(),
+            _builder_token=session.operation_token,
+            _issue_seal=contracts._CONTRACT_SEAL,
+        )
+        contracts._register_preparation_context(context, issuer=self)
+        return context
 
 
 class ActorContinuityService(_BoundService):

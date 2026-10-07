@@ -203,52 +203,46 @@ def _accepted_command(catalog, compiled):
 
 
 def _context(catalog, compiled, host):
-    from GAME.TOOLS import activity_contracts as contracts
-    from GAME.TOOLS.current_owner import NativeOwnerRef
-
-    operation = host._begin_operation()
-    session = host._current_owner.begin(operation)
-    actor_ref = NativeOwnerRef("world.actor", (ACTOR_ID,))
-    observation = session.require((actor_ref,))
     accepted = _accepted_command(catalog, compiled)
     resolution = {
         "root_command_id": accepted["command_id"],
         "initiating_command_id": accepted["command_id"],
         "activity_id": compiled.activity_id,
-        "actor_id": ACTOR_ID,
+        "actor_id": accepted["action_request"]["actor_id"],
+        "target_ids": accepted["action_request"]["target_ids"],
+        "parameter_bindings": accepted["action_request"].get("parameter_bindings", {}),
         "ruleset_set_digest_generation": 1,
         "ruleset_set_sha256": compiled.ruleset_set_sha256,
         "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": catalog.catalog_context.fingerprint,
         "status": "RUNNING",
         "next_segment_sequence": 1,
-        "invocation_facts": [],
+        "invocation_facts": accepted["invocation_facts"],
         "fixed_rng_results": [],
         "prior_step_exports": {},
         "child_resolution_ids": [],
         "segments": [],
     }
-    return contracts.NativePreparationContext(
-        catalog=catalog,
-        compiled=compiled,
+    repository = host._repository
+    command_record = {
+        "kind": "runtime.command",
+        "id": accepted["command_id"],
+        **accepted,
+    }
+    resolution_record = {
+        "kind": "runtime.resolution",
+        "id": accepted["root_resolution_id"],
+        "campaign_id": CAMPAIGN_ID,
+        **resolution,
+    }
+    _write_routed(repository, "runtime.command", command_record)
+    _write_routed(repository, "runtime.resolution", resolution_record)
+    repository.commit("seed accepted root preparation inputs")
+    return host._current_owner._prepare_root_context(
+        catalog,
+        compiled,
+        command_id=accepted["command_id"],
         consumer_id=compiled.instructions[0].consumer_id,
-        occurrence_id="occ.membership",
-        execution_ref=contracts.ExecutionRef(
-            accepted["command_id"], accepted["root_resolution_id"]
-        ),
-        observation=observation,
-        owner_session=session,
-        role_bindings={"actor": actor_ref},
-        accepted_command=accepted,
-        resolution=resolution,
-        accepted_fact_refs=(),
-        accepted_adjudication=(),
-        policy_refs=(),
-        fixed_roll_refs=(),
-        prospective_owner_documents=(),
-        allocation_handles=(),
-        _builder_token=object(),
-        _issue_seal=contracts._CONTRACT_SEAL,
     )
 
 
@@ -1050,8 +1044,9 @@ class PinnedMembershipTests(unittest.TestCase):
 
     def test_copied_mutated_and_rebound_evidence_rejects(self):
         import copy
+        from dataclasses import replace
 
-        from GAME.TOOLS import mechanical_sources
+        from GAME.TOOLS import activity_contracts, mechanical_sources
         from GAME.TOOLS.current_owner import NativeOwnerRef
         from GAME.TOOLS.hot_store import NativeHotStore
 
@@ -1061,11 +1056,24 @@ class PinnedMembershipTests(unittest.TestCase):
             repository = self._repository(Path(temporary) / "campaign.git")
             with NativeHotStore(":memory:") as store:
                 host, context = self._host_context(repository, store)
+                self.assertTrue(
+                    activity_contracts._preparation_context_is_issued(context)
+                )
+                unissued = replace(context)
+                self.assertFalse(
+                    activity_contracts._preparation_context_is_issued(unissued)
+                )
+                with self.assertRaisesRegex(
+                    mechanical_sources.MechanicalSourceError, "source-bound"
+                ):
+                    mechanical_sources.prepare_membership(unissued)
                 observation = mechanical_sources.prepare_membership(context)
                 copied = copy.copy(observation)
                 self.assertFalse(mechanical_sources.is_membership_issued(copied))
                 with self.assertRaises(mechanical_sources.MechanicalSourceError):
                     mechanical_sources.revalidate_membership(copied, context)
+                with self.assertRaises(mechanical_sources.MechanicalSourceError):
+                    mechanical_sources.revalidate_membership(observation, unissued)
 
                 mutated = copy.copy(observation)
                 object.__setattr__(mutated, "effects", ())

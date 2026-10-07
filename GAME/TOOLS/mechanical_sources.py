@@ -37,8 +37,8 @@ from .live_state import LiveRouting
 from .native_storage import ROUTE_PREFIX, route_native_record
 from .policy_basis import PinnedCampaign
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 _FAMILY_ROOTS: Final = MappingProxyType(
     {
@@ -431,7 +431,10 @@ def is_membership_issued(value: object) -> bool:
     if record is None or record[0]() is not value:
         return False
     try:
-        return record[1] == _membership_snapshot(value)
+        return (
+            contracts._preparation_context_is_issued(value._context)
+            and record[1] == _membership_snapshot(value)
+        )
     except (AttributeError, RecursionError, TypeError, ValueError):
         return False
 
@@ -449,6 +452,7 @@ def revalidate_membership(
     if (
         type(context) is not contracts.NativePreparationContext
         or context is not observation._context
+        or not contracts._preparation_context_is_issued(context)
     ):
         raise MechanicalSourceError(
             "membership observation is rebound to another preparation context"
@@ -523,6 +527,10 @@ def _validate_context(
     if type(context) is not contracts.NativePreparationContext:
         raise MechanicalSourceError(
             "membership requires a typed native preparation context"
+        )
+    if not contracts._preparation_context_is_issued(context):
+        raise MechanicalSourceError(
+            "membership requires an authentic source-bound preparation context"
         )
     compiled = context.compiled
     if (

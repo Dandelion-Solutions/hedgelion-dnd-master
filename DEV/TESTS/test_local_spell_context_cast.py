@@ -9,7 +9,7 @@ import copy
 import importlib.util
 import os
 import unittest
-from dataclasses import replace
+from dataclasses import fields, replace
 
 
 class InstalledMechanicalReadTests(unittest.TestCase):
@@ -38,6 +38,7 @@ class PinnedMechanicalReadTests(unittest.TestCase):
     def setUp(self):
         from DEV.TESTS.test_w05_t06_p0_actor_producer import (
             ACTOR_ID,
+            CAMPAIGN_ID,
             ActorRepository,
             _actor,
             _selected_host,
@@ -59,8 +60,12 @@ class PinnedMechanicalReadTests(unittest.TestCase):
                 inner.other = copy.deepcopy(_actor())
                 inner.other["id"] = "actor.other"
                 inner.actor_missing = False
+                inner.native_records = {}
 
             def read_exact_path(inner, pinned, path):
+                if path in inner.native_records:
+                    inner.path_reads.append((pinned.revision, path))
+                    return copy.deepcopy(inner.native_records[path])
                 if inner.actor_missing and path == route_native_record("world.actor", (ACTOR_ID,)).relative_path:
                     raise KeyError(path)
                 if path == route_native_record("world.actor", ("actor.other",)).relative_path:
@@ -68,20 +73,69 @@ class PinnedMechanicalReadTests(unittest.TestCase):
                     return copy.deepcopy(inner.other)
                 return super().read_exact_path(pinned, path)
 
-        self.repository = Repository()
-        self.store = NativeHotStore(":memory:")
-        self.addCleanup(self.store.close)
-        host, _source = _selected_host(self.store, repository=self.repository)
-        self.session = host._current_owner.begin(host._begin_operation())
-        self.roles = {"actor": self.owner}
         self.consumer = "activity.check.generic.step.0"
         from DEV.TESTS.test_rd05_runtime_execution import _interpreter_result, _proposal
         from GAME.TOOLS.runtime_execution import accept_command
 
         proposal = _proposal()
         proposal["action_request"]["actor_id"] = self.owner.identity[0]
-        self.accepted = accept_command(_interpreter_result(), self.catalog.catalog_context,
-            {"definition_id": self.compiled.activity_id, "kind": "definition.activity"}, proposal)
+        proposal["action_request"]["target_ids"] = []
+        self.accepted = accept_command(
+            _interpreter_result(),
+            self.catalog.catalog_context,
+            {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
+            proposal,
+        )
+        self.repository = Repository()
+        command_record = {
+            "kind": "runtime.command",
+            "id": self.accepted["command_id"],
+            **self.accepted,
+        }
+        resolution = {
+            "root_command_id": self.accepted["command_id"],
+            "initiating_command_id": self.accepted["command_id"],
+            "activity_id": self.compiled.activity_id,
+            "actor_id": self.owner.identity[0],
+            "target_ids": self.accepted["action_request"]["target_ids"],
+            "parameter_bindings": self.accepted["action_request"].get(
+                "parameter_bindings", {}
+            ),
+            "ruleset_set_digest_generation": 1,
+            "ruleset_set_sha256": self.compiled.ruleset_set_sha256,
+            "catalog_context_fingerprint_generation": 1,
+            "catalog_context_fingerprint": self.catalog.catalog_context.fingerprint,
+            "status": "RUNNING",
+            "next_segment_sequence": 1,
+            "invocation_facts": self.accepted["invocation_facts"],
+            "fixed_rng_results": [],
+            "prior_step_exports": {},
+            "child_resolution_ids": [],
+            "segments": [],
+        }
+        resolution_record = {
+            "kind": "runtime.resolution",
+            "id": self.accepted["root_resolution_id"],
+            "campaign_id": CAMPAIGN_ID,
+            **resolution,
+        }
+        self.repository.native_records.update(
+            {
+                route_native_record(
+                    "runtime.command", (self.accepted["command_id"],)
+                ).relative_path: command_record,
+                route_native_record(
+                    "runtime.resolution", (self.accepted["root_resolution_id"],)
+                ).relative_path: resolution_record,
+            }
+        )
+        self.store = NativeHotStore(":memory:")
+        self.addCleanup(self.store.close)
+        self.host, _source = _selected_host(
+            self.store, repository=self.repository
+        )
+        self.session = self.host._current_owner.begin(self.host._begin_operation())
+        self.roles = {"actor": self.owner}
 
     def acquire(self, **changes):
         arguments = {"consumer_id": self.consumer, "owner_session": self.session,
@@ -89,27 +143,79 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         arguments.update(changes)
         return self.mechanical.acquire_observation(self.compiled, **arguments)
 
-    def preparation(self):
-        """SP01 trusted issuer over actual observations and authentic compiled handles."""
-        from GAME.TOOLS import activity_contracts as contracts
-        accepted = self.accepted
+    def preparation(self, *, adjudication_basis=None):
+        """Use the runtime-host source-bound root read/preparation issuer."""
+        return self.host._current_owner._prepare_root_context(
+            self.catalog,
+            self.compiled,
+            command_id=self.accepted["command_id"],
+            consumer_id=self.consumer,
+            adjudication_basis=adjudication_basis,
+        )
+
+    def _store_root_source(self, accepted):
+        from DEV.TESTS.test_w05_t06_p0_actor_producer import CAMPAIGN_ID
+        from GAME.TOOLS.native_storage import route_native_record
+
+        request = accepted["action_request"]
         resolution = {
-            "root_command_id": accepted["command_id"], "initiating_command_id": accepted["command_id"],
-            "activity_id": self.compiled.activity_id, "actor_id": self.owner.identity[0],
-            "ruleset_set_digest_generation": 1, "ruleset_set_sha256": self.compiled.ruleset_set_sha256,
+            "root_command_id": accepted["command_id"],
+            "initiating_command_id": accepted["command_id"],
+            "activity_id": self.compiled.activity_id,
+            "actor_id": request["actor_id"],
+            "target_ids": request["target_ids"],
+            "parameter_bindings": request.get("parameter_bindings", {}),
+            "ruleset_set_digest_generation": 1,
+            "ruleset_set_sha256": self.compiled.ruleset_set_sha256,
             "catalog_context_fingerprint_generation": 1,
             "catalog_context_fingerprint": self.catalog.catalog_context.fingerprint,
-            "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": [],
-            "fixed_rng_results": [], "prior_step_exports": {}, "child_resolution_ids": [], "segments": [],
+            "status": "RUNNING",
+            "next_segment_sequence": 1,
+            "invocation_facts": accepted["invocation_facts"],
+            "fixed_rng_results": [],
+            "prior_step_exports": {},
+            "child_resolution_ids": [],
+            "segments": [],
         }
-        return contracts.NativePreparationContext(
-            catalog=self.catalog, compiled=self.compiled, consumer_id=self.consumer,
-            occurrence_id="occ.read", execution_ref=contracts.ExecutionRef(accepted["command_id"], accepted["root_resolution_id"]),
-            observation=self.acquire(), owner_session=self.session, role_bindings=self.roles,
-            accepted_command=accepted, resolution=resolution, accepted_fact_refs=(), accepted_adjudication=(),
-            policy_refs=(), fixed_roll_refs=(), prospective_owner_documents=(), allocation_handles=(),
-            _builder_token=object(), _issue_seal=contracts._CONTRACT_SEAL,
+        self.repository.native_records.update(
+            {
+                route_native_record(
+                    "runtime.command", (accepted["command_id"],)
+                ).relative_path: {
+                    "kind": "runtime.command",
+                    "id": accepted["command_id"],
+                    **accepted,
+                },
+                route_native_record(
+                    "runtime.resolution", (accepted["root_resolution_id"],)
+                ).relative_path: {
+                    "kind": "runtime.resolution",
+                    "id": accepted["root_resolution_id"],
+                    "campaign_id": CAMPAIGN_ID,
+                    **resolution,
+                },
+            }
         )
+
+    def _accepted_with_basis(self, basis):
+        from DEV.TESTS.test_rd05_runtime_execution import _interpreter_result, _proposal
+        from GAME.TOOLS.runtime_execution import accept_command
+
+        proposal = _proposal()
+        proposal["action_request"]["actor_id"] = self.owner.identity[0]
+        proposal["action_request"]["target_ids"] = []
+        proposal["action_request"]["parameter_bindings"] = (
+            basis.runtime_parameter_bindings()
+        )
+        self.accepted = accept_command(
+            _interpreter_result(),
+            self.catalog.catalog_context,
+            {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
+            proposal,
+            adjudication_basis=basis,
+        )
+        self._store_root_source(self.accepted)
+        return self.preparation(adjudication_basis=basis)
 
     def test_exact_read_plan_is_retained_from_real_compiler(self):
         self.assertEqual(self.mechanical.compiled_read_plan(self.compiled, self.consumer),
@@ -171,14 +277,26 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         after = self.mechanical.context_cache_identity(self.preparation())
         self.assertNotEqual(before, after)
 
-    def test_material_policy_order_is_canonical_and_affects_identity(self):
-        context = self.preparation()
+    def test_resolver_issued_policy_changes_cache_identity(self):
+        unadjudicated_context = self.preparation()
+        unadjudicated_identity = self.mechanical.context_cache_identity(
+            unadjudicated_context
+        )
+        basis = self.policy_basis()
+        context = self._accepted_with_basis(basis)
         before = self.mechanical.context_cache_identity(context)
-        changed = replace(context, policy_refs=("policy.one", "policy.two"))
-        self.assertNotEqual(self.mechanical.context_cache_identity(changed), before)
-        for refs in (("policy.two", "policy.one"), ("policy.one", "policy.one")):
-            with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "canonical"):
-                self.mechanical.context_cache_identity(replace(context, policy_refs=refs))
+        self.assertNotEqual(unadjudicated_identity, before)
+        self.assertEqual(
+            context.policy_refs,
+            tuple(sorted(policy.policy_id for policy in basis.verified_policies)),
+        )
+        self.assertEqual(self.mechanical.context_cache_identity(context), before)
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
+            self.mechanical.context_cache_identity(
+                replace(context, policy_refs=("policy.one", "policy.two"))
+            )
 
     def test_post_issuance_command_mutation_and_state_substitution_reject(self):
         from GAME.TOOLS.activity_contracts import ActivityContractError
@@ -188,7 +306,9 @@ class PinnedMechanicalReadTests(unittest.TestCase):
             replace(context, accepted_command=dict(context.accepted_command, hp=100))
         forged = dict(context.accepted_command)
         forged["input_fingerprint"] = "0" * 64
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "accepted command"):
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
             self.mechanical.context_cache_identity(replace(context, accepted_command=forged))
 
     def test_prospective_documents_require_future_same_builder_issuance(self):
@@ -198,7 +318,9 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         read = context.observation.require(self.owner)
         document = OwnerDocument(self.session._campaign_id, self.owner.family_key,
             self.owner.identity, read.payload, read.source_basis, read.generation)
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "prospective"):
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
             self.mechanical.context_cache_identity(replace(context, prospective_owner_documents=(document,)))
 
     def test_fake_context_and_stale_observation_are_not_cache_authority(self):
@@ -207,24 +329,285 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         with self.assertRaises(self.mechanical.MechanicalContextError):
             self.mechanical.context_cache_identity({"hp": 8})
         context = self.preparation()
-        self.session.require((self.other,))
+        context.owner_session.require((self.other,))
         with self.assertRaises(NativePreparationHold):
             self.mechanical.context_cache_identity(context)
+
+    def test_source_bound_issuer_binds_exact_native_root_and_consumer(self):
+        from GAME.TOOLS import activity_contracts as contracts
+
+        context = self.preparation()
+
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+        from GAME.TOOLS.catalog_runtime import _thaw
+
+        self.assertEqual(_thaw(context.accepted_command), self.accepted)
+        self.assertEqual(context.execution_ref.command_id, self.accepted["command_id"])
+        self.assertEqual(
+            context.execution_ref.resolution_id,
+            self.accepted["root_resolution_id"],
+        )
+        self.assertEqual(
+            context.occurrence_id,
+            f"{self.accepted['root_resolution_id']}:{self.consumer}",
+        )
+        self.assertEqual(dict(context.role_bindings), self.roles)
+        self.assertEqual(context.resolution["root_command_id"], self.accepted["command_id"])
+        self.assertEqual(context.resolution["segments"], ())
+        self.assertIs(context._builder_token, context.owner_session.operation_token)
+
+    def test_constructor_copy_replace_mutation_and_forged_child_do_not_issue(self):
+        from GAME.TOOLS import activity_contracts as contracts
+
+        context = self.preparation()
+        registry_count = sum(
+            record.reference() is not None
+            for records in contracts._PREPARATION_CONTEXTS.values()
+            for record in records
+        )
+        self.mechanical.context_cache_identity(context)
+        self.assertEqual(
+            sum(
+                record.reference() is not None
+                for records in contracts._PREPARATION_CONTEXTS.values()
+                for record in records
+            ),
+            registry_count,
+        )
+        direct_fields = {
+            member.name: getattr(context, member.name)
+            for member in fields(context)
+            if member.init and member.name != "_issue_seal"
+        }
+        directly_constructed = contracts.NativePreparationContext(
+            **direct_fields, _issue_seal=context._issue_seal
+        )
+        forged_child_resolution = dict(context.resolution)
+        forged_child_resolution["causal_invocation_key"] = "invented:segment:event"
+        forged_child = replace(
+            context,
+            occurrence_id="occ.invented.child",
+            execution_ref=contracts.ExecutionRef(
+                context.execution_ref.command_id, "resolution.invented.child"
+            ),
+            resolution=forged_child_resolution,
+        )
+
+        for unissued in (
+            copy.copy(context),
+            replace(context),
+            replace(context, occurrence_id="occ.invented"),
+            directly_constructed,
+            forged_child,
+        ):
+            self.assertFalse(contracts._preparation_context_is_issued(unissued))
+            with self.assertRaisesRegex(
+                self.mechanical.MechanicalContextError, "authentic source-bound"
+            ):
+                self.mechanical.context_cache_identity(unissued)
+
+        other_session = self.host._current_owner.begin(self.host._begin_operation())
+        other_observation = other_session.require((self.owner,))
+        rebound = replace(
+            context,
+            owner_session=other_session,
+            observation=other_observation,
+        )
+        self.assertFalse(contracts._preparation_context_is_issued(rebound))
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
+            self.mechanical.context_cache_identity(rebound)
+
+        with self.assertRaises(contracts.ActivityContractError):
+            replace(context, consumer_id="activity.foreign.step.0")
+        with self.assertRaises(contracts.ActivityContractError):
+            replace(context, catalog=copy.copy(context.catalog))
+
+        original_occurrence = context.occurrence_id
+        object.__setattr__(context, "occurrence_id", "occ.mutated.after.issue")
+        self.assertFalse(contracts._preparation_context_is_issued(context))
+        object.__setattr__(context, "occurrence_id", original_occurrence)
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+
+    def test_unrelated_compiled_cache_rebuild_preserves_root_issuance(self):
+        from types import MappingProxyType
+
+        from GAME.TOOLS import activity_contracts as contracts
+        from GAME.TOOLS.activity_runtime import compile_activity
+
+        context = self.preparation()
+        before = self.mechanical.context_cache_identity(context)
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+        selected_compiled = self.compiled
+
+        unrelated_before = compile_activity(self.catalog, "activity.save.generic")
+        cache_without_unrelated = dict(self.catalog.compiled_activities)
+        cache_without_unrelated.pop("activity.save.generic")
+        object.__setattr__(
+            self.catalog,
+            "compiled_activities",
+            MappingProxyType(cache_without_unrelated),
+        )
+        unrelated_after = compile_activity(self.catalog, "activity.save.generic")
+
+        self.assertIsNot(unrelated_after, unrelated_before)
+        self.assertTrue(contracts._compiler_value_is_issued(self.catalog, kind="catalog"))
+        self.assertTrue(contracts._compiler_value_is_issued(selected_compiled, kind="compiled"))
+        self.assertIs(
+            self.catalog.compiled_activities[self.compiled.activity_id],
+            selected_compiled,
+        )
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+        self.assertEqual(self.mechanical.context_cache_identity(context), before)
+
+        selected_cache = self.catalog.compiled_activities
+        replaced_cache = dict(selected_cache)
+        replaced_cache[self.compiled.activity_id] = copy.copy(self.compiled)
+        try:
+            object.__setattr__(
+                self.catalog, "compiled_activities", MappingProxyType(replaced_cache)
+            )
+            self.assertFalse(contracts._preparation_context_is_issued(context))
+        finally:
+            object.__setattr__(self.catalog, "compiled_activities", selected_cache)
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+
+        accepted_definitions = self.catalog.frozen_definitions
+        changed_definitions = dict(accepted_definitions)
+        changed_definitions.pop(self.compiled.activity_id)
+        try:
+            object.__setattr__(
+                self.catalog,
+                "frozen_definitions",
+                MappingProxyType(changed_definitions),
+            )
+            self.assertFalse(contracts._preparation_context_is_issued(context))
+        finally:
+            object.__setattr__(self.catalog, "frozen_definitions", accepted_definitions)
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+
+    def test_native_root_issuer_holds_missing_foreign_or_advanced_sources(self):
+        from GAME.TOOLS.activity_contracts import NativePreparationHold
+        from GAME.TOOLS.native_storage import route_native_record
+
+        with self.assertRaises(NativePreparationHold) as missing_command:
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id="command.missing",
+                consumer_id=self.consumer,
+            )
+        self.assertEqual(
+            missing_command.exception.operation_status, "AUTHORITY_UNAVAILABLE"
+        )
+
+        command_path = route_native_record(
+            "runtime.command", (self.accepted["command_id"],)
+        ).relative_path
+        original_command = self.repository.native_records[command_path]
+        foreign_command = dict(original_command, command_id="command.foreign")
+        self.repository.native_records[command_path] = foreign_command
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        stale_command = dict(original_command, input_fingerprint="0" * 64)
+        self.repository.native_records[command_path] = stale_command
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        self.repository.native_records[command_path] = original_command
+
+        resolution_path = route_native_record(
+            "runtime.resolution", (self.accepted["root_resolution_id"],)
+        ).relative_path
+        original_resolution = self.repository.native_records[resolution_path]
+        self.repository.native_records.pop(resolution_path)
+        with self.assertRaises(NativePreparationHold) as missing_resolution:
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        self.assertEqual(
+            missing_resolution.exception.operation_status, "AUTHORITY_UNAVAILABLE"
+        )
+        self.repository.native_records[resolution_path] = original_resolution
+
+        foreign_resolution = dict(original_resolution, campaign_id="campaign.other")
+        self.repository.native_records[resolution_path] = foreign_resolution
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        self.repository.native_records[resolution_path] = original_resolution
+
+        foreign_root = dict(original_resolution, root_command_id="command.foreign")
+        self.repository.native_records[resolution_path] = foreign_root
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        self.repository.native_records[resolution_path] = original_resolution
+
+        advanced_resolution = dict(
+            original_resolution
+        )
+        advanced_resolution["segments"] = [{"segment_id": "invented"}]
+        self.repository.native_records[resolution_path] = advanced_resolution
+        with self.assertRaises(NativePreparationHold) as advanced_root:
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+            )
+        self.assertEqual(
+            advanced_root.exception.operation_status, "AUTHORITY_UNAVAILABLE"
+        )
+        self.repository.native_records[resolution_path] = original_resolution
+        from GAME.TOOLS import activity_contracts as contracts
+
+        fresh = self.preparation()
+        self.assertTrue(contracts._preparation_context_is_issued(fresh))
 
     def test_read_roles_cannot_rebind_the_accepted_root_actor(self):
         with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "root Actor"):
             self.acquire(role_bindings={"actor": self.other})
 
     def test_adjudication_cache_join_uses_actual_frozen_basis_members(self):
-        from GAME.TOOLS.policy_basis import AcceptedAdjudicationBasis
+        from GAME.TOOLS import activity_contracts as contracts
 
-        context = self.preparation()
-        basis = AcceptedAdjudicationBasis({}, (), ())
-        joined = replace(context, accepted_adjudication=(basis,))
-        self.assertNotEqual(self.mechanical.context_cache_identity(joined),
-                            self.mechanical.context_cache_identity(context))
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "adjudication"):
-            self.mechanical.context_cache_identity(replace(context, accepted_adjudication=(copy.copy(basis),)))
+        basis = self.policy_basis()
+        context = self._accepted_with_basis(basis)
+        self.assertTrue(contracts._preparation_context_is_issued(context))
+        identity = self.mechanical.context_cache_identity(context)
+        self.assertEqual(self.mechanical.context_cache_identity(context), identity)
+        copied_basis_context = replace(
+            context, accepted_adjudication=(copy.copy(basis),)
+        )
+        self.assertFalse(
+            contracts._preparation_context_is_issued(copied_basis_context)
+        )
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
+            self.mechanical.context_cache_identity(copied_basis_context)
 
     def policy_basis(self, *, consumer_id=None, catalog_context=None):
         from DEV.TESTS.test_rd07_recovery import (
@@ -247,30 +630,25 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         return resolver.bind_accepted_basis({"dc": binding}, (), (policy,))
 
     def test_nonempty_policy_used_by_actual_accepted_command_is_cache_eligible(self):
-        from DEV.TESTS.test_rd05_runtime_execution import _interpreter_result, _proposal
-        from GAME.TOOLS.runtime_execution import accept_command
-
         basis = self.policy_basis()
-        proposal = _proposal()
-        proposal["action_request"]["actor_id"] = self.owner.identity[0]
-        proposal["action_request"]["parameter_bindings"] = basis.runtime_parameter_bindings()
-        self.accepted = accept_command(_interpreter_result(), self.catalog.catalog_context,
-            {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
-            proposal, adjudication_basis=basis)
-        context = self.preparation()
-        resolution = dict(context.resolution, parameter_bindings=basis.runtime_parameter_bindings())
-        context = replace(context, resolution=resolution, accepted_adjudication=(basis,))
+        context = self._accepted_with_basis(basis)
         self.assertEqual(self.accepted["action_request"]["parameter_bindings"], basis.runtime_parameter_bindings())
         self.assertEqual(basis.verified_policies[0].consumer_id, self.compiled.activity_id)
         identity = self.mechanical.context_cache_identity(context)
         self.assertEqual(identity, self.mechanical.context_cache_identity(context))
 
     def test_policy_for_wrong_activity_consumer_rejects_at_cache_seam(self):
-        context = self.preparation()
         basis = self.policy_basis(consumer_id="activity.save.generic")
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "adjudication") as raised:
-            self.mechanical.context_cache_identity(replace(context, accepted_adjudication=(basis,)))
-        self.assertIn("policy applicability witness", str(raised.exception.__cause__))
+        from GAME.TOOLS.activity_contracts import NativePreparationHold
+
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+                adjudication_basis=basis,
+            )
 
     def test_policy_for_other_admitted_catalog_context_rejects_at_cache_seam(self):
         from pathlib import Path
@@ -289,33 +667,42 @@ class PinnedMechanicalReadTests(unittest.TestCase):
             engine_contract_inventory_source=source, natural_owner_sources={})
         self.assertNotEqual(foreign.fingerprint, self.catalog.catalog_context.fingerprint)
         basis = self.policy_basis(catalog_context=foreign)
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "adjudication") as raised:
-            self.mechanical.context_cache_identity(replace(self.preparation(), accepted_adjudication=(basis,)))
-        self.assertIn("resolver-selected catalog context", str(raised.exception.__cause__))
+        from GAME.TOOLS.activity_contracts import NativePreparationHold
+
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                self.compiled,
+                command_id=self.accepted["command_id"],
+                consumer_id=self.consumer,
+                adjudication_basis=basis,
+            )
 
     def test_cache_cannot_rebind_root_actor_when_both_actors_are_observed(self):
         context = self.preparation()
-        observation = self.session.require((self.other,))
-        context = replace(context, observation=observation)
-        self.mechanical.context_cache_identity(context)
-        rebound = replace(context, role_bindings={"actor": self.other})
-        self.assertEqual(set(rebound.observation.key_union), {self.owner, self.other})
-        with self.assertRaisesRegex(self.mechanical.MechanicalContextError, "root Actor"):
+        from GAME.TOOLS import activity_contracts as contracts
+
+        observation = context.owner_session.require((self.other,))
+        rebound = replace(
+            context,
+            observation=observation,
+            role_bindings={"actor": self.other},
+        )
+        self.assertFalse(contracts._preparation_context_is_issued(rebound))
+        with self.assertRaisesRegex(
+            self.mechanical.MechanicalContextError, "authentic source-bound"
+        ):
             self.mechanical.context_cache_identity(rebound)
 
-    def test_cache_preserves_real_child_activity_and_actor_binding(self):
-        from GAME.TOOLS import activity_contracts as contracts
+    def test_root_issuer_does_not_invent_a_distinct_child_resolution(self):
+        from GAME.TOOLS.activity_contracts import NativePreparationHold
         from GAME.TOOLS.activity_runtime import compile_activity
 
-        root = self.preparation()
         child = compile_activity(self.catalog, "activity.save.generic")
-        observation = self.session.require((self.other,))
-        resolution = dict(root.resolution, activity_id=child.activity_id,
-                          actor_id=self.other.identity[0], causal_invocation_key="resolution-1:segment:1:event:1")
-        resolution.pop("initiating_command_id")
-        context = replace(root, compiled=child, consumer_id="activity.save.generic.step.0",
-            occurrence_id="occ.child", execution_ref=contracts.ExecutionRef(root.execution_ref.command_id, "resolution.child"),
-            observation=observation, role_bindings={"actor": self.other}, resolution=resolution)
-        self.assertEqual(context.accepted_command["action_request"]["actor_id"], self.owner.identity[0])
-        self.assertNotEqual(context.compiled.activity_id, root.compiled.activity_id)
-        self.mechanical.context_cache_identity(context)
+        with self.assertRaises(NativePreparationHold):
+            self.host._current_owner._prepare_root_context(
+                self.catalog,
+                child,
+                command_id=self.accepted["command_id"],
+                consumer_id="activity.save.generic.step.0",
+            )
