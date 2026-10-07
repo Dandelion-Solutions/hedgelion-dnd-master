@@ -3,6 +3,7 @@
 import copy
 import importlib.util
 import json
+import os
 import shutil
 import tempfile
 import unittest
@@ -108,6 +109,15 @@ class SpellClosedContractTests(unittest.TestCase):
             contracts.ProfileBinding("activity.one", "execution.foreign", 1)
 
     def test_preparation_contract_uses_real_p0_observation_and_rejects_foreign_session_handles(self):
+        from DEV.TESTS.sp02_installed_test_support import (
+            authentic_generic_catalog, run_installed_structural_test,
+        )
+        if "HDM_INSTALLED_STRUCTURAL_TEST" not in os.environ:
+            result = run_installed_structural_test(
+                "DEV.TESTS.test_local_spell_closed_contracts.SpellClosedContractTests."
+                "test_preparation_contract_uses_real_p0_observation_and_rejects_foreign_session_handles")
+            self.assertEqual(result.returncode, 0, result.stderr or result.stdout)
+            return
         from dataclasses import replace
 
         from DEV.TESTS.test_rd05_runtime_execution import (
@@ -115,7 +125,6 @@ class SpellClosedContractTests(unittest.TestCase):
             _interpreter_result,
             _proposal,
         )
-        from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
         from DEV.TESTS.test_w05_t06_p0_actor_producer import (
             ACTOR_ID,
             ActorRepository,
@@ -128,19 +137,12 @@ class SpellClosedContractTests(unittest.TestCase):
         from GAME.TOOLS.native_storage import route_native_record
         from GAME.TOOLS.runtime_execution import accept_command
 
-        context = _bind_context()
-        catalog = contracts.AdmittedActivityCatalog(context, {}, {}, context.basis["engine_contract_inventory"], 1, "mode.conformance", {}, {}, {}, {}, _issue_seal=contracts._CONTRACT_SEAL)
+        catalog = authentic_generic_catalog()
+        context = catalog.catalog_context
         with self.assertRaises(contracts.ActivityContractError):
             replace(catalog, engine_contract_inventory={})
-        compiled = contracts.CompiledActivity(
-            activity_id="activity.check.generic", definition_semantic_hash="a" * 64, definition_semantic_hash_generation=1,
-            ruleset_set_sha256=context.basis["ruleset_lock"]["ruleset_set_sha256"], ruleset_set_digest_generation=1,
-            catalog_context_fingerprint=context.fingerprint, catalog_context_fingerprint_generation=1,
-            compiler_generation=1, engine_contract_inventory_sha256=context.basis["engine_contract_inventory_sha256"],
-            mode_policy_profile_id="mode.conformance", instructions=(contracts.CompiledInstruction("activity.check.generic.step.0", "op.resolve_check", {"roll": {"export_ref": "roll.result", "value_kind": "prior_roll_result"}, "threshold": {"parameter_ref": "dc", "value_kind": "integer"}}, (), ()),), parameter_contracts={}, role_contracts={"actor": {"family_key": "world.actor", "required": True}}, export_contracts={},
-            consumer_read_plan=(), dependency_ids=(), cost_contract_refs=(), native_transition_contract_refs=(), timing_contract_refs=(),
-            profile_bindings=(), safe_recompute_phases=(), _issue_seal=contracts._CONTRACT_SEAL,
-        )
+        from GAME.TOOLS.activity_runtime import compile_activity
+        compiled = compile_activity(catalog, "activity.check.generic")
         with NativeHotStore(":memory:") as store:
             child_actor_id = "actor.child"
             child_actor = copy.deepcopy(_actor())
@@ -196,20 +198,7 @@ class SpellClosedContractTests(unittest.TestCase):
 
             child_owner = NativeOwnerRef("world.actor", (child_actor_id,))
             child_observation = session.require((child_owner,))
-            child_compiled = replace(
-                compiled,
-                activity_id="activity.followup",
-                instructions=(contracts.CompiledInstruction(
-                    "activity.followup.step.0",
-                    "op.resolve_check",
-                    {
-                        "roll": {"export_ref": "roll.result", "value_kind": "prior_roll_result"},
-                        "threshold": {"parameter_ref": "dc", "value_kind": "integer"},
-                    },
-                    (),
-                    (),
-                ),),
-            )
+            child_compiled = compile_activity(catalog, "activity.save.generic")
             child_handle = contracts.NativeAllocationHandle(
                 child_owner,
                 "occ.child",
@@ -227,7 +216,7 @@ class SpellClosedContractTests(unittest.TestCase):
             child_preparation = contracts.NativePreparationContext(
                 catalog=catalog,
                 compiled=child_compiled,
-                consumer_id="activity.followup.step.0",
+                consumer_id="activity.save.generic.step.0",
                 occurrence_id="occ.child",
                 execution_ref=contracts.ExecutionRef(
                     accepted["command_id"], "resolution.child"
@@ -247,7 +236,7 @@ class SpellClosedContractTests(unittest.TestCase):
                 _issue_seal=contracts._CONTRACT_SEAL,
             )
             self.assertEqual(child_preparation.execution_ref.resolution_id, "resolution.child")
-            self.assertEqual(child_preparation.compiled.activity_id, "activity.followup")
+            self.assertEqual(child_preparation.compiled.activity_id, "activity.save.generic")
             self.assertEqual(child_preparation.resolution["actor_id"], child_actor_id)
             for invalid_resolution in (
                 {key: value for key, value in child_resolution.items() if key != "causal_invocation_key"},
@@ -257,7 +246,7 @@ class SpellClosedContractTests(unittest.TestCase):
             ):
                 with self.assertRaises(contracts.ActivityContractError):
                     replace(child_preparation, resolution=invalid_resolution)
-        # No native mutation, RNG, compiler output or establishment was performed.
+        # Compiler-issued setup; structural preparation still establishes no native mutation or RNG.
 
     def test_native_cause_and_object_basis_dtos_reject_amount_substitution(self):
         from GAME.TOOLS import activity_contracts as contracts

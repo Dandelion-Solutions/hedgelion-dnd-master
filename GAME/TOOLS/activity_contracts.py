@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import math
 import re
+import threading
 import types
+import weakref
 from collections.abc import Mapping
-from dataclasses import dataclass, field, fields
+from dataclasses import dataclass, field, fields, is_dataclass
 from types import MappingProxyType
 from typing import (
     ClassVar,
@@ -24,7 +26,7 @@ from typing import (
     get_type_hints,
 )
 
-from .catalog_runtime import BoundCatalogContext
+from .catalog_runtime import ActivityCompilerContractSource, BoundCatalogContext
 from .current_owner import (
     CurrentOwnerObservation,
     CurrentOwnerReadSession,
@@ -34,14 +36,24 @@ from .hot_store import OwnerDocument
 from .policy_basis import AcceptedAdjudicationBasis
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
 Ordinal = NewType("Ordinal", int)
 _ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _CONTRACT_SEAL = object()
+_COMPILER_ISSUANCE_LOCK = threading.RLock()
+_COMPILER_ISSUANCES: dict[
+    int,
+    tuple[
+        weakref.ReferenceType[object],
+        str,
+        tuple[object, ...],
+        tuple[tuple[str, object, object], ...],
+    ],
+] = {}
 NON_EXECUTABLE_DETAILS_FIELDS: Final = frozenset({
     "profile_bindings", "profile_args", "stochastic_state", "reconciliation_state", "cause", "geometry",
     "restoration_basis", "restoration_basis_ref", "progress", "spell_progress", "prospective_delta", "state_delta",
@@ -143,6 +155,201 @@ def _check(value: object, annotation: object, label: str) -> None:
         expected = 2 if value.family_key in {"world.knowledge", "runtime.disclosure"} else 1
         if len(value.identity) != expected:
             raise ActivityContractError(f"{label} has a foreign family identity arity")
+
+
+def _compiler_issuance_fields(value: object, kind: str) -> tuple[tuple[str, object], ...]:
+    ignored = {"_issue_seal"}
+    if kind == "catalog":
+        # Compiled entries are a disposable process-local cache; all other catalog
+        # fields are source/identity owners and stay frozen by the issuance record.
+        ignored.add("compiled_activities")
+    return tuple(
+        (member.name, getattr(value, member.name))
+        for member in fields(value)
+        if member.name not in ignored
+    )
+
+
+def _compiler_value_snapshot(value: object, active: set[int] | None = None) -> object:
+    """Capture recursively immutable DTO contents, rejecting object cycles."""
+    if isinstance(value, (str, int, float, bool, type(None), bytes)):
+        return ("scalar", type(value), value)
+    if active is None:
+        active = set()
+    identity = id(value)
+    if identity in active:
+        raise ActivityContractError("compiler value contains a reference cycle")
+    active.add(identity)
+    try:
+        if isinstance(value, Mapping):
+            return (
+                "mapping",
+                type(value),
+                identity,
+                tuple(
+                    (
+                        _compiler_value_snapshot(key, active),
+                        _compiler_value_snapshot(item, active),
+                    )
+                    for key, item in value.items()
+                ),
+            )
+        if isinstance(value, (tuple, list)):
+            return (
+                "sequence",
+                type(value),
+                identity,
+                tuple(_compiler_value_snapshot(item, active) for item in value),
+            )
+        if is_dataclass(value) and not isinstance(value, type):
+            return (
+                "dataclass",
+                type(value),
+                identity,
+                tuple(
+                    (member.name, _compiler_value_snapshot(getattr(value, member.name), active))
+                    for member in fields(value)
+                ),
+            )
+        return ("identity", type(value), identity)
+    finally:
+        active.remove(identity)
+
+
+def _same_issued_field(current: object, issued: object) -> bool:
+    if isinstance(issued, (Mapping, tuple, bytes)):
+        return current is issued
+    return type(current) is type(issued) and current == issued
+
+
+def _register_compiler_value(
+    value: object,
+    *,
+    kind: Literal["catalog", "compiled"],
+    lineage: tuple[object, ...],
+) -> None:
+    """Record one exact compiler-issued object and its issuer lineage."""
+    expected_type = {
+        "catalog": AdmittedActivityCatalog,
+        "compiled": CompiledActivity,
+    }[kind]
+    if type(value) is not expected_type or getattr(value, "_issue_seal", None) is not _CONTRACT_SEAL:
+        raise ActivityContractError("compiler issuer attempted to register a foreign value")
+    if kind == "catalog":
+        if (
+            len(lineage) != 1
+            or lineage[0] is not value.catalog_context
+            or not value.catalog_context._is_admitted()
+        ):
+            raise ActivityContractError("catalog compiler lineage is not admitted")
+    else:
+        if (
+            len(lineage) != 4
+            or not isinstance(lineage[0], BoundCatalogContext)
+            or not lineage[0]._is_admitted()
+            or lineage[0]._compiler_contract_source is not lineage[1]
+            or type(lineage[1]) is not ActivityCompilerContractSource
+            or not lineage[1]._is_admitted()
+            or lineage[2] != value.activity_id
+            or lineage[3] != value.definition_semantic_hash
+        ):
+            raise ActivityContractError(
+                "compiled Activity source/context lineage is not admitted"
+            )
+
+    identity = id(value)
+
+    def forget(reference: weakref.ReferenceType[object]) -> None:
+        with _COMPILER_ISSUANCE_LOCK:
+            current = _COMPILER_ISSUANCES.get(identity)
+            if current is not None and current[0] is reference:
+                del _COMPILER_ISSUANCES[identity]
+
+    reference = weakref.ref(value, forget)
+    fields_snapshot = tuple(
+        (name, field_value, None if kind == "catalog" else _compiler_value_snapshot(field_value))
+        for name, field_value in _compiler_issuance_fields(value, kind)
+    )
+    record = (reference, kind, lineage, fields_snapshot)
+    with _COMPILER_ISSUANCE_LOCK:
+        _COMPILER_ISSUANCES[identity] = record
+
+
+def _compiler_value_is_issued(
+    value: object,
+    *,
+    kind: Literal["catalog", "compiled"],
+    parent: object | None = None,
+) -> bool:
+    expected_type = {
+        "catalog": AdmittedActivityCatalog,
+        "compiled": CompiledActivity,
+    }[kind]
+    if type(value) is not expected_type or getattr(value, "_issue_seal", None) is not _CONTRACT_SEAL:
+        return False
+    with _COMPILER_ISSUANCE_LOCK:
+        record = _COMPILER_ISSUANCES.get(id(value))
+    if record is None or record[0]() is not value or record[1] != kind:
+        return False
+    lineage = record[2]
+    if (
+        kind == "catalog"
+        and parent is not None
+        and (len(lineage) != 1 or lineage[0] is not parent)
+    ):
+        return False
+    if kind == "catalog":
+        if not value.catalog_context._is_admitted() or lineage[0] is not value.catalog_context:
+            return False
+    else:
+        if (
+            len(lineage) != 4
+            or not isinstance(lineage[0], BoundCatalogContext)
+            or not lineage[0]._is_admitted()
+            or lineage[0]._compiler_contract_source is not lineage[1]
+            or type(lineage[1]) is not ActivityCompilerContractSource
+            or not lineage[1]._is_admitted()
+            or lineage[2] != value.activity_id
+            or lineage[3] != value.definition_semantic_hash
+        ):
+            return False
+        if parent is not None and lineage[0] is not parent:
+            return False
+    try:
+        current_fields = _compiler_issuance_fields(value, kind)
+        current_snapshots = tuple(
+            (name, field_value, None if kind == "catalog" else _compiler_value_snapshot(field_value))
+            for name, field_value in current_fields
+        )
+    except (ActivityContractError, AttributeError, RecursionError, TypeError, ValueError):
+        return False
+    if len(current_snapshots) != len(record[3]):
+        return False
+    # Catalog source containers are recursively detached immutable JSON/bytes
+    # at issue. Exact field identity plus the context/source issuers proves their
+    # retention without walking the whole catalog again. Compiled instructions
+    # retain recursive snapshots because frozen dataclass members can otherwise
+    # be replaced through object.__setattr__.
+    return all(
+        current_name == issued_name
+        and _same_issued_field(current_value, issued_value)
+        and current_snapshot == issued_snapshot
+        for (current_name, current_value, current_snapshot), (
+            issued_name,
+            issued_value,
+            issued_snapshot,
+        ) in zip(
+            current_snapshots, record[3], strict=True
+        )
+    )
+
+
+def _compiler_value_lineage(value: object, *, kind: Literal["catalog", "compiled"]) -> tuple[object, ...] | None:
+    if not _compiler_value_is_issued(value, kind=kind):
+        return None
+    with _COMPILER_ISSUANCE_LOCK:
+        record = _COMPILER_ISSUANCES.get(id(value))
+    return None if record is None else record[2]
 
 
 class ContractValue:
@@ -1225,6 +1432,21 @@ def validate_spell_progress(value: Mapping[str, object]) -> SpellProgress:
         raise ActivityContractError("progress has missing/foreign fields") from exc
 
 
+def _compiled_instruction_wire(value: CompiledInstruction) -> dict[str, object]:
+    return {
+        "consumer_id": value.consumer_id,
+        "primitive_id": value.primitive_id,
+        "arguments": value.arguments,
+        "result_contract_refs": value.result_contract_refs,
+        "read_contract_refs": value.read_contract_refs,
+        "children": tuple(_compiled_instruction_wire(child) for child in value.children),
+        "guard": value.guard,
+        "result_contracts": value.result_contracts,
+        "scope_bindings": value.scope_bindings,
+        "export_name": value.export_name,
+    }
+
+
 @dataclass(frozen=True, slots=True)
 class CompiledInstruction(ContractValue):
     consumer_id: NativeId
@@ -1233,13 +1455,17 @@ class CompiledInstruction(ContractValue):
     result_contract_refs: tuple[NativeId, ...]
     read_contract_refs: tuple[NativeId, ...]
     children: tuple[CompiledInstruction, ...] = ()
+    guard: Mapping[str, object] | None = None
+    result_contracts: Mapping[str, object] = field(default_factory=dict)
+    scope_bindings: Mapping[str, object] = field(default_factory=dict)
+    export_name: str | None = None
 
     def __post_init__(self) -> None:
         ContractValue.__post_init__(self)
-        _wire_contract("arguments:" + self.primitive_id, self.arguments)
+        _wire_contract("compiled_instruction", _compiled_instruction_wire(self))
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class CompiledActivity(_SealedValue):
     activity_id: NativeId
     definition_semantic_hash: str
@@ -1262,6 +1488,12 @@ class CompiledActivity(_SealedValue):
     timing_contract_refs: tuple[NativeId, ...]
     profile_bindings: tuple[ProfileBinding, ...]
     safe_recompute_phases: tuple[NativeId, ...]
+    requirements: Mapping[str, object] | None = None
+    activation_contract: Mapping[str, object] | None = None
+    cost_contracts: tuple[Mapping[str, object], ...] = ()
+    duration_contract: Mapping[str, object] | None = None
+    targeting_contract: Mapping[str, object] | None = None
+    symbol_contracts: Mapping[str, object] = field(default_factory=dict)
     _issue_seal: object = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self) -> None:
@@ -1271,6 +1503,16 @@ class CompiledActivity(_SealedValue):
         _wire_contract("parameters", self.parameter_contracts)
         _wire_contract("roles", self.role_contracts)
         _wire_contract("export_contracts", self.export_contracts)
+        _wire_contract("compiler_symbol_contracts", self.symbol_contracts)
+        for name, value in (("mechanical-predicate", self.requirements),
+                            ("duration-spec", self.duration_contract),
+                            ("target-spec", self.targeting_contract)):
+            if value is not None:
+                _wire_contract(name, value)
+        if self.activation_contract is not None:
+            _wire_contract("https://hedgelion.invalid/schemas/activity-definition-data.schema.json#/$defs/activation", self.activation_contract)
+        for cost in self.cost_contracts:
+            _wire_contract("cost-spec", cost)
         pending, consumers = list(self.instructions), set()
         while pending:
             instruction = pending.pop()
@@ -1282,7 +1524,7 @@ class CompiledActivity(_SealedValue):
             raise ActivityContractError("profile binding references a foreign instruction occurrence")
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, weakref_slot=True)
 class AdmittedActivityCatalog(_SealedValue):
     catalog_context: BoundCatalogContext
     frozen_semantic_members: Mapping[tuple[str, str], bytes]
@@ -1294,6 +1536,8 @@ class AdmittedActivityCatalog(_SealedValue):
     alias_index: Mapping[str, tuple[NativeId, ...]]
     capability_index: Mapping[str, tuple[NativeId, ...]]
     card_index: Mapping[str, object]
+    unavailable_activity_reasons: Mapping[str, str] = field(default_factory=dict)
+    definition_dependency_graph: Mapping[str, tuple[NativeId, ...]] = field(default_factory=dict)
     _issue_seal: object = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self) -> None:
@@ -1310,6 +1554,24 @@ class AdmittedActivityCatalog(_SealedValue):
             _wire_contract("capability_card", card)
             if card["definition_id"] != identity:
                 raise ActivityContractError("card map key differs from its definition")
+        _wire_contract(
+            "activity_unavailable_reasons", self.unavailable_activity_reasons
+        )
+        _wire_contract("definition_dependency_graph", self.definition_dependency_graph)
+        if self.definition_dependency_graph and (
+            set(self.definition_dependency_graph) != set(self.frozen_definitions)
+            or any(reference not in self.frozen_definitions
+                for references in self.definition_dependency_graph.values() for reference in references)
+        ):
+            raise ActivityContractError("definition dependency graph differs from its frozen source set")
+        if any(
+            identity not in self.frozen_definitions
+            or self.frozen_definitions[identity]["kind"] != "definition.activity"
+            for identity in self.unavailable_activity_reasons
+        ):
+            raise ActivityContractError(
+                "unavailable Activity diagnostics reference a foreign definition"
+            )
 
 
 @dataclass(frozen=True, slots=True)
@@ -1360,6 +1622,19 @@ class NativePreparationContext(_SealedValue):
 
     def __post_init__(self) -> None:
         _SealedValue.__post_init__(self)
+        if (
+            not _compiler_value_is_issued(self.catalog, kind="catalog")
+            or not _compiler_value_is_issued(
+                self.compiled,
+                kind="compiled",
+                parent=self.catalog.catalog_context,
+            )
+            or self.catalog.compiled_activities.get(self.compiled.activity_id)
+            is not self.compiled
+        ):
+            raise ActivityContractError(
+                "preparation requires exact compiler-issued catalog and Activity"
+            )
         _wire_contract("runtime-command-state", self.accepted_command)
         _wire_contract("runtime-resolution-state", self.resolution)
         if self._builder_token is None or self.compiled.catalog_context_fingerprint != self.catalog.catalog_context.fingerprint:

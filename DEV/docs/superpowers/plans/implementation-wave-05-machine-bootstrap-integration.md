@@ -1551,6 +1551,18 @@ no handwritten duplicate registry, self-hash authority, production activation,
 SP01 reopening or final SP28/SP29 writer transfer. The task Impact Envelope
 includes precisely this producer -> projection -> compiler integration.
 
+**Compiler ABI/source repair allocation:** the independent technical final audit
+`DEV/docs/superpowers/design/2026-10-06-sp02-independent-integration-audit.md`
+records the bounded extension to `activity_contracts.py` compiler-only DTOs and
+`build_activity_contract_shapes.py`/generated structural projection, plus the
+optional physical Activity compiler-declaration schema/primitive declaration
+shape. Requirements/guards/scoped children/export associations and typed symbol
+producer metadata implement existing accepted semantics, not an evaluator or
+new admission registry. Source issuance binds the executing installed root and
+owned semantic contents. Genuine legacy recipe/source gaps and the missing
+Magic-action taxonomy hold only affected admission; they do not require SP03
+or full339 content before compiler-mechanism qualification.
+
 **Interfaces:** exact execution section 7 `admit_activity_catalog(context_request: object, *, package_snapshots: Mapping[str,PackageSnapshot], engine_contract_inventory_source: object, natural_owner_sources: object, compiler_generation: int, mode_policy_profile_id: str) -> AdmittedActivityCatalog`; `compile_activity(catalog: AdmittedActivityCatalog, activity_id: str) -> CompiledActivity`. Add pure `lookup_activity(catalog, activity_id: str) -> CompiledActivity` and `lookup_capability_cards(catalog, *, eligible_activity_ids: tuple[str,...], query: str, maximum_candidates: int) -> tuple[Mapping[str,object],...]`; the supplied IDs must come from the actual source-specific Actor availability projection, and the lookup grants no capability. Hydration returns only eligible catalog-card data for the caller's existing Context budget/disclosure route. Frozen source bytes, exact consumer/read/dependency/profile contracts and compiled cache identity are the section 3 contract, not mutable snapshot paths.
 
 **Minimum Impact Envelope:**

@@ -132,6 +132,7 @@
         "selection_state": {"enum": ["DORMANT_NONSELECTABLE", "QUARANTINED_NO_EXACT_CLOSED_VARIANT", "ACTIVE_ADMITTED"]},
         "activation_trigger": {"enum": ["S6D_07_TO_09_EXACT_COMPILED_SEED_CONSUMER_AND_ACTIVE_DEPENDENCIES", "EXACT_CLOSED_EVENT_VARIANT_AND_ACTIVE_DEPENDENCIES"]},
         "exact_seed_consumer_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^activity\\."}},
+        "compiler_declarations": {"type": "object", "propertyNames": {"pattern": "^activity\\."}, "additionalProperties": {"$ref": "https://hedgelion.invalid/schemas/activity-compiler-declaration.schema.json"}},
         "authority_denied": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
         "arguments": {"type": "object", "additionalProperties": {"$ref": "#/$defs/typedValue"}},
         "results": {"type": "object", "additionalProperties": {"$ref": "#/$defs/typedValue"}},

@@ -21,7 +21,7 @@ COMPILED_VALUES = BASE + "compiled-activity-values.schema.json"
 ROOTS = ("spell-native-profile-values", "runtime-command-state", "runtime-resolution-state",
          "resolution-receipt", "execution-segment", "activity-parameter-spec", "catalog-definition",
          "roll-result", "activity-primitive-values", "runtime-mechanical-event-state",
-         "runtime-procedure-state", "runtime-continuation-state")
+          "runtime-procedure-state", "runtime-continuation-state", "activity-compiler-declaration")
 ID = {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
 SCALAR = {"type": ["string", "number", "boolean"]}
 
@@ -92,9 +92,9 @@ def build_projection(root=ROOT):
                 shape = {"type": "array", "items": shape}
             refs = [{"type": "object", "additionalProperties": False,
                      "required": [key, "value_kind"],
-                     "properties": {key: {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"},
-                                    "value_kind": {"const": kind}}}
-                    for key in ("export_ref", "parameter_ref")]
+                      "properties": {key: {"type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*(?::[a-z][a-z0-9_]*)?$" if key == "symbol_ref" else "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)*$"},
+                                     "value_kind": {"const": kind}}}
+                     for key in ("export_ref", "parameter_ref", "scope_ref", "symbol_ref")]
             props[name] = {"anyOf": [shape, *refs]}
             if spec["required"]:
                 required.append(name)
@@ -125,7 +125,15 @@ def build_projection(root=ROOT):
                         "properties": {"value_kind": {"enum": sorted(catalog["value_contracts"])},
                                        "cardinality": {"enum": ["single", "many"]}, "required": {"type": "boolean"},
                                        "source": {"const": "PRIMITIVE_RESULT"}}}
+    scope_binding = {"type": "object", "additionalProperties": False,
+                     "required": ["source_export", "value_kind"],
+                      "properties": {"source_export": ID,
+                                     "value_kind": {"enum": sorted(catalog["value_contracts"])},
+                                     "family_key": {"enum": ["world.actor", "world.asset", "runtime.procedure"]}}}
     named = {
+        "definition_dependency_graph": {"type": "object", "propertyNames": ID,
+            "additionalProperties": {"type": "array", "uniqueItems": True, "items": ID}},
+        "compiler_symbol_contracts": {"type": "object", "additionalProperties": reference(BASE + "activity-compiler-declaration.schema.json#/$defs/symbol")},
         "capability_card": {"type": "object", "additionalProperties": False,
             "required": ["definition_id", "name", "summary", "activity_ids"], "properties": {
                 "definition_id": ID, "name": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}},
@@ -144,6 +152,11 @@ def build_projection(root=ROOT):
         "export_contracts": {"type": "object", "propertyNames": ID, "additionalProperties": {
             "type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"}, "minProperties": 1,
             "additionalProperties": value_descriptor}},
+        "compiled_instruction": {"$ref": COMPILED_VALUES + "#/$defs/instruction"},
+        "activity_unavailable_reasons": {
+            "type": "object", "propertyNames": ID,
+            "additionalProperties": {"type": "string", "minLength": 1},
+        },
         "native_execution_envelope": {
             "type": "object", "additionalProperties": False,
             "required": ["accepted_command_id", "accepted_input_fingerprint", "execution_owner_id",
@@ -167,8 +180,39 @@ def build_projection(root=ROOT):
     }
     named["fragment_exports"] = {"type": "object", "propertyNames": ID,
         "additionalProperties": {"anyOf": [SCALAR, named["typed_export_value"]]}}
+    instruction_shape = {
+        "type": "object", "additionalProperties": False,
+        "required": ["consumer_id", "primitive_id", "arguments", "result_contract_refs",
+                     "read_contract_refs", "children", "guard", "result_contracts", "scope_bindings", "export_name"],
+        "properties": {
+            "consumer_id": ID,
+            "primitive_id": {"enum": sorted(argument_shapes)},
+            "arguments": {"type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"}},
+            "result_contract_refs": {"type": "array", "items": ID},
+            "read_contract_refs": {"type": "array", "items": ID},
+            "children": {"type": "array", "items": {"$ref": "#/$defs/instruction"}},
+            "guard": {"anyOf": [{"type": "null"},
+                                 reference(BASE + "activity-definition-data.schema.json#/$defs/step/properties/when")]},
+            "result_contracts": {"type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"},
+                                 "additionalProperties": value_descriptor},
+            "scope_bindings": {"type": "object", "propertyNames": {"pattern": "^[a-z][a-z0-9_]*$"},
+                               "additionalProperties": scope_binding},
+            "export_name": {"anyOf": [{"type": "null"}, {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}]},
+        },
+        "allOf": [
+            {"if": {"properties": {"primitive_id": {"const": operation}}, "required": ["primitive_id"]},
+             "then": {"properties": {"arguments": {
+                 **arguments, "properties": {
+                     name: {"type": "array", "minItems": 1, "items": ID}
+                     if catalog_row["arguments"][name]["value_kind"] == "compiled_step_list" else shape
+                     for name, shape in arguments["properties"].items()
+                 }}}}}
+            for catalog_row in catalog["contracts"]
+            for operation, arguments in [(catalog_row["primitive_id"], argument_shapes[catalog_row["primitive_id"]])]
+        ],
+    }
     schemas[COMPILED_VALUES] = {"$schema": "https://json-schema.org/draft/2020-12/schema", "$id": COMPILED_VALUES,
-        "$defs": {"typedResult": named["typed_export_value"], "step": {
+        "$defs": {"typedResult": named["typed_export_value"], "instruction": instruction_shape, "step": {
             "allOf": [{"$ref": BASE + "activity-definition-data.schema.json#/$defs/step"},
                       {"properties": {"op": {"enum": sorted(argument_shapes)}}}],
             "dependentSchemas": {"op": {"allOf": [
