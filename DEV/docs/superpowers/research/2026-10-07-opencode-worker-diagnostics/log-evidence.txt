@@ -1,0 +1,34 @@
+SOURCE_COPY: /tmp/hdm-dev/opencode-log-diagnostics/opencode.log
+SHA256: 383e868ad6ca47f251315bedf012f651063823ad6ebb2baa893bb2a96346bd86
+BYTES: 127553857; LINES: 631357; copied-file mtime: 2026-10-07 13:17:26.369141307 +0200 (copy time, not an incident time).
+Selective exact lines follow. Prefix [source line N] is added by diagnosis; source log body is unchanged. Unrelated prompts, credential values, request bodies and attachments are excluded.
+[source line 553000] timestamp=2026-10-03T23:10:41.137Z level=INFO run=824290b9 message="creating instance" directory=/home/denis/hdm/repos/hedgelion-dnd-master
+[source line 568025] timestamp=2026-10-05T11:03:41.719Z level=INFO run=824290b9 message=process session.id=ses_f0e3bd4e4ffem8jmapJbWHWjLz messageID=msg_10bbbd23c001qh4ON51FQjsRPk
+[source line 572076] timestamp=2026-10-05T12:37:22.495Z level=INFO run=824290b9 message=process session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH messageID=msg_10c1198c4001mQLx2DKMHyoOzr
+[source line 572077] timestamp=2026-10-05T12:37:22.496Z level=INFO run=824290b9 message=stream providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH small=false agent=hdm-worker mode=subagent
+[source line 572316] timestamp=2026-10-05T12:52:26.451Z level=INFO run=824290b9 message=stream providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH small=false agent=hdm-worker mode=subagent
+[source line 572423] timestamp=2026-10-05T12:55:27.993Z level=INFO run=824290b9 message=formatting file=/tmp/hdm-dev/spell-resume/SP01-repair-receipt.md
+[source line 572424] timestamp=2026-10-05T12:55:27.994Z level=INFO run=824290b9 message="touching file" file=/tmp/hdm-dev/spell-resume/SP01-repair-receipt.md
+[source line 572426] timestamp=2026-10-05T12:55:29.222Z level=INFO run=824290b9 message=loop session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH step=71
+[source line 572428] timestamp=2026-10-05T12:55:29.707Z level=INFO run=824290b9 message=process session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH messageID=msg_10c222f68001MgHl1Jf8gBzsnO
+[source line 572429] timestamp=2026-10-05T12:55:29.709Z level=INFO run=824290b9 message=stream providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH small=false agent=hdm-worker mode=subagent
+[source line 572430] timestamp=2026-10-05T12:55:29.731Z level=INFO run=824290b9 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=openai llm.model=gpt-6.1-sol
+[source line 572800] timestamp=2026-10-05T13:10:33.358Z level=INFO run=824290b9 message=stream providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH small=false agent=hdm-worker mode=subagent
+[source line 572801] timestamp=2026-10-05T13:10:33.418Z level=INFO run=824290b9 message="llm runtime selected" llm.runtime=ai-sdk llm.provider=openai llm.model=gpt-6.1-sol
+[source line 572807] timestamp=2026-10-05T13:11:56.313Z level=INFO run=824290b9 message=cleanup prune=7.days
+[source line 572913] timestamp=2026-10-05T13:17:40.603Z level=INFO run=32dfa066 message="creating instance" directory=/home/denis/hdm/repos/hedgelion-dnd-master
+[source line 572947] timestamp=2026-10-05T13:18:36.615Z level=INFO run=10ed5c2c message="creating instance" directory=/home/denis/hdm/repos/hedgelion-dnd-master
+[source line 586679] timestamp=2026-10-06T12:33:14.857Z level=INFO run=ffe85a53 message="creating instance" directory=/home/denis/hdm/repos/hedgelion-dnd-master
+[source line 587405] timestamp=2026-10-06T12:50:49.811Z level=INFO run=ffe85a53 message=loop session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH step=0
+[source line 587407] timestamp=2026-10-06T12:50:50.588Z level=INFO run=ffe85a53 message=process session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH messageID=msg_11144490d001H29TIQbEGK6Se7
+[source line 587408] timestamp=2026-10-06T12:50:50.590Z level=INFO run=ffe85a53 message=stream providerID=openai modelID=gpt-6-luna session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH small=false agent=hdm-worker mode=subagent
+[source line 587423] timestamp=2026-10-06T12:51:03.527Z level=INFO run=ffe85a53 message="exiting loop" session.id=ses_ef4efdc0bffeP1H6Ul9qC57zdH
+[source line 587457] timestamp=2026-10-06T12:52:54.235Z level=INFO run=ffe85a53 message=stream providerID=openai modelID=gpt-6-luna session.id=ses_eeeb9dea3ffeqyVQdiPzOLUHGF small=false agent=hdm-worker mode=subagent
+[source line 588950] timestamp=2026-10-06T13:11:32.657Z level=INFO run=ffe85a53 message="exiting loop" session.id=ses_eeeb9dea3ffeqyVQdiPzOLUHGF
+[source line 566455] timestamp=2026-10-05T10:22:39.808Z level=ERROR run=824290b9 message="stream error" providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE small=false agent=hdm-worker mode=subagent error.error="AI_APICallError: Your input exceeds the context window of this model. Please adjust your input and try again."
+[source line 566695] timestamp=2026-10-05T10:26:33.480Z level=ERROR run=824290b9 message="stream error" providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE small=false agent=hdm-worker mode=subagent error.error="AI_APICallError: Your input exceeds the context window of this model. Please adjust your input and try again."
+[source line 566880] timestamp=2026-10-05T10:31:03.583Z level=ERROR run=824290b9 message="stream error" providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE small=false agent=hdm-worker mode=subagent error.error="AI_APICallError: Your input exceeds the context window of this model. Please adjust your input and try again."
+[source line 567116] timestamp=2026-10-05T10:36:02.508Z level=ERROR run=824290b9 message="stream error" providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE small=false agent=hdm-worker mode=subagent error.error="AI_APICallError: Your input exceeds the context window of this model. Please adjust your input and try again."
+[source line 567448] timestamp=2026-10-05T10:45:34.533Z level=ERROR run=824290b9 message="stream error" providerID=openai modelID=gpt-6.1-sol session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE small=false agent=hdm-worker mode=subagent error.error="AI_APICallError: Your input exceeds the context window of this model. Please adjust your input and try again."
+[source line 567626] timestamp=2026-10-05T10:49:17.209Z level=INFO run=824290b9 message="exiting loop" session.id=ses_ef4efdd58ffeU3uWpkKUMNHVWE
+[source line 568021] timestamp=2026-10-05T11:03:33.682Z level=INFO run=824290b9 message="exiting loop" session.id=ses_ef4efdaacffesFcTKCaW6bIgLg

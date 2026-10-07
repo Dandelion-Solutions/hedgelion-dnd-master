@@ -125,6 +125,7 @@ repository root
 | Campaign bootstrap / creation | `GAME/INSTALL/00_DND_BOOTSTRAP.md`, `BOOTSTRAP_RUNTIME.md`, `NEW_CAMPAIGN_FAST_PATH.md`, `CAMPAIGN_SETUP.md`, `GAME/TOOLS/init_campaign.py` | `GAME/CAMPAIGN/`, campaign schemas, branch/access/persistence owners |
 | Runtime packaging / versioning / update | `DEV/TOOLS/release_builder.py`, `run_release_build.py`, `DEV/RELEASE/`, `.github/workflows/release-runtime.yml`, `GAME/ENGINE_VERSION.yaml`, `ENGINE_UPDATES.md` | install, migrations, release/version tests |
 | Rules/source routing | `GAME/RULES/`, `GAME/CORE/SOURCES.md`, `PLAY_POLICY.md` | domain CORE modules, character readiness, prep/worldgen, campaign House Rules |
+| SRD 5.2.1 source lookup | [`DEV/docs/SRD_CC_v5.2.1_ToC.md`](docs/SRD_CC_v5.2.1_ToC.md) — compact contents and section links | `DEV/docs/SRD_CC_v5.2.1.md` — licensed reference text; source qualification, ruleset package owners and SRD attribution |
 | LLM reasoning / information / presentation | `DEV/docs/superpowers/specs/2026-09-26-player-facing-response-language-owner-decision.md`, `AI_REASONING.md`, `GM_CRAFT.md`, `PREP.md`, `NARRATIVE.md`, `INFORMATION.md`, `LORE.md`, `NPC.md` | Step-4 final spec/amendment, role-context research evidence, R2.1–R2.4 final specs; PO-011 controls Master-to-human response language while internal/diagnostic language remains separate |
 | Support / diagnostics / maintenance | `MAINTENANCE_COMMANDS.md`, `DEV/TOOLS/run_maintenance_audit.py`, `audit_engine.py` | session/integrity/storage/persistence/checkpoint schemas/tests; compose with PO-011 for ordinary Master explanation versus separate technical diagnostic language |
 | Access / repository/campaign ownership | `ACCESS_CONTROL.md`, `BRANCH_MODEL.md` | multiplayer, bootstrap, persistence, player/session schemas, House-Rules adoption |
@@ -213,6 +214,11 @@ plans/      implementation plans/execution status
 ```
 
 Do not infer semantic role solely from an old filename/path. Final accepted law must not remain hidden only in `research/` or `design/`.
+
+### 6.9 SRD reference navigation
+
+- [`DEV/docs/SRD_CC_v5.2.1_ToC.md`](docs/SRD_CC_v5.2.1_ToC.md) — compact SRD contents, source-section links, stat-block index and legal/source links; start here to select the relevant Markdown section.
+- [`DEV/docs/SRD_CC_v5.2.1.md`](docs/SRD_CC_v5.2.1.md) — full CC BY 4.0 reference text; read only the sections needed for the task. Its presence does not establish source qualification or runtime support.
 
 ---
 
