@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "ccdc7195e95e7281b9b8e56eced81bb30e383506dda5509703279dd6e8200e26"
+    "7475c7f57c084a99c3dc2fd0ff93a1a2c3e121fd49d8491b56ecba3963138cc1"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -3019,6 +3019,502 @@ SOURCE_UNKNOWN_EXPECTED_COUNTS = {
     "source_mapping_review": 23,
     "downstream_domain_consumer_admission_native_proof": 33,
 }
+SOURCE_MARKDOWN_RELATIVE_PATH = "DEV/docs/SRD_CC_v5.2.1.md"
+SOURCE_MARKDOWN_SHA256 = (
+    "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e"
+)
+SOURCE_RESIDUAL_EVIDENCE_RELATIVE_PATH = "DEV/docs/superpowers/design/2026-10-07-sp00-first12-markdown-source-qualification.md"
+SOURCE_RESIDUAL_EVIDENCE_SHA256 = (
+    "2ab8076aabba92f9e315dcf8e01af7928e50e83ce5645234c099c58d96ad9c08"
+)
+SOURCE_RESOLVED_KEYS = frozenset(
+    {
+        "source.spell.alarm.unresolved.audible_sound_bounds",
+        "source.spell.animal_messenger.unresolved.travel_and_message_bounds",
+        "source.spell.augury.unresolved.recast_probability",
+        "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling",
+        "source.spell.command.unresolved.command_exact_restrictions",
+        "source.spell.continual_flame.unresolved.darkness_interaction",
+        "source.spell.dancing_lights.unresolved.movement_and_link_bounds",
+        "source.spell.darkness.unresolved.interaction_thresholds",
+        "source.spell.detect_evil_and_good.unresolved.barrier_thresholds",
+    }
+)
+SOURCE_HELD_KEYS = frozenset(
+    {
+        "source.spell.aid.unresolved.health_normalization_policy",
+        "source.spell.arcane_lock.unresolved.destruction_access_policy",
+        "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
+    }
+)
+SOURCE_RESOLUTION_KEYS = (
+    "source.spell.aid.unresolved.health_normalization_policy",
+    "source.spell.alarm.unresolved.audible_sound_bounds",
+    "source.spell.animal_messenger.unresolved.travel_and_message_bounds",
+    "source.spell.arcane_lock.unresolved.destruction_access_policy",
+    "source.spell.augury.unresolved.recast_probability",
+    "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling",
+    "source.spell.command.unresolved.command_exact_restrictions",
+    "source.spell.continual_flame.unresolved.darkness_interaction",
+    "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
+    "source.spell.dancing_lights.unresolved.movement_and_link_bounds",
+    "source.spell.darkness.unresolved.interaction_thresholds",
+    "source.spell.detect_evil_and_good.unresolved.barrier_thresholds",
+)
+SOURCE_RESOLUTION_CATEGORIES: dict[str, str] = {
+    "source.spell.aid.unresolved.health_normalization_policy": "source_semantics",
+    "source.spell.alarm.unresolved.audible_sound_bounds": "source_parameter",
+    "source.spell.animal_messenger.unresolved.travel_and_message_bounds": "source_parameter",
+    "source.spell.arcane_lock.unresolved.destruction_access_policy": "source_semantics",
+    "source.spell.augury.unresolved.recast_probability": "source_parameter",
+    "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling": "source_parameter",
+    "source.spell.command.unresolved.command_exact_restrictions": "source_semantics",
+    "source.spell.continual_flame.unresolved.darkness_interaction": "source_semantics",
+    "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds": "source_parameter",
+    "source.spell.dancing_lights.unresolved.movement_and_link_bounds": "source_parameter",
+    "source.spell.darkness.unresolved.interaction_thresholds": "source_parameter",
+    "source.spell.detect_evil_and_good.unresolved.barrier_thresholds": "source_parameter",
+}
+SOURCE_MARKDOWN_LOCATORS: dict[str, list[dict[str, object]]] = {
+    "source.spell.aid.unresolved.health_normalization_policy": [
+        {"heading": "Aid", "line_start": 9307, "line_end": 9321},
+        {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+        {"heading": "Combining Spell Effects", "line_start": 9255, "line_end": 9257},
+    ],
+    "source.spell.alarm.unresolved.audible_sound_bounds": [
+        {"heading": "Alarm", "line_start": 9325, "line_end": 9341}
+    ],
+    "source.spell.animal_messenger.unresolved.travel_and_message_bounds": [
+        {"heading": "Animal Messenger", "line_start": 9385, "line_end": 9401}
+    ],
+    "source.spell.arcane_lock.unresolved.destruction_access_policy": [
+        {"heading": "Arcane Lock", "line_start": 9592, "line_end": 9604}
+    ],
+    "source.spell.augury.unresolved.recast_probability": [
+        {"heading": "Augury", "line_start": 9666, "line_end": 9678},
+        {"heading": "Augury", "line_start": 9691, "line_end": 9693},
+    ],
+    "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling": [
+        {"heading": "Chromatic Orb", "line_start": 10105, "line_end": 10121}
+    ],
+    "source.spell.command.unresolved.command_exact_restrictions": [
+        {"heading": "Command", "line_start": 10215, "line_end": 10239}
+    ],
+    "source.spell.continual_flame.unresolved.darkness_interaction": [
+        {"heading": "Continual Flame", "line_start": 10550, "line_end": 10562},
+        {"heading": "Darkness", "line_start": 10784, "line_end": 10798},
+        {
+            "heading": "Using a Higher-Level Spell Slot",
+            "line_start": 9106,
+            "line_end": 9110,
+        },
+    ],
+    "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds": [
+        {"heading": "Create or Destroy Water", "line_start": 10674, "line_end": 10692}
+    ],
+    "source.spell.dancing_lights.unresolved.movement_and_link_bounds": [
+        {"heading": "Dancing Lights", "line_start": 10766, "line_end": 10780},
+        {"heading": "Range", "line_start": 9165, "line_end": 9175},
+    ],
+    "source.spell.darkness.unresolved.interaction_thresholds": [
+        {"heading": "Darkness", "line_start": 10784, "line_end": 10798},
+        {
+            "heading": "Using a Higher-Level Spell Slot",
+            "line_start": 9106,
+            "line_end": 9110,
+        },
+    ],
+    "source.spell.detect_evil_and_good.unresolved.barrier_thresholds": [
+        {"heading": "Detect Evil and Good", "line_start": 10894, "line_end": 10908}
+    ],
+}
+SOURCE_MARKDOWN_REQUIRED_PHRASES: dict[str, tuple[tuple[int, str], ...]] = {
+    "source.spell.aid.unresolved.health_normalization_policy": (
+        (0, "current Hit Points increase by 5"),
+        (0, "for each spell slot level above 2"),
+        (1, "if you don’t have the Incapacitated condition"),
+        (2, "most potent effect"),
+    ),
+    "source.spell.alarm.unresolved.audible_sound_bounds": (
+        (0, "for 10 seconds within 60 feet of the warded area"),
+        (0, "within 1 mile of the warded area"),
+        (0, "no larger than a 20-foot Cube"),
+    ),
+    "source.spell.animal_messenger.unresolved.travel_and_message_bounds": (
+        (0, "up to twenty-five words"),
+        (0, "covering about 25 miles per 24 hours or 50 miles if the Beast can fly"),
+        (0, "the Beast returns to where you cast the spell"),
+    ),
+    "source.spell.arcane_lock.unresolved.destruction_access_policy": (
+        (0, "can’t be unlocked by any nonmagical means"),
+        (0, "within 5 feet of the object"),
+        (0, "unlocks it for 1 minute"),
+    ),
+    "source.spell.augury.unresolved.recast_probability": (
+        (0, "within the next 30 minutes"),
+        (1, "before finishing a Long Rest"),
+        (1, "cumulative 25 percent chance for each casting after the first"),
+    ),
+    "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling": (
+        (0, "same number on two or more of the d8s"),
+        (0, "within 30 feet of the target"),
+        (0, "maximum number of times equal to the level of the slot expended"),
+        (0, "creature can be targeted only once"),
+    ),
+    "source.spell.command.unresolved.command_exact_restrictions": (
+        (0, "shortest and most direct route"),
+        (0, "if it moves within 5 feet of you"),
+        (0, "takes no action or Bonus Action"),
+    ),
+    "source.spell.continual_flame.unresolved.darkness_interaction": (
+        (0, "20-foot radius and Dim Light for an additional 20 feet"),
+        (1, "spell of level 2 or lower"),
+        (1, "that other spell is dispelled"),
+        (2, "takes on the higher level for that casting"),
+    ),
+    "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds": (
+        (0, "up to 10 gallons of clean water"),
+        (0, "in an open container"),
+        (0, "30-foot Cube"),
+        (0, "size of the Cube increases by 5 feet"),
+    ),
+    "source.spell.dancing_lights.unresolved.movement_and_link_bounds": (
+        (0, "move the lights up to 60 feet to a space within range"),
+        (0, "within 20 feet of another light created by this spell"),
+        (0, "vanishes if it exceeds the spell’s range"),
+        (
+            1,
+            "aren’t restricted by its range unless the spell’s description says otherwise",
+        ),
+    ),
+    "source.spell.darkness.unresolved.interaction_thresholds": (
+        (0, "15-foot-radius Sphere"),
+        (0, "15-foot Emanation"),
+        (0, "Darkvision can’t see through it"),
+        (0, "nonmagical light can’t illuminate it"),
+        (0, "spell of level 2 or lower"),
+        (0, "that other spell is dispelled"),
+        (1, "takes on the higher level for that casting"),
+    ),
+    "source.spell.detect_evil_and_good.unresolved.barrier_thresholds": (
+        (0, "within 30 feet of yourself"),
+        (0, "*Hallow* spell is active there"),
+        (0, "1 foot of stone, dirt, or wood"),
+        (0, "1 inch of metal"),
+        (0, "a thin sheet of lead"),
+    ),
+}
+SOURCE_RESIDUAL_REVIEW = {
+    "review_id": "SP00_FIRST12_MARKDOWN_REVIEW_20261007",
+    "integration_base_sha": "4222a6c88234afeee893697241830b4e75521477",
+    "candidate_source_base_sha": "4fb8a15108bf6b4b3108dac83a02735bdd21b04e",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-residuals-first12/residuals-first12.json",
+    "candidate_sha256": "110b5704d31546c20981d7d179a3dcc78b580db00a50ff5f12a31beef703a8df",
+    "candidate_report_path": "/tmp/hdm-dev/spell-recovery/SP00-residuals-first12/report.md",
+    "candidate_report_sha256": "7d841d1917f6ec8e98752d7a33832209dcdb7fe0e15fe5c3bbc29d50f5990864",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-first12-markdown-review-20261007.md",
+    "accepted_review_sha256": "e0c581fd53df459790266a021122d7be6d3f950a8d3a0d613d8c4ee52f32179c",
+    "task_evidence_path": SOURCE_RESIDUAL_EVIDENCE_RELATIVE_PATH,
+    "task_evidence_sha256": SOURCE_RESIDUAL_EVIDENCE_SHA256,
+}
+
+
+def _read_pinned_local_evidence(
+    relative_path: str, expected_sha256: str, evidence_name: str
+) -> bytes:
+    path = (REPOSITORY_ROOT / relative_path).resolve()
+    if not path.is_relative_to(REPOSITORY_ROOT) or not path.is_file():
+        _fail(evidence_name, "pinned local evidence is unavailable")
+    try:
+        data = path.read_bytes()
+    except OSError:
+        _fail(evidence_name, "pinned local evidence cannot be read")
+    if hashlib.sha256(data).hexdigest() != expected_sha256:
+        _fail(evidence_name, "pinned local evidence bytes changed")
+    return data
+
+
+def _validate_source_unknown_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind the reviewed first12 dispositions to current Markdown and old witnesses."""
+    expected_markdown_source = {
+        "path": SOURCE_MARKDOWN_RELATIVE_PATH,
+        "asset_id": "srd52_en",
+        "edition": "SRD_5_2_1",
+        "sha256": SOURCE_MARKDOWN_SHA256,
+        "hash_basis": "RAW_UTF8",
+        "license_id": "CC-BY-4.0",
+        "required_attribution": ATTRIBUTION,
+    }
+    markdown_source = _object(
+        manifest.get("source_markdown_source"), "source_markdown_source"
+    )
+    if markdown_source != expected_markdown_source:
+        _fail(
+            "source_unknown_resolution_markdown",
+            "source Markdown identity, license or attribution differs",
+        )
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_unknown_resolution_markdown",
+    )
+    try:
+        markdown_lines = markdown_bytes.decode("utf-8").splitlines()
+    except UnicodeDecodeError:
+        _fail("source_unknown_resolution_markdown", "source Markdown is not UTF-8")
+
+    review = _object(manifest.get("source_residual_review"), "source_residual_review")
+    if review != SOURCE_RESIDUAL_REVIEW:
+        _fail(
+            "source_unknown_resolution_review",
+            "frozen candidate, accepted review or task evidence identity differs",
+        )
+    task_evidence_bytes = _read_pinned_local_evidence(
+        SOURCE_RESIDUAL_EVIDENCE_RELATIVE_PATH,
+        SOURCE_RESIDUAL_EVIDENCE_SHA256,
+        "source_unknown_resolution_review",
+    )
+    try:
+        task_evidence = task_evidence_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_unknown_resolution_review", "task evidence is not UTF-8")
+    required_review_tokens = (
+        review["accepted_review_sha256"],
+        review["candidate_sha256"],
+        "F12-01 incorporation",
+        "if it moves within 5 feet of the caster",
+        *SOURCE_RESOLUTION_KEYS,
+    )
+    if any(token not in task_evidence for token in required_review_tokens):
+        _fail(
+            "source_unknown_resolution_review",
+            "task evidence omits a frozen review identity, key or Command correction",
+        )
+
+    rows = [
+        _object(value, f"source_unknown_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_unknown_resolution_evidence"),
+                "source_unknown_resolution_evidence",
+            )
+        )
+    ]
+    if (
+        len(rows) != len(SOURCE_RESOLUTION_KEYS)
+        or tuple(row.get("unresolved_key") for row in rows) != SOURCE_RESOLUTION_KEYS
+    ):
+        _fail(
+            "source_unknown_resolution_census",
+            "the twelve reviewed residual identities or their order differ",
+        )
+
+    source_pass_pointers: list[str] = []
+    body_witness_pointers: list[str] = []
+    closed_keys: list[str] = []
+    held_keys: list[str] = []
+    closed_subobligation_ids: list[str] = []
+    command_approach_source_text = ""
+    for index, row in enumerate(rows, start=1):
+        key = SOURCE_RESOLUTION_KEYS[index - 1]
+        classification = classified_by_key.get(key)
+        if classification is None:
+            _fail(
+                "source_unknown_resolution_key", f"{key} has no original classification"
+            )
+        source_name = str(classification["source_exact_name"])
+        expected_subobligation_id = f"{key}::{SOURCE_RESOLUTION_CATEGORIES[key]}"
+        source_subobligations = [
+            _object(value, f"{key}.subobligation")
+            for value in _array(
+                classification.get("subobligations"), f"{key}.subobligations"
+            )
+            if isinstance(value, dict)
+            and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        if (
+            len(source_subobligations) != 1
+            or source_subobligations[0].get("subobligation_id")
+            != expected_subobligation_id
+            or source_subobligations[0].get("status") != "NOT_ESTABLISHED"
+        ):
+            _fail(
+                "source_unknown_resolution_subobligation",
+                f"{key} does not contain exactly the reviewed open source subobligation",
+            )
+        evidence_ref = _object(
+            classification.get("evidence_ref"), f"{key}.evidence_ref"
+        )
+        expected_record_ref = {
+            "artifact_id": evidence_ref.get("artifact_id"),
+            "json_pointer": evidence_ref.get("json_pointer"),
+            "source_exact_name": evidence_ref.get("exact_record_name"),
+            "printed_page": evidence_ref.get("printed_page"),
+            "source_header_line": evidence_ref.get("source_header_line"),
+            "raw_body_sha256": evidence_ref.get("raw_body_sha256"),
+            "body_witness_ref": evidence_ref.get("body_witness_ref"),
+        }
+        expected_disposition = (
+            "SOURCE_CLOSED" if key in SOURCE_RESOLVED_KEYS else "SOURCE_HELD"
+        )
+        expected_item_id = f"ITEM-{index:02d}"
+        if (
+            key not in SOURCE_RESOLVED_KEYS | SOURCE_HELD_KEYS
+            or row.get("review_item_id") != expected_item_id
+            or row.get("source_exact_name") != source_name
+            or row.get("subobligation_id") != expected_subobligation_id
+            or row.get("disposition") != expected_disposition
+            or row.get("source_record_ref") != expected_record_ref
+            or row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail(
+                "source_unknown_resolution_binding",
+                f"{key} differs from its reviewed source record/subobligation binding",
+            )
+
+        locators = [
+            _object(value, f"{key}.source_markdown_locators[{locator_index}]")
+            for locator_index, value in enumerate(
+                _array(
+                    row.get("source_markdown_locators"),
+                    f"{key}.source_markdown_locators",
+                )
+            )
+        ]
+        if locators != SOURCE_MARKDOWN_LOCATORS[key]:
+            _fail(
+                "source_unknown_resolution_locator",
+                f"{key} Markdown line locators differ from the reviewed source route",
+            )
+        locator_texts: list[str] = []
+        for locator_index, locator in enumerate(locators):
+            start = locator.get("line_start")
+            end = locator.get("line_end")
+            if (
+                not isinstance(start, int)
+                or not isinstance(end, int)
+                or start < 1
+                or end < start
+                or end > len(markdown_lines)
+            ):
+                _fail(
+                    "source_unknown_resolution_locator",
+                    f"{key} has an invalid Markdown line span",
+                )
+            section_text = "\n".join(markdown_lines[start - 1 : end])
+            locator_texts.append(section_text)
+            if locator_index == 0 and markdown_lines[start - 1].strip() != (
+                f"##### {source_name}"
+            ):
+                _fail(
+                    "source_unknown_resolution_locator",
+                    f"{key} primary Markdown span does not start at its exact heading",
+                )
+            first_line = markdown_lines[start - 1].strip()
+            if first_line.startswith("#") and locator.get("heading") not in first_line:
+                _fail(
+                    "source_unknown_resolution_locator",
+                    f"{key} Markdown span heading does not match its locator",
+                )
+        for locator_index, phrase in SOURCE_MARKDOWN_REQUIRED_PHRASES[key]:
+            if phrase not in locator_texts[locator_index]:
+                _fail(
+                    "source_unknown_resolution_source_text",
+                    f"{key} source Markdown span omits a required source phrase",
+                )
+
+        interpretation = row.get("source_interpretation")
+        retained_residual = row.get("retained_source_residual")
+        qualifiers = row.get("material_qualifiers")
+        if (
+            not isinstance(interpretation, str)
+            or not interpretation.strip()
+            or not isinstance(qualifiers, list)
+            or not qualifiers
+            or not all(isinstance(value, str) and value.strip() for value in qualifiers)
+            or not isinstance(retained_residual, str)
+            or not retained_residual.strip()
+        ):
+            _fail(
+                "source_unknown_resolution_formulation",
+                f"{key} lacks a concise interpretation, qualifiers or explicit residual",
+            )
+        if expected_disposition == "SOURCE_HELD":
+            if retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY"
+            ):
+                _fail("source_unknown_resolution_hold", f"{key} hold was removed")
+            held_keys.append(key)
+        else:
+            if not retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY"
+            ):
+                _fail(
+                    "source_unknown_resolution_closure",
+                    f"{key} does not limit its closure to the selected subobligation",
+                )
+            closed_keys.append(key)
+            closed_subobligation_ids.append(expected_subobligation_id)
+        source_pass_pointers.append(str(expected_record_ref["json_pointer"]))
+        body_witness_pointers.append(
+            str(
+                _object(expected_record_ref["body_witness_ref"], "body_witness_ref")[
+                    "json_pointer"
+                ]
+            )
+        )
+        if key == "source.spell.command.unresolved.command_exact_restrictions":
+            command_approach_source_text = next(
+                line for line in locator_texts[0].splitlines() if "Approach." in line
+            )
+            if (
+                "if it moves within 5 feet of you" not in command_approach_source_text
+                or "if within 5 feet" in interpretation
+                or "if it moves within 5 feet" not in interpretation
+            ):
+                _fail(
+                    "source_unknown_resolution_command_approach",
+                    "Command Approach must retain the movement-conditioned 5-foot clause",
+                )
+
+    contract = _object(
+        manifest.get("source_unknown_resolution_contract"),
+        "source_unknown_resolution_contract",
+    )
+    expected_contract = {
+        "status": "PARTIAL_FIRST12_SOURCE_ONLY",
+        "reviewed_record_count": 12,
+        "source_closed_subobligation_count": 9,
+        "source_held_subobligation_count": 3,
+        "active_source_blocker_count": 68,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+    }
+    if (
+        contract != expected_contract
+        or set(closed_keys) != SOURCE_RESOLVED_KEYS
+        or set(held_keys) != SOURCE_HELD_KEYS
+    ):
+        _fail(
+            "source_unknown_resolution_contract",
+            "first12 source closure/hold counts or partial claim differs",
+        )
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": closed_keys,
+        "source_held_keys": held_keys,
+        "source_closed_subobligation_ids": closed_subobligation_ids,
+        "source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "source_held_subobligation_count": len(held_keys),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+        "source_pass_pointers": source_pass_pointers,
+        "body_witness_pointers": body_witness_pointers,
+        "command_approach_source_text": command_approach_source_text,
+    }
 
 
 def _validate_source_unknown_classifications(
@@ -3207,10 +3703,50 @@ def _validate_source_unknown_classifications(
             "source_unknown_classification_contract",
             "the declared 82-key source/downstream split differs",
         )
+    historical_source_blocking_keys = source_blocking_keys
+    source_resolution = _validate_source_unknown_resolution_evidence(
+        manifest, classified_by_key
+    )
+    closed_subobligation_ids = set(source_resolution["source_closed_subobligation_ids"])
+    source_blocking_keys = [
+        key
+        for key in historical_source_blocking_keys
+        if any(
+            subobligation["subobligation_id"] not in closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    resolution_contract = _object(
+        manifest.get("source_unknown_resolution_contract"),
+        "source_unknown_resolution_contract",
+    )
+    if len(source_blocking_keys) != 68 or resolution_contract.get(
+        "active_source_blocker_count"
+    ) != len(source_blocking_keys):
+        _fail(
+            "source_unknown_resolution_blocker_count",
+            "active source blockers do not equal the preserved open subobligations",
+        )
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
         "source_blocking_keys": source_blocking_keys,
+        "historical_source_blocking_key_count": len(historical_source_blocking_keys),
+        "historical_source_blocking_keys": historical_source_blocking_keys,
+        "source_resolved_subobligation_count": source_resolution[
+            "source_resolved_subobligation_count"
+        ],
+        "source_resolved_keys": source_resolution["source_resolved_keys"],
+        "source_held_subobligation_count": source_resolution[
+            "source_held_subobligation_count"
+        ],
+        "source_held_keys": source_resolution["source_held_keys"],
+        "source_resolution_evidence": source_resolution["source_resolution_records"],
+        "source_markdown_sha256": source_resolution["source_markdown_sha256"],
+        "command_approach_source_text": source_resolution[
+            "command_approach_source_text"
+        ],
         "downstream_only_key_count": len(downstream_only_keys),
         "downstream_only_keys": downstream_only_keys,
         "mixed_source_and_downstream_key_count": mixed_count,

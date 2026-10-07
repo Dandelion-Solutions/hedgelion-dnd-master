@@ -17,6 +17,10 @@
     "source_mapping_lanes",
     "source_unknown_classifications",
     "source_unknown_classification_contract",
+    "source_markdown_source",
+    "source_residual_review",
+    "source_unknown_resolution_contract",
+    "source_unknown_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -71,6 +75,17 @@
     },
     "source_unknown_classification_contract": {
       "$ref": "#/$defs/sourceUnknownClassificationContract"
+    },
+    "source_markdown_source": {"$ref": "#/$defs/sourceMarkdownSource"},
+    "source_residual_review": {"$ref": "#/$defs/sourceResidualReview"},
+    "source_unknown_resolution_contract": {
+      "$ref": "#/$defs/sourceUnknownResolutionContract"
+    },
+    "source_unknown_resolution_evidence": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "items": {"$ref": "#/$defs/sourceUnknownResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -481,6 +496,103 @@
         "source_level_categories": {"const": ["source_mapping_review", "source_parameter", "source_semantics"]},
         "downstream_only_category": {"const": "downstream_domain_consumer_admission_native_proof"},
         "original_reason_and_evidence_preserved": {"const": true}
+      }
+    },
+    "sourceMarkdownSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "asset_id", "edition", "sha256", "hash_basis", "license_id", "required_attribution"],
+      "properties": {
+        "path": {"const": "DEV/docs/SRD_CC_v5.2.1.md"},
+        "asset_id": {"const": "srd52_en"},
+        "edition": {"const": "SRD_5_2_1"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "hash_basis": {"const": "RAW_UTF8"},
+        "license_id": {"const": "CC-BY-4.0"},
+        "required_attribution": {"type": "string", "minLength": 1}
+      }
+    },
+    "sourceResidualReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_id", "integration_base_sha", "candidate_source_base_sha", "candidate_path", "candidate_sha256", "candidate_report_path", "candidate_report_sha256", "accepted_review_path", "accepted_review_sha256", "task_evidence_path", "task_evidence_sha256"],
+      "properties": {
+        "review_id": {"const": "SP00_FIRST12_MARKDOWN_REVIEW_20261007"},
+        "integration_base_sha": {"const": "4222a6c88234afeee893697241830b4e75521477"},
+        "candidate_source_base_sha": {"const": "4fb8a15108bf6b4b3108dac83a02735bdd21b04e"},
+        "candidate_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-residuals-first12/residuals-first12.json"},
+        "candidate_sha256": {"$ref": "#/$defs/sha256"},
+        "candidate_report_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-residuals-first12/report.md"},
+        "candidate_report_sha256": {"$ref": "#/$defs/sha256"},
+        "accepted_review_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-first12-markdown-review-20261007.md"},
+        "accepted_review_sha256": {"$ref": "#/$defs/sha256"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-07-sp00-first12-markdown-source-qualification.md"},
+        "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceUnknownResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reviewed_record_count", "source_closed_subobligation_count", "source_held_subobligation_count", "active_source_blocker_count", "future_native_proof_status", "full_339_source_qualification_status"],
+      "properties": {
+        "status": {"const": "PARTIAL_FIRST12_SOURCE_ONLY"},
+        "reviewed_record_count": {"const": 12},
+        "source_closed_subobligation_count": {"const": 9},
+        "source_held_subobligation_count": {"const": 3},
+        "active_source_blocker_count": {"const": 68},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceUnknownResolutionRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "json_pointer", "source_exact_name", "printed_page", "source_header_line", "raw_body_sha256", "body_witness_ref"],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/required_modes_or_exceptions$"},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "body_witness_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        }
+      }
+    },
+    "sourceMarkdownLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "line_start", "line_end"],
+      "properties": {
+        "heading": {"type": "string", "minLength": 1},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1}
+      }
+    },
+    "sourceUnknownResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_item_id", "unresolved_key", "source_exact_name", "subobligation_id", "disposition", "source_record_ref", "source_markdown_locators", "source_interpretation", "material_qualifiers", "retained_source_residual", "future_native_proof_status", "actual_native_proof_refs"],
+      "properties": {
+        "review_item_id": {"enum": ["ITEM-01", "ITEM-02", "ITEM-03", "ITEM-04", "ITEM-05", "ITEM-06", "ITEM-07", "ITEM-08", "ITEM-09", "ITEM-10", "ITEM-11", "ITEM-12"]},
+        "unresolved_key": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["SOURCE_CLOSED", "SOURCE_HELD"]},
+        "source_record_ref": {"$ref": "#/$defs/sourceUnknownResolutionRecordRef"},
+        "source_markdown_locators": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sourceMarkdownLocator"}},
+        "source_interpretation": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "material_qualifiers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "retained_source_residual": {"type": "string", "minLength": 1},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }
     },
     "sourceTableEvidenceResidual": {

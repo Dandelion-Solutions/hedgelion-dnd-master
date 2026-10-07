@@ -19,10 +19,33 @@ INVENTORY_PATH = (
     / "DEV/docs/superpowers/research/2026-10-04-spell-coverage/spell-inventory.json"
 )
 LEVEL_COUNTS = {0: 27, 1: 57, 2: 57, 3: 42, 4: 34, 5: 38, 6: 31, 7: 20, 8: 17, 9: 16}
+FIRST12_SOURCE_CLOSED_KEYS = {
+    "source.spell.alarm.unresolved.audible_sound_bounds",
+    "source.spell.animal_messenger.unresolved.travel_and_message_bounds",
+    "source.spell.augury.unresolved.recast_probability",
+    "source.spell.chromatic_orb.unresolved.leap_distance_and_scaling",
+    "source.spell.command.unresolved.command_exact_restrictions",
+    "source.spell.continual_flame.unresolved.darkness_interaction",
+    "source.spell.dancing_lights.unresolved.movement_and_link_bounds",
+    "source.spell.darkness.unresolved.interaction_thresholds",
+    "source.spell.detect_evil_and_good.unresolved.barrier_thresholds",
+}
+FIRST12_SOURCE_HELD_KEYS = {
+    "source.spell.aid.unresolved.health_normalization_policy",
+    "source.spell.arcane_lock.unresolved.destruction_access_policy",
+    "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
+}
 
 
 def load_json(path: Path) -> dict[str, object]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def evidence_by_key_for(manifest: dict[str, object], key: str) -> dict[str, object]:
+    records = manifest.get("source_unknown_resolution_evidence")
+    if not isinstance(records, list):
+        raise TypeError("source residual resolution evidence must be a list")
+    return next(row for row in records if row["unresolved_key"] == key)
 
 
 def load_tool() -> ModuleType | None:
@@ -525,8 +548,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 77)
-        self.assertEqual(unresolved_blocker["entry_count"], 67)
+        self.assertEqual(unresolved_blocker["count"], 68)
+        self.assertEqual(unresolved_blocker["entry_count"], 61)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -814,7 +837,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 77)
+        self.assertEqual(classification["source_blocking_key_count"], 68)
+        self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
         ray = by_key["source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy"]
@@ -853,6 +877,120 @@ class TestSpellSourceQualification(unittest.TestCase):
         mixed["source_ready_blocking"] = False
         with self.assertRaises(TOOL.SourceQualificationError):
             TOOL._validate_source_unknown_classifications(tampered)
+
+    def test_first12_markdown_review_closes_only_nine_source_subobligations(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        roster = TOOL.derive_source_requirement_roster(manifest)
+        receipt = TOOL._source_qualification_receipt(manifest, roster)
+        classification = receipt["source_unknown_classification"]
+
+        self.assertEqual(classification["source_blocking_key_count"], 68)
+        self.assertEqual(classification["historical_source_blocking_key_count"], 77)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 9)
+        self.assertEqual(classification["source_held_subobligation_count"], 3)
+        source_blocking_keys = set(classification["source_blocking_keys"])
+        self.assertTrue(FIRST12_SOURCE_CLOSED_KEYS.isdisjoint(source_blocking_keys))
+        self.assertTrue(FIRST12_SOURCE_HELD_KEYS.issubset(source_blocking_keys))
+        self.assertTrue(
+            {
+                "source.spell.augury.unresolved.four_omen_members",
+                "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+                "source.spell.detect_evil_and_good.unresolved.supernatural_type_members",
+            }.issubset(source_blocking_keys)
+        )
+
+        evidence = manifest["source_unknown_resolution_evidence"]
+        evidence_by_key = {row["unresolved_key"]: row for row in evidence}
+        self.assertEqual(
+            set(evidence_by_key), FIRST12_SOURCE_CLOSED_KEYS | FIRST12_SOURCE_HELD_KEYS
+        )
+        for key in FIRST12_SOURCE_CLOSED_KEYS:
+            self.assertEqual(evidence_by_key[key]["disposition"], "SOURCE_CLOSED")
+        for key in FIRST12_SOURCE_HELD_KEYS:
+            self.assertEqual(evidence_by_key[key]["disposition"], "SOURCE_HELD")
+
+        original_by_key = {
+            row["unresolved_key"]: row
+            for row in manifest["source_unknown_classifications"]
+        }
+        for key, evidence_row in evidence_by_key.items():
+            original = original_by_key[key]
+            self.assertEqual(original["original_status"], "NOT_ESTABLISHED")
+            self.assertEqual(
+                evidence_row["future_native_proof_status"], "NOT_ESTABLISHED"
+            )
+            self.assertEqual(evidence_row["actual_native_proof_refs"], [])
+            self.assertEqual(
+                evidence_row["source_record_ref"]["json_pointer"],
+                original["evidence_ref"]["json_pointer"],
+            )
+            self.assertEqual(
+                evidence_row["source_record_ref"]["body_witness_ref"]["json_pointer"],
+                original["evidence_ref"]["body_witness_ref"]["json_pointer"],
+            )
+
+        self.assertEqual(receipt["status"], "W05_SPELL_SOURCE_CENSUS_PARTIAL")
+        self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
+        self.assertFalse(receipt["source_ready_gate"]["ready"])
+        self.assertEqual(
+            receipt["source_mapping_coverage"]["unresolved_source_key_count"], 82
+        )
+
+    def test_first12_markdown_witness_rejects_drift_and_command_static_proximity(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        result = TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(
+            result["source_markdown_sha256"],
+            "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e",
+        )
+        evidence_by_key = {
+            row["unresolved_key"]: row
+            for row in manifest["source_unknown_resolution_evidence"]
+        }
+        command = evidence_by_key[
+            "source.spell.command.unresolved.command_exact_restrictions"
+        ]
+        self.assertIn("if it moves within 5 feet", command["source_interpretation"])
+        self.assertNotIn(
+            "end its turn if within 5 feet", command["source_interpretation"]
+        )
+        self.assertIn(
+            "if it moves within 5 feet of you", result["command_approach_source_text"]
+        )
+
+        for mutate in (
+            lambda candidate: candidate["source_markdown_source"].update(
+                {"sha256": "0" * 64}
+            ),
+            lambda candidate: evidence_by_key_for(
+                candidate, "source.spell.aid.unresolved.health_normalization_policy"
+            ).update({"disposition": "SOURCE_CLOSED"}),
+            lambda candidate: evidence_by_key_for(
+                candidate, "source.spell.alarm.unresolved.audible_sound_bounds"
+            )["source_record_ref"].update(
+                {"json_pointer": "/rows/4/required_modes_or_exceptions"}
+            ),
+            lambda candidate: evidence_by_key_for(
+                candidate, "source.spell.alarm.unresolved.audible_sound_bounds"
+            )["source_markdown_locators"][0].update({"line_start": 9324}),
+            lambda candidate: evidence_by_key_for(
+                candidate, "source.spell.command.unresolved.command_exact_restrictions"
+            ).update(
+                {
+                    "source_interpretation": "End its turn if within 5 feet of the caster."
+                }
+            ),
+        ):
+            tampered = copy.deepcopy(manifest)
+            with self.assertRaises(TOOL.SourceQualificationError):
+                mutate(tampered)
+                TOOL._validate_source_unknown_classifications(tampered)
         tampered = copy.deepcopy(manifest)
         tampered["source_unknown_classifications"][0]["original_reason"] += " Changed."
         with self.assertRaises(TOOL.SourceQualificationError):
