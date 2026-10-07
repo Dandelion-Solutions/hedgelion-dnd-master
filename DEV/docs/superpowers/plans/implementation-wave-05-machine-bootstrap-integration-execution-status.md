@@ -3172,3 +3172,26 @@ state. This metadata receipt is published/read back as the next checkpoint.
 CONCURRENCY: one final integrator/index/cursor/publisher, up to five bounded
 isolated tasks with frozen independent reviews. Old stalled SP01 assignment
 cancelled; replacement recovered exact saved source rather than restarting it.
+
+## SP03 reviewed known-owner read/cache preparation — 2026-10-06
+
+IMPLEMENTATION_START_HEAD: `ecc73b5d095f3555e17d3bb477d247d72d7f2148`.
+FROZEN_PARTIAL_INPUT: `c56b063ab81809499c4bc2ce0f5fd8c436215c4b`.
+ALLOWED/ACTUAL OWNERS: mechanical_context plus installed source/compiled/P0
+read/cache tests; no policy evaluator/cast/native/membership implementation.
+EXPECTED CONSUMERS: SP03 full read/calculation/preflight and later native issuer.
+PROTECTED: actual compiler issuance and current P0 read basis; root Activity/
+Actor and child scope; policy consumer identity distinct from command ID;
+no state/empty-set inference, Actor copied sources or prospective truth.
+INDEPENDENT_PARTIAL_SPEC/QUALITY: PASS after cache policy/root-role repairs.
+SOURCE/STRUCTURAL_CONTINUATION: independent Senior GO for finite policy/common-
+cast carriers and minimum positively proved membership read adapter, within
+existing owners; explicit stable-plan allocation and report
+`DEV/docs/superpowers/design/2026-10-06-sp03-read-slice-and-policy-allocation.md`.
+COORDINATOR_FOCUSED: installed driver PASS, actual 20 inner tests OK;
+staged diff check PASS. Full integrated proof/publication pending.
+VERSION_IMPACT: mechanical_context new 1.0.2 (initial plus one material repair);
+no existing source/currentness/schema/catalog/digest namespace changed in slice.
+Full allocated continuation assesses its separate actual owner/projection set.
+CLAIM: read/cache PREPARATION only; full SP03 output NOT_PRODUCED, SP04 held.
+No evaluator/native/target-latency claim. P0, SP01/SP02 acceptance preserved.

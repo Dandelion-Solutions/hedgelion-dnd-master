@@ -1602,6 +1602,22 @@ Future: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DE
 
 **Files/actions:** `NEW_CREATE` `GAME/TOOLS/mechanical_context.py`, `calculation.py`, `spell_cast.py`, `DEV/TESTS/test_local_spell_context_cast.py`, SP03 private fixtures. `EXISTING_MODIFY` `GAME/TOOLS/current_owner.py` only if a compiled read-plan adapter cannot reuse `require(tuple[NativeOwnerRef,...])` unchanged; do not rewrite accepted P0 source admission. `INSPECT_ONLY` current mechanical-surfaces/accessor/pair schemas and ledger, class seed/acquisition, Actor/Asset/Procedure/HouseRules/adjudication owners. Shared production metadata stays with the final writer.
 
+**Bounded policy/membership allocation:** independent Senior ruling and partial
+read/cache review are recorded in
+`DEV/docs/superpowers/design/2026-10-06-sp03-read-slice-and-policy-allocation.md`.
+One serialized writer may realize missing finite four-policy/common-cast
+carriers in mechanical-surfaces/profile/compiler-declaration schemas, compiler
+DTO/retention/read plans and their generated structural/compiler projections.
+NEW_CREATE `GAME/TOOLS/mechanical_sources.py` only for the minimum complete
+native Effect/equipment/access membership read/revalidation adapter. Preserve
+P0 exact reads; no caller ID-list/completeness flag, Actor copied inventory/
+Effects, broad body scan, new state/currentness authority or production activation.
+Actual complete source-backed conformance preparation may proceed without
+waiting for SP04 establishment. Atomic production coverage/fencing joins the
+native producer separately; missing coverage holds, never empty-set inference.
+The existing inspect-only evaluator assignment is extended only by this explicit
+serialized structural/source allocation, with actual namespace synchronization.
+
 **Interfaces:** execution section 7 `evaluate_selector(compiled: CompiledActivity, selector_id: str, *, consumer_id: str, observation: CurrentOwnerObservation, role_bindings: Mapping[str,NativeOwnerRef], accepted_command: Mapping[str,object], prospective_documents: tuple[OwnerDocument,...] = ()) -> Mapping[str,object]`; prospective documents must originate from the same sealed builder. `calculation.calculate_selector(context: NativePreparationContext, selector_id: str) -> Mapping[str,object]` evaluates the closed policy/result/provenance. `spell_cast.prepare_cast(context: NativePreparationContext, transition: CastTransitionInput) -> PreparedNativeFragment`; `spell_cast.preflight_cast(context: NativePreparationContext, inputs: CastPreflightInput) -> Mapping[str,object]` returns a closed validated preflight decision, never authoritative caller state. SP04 issues production contexts; SP03 tests can use the SP01 trusted context issuer over real read observations, without claiming establishment.
 
 Close the four selected policy profiles exactly, with complete pair/value/subject/normalization/composition/dependency/fact/conflict/trace contracts for each concrete consumer. Advantage/disadvantage cancels applicable contributions, damage defense preserves type/origin/bypass/order/rounding, AC chooses a legal nonadditive base, and capability projection reads source/current native form/equipment restrictions. Do not activate an entire rule.* family or accept model-computed bases. Common casting retains one slot expended to cast per turn, source exceptions, armor training, component access/free hand/focus/material substitution and DC/attack/slot/upcast rules. Physical origin, principal, source and each cost payer remain separate. Binding fault differs from a valid secret-invalid-target result.
