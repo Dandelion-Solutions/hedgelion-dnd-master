@@ -4,10 +4,10 @@ PLAN: `DEV/docs/superpowers/plans/implementation-wave-05-machine-bootstrap-integ
 SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-planning-readiness-canonical-spec.md`; accepted local-spell canonical spec and exact execution/lifecycle/content-acquisition/Wish annexes, PO-013 owner decision.
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
-STATUS: INDEPENDENT COMPLETE32-TASK SENIOR PLAN GO / OTHER-WORKER AUTONOMOUS DEPENDENCY-DRIVEN IMPLEMENTATION AUTHORIZED; task inputs/technical reviews/original integration gates remain.
-CURRENT_TASK: SP02 eligible after accepted SP01; parallel SP00 partial census and P2 non-HOT preparation integration. SP00/P2 full outputs remain held on their exact remaining inputs; no full339 support claim.
-LAST_COMPLETED_TASK: W05.T06-P0 -> `W05_T06_CURRENT_OWNER_VIEW_READY` at `8f7098c23521237363bca84879485a18f5b7aa25`; independent task review PASS and clean exact verification recorded below. W05.T05 remains accepted as recorded below.
-LAST_SAFE_SHA: `d84c9a367d46f2f6e70bfa4baadac0914a2d19a9` — exact independently reviewed repaired plan, maintenance PASS /1526 DEV tests OK; canonical Stop2 GO and original P0/accepted task evidence below preserved. Fresh current ref and own task inputs govern resumption.
+STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
+CURRENT_TASK: SP03 eligible after accepted SP02/P0; independent published SP00 census and P2 non-HOT preparations remain partial. Continue source/technical holds independently; no full339 support claim.
+LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
+LAST_SAFE_SHA: `d0c97f623bfb5fd24a44403dc163b16793186673` — latest verified published compiler/foundation/preparation implementation; this cursor synchronization follows. Complete-plan GO remains applicable to unchanged authorized scope.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -2915,8 +2915,8 @@ PLAN: existing stable Wave05/Wave06/index;32 additional tasks, complete envelope
 |---|---|---|
 | W05.SP00 | PARTIAL / SOURCE_INPUTS_HELD | reviewed candidate census/tool slice; no source-ready output; exact residuals below |
 | W05.SP01 | COMPLETE / ACCEPTED | `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` at `30c5a66f234b75bec926462c6301454133506884`, independent review and integrated proof/read-back PASS |
-| W05.SP02 | ELIGIBLE_OWN_ENTRY | accepted SP01 plus prior catalog/package binding; task-local checks/TDD/review required |
-| W05.SP03 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
+| W05.SP02 | COMPLETE / ACCEPTED | W05_SPELL_SEALED_CATALOG_READY at `d0c97f623bfb5fd24a44403dc163b16793186673`, task/Senior audit and integrated proof/read-back PASS |
+| W05.SP03 | ELIGIBLE_OWN_ENTRY | accepted SP02 plus P0; exact task inputs/envelope/TDD/review required |
 | W05.SP04 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP05 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP06 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
@@ -3141,6 +3141,34 @@ unchanged. No release bump, content adoption/migration or full-support verdict.
 SYSTEM_IMPACT: RESOLVED bounded allocation; NEEDS_PO NONE. Actual unavailable
 legacy aliases/Action Surge taxonomy remain affected-unit holds, not a whole
 compiler dependency cycle. SP03 evaluator is not a prerequisite of SP02.
-FULL_INTEGRATED_PROOF: pending exact committed clean-source checks/publication.
-OUTPUT: W05_SPELL_SEALED_CATALOG_READY pending integrated proof/read-back;
-SP03 waits for that accepted actual input. No native or full339 claim.
+FULL_INTEGRATED_PROOF: exact committed clean source
+`d0c97f623bfb5fd24a44403dc163b16793186673`: 1759 pytest passed (24 inherited
+warnings), canonical unittest 1596 tests OK; version census/legacy hits empty;
+maintenance and release build PASS. Exact focused plus SP01 215 passed.
+PUBLICATION_READBACK: PASS — non-force push and fresh pruned fetch confirmed
+local/remote commit equality, exact tree diff empty, main worktree clean.
+OUTPUT: W05_SPELL_SEALED_CATALOG_READY ACCEPTED at that published checkpoint.
+SP03 now eligible from actual SP02 and accepted P0. No native/full339/target
+performance claim follows. Status synchronization VERSION_IMPACT NONE.
+
+## Recovery continuation cursor — 2026-10-06
+
+LAST_PUBLISHED_IMPLEMENTATION_SHA: `d0c97f623bfb5fd24a44403dc163b16793186673`.
+COMPLETED_SLICES: PDF tooling `8f8aaec7`; SP01 `30c5a66f`; P2 reviewed non-HOT
+preparation `3032517d` (not full P2); SP00 reviewed progressed-partial census
+`4fb8a151` (not source READY); SP02 compiler mechanism `d0c97f62`.
+CURRENT_VERIFICATION_STATE: final integrated 1759 pytest/1596 unittest OK,
+audit/build/namespace and publication/read-back PASS; hosted CI not inspected.
+NEXT_EXACT_TASK_OR_SLICE: SP03 own entry, pinned read/calculation/cast preflight;
+then SP04 actual native kernel. Independently qualify SP00 remaining source/
+review/default obligations and integrate its bounded table witnesses; join
+actual SP04 to P2 before P3 or SP28 Wish History consumption.
+KNOWN_BLOCKERS: no PO decision; exact source/legacy/taxonomy and producer holds
+are scoped. Whole compiler/foundation holds are resolved. No unrelated Story/
+T07/T08/W06 activation. Accepted prior work is not repeated.
+UNPUBLISHED_WORK: NONE for integrated reviewed slices; old isolated intermediate
+workspaces are superseded diagnostic provenance, not required hidden project
+state. This metadata receipt is published/read back as the next checkpoint.
+CONCURRENCY: one final integrator/index/cursor/publisher, up to five bounded
+isolated tasks with frozen independent reviews. Old stalled SP01 assignment
+cancelled; replacement recovered exact saved source rather than restarting it.
