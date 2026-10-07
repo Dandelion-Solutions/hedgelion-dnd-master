@@ -19,6 +19,7 @@
     "source_unknown_classification_contract",
     "source_modeling_resolutions",
     "source_modeling_residuals",
+    "primary_table_evidence_witnesses",
     "primary_table_evidence_residuals",
     "source_assets",
     "corroborating_sources",
@@ -83,10 +84,16 @@
       "maxItems": 1,
       "items": {"$ref": "#/$defs/sourceModelingResidual"}
     },
-    "primary_table_evidence_residuals": {
+    "primary_table_evidence_witnesses": {
       "type": "array",
       "minItems": 2,
       "maxItems": 2,
+      "items": {"$ref": "#/$defs/sourceTableEvidenceWitness"}
+    },
+    "primary_table_evidence_residuals": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 0,
       "items": {"$ref": "#/$defs/sourceTableEvidenceResidual"}
     },
     "source_assets": {
@@ -234,7 +241,7 @@
         "downstream_only_unknown_key_count": {"const": 5},
         "mixed_unknown_key_count": {"const": 28},
         "source_unknown_classification_status": {"const": "ALL_82_CLASSIFIED"},
-        "primary_table_evidence_residual_count": {"const": 2},
+        "primary_table_evidence_residual_count": {"const": 0},
         "summary_string_as_mode_policy": {"const": "FORBIDDEN"},
         "inventory_dependency_labels_as_support_policy": {
           "const": "NOT_SUPPORT_DOMAIN_MAPPINGS"
@@ -485,6 +492,207 @@
         "residual": {"type": "string", "minLength": 1},
         "status": {"const": "NOT_ESTABLISHED"}
       }
+    },
+    "tableSourceRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "record_index", "json_pointer", "source_exact_name",
+        "asset_id", "edition", "printed_page", "source_header_line",
+        "raw_body_sha256", "body_witness_ref"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-6-9"},
+        "record_index": {"type": "integer", "minimum": 0},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"},
+        "source_exact_name": {"enum": ["Teleport", "Control Weather"]},
+        "asset_id": {"const": "srd52_en"},
+        "edition": {"const": "SRD_5_2_1"},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "body_witness_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        }
+      }
+    },
+    "tableVisualProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_asset_sha256", "source_pass_sha256", "witness_sha256",
+        "subset_sha256", "captured_candidate_sha", "captured_source_fixture_sha256",
+        "visual_inspection_status", "subset_creation_tool",
+        "secondary_text_role", "subset_page_mapping", "unqualified_subset_page"
+      ],
+      "properties": {
+        "source_asset_sha256": {"$ref": "#/$defs/sha256"},
+        "source_pass_sha256": {"$ref": "#/$defs/sha256"},
+        "witness_sha256": {"$ref": "#/$defs/sha256"},
+        "subset_sha256": {"$ref": "#/$defs/sha256"},
+        "captured_candidate_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "captured_source_fixture_sha256": {"$ref": "#/$defs/sha256"},
+        "visual_inspection_status": {"const": "NATIVE_PAGE_IMAGES_VISUALLY_INSPECTED"},
+        "subset_creation_tool": {"const": "pypdf 6.19.0"},
+        "secondary_text_role": {"const": "CODEPOINT_COUNTS_ONLY_NOT_VISUAL_SUBSTITUTE"},
+        "subset_page_mapping": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["1", "2", "3"],
+          "properties": {
+            "1": {"const": 120},
+            "2": {"const": 168},
+            "3": {"const": 169}
+          }
+        },
+        "unqualified_subset_page": {
+          "type": "object", "additionalProperties": false,
+          "required": ["subset_page", "asset_page", "qualified", "reason"],
+          "properties": {
+            "subset_page": {"const": 3},
+            "asset_page": {"const": 169},
+            "qualified": {"const": false},
+            "reason": {"const": "Unneeded adjacent boundary page; no obligations or claims qualified from it."}
+          }
+        }
+      }
+    },
+    "teleportOutcomeCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_key", "row_label", "outcome", "literal",
+        "normalized_interval", "visual_locator"
+      ],
+      "properties": {
+        "cell_key": {"type": "string", "minLength": 1},
+        "row_label": {"enum": ["Permanent circle", "Linked object", "Very familiar", "Seen casually", "Viewed once or described", "False destination"]},
+        "outcome": {"enum": ["mishap", "similar_area", "off_target", "on_target"]},
+        "literal": {"type": "string", "minLength": 1},
+        "normalized_interval": {
+          "oneOf": [
+            {"type": "null"},
+            {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "integer", "minimum": 1, "maximum": 100}}
+          ]
+        },
+        "visual_locator": {"const": "asset p168 / subset p2 / lower-left Teleportation Outcome"}
+      }
+    },
+    "tableExplanationClause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clause_key", "location", "evidence_clause_paraphrase"],
+      "properties": {
+        "clause_key": {"type": "string", "minLength": 1},
+        "location": {"type": "string", "minLength": 1},
+        "evidence_clause_paraphrase": {"type": "string", "minLength": 1},
+        "qualification": {"type": "string", "minLength": 1}
+      }
+    },
+    "tableFamiliarityCondition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["row_label", "location", "condition_paraphrase"],
+      "properties": {
+        "row_label": {"enum": ["Permanent circle", "Linked object", "Very familiar", "Seen casually", "Viewed once or described", "False destination"]},
+        "location": {"type": "string", "minLength": 1},
+        "condition_paraphrase": {"type": "string", "minLength": 1},
+        "qualification": {"type": "string", "minLength": 1}
+      }
+    },
+    "weatherStageRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cell_key", "table", "stage_cell_key", "condition_cell_key", "stage", "condition_literal"],
+      "properties": {
+        "cell_key": {"type": "string", "minLength": 1},
+        "table": {"enum": ["precipitation", "temperature", "wind"]},
+        "stage_cell_key": {"type": "string", "minLength": 1},
+        "condition_cell_key": {"type": "string", "minLength": 1},
+        "stage": {"type": "integer", "minimum": 1, "maximum": 6},
+        "condition_literal": {"type": "string", "minLength": 1}
+      }
+    },
+    "sourceTableEvidenceWitness": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_exact_name", "status", "source_pass_ref", "visual_provenance",
+            "asset_page", "subset_page", "outcome_cells", "familiarity_conditions",
+            "outcome_explanations", "normalization", "unicode_profile",
+            "machine_execution_proof_status"
+          ],
+          "properties": {
+            "source_exact_name": {"const": "Teleport"},
+            "status": {"const": "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY"},
+            "source_pass_ref": {"$ref": "#/$defs/tableSourceRecordRef"},
+            "visual_provenance": {"$ref": "#/$defs/tableVisualProvenance"},
+            "asset_page": {"const": 168},
+            "subset_page": {"const": 2},
+            "outcome_cells": {"type": "array", "minItems": 24, "maxItems": 24, "items": {"$ref": "#/$defs/teleportOutcomeCell"}},
+            "familiarity_conditions": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/tableFamiliarityCondition"}},
+            "outcome_explanations": {"type": "array", "minItems": 4, "maxItems": 4, "items": {"$ref": "#/$defs/tableExplanationClause"}},
+            "normalization": {
+              "type": "object", "additionalProperties": false,
+              "required": ["literal_00_retained", "normalized_upper_bound", "qualification_ref", "general_d100_primary_rule_verified"],
+              "properties": {
+                "literal_00_retained": {"const": true},
+                "normalized_upper_bound": {"const": 100},
+                "qualification_ref": {"const": "/rows/50/qualifications/0"},
+                "general_d100_primary_rule_verified": {"const": false}
+              }
+            },
+            "unicode_profile": {
+              "type": "object", "additionalProperties": false,
+              "required": ["u2014_em_dash_count", "u2013_en_dash_count", "u2212_minus_count"],
+              "properties": {
+                "u2014_em_dash_count": {"const": 8},
+                "u2013_en_dash_count": {"const": 16},
+                "u2212_minus_count": {"const": 0}
+              }
+            },
+            "machine_execution_proof_status": {"const": "NOT_ESTABLISHED"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_exact_name", "status", "source_pass_ref", "visual_provenance",
+            "asset_page", "subset_page", "stage_rows", "stage_cell_count",
+            "transition_clauses", "transition_formula", "unicode_profile",
+            "machine_execution_proof_status"
+          ],
+          "properties": {
+            "source_exact_name": {"const": "Control Weather"},
+            "status": {"const": "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY"},
+            "source_pass_ref": {"$ref": "#/$defs/tableSourceRecordRef"},
+            "visual_provenance": {"$ref": "#/$defs/tableVisualProvenance"},
+            "asset_page": {"const": 120},
+            "subset_page": {"const": 1},
+            "stage_rows": {"type": "array", "minItems": 16, "maxItems": 16, "items": {"$ref": "#/$defs/weatherStageRow"}},
+            "stage_cell_count": {"const": 32},
+            "transition_clauses": {"type": "array", "minItems": 3, "maxItems": 3, "items": {"$ref": "#/$defs/tableExplanationClause"}},
+            "transition_formula": {"const": "1d4 × 10 minutes"},
+            "unicode_profile": {
+              "type": "object", "additionalProperties": false,
+              "required": ["u00d7_multiplication_count", "u2212_minus_count"],
+              "properties": {
+                "u00d7_multiplication_count": {"const": 1},
+                "u2212_minus_count": {"const": 0}
+              }
+            },
+            "machine_execution_proof_status": {"const": "NOT_ESTABLISHED"}
+          }
+        }
+      ]
     },
     "sourceEvidenceRef": {
       "type": "object",

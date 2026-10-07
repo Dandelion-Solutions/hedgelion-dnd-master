@@ -3195,3 +3195,26 @@ no existing source/currentness/schema/catalog/digest namespace changed in slice.
 Full allocated continuation assesses its separate actual owner/projection set.
 CLAIM: read/cache PREPARATION only; full SP03 output NOT_PRODUCED, SP04 held.
 No evaluator/native/target-latency claim. P0, SP01/SP02 acceptance preserved.
+INTEGRATED_PROOF: clean exact `f68f03ceaa61dc6035723a08bd1d8b0f66487d77`:
+1760 pytest passed with 20 installed-only outer skips, canonical unittest
+1617 OK/skipped20 plus actual installed 20 inner tests OK; audit PASS. The
+installed driver executes the skipped inner scope on the built runtime.
+PUBLICATION_READBACK: PASS — fresh local/remote ref equality and empty tree diff.
+Read/cache preparation accepted; full SP03 still NOT_PRODUCED.
+
+## SP00 two-table evidence integration — 2026-10-06
+
+FROZEN_INPUT: `03635a8336a3a7c8ca97475a481cd8e542956a45`.
+BASE_SOURCE: published SP00 partial `4fb8a151`; current source/asset/history
+hashes unchanged. ALLOWED OWNERS: four SP00 source schema/fixture/tool/test
+paths only. Primary printed-page table obligations are evidence, not recipes
+or runtime state. Public full PDF/source paragraphs not copied.
+INDEPENDENT_SPEC/QUALITY: limited PASS, actual page-image/source comparisons
+recorded in `DEV/docs/superpowers/design/2026-10-06-sp00-two-table-independent-review.md`.
+COORDINATOR_FOCUSED: 20 passed on integrated candidate; diff check PASS.
+ACTUAL CLAIM: Teleport/Control Weather table witnesses source-qualified;
+page169/general d100 primary rule not qualified; all other source/review/
+Word of Recall/default holds remain. Full source/machine/native/performance
+READY not issued. VERSION_IMPACT NONE — DEV-only draft schema1/evidence;
+no installed or existing owned namespace/projection transition.
+FULL_INTEGRATED_PROOF/PUBLICATION: pending exact committed checks/read-back.

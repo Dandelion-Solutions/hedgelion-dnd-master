@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "508afd0ce05ac048b9be60c39e41d0a33c8035e4fc78bab451e0a0c9b63f53c2"
+    "ccdc7195e95e7281b9b8e56eced81bb30e383506dda5509703279dd6e8200e26"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -110,7 +110,7 @@ SOURCE_MAPPING_LANE_EXPECTATIONS: dict[str, dict[str, object]] = {
         "map_sha256": "7d177d47dbba5d7bb99e09459ee357222f799a82653977124d65220de30adb52",
         "receipt_sha256": "4b93a95094fe4ca4e06a138ac091c19f79fe7939075140aa09fc1f00904483e1",
         "source_pass_sha256": "23f57b38f89c326fa46b7961d9994342bb7cc92d664201ce1289eb3668955cd6",
-        "mapping_payload_sha256": "464c60b32095612a2dd077de5e14b0cae2020464c22a4960b8ceb117dc1c7d5b",
+        "mapping_payload_sha256": "dc3a4d30ce2d58b9cc102945a0fc4f2126cf8e0eb06b0f791ddd92d90e94119b",
         "entry_count": 84,
     },
 }
@@ -669,7 +669,7 @@ def _validate_source_mode_mappings(
         or contract.get("downstream_only_unknown_key_count") != 5
         or contract.get("mixed_unknown_key_count") != 28
         or contract.get("source_unknown_classification_status") != "ALL_82_CLASSIFIED"
-        or contract.get("primary_table_evidence_residual_count") != 2
+        or contract.get("primary_table_evidence_residual_count") != 0
         or contract.get("summary_string_as_mode_policy") != "FORBIDDEN"
         or contract.get("inventory_dependency_labels_as_support_policy")
         != "NOT_SUPPORT_DOMAIN_MAPPINGS"
@@ -1303,6 +1303,596 @@ def _source_recipe_materialization_residuals(
             "114 recipe holds or the exact eight L35-O9 source gaps differ",
         )
     return classifications
+
+
+TELEPORT_TABLE_INTERVALS: dict[str, dict[str, tuple[int, int] | None]] = {
+    "Permanent circle": {
+        "mishap": None,
+        "similar_area": None,
+        "off_target": None,
+        "on_target": (1, 100),
+    },
+    "Linked object": {
+        "mishap": None,
+        "similar_area": None,
+        "off_target": None,
+        "on_target": (1, 100),
+    },
+    "Very familiar": {
+        "mishap": (1, 5),
+        "similar_area": (6, 13),
+        "off_target": (14, 24),
+        "on_target": (25, 100),
+    },
+    "Seen casually": {
+        "mishap": (1, 33),
+        "similar_area": (34, 43),
+        "off_target": (44, 53),
+        "on_target": (54, 100),
+    },
+    "Viewed once or described": {
+        "mishap": (1, 43),
+        "similar_area": (44, 53),
+        "off_target": (54, 73),
+        "on_target": (74, 100),
+    },
+    "False destination": {
+        "mishap": (1, 50),
+        "similar_area": (51, 100),
+        "off_target": None,
+        "on_target": None,
+    },
+}
+TELEPORT_ROW_SLUGS = {
+    "Permanent circle": "permanent_circle",
+    "Linked object": "linked_object",
+    "Very familiar": "very_familiar",
+    "Seen casually": "seen_casually",
+    "Viewed once or described": "viewed_once_or_described",
+    "False destination": "false_destination",
+}
+WEATHER_TABLE_CONDITIONS = {
+    "precipitation": [
+        "Clear",
+        "Light clouds",
+        "Overcast or ground fog",
+        "Rain, hail, or snow",
+        "Torrential rain, driving hail, or blizzard",
+    ],
+    "temperature": ["Heat wave", "Hot", "Warm", "Cool", "Cold", "Freezing"],
+    "wind": ["Calm", "Moderate wind", "Strong wind", "Gale", "Storm"],
+}
+
+
+def _validate_primary_table_evidence_witnesses(
+    manifest: Mapping[str, object],
+) -> list[dict[str, object]]:
+    """Validate only the two visually witnessed source tables, never native proof."""
+    witnesses = [
+        _object(value, f"primary_table_evidence_witnesses[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("primary_table_evidence_witnesses"),
+                "primary_table_evidence_witnesses",
+            )
+        )
+    ]
+    if len(witnesses) != 2:
+        _fail(
+            "primary_table_witness_census", "exactly two table witnesses are required"
+        )
+    by_name: dict[str, dict[str, object]] = {}
+    for witness in witnesses:
+        name = _string(
+            witness.get("source_exact_name"), "primary_table_witness.source_exact_name"
+        )
+        if name in by_name or name not in {"Teleport", "Control Weather"}:
+            _fail(
+                "primary_table_witness_census", f"unexpected or duplicate table {name}"
+            )
+        by_name[name] = witness
+
+    evidence = _load_evidence(manifest)
+    source_payload = _object(evidence.get("source-pass-6-9"), "source-pass-6-9")
+    source_rows = _rows(source_payload, "rows", "source-pass-6-9")
+    body_payload = _object(
+        evidence.get("source-body-witnesses"), "source-body-witnesses"
+    )
+    english_assets = [
+        _object(value, f"source_assets[{index}]")
+        for index, value in enumerate(
+            _array(manifest.get("source_assets"), "source_assets")
+        )
+        if isinstance(value, dict) and value.get("asset_id") == "srd52_en"
+    ]
+    pass_artifact = next(
+        (
+            _object(value, "evidence_artifacts[]")
+            for value in _array(
+                manifest.get("evidence_artifacts"), "evidence_artifacts"
+            )
+            if isinstance(value, dict) and value.get("artifact_id") == "source-pass-6-9"
+        ),
+        None,
+    )
+    if len(english_assets) != 1 or pass_artifact is None:
+        _fail(
+            "primary_table_witness_provenance",
+            "one pinned English source asset and source pass are required",
+        )
+    asset_sha256 = english_assets[0].get("sha256")
+    source_pass_sha256 = pass_artifact.get("sha256")
+    proof_sha256 = "c5ee7e0af314c45179addeb763e95afc90ab315a67107495da2d2183279febc4"
+    subset_sha256 = "b78eb3ba8663c49adce515749e8fb8bc0cac39792e4aadd5ab337078556f1a36"
+    captured_candidate_sha = "9d040f4ee70a063f29a709c063908d3f66315257"
+    captured_fixture_sha256 = (
+        "13d60dff16a92b700763b031945aaf6b3cb8d6a4c05ad2cdff0e04242b19dde3"
+    )
+    subset_page_mapping = {"1": 120, "2": 168, "3": 169}
+    expected_records = {
+        "Teleport": {
+            "record_index": 50,
+            "page": 168,
+            "header": 14887,
+            "body_sha256": "c532020059ac049d17f8710ca57d77ec2c9f57862236a5c216c6403c06ec411c",
+            "body_witness_pointer": "/rows/306",
+            "subset_page": 2,
+        },
+        "Control Weather": {
+            "record_index": 56,
+            "page": 120,
+            "header": 10284,
+            "body_sha256": "1464ca06b0734ab127cce02dfda0f9fea2c1b64006fb9e869fd2a1e2b6d77313",
+            "body_witness_pointer": "/rows/66",
+            "subset_page": 1,
+        },
+    }
+    for name, witness in by_name.items():
+        expected = expected_records[name]
+        if (
+            witness.get("status") != "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY"
+            or witness.get("machine_execution_proof_status") != "NOT_ESTABLISHED"
+        ):
+            _fail(
+                "primary_table_witness_scope",
+                f"{name} table witness must not imply machine or native execution proof",
+            )
+        source_ref = _object(witness.get("source_pass_ref"), f"{name}.source_pass_ref")
+        record_index = int(expected["record_index"])
+        source_row = source_rows[record_index]
+        expected_source_ref = {
+            "artifact_id": "source-pass-6-9",
+            "record_index": record_index,
+            "json_pointer": f"/rows/{record_index}",
+            "source_exact_name": name,
+            "asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": expected["page"],
+            "source_header_line": expected["header"],
+            "raw_body_sha256": expected["body_sha256"],
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": expected["body_witness_pointer"],
+            },
+        }
+        body_row = _object(
+            _resolve_json_pointer(
+                body_payload,
+                str(expected["body_witness_pointer"]),
+                f"{name}.body_witness_ref",
+            ),
+            f"{name}.body_witness",
+        )
+        if (
+            source_ref != expected_source_ref
+            or source_row.get("name") != name
+            or source_row.get("source_exact_name", name) != name
+            or source_row.get("source_page") != expected["page"]
+            or source_row.get("source_header_line") != expected["header"]
+            or source_row.get("body_sha256") != expected["body_sha256"]
+            or body_row.get("name") != name
+            or body_row.get("page") != expected["page"]
+            or body_row.get("line") != expected["header"]
+            or body_row.get("body_sha256") != expected["body_sha256"]
+        ):
+            _fail(
+                "primary_table_witness_source_ref",
+                f"{name} table proof is not bound to its exact source record/body",
+            )
+        provenance = _object(
+            witness.get("visual_provenance"), f"{name}.visual_provenance"
+        )
+        expected_provenance = {
+            "source_asset_sha256": asset_sha256,
+            "source_pass_sha256": source_pass_sha256,
+            "witness_sha256": proof_sha256,
+            "subset_sha256": subset_sha256,
+            "captured_candidate_sha": captured_candidate_sha,
+            "captured_source_fixture_sha256": captured_fixture_sha256,
+            "visual_inspection_status": "NATIVE_PAGE_IMAGES_VISUALLY_INSPECTED",
+            "subset_creation_tool": "pypdf 6.19.0",
+            "secondary_text_role": "CODEPOINT_COUNTS_ONLY_NOT_VISUAL_SUBSTITUTE",
+            "subset_page_mapping": subset_page_mapping,
+            "unqualified_subset_page": {
+                "subset_page": 3,
+                "asset_page": 169,
+                "qualified": False,
+                "reason": "Unneeded adjacent boundary page; no obligations or claims qualified from it.",
+            },
+        }
+        if provenance != expected_provenance:
+            _fail(
+                "primary_table_witness_provenance",
+                f"{name} witness no longer matches the independently asset-bound visual record",
+            )
+        if (
+            witness.get("asset_page") != expected["page"]
+            or witness.get("subset_page") != expected["subset_page"]
+        ):
+            _fail(
+                "primary_table_witness_source_locator",
+                f"{name} visual page locator differs from the pinned subset map",
+            )
+
+    teleport = by_name["Teleport"]
+    cells = [
+        _object(value, f"Teleport.outcome_cells[{index}]")
+        for index, value in enumerate(
+            _array(teleport.get("outcome_cells"), "Teleport.outcome_cells")
+        )
+    ]
+    cells_by_key: dict[str, dict[str, object]] = {}
+    row_intervals: dict[str, list[tuple[int, int]]] = {
+        label: [] for label in TELEPORT_TABLE_INTERVALS
+    }
+    for cell in cells:
+        cell_key = _string(cell.get("cell_key"), "Teleport.cell_key")
+        if cell_key in cells_by_key:
+            _fail("primary_table_cell_census", f"duplicate Teleport cell {cell_key}")
+        row_label = _string(cell.get("row_label"), f"{cell_key}.row_label")
+        outcome = _string(cell.get("outcome"), f"{cell_key}.outcome")
+        expected_row = TELEPORT_TABLE_INTERVALS.get(row_label)
+        expected_interval = (
+            expected_row.get(outcome) if expected_row is not None else None
+        )
+        expected_key = (
+            f"teleport.{TELEPORT_ROW_SLUGS.get(row_label, 'unknown')}.{outcome}"
+        )
+        literal = _string(cell.get("literal"), f"{cell_key}.literal")
+        interval_value = cell.get("normalized_interval")
+        if (
+            expected_row is None
+            or outcome not in expected_row
+            or cell_key != expected_key
+            or cell.get("visual_locator")
+            != "asset p168 / subset p2 / lower-left Teleportation Outcome"
+        ):
+            _fail(
+                "primary_table_cell_identity",
+                f"Teleport cell {cell_key} has a wrong row/outcome/locator",
+            )
+        if expected_interval is None:
+            if literal != "—" or interval_value is not None:
+                _fail(
+                    "primary_table_cell_value",
+                    f"{cell_key} must retain its unavailable em-dash cell",
+                )
+        else:
+            match = re.fullmatch(r"(\d{2})–(\d{2})", literal)
+            if match is None:
+                _fail(
+                    "primary_table_cell_unicode",
+                    f"{cell_key} must use a literal en-dash range",
+                )
+            start = int(match.group(1))
+            raw_end = int(match.group(2))
+            normalized = (start, 100 if raw_end == 0 else raw_end)
+            if interval_value != [normalized[0], normalized[1]]:
+                _fail(
+                    "primary_table_cell_value",
+                    f"{cell_key} literal/range differs from the witnessed cell",
+                )
+            row_intervals[row_label].append(normalized)
+        cells_by_key[cell_key] = cell
+    expected_cell_keys = {
+        f"teleport.{TELEPORT_ROW_SLUGS[row_label]}.{outcome}"
+        for row_label, outcomes in TELEPORT_TABLE_INTERVALS.items()
+        for outcome in outcomes
+    }
+    if len(cells) != 24 or set(cells_by_key) != expected_cell_keys:
+        _fail(
+            "primary_table_cell_census",
+            "Teleport must preserve all 24 exact outcome cells",
+        )
+    for row_label, intervals in row_intervals.items():
+        intervals.sort()
+        cursor = 1
+        for start, end in intervals:
+            if start != cursor or end < start:
+                _fail(
+                    "primary_table_range_partition",
+                    f"Teleport {row_label} ranges overlap or leave a gap",
+                )
+            cursor = end + 1
+        if cursor != 101:
+            _fail(
+                "primary_table_range_partition",
+                f"Teleport {row_label} ranges do not partition 1–100",
+            )
+    for row_label, expected_outcomes in TELEPORT_TABLE_INTERVALS.items():
+        for outcome, expected_interval in expected_outcomes.items():
+            cell = cells_by_key[f"teleport.{TELEPORT_ROW_SLUGS[row_label]}.{outcome}"]
+            expected_pair = (
+                None
+                if expected_interval is None
+                else [int(expected_interval[0]), int(expected_interval[1])]
+            )
+            if cell.get("normalized_interval") != expected_pair:
+                _fail(
+                    "primary_table_cell_value",
+                    f"{cell['cell_key']} differs from the pinned primary-table cell",
+                )
+    if (
+        sum(cell["literal"].count("—") for cell in cells) != 8
+        or sum(cell["literal"].count("–") for cell in cells) != 16
+        or sum(cell["literal"].count("−") for cell in cells) != 0
+    ):
+        _fail(
+            "primary_table_unicode",
+            "Teleport dash glyphs differ from the visual witness",
+        )
+    if teleport.get("unicode_profile") != {
+        "u2014_em_dash_count": 8,
+        "u2013_en_dash_count": 16,
+        "u2212_minus_count": 0,
+    }:
+        _fail("primary_table_unicode", "Teleport Unicode census differs")
+    if teleport.get("normalization") != {
+        "literal_00_retained": True,
+        "normalized_upper_bound": 100,
+        "qualification_ref": "/rows/50/qualifications/0",
+        "general_d100_primary_rule_verified": False,
+    }:
+        _fail(
+            "primary_table_normalization",
+            "Teleport's literal 00 normalization must retain its existing qualification only",
+        )
+    familiarity_conditions = [
+        _object(value, f"Teleport.familiarity_conditions[{index}]")
+        for index, value in enumerate(
+            _array(
+                teleport.get("familiarity_conditions"),
+                "Teleport.familiarity_conditions",
+            )
+        )
+    ]
+    expected_familiarity_conditions = {
+        "Permanent circle": (
+            "right column Familiarity bullet 1",
+            "Permanent teleportation circle whose sigil sequence the caster knows.",
+            None,
+        ),
+        "Linked object": (
+            "right column Familiarity bullet 2",
+            "Caster possesses an object taken from the desired destination within the last six months.",
+            "Possession and destination provenance/age both apply; mere knowledge of an object is insufficient.",
+        ),
+        "Very familiar": (
+            "right column Familiarity bullet 3",
+            "Place visited often, carefully studied, or visible when casting.",
+            None,
+        ),
+        "Seen casually": (
+            "right column Familiarity bullet 4",
+            "Place seen more than once but not very familiar.",
+            None,
+        ),
+        "Viewed once or described": (
+            "right column Familiarity bullet 5",
+            "Place seen once, possibly magically, or known from another person’s description, perhaps a map.",
+            None,
+        ),
+        "False destination": (
+            "right column Familiarity bullet 6",
+            "Place does not exist, such as a scryed illusion or location that no longer exists.",
+            "Only Mishap or Similar Area cells apply; no ordinary Off Target or On Target outcome.",
+        ),
+    }
+    if (
+        len(familiarity_conditions) != 6
+        or {row.get("row_label") for row in familiarity_conditions}
+        != set(TELEPORT_TABLE_INTERVALS)
+        or any(
+            (
+                row.get("location"),
+                row.get("condition_paraphrase"),
+                row.get("qualification"),
+            )
+            != expected_familiarity_conditions[row["row_label"]]
+            for row in familiarity_conditions
+        )
+    ):
+        _fail(
+            "primary_table_familiarity_census",
+            "Teleport must preserve all six qualified familiarity conditions",
+        )
+    outcome_explanations = [
+        _object(value, f"Teleport.outcome_explanations[{index}]")
+        for index, value in enumerate(
+            _array(
+                teleport.get("outcome_explanations"), "Teleport.outcome_explanations"
+            )
+        )
+    ]
+    expected_outcome_explanations = {
+        "teleport.mishap.explanation": (
+            "right column Mishap",
+            "Each teleporting creature or target object takes 3d10 Force damage and the GM rerolls the table; multiple mishaps can occur, dealing damage each time.",
+            "The source supplies no repeat cap; this establishes source semantics only, not RNG/cursor implementation.",
+        ),
+        "teleport.similar_area.explanation": (
+            "right column Similar Area",
+            "The group or target object appears in a different visually or thematically similar area, at the closest similar place.",
+            None,
+        ),
+        "teleport.off_target.explanation": (
+            "right column Off Target",
+            "The group or target object appears 2d12 miles away in a random direction; d8 maps 1 east, 2 southeast, 3 south, 4 southwest, 5 west, 6 northwest, 7 north, 8 northeast.",
+            None,
+        ),
+        "teleport.on_target.explanation": (
+            "right column On Target",
+            "The group or target object appears where intended.",
+            None,
+        ),
+    }
+    if (
+        len(outcome_explanations) != 4
+        or {row.get("clause_key") for row in outcome_explanations}
+        != set(expected_outcome_explanations)
+        or any(
+            (
+                row.get("location"),
+                row.get("evidence_clause_paraphrase"),
+                row.get("qualification"),
+            )
+            != expected_outcome_explanations[row["clause_key"]]
+            for row in outcome_explanations
+        )
+    ):
+        _fail(
+            "primary_table_explanation_census",
+            "Teleport's four outcome explanations differ",
+        )
+
+    weather = by_name["Control Weather"]
+    stage_rows = [
+        _object(value, f"Control Weather.stage_rows[{index}]")
+        for index, value in enumerate(
+            _array(weather.get("stage_rows"), "Control Weather.stage_rows")
+        )
+    ]
+    expected_stage_keys = {
+        (table, stage, condition)
+        for table, conditions in WEATHER_TABLE_CONDITIONS.items()
+        for stage, condition in enumerate(conditions, 1)
+    }
+    observed_stage_keys: set[tuple[str, int, str]] = set()
+    stage_cell_keys: set[str] = set()
+    for row in stage_rows:
+        table = _string(row.get("table"), "Control Weather.stage.table")
+        stage = row.get("stage")
+        condition = _string(
+            row.get("condition_literal"), "Control Weather.stage.condition_literal"
+        )
+        cell_key = _string(row.get("cell_key"), "Control Weather.stage.cell_key")
+        stage_key = _string(
+            row.get("stage_cell_key"), "Control Weather.stage.stage_cell_key"
+        )
+        condition_key = _string(
+            row.get("condition_cell_key"), "Control Weather.stage.condition_cell_key"
+        )
+        expected_key = f"control_weather.{table}.{stage}"
+        if (
+            type(stage) is not int
+            or (table, stage, condition) not in expected_stage_keys
+            or cell_key != expected_key
+            or stage_key != f"{expected_key}.stage"
+            or condition_key != f"{expected_key}.condition"
+            or cell_key in stage_cell_keys
+        ):
+            _fail(
+                "primary_table_weather_stage",
+                f"Control Weather stage {cell_key} is duplicated or wrong",
+            )
+        observed_stage_keys.add((table, stage, condition))
+        stage_cell_keys.add(cell_key)
+    if (
+        len(stage_rows) != 16
+        or observed_stage_keys != expected_stage_keys
+        or len(stage_cell_keys) != 16
+        or weather.get("stage_cell_count") != 32
+    ):
+        _fail(
+            "primary_table_weather_stage_census",
+            "Control Weather must preserve all 16 stage rows/32 cells",
+        )
+    transition_clauses = [
+        _object(value, f"Control Weather.transition_clauses[{index}]")
+        for index, value in enumerate(
+            _array(
+                weather.get("transition_clauses"), "Control Weather.transition_clauses"
+            )
+        )
+    ]
+    expected_transition_clauses = {
+        "control_weather.transition": (
+            "right column top, before tables",
+            "Find a current condition on the tables and change its stage by one, up or down; wind direction may also change.",
+            "Stages are the listed bounded sets, not arbitrary numeric weather values; no unlisted stage or invented wraparound.",
+        ),
+        "control_weather.current_and_end": (
+            "left column own body and right column top",
+            "GM determines current weather; caster must be outdoors; going indoors ends the spell early; weather gradually returns to normal when it ends.",
+            "No fixed normalization rate is given in the inspected body.",
+        ),
+        "control_weather.delay": (
+            "left column final lines continuing at right-column top",
+            "New conditions take 1d4 × 10 minutes to take effect; only after they take effect can conditions change again.",
+            "Multiplication is preserved; no subtraction, replacement glyph, or fixed ten-minute delay.",
+        ),
+    }
+    if (
+        len(transition_clauses) != 3
+        or {row.get("clause_key") for row in transition_clauses}
+        != set(expected_transition_clauses)
+        or any(
+            (
+                row.get("location"),
+                row.get("evidence_clause_paraphrase"),
+                row.get("qualification"),
+            )
+            != expected_transition_clauses[row["clause_key"]]
+            for row in transition_clauses
+        )
+        or weather.get("transition_formula") != "1d4 × 10 minutes"
+        or "×" not in str(weather.get("transition_formula"))
+        or "−" in str(weather.get("transition_formula"))
+        or weather.get("unicode_profile")
+        != {"u00d7_multiplication_count": 1, "u2212_minus_count": 0}
+    ):
+        _fail(
+            "primary_table_weather_transition",
+            "Control Weather transition qualifiers/Unicode differ from the visual witness",
+        )
+    if _array(
+        manifest.get("primary_table_evidence_residuals"),
+        "primary_table_evidence_residuals",
+    ):
+        _fail(
+            "primary_table_residual",
+            "verified table witnesses must clear both current table residuals",
+        )
+    lane6 = next(
+        lane
+        for lane in _array(manifest.get("source_mapping_lanes"), "source_mapping_lanes")
+        if isinstance(lane, dict) and lane.get("lane_id") == "source-pass-6-9"
+    )
+    lane6_payload = _object(
+        lane6.get("mapping_payload"), "source-pass-6-9.mapping_payload"
+    )
+    lane6_receipt = _object(
+        lane6.get("receipt_summary"), "source-pass-6-9.receipt_summary"
+    )
+    if (
+        lane6_payload.get("primary_table_evidence_residuals") != []
+        or lane6_receipt.get("primary_table_evidence_residuals") != []
+    ):
+        _fail(
+            "primary_table_residual",
+            "source-pass 6-9 payload and receipt must no longer carry these two current residuals",
+        )
+    return witnesses
 
 
 def _validate_source_mapping_lane_totals(
@@ -2248,7 +2838,7 @@ def _validate_source_mapping_lanes(
         or contract.get("downstream_only_unknown_key_count") != 5
         or contract.get("mixed_unknown_key_count") != 28
         or contract.get("source_unknown_classification_status") != "ALL_82_CLASSIFIED"
-        or contract.get("primary_table_evidence_residual_count") != 2
+        or contract.get("primary_table_evidence_residual_count") != 0
         or contract.get("summary_string_as_mode_policy") != "FORBIDDEN"
         or contract.get("inventory_dependency_labels_as_support_policy")
         != "NOT_SUPPORT_DOMAIN_MAPPINGS"
@@ -2363,9 +2953,17 @@ def _validate_source_mapping_lanes(
         or len(unresolved_keys) != 1
         or {row.get("source_exact_name") for row in unresolved_keys}
         != {"Word of Recall"}
-        or len(table_residuals) != 2
-        or {row.get("source_exact_name") for row in table_residuals}
-        != {"Teleport", "Control Weather"}
+        or table_residuals
+        or lane6_payload.get("primary_table_evidence_residuals") != []
+        or _object(
+            next(
+                lane["receipt_summary"]
+                for lane in lanes
+                if lane.get("lane_id") == "source-pass-6-9"
+            ),
+            "source-pass-6-9.receipt_summary",
+        ).get("primary_table_evidence_residuals")
+        != []
         or not {"Teleport", "Control Weather"}.issubset(table_annotation_names)
     ):
         _fail(
@@ -3946,6 +4544,9 @@ def _source_qualification_receipt(
             )
         )
     ]
+    primary_table_evidence_witnesses = _validate_primary_table_evidence_witnesses(
+        manifest
+    )
     source_recipe_materialization_classifications = (
         _source_recipe_materialization_residuals(manifest)
     )
@@ -4194,6 +4795,7 @@ def _source_qualification_receipt(
         "source_modeling_resolutions": source_modeling_resolutions,
         "source_modeling_residuals": source_modeling_residuals,
         "primary_table_evidence_residuals": table_residuals,
+        "primary_table_evidence_witnesses": primary_table_evidence_witnesses,
         "source_recipe_materialization_classifications": (
             source_recipe_materialization_classifications
         ),

@@ -111,7 +111,7 @@
     "unresolved_source_entry_count": 72,
     "source_mapping_review_status": "PENDING_INDEPENDENT_REVIEW",
     "source_modeling_residual_count": 1,
-    "primary_table_evidence_residual_count": 2,
+    "primary_table_evidence_residual_count": 0,
     "summary_string_as_mode_policy": "FORBIDDEN",
     "inventory_dependency_labels_as_support_policy": "NOT_SUPPORT_DOMAIN_MAPPINGS",
     "source_support_obligation_status": "PARTIAL_SOURCE_DESCRIPTORS_DOMAIN_CENSUS_NOT_ESTABLISHED",
@@ -104403,7 +104403,7 @@
       "source_pass_sha256": "23f57b38f89c326fa46b7961d9994342bb7cc92d664201ce1289eb3668955cd6",
       "source_entry_count": 84,
       "independent_review_status": "PENDING",
-      "mapping_payload_sha256": "464c60b32095612a2dd077de5e14b0cae2020464c22a4960b8ceb117dc1c7d5b",
+      "mapping_payload_sha256": "dc3a4d30ce2d58b9cc102945a0fc4f2126cf8e0eb06b0f791ddd92d90e94119b",
       "mapping_payload": {
         "status": "BOUNDED_SOURCE_EVIDENCE_NOT_IMPORT_OR_SUPPORT_ADMISSION",
         "scope": {
@@ -110048,18 +110048,7 @@
             }
           }
         ],
-        "primary_table_evidence_residuals": [
-          {
-            "source_exact_name": "Teleport",
-            "residual": "Independent literal primary-cell transcription of the familiarity table and explanation remains unverified.",
-            "status": "NOT_ESTABLISHED"
-          },
-          {
-            "source_exact_name": "Control Weather",
-            "residual": "Independent literal primary-cell census of all three weather-stage tables remains unverified.",
-            "status": "NOT_ESTABLISHED"
-          }
-        ],
+        "primary_table_evidence_residuals": [],
         "lane_reported_source_modeling_residuals": [
           {
             "source_exact_name": "Flesh to Stone",
@@ -110192,18 +110181,7 @@
           "No exact eligible-domain census, consumer contract equality, or packaged source/production proof is asserted.",
           "Find the Path and Otherworldly Steed are cross-lane ownership links, not extra entries or support claims."
         ],
-        "primary_table_evidence_residuals": [
-          {
-            "source_exact_name": "Teleport",
-            "residual": "Independent literal primary-cell transcription of the familiarity table and explanation remains unverified.",
-            "status": "NOT_ESTABLISHED"
-          },
-          {
-            "source_exact_name": "Control Weather",
-            "residual": "Independent literal primary-cell census of all three weather-stage tables remains unverified.",
-            "status": "NOT_ESTABLISHED"
-          }
-        ],
+        "primary_table_evidence_residuals": [],
         "independent_review_status": "PENDING",
         "future_proof_boundary": "NATIVE CONSUMERS, MEMBER CENSUS, MACHINE ADMISSION, EXECUTION, RECOVERY, AND PERFORMANCE ARE NOT ESTABLISHED; THESE DO NOT SUBSTITUTE FOR SOURCE RESOLUTION",
         "complete_339_or_production_claim": "NONE",
@@ -110384,18 +110362,156 @@
       "status": "NOT_ESTABLISHED"
     }
   ],
-  "primary_table_evidence_residuals": [
+  "primary_table_evidence_witnesses": [
     {
       "source_exact_name": "Teleport",
-      "residual": "Independent literal primary-cell transcription of the familiarity table and explanation remains unverified.",
-      "status": "NOT_ESTABLISHED"
+      "status": "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY",
+      "source_pass_ref": {
+        "artifact_id": "source-pass-6-9",
+        "record_index": 50,
+        "json_pointer": "/rows/50",
+        "source_exact_name": "Teleport",
+        "asset_id": "srd52_en",
+        "edition": "SRD_5_2_1",
+        "printed_page": 168,
+        "source_header_line": 14887,
+        "raw_body_sha256": "c532020059ac049d17f8710ca57d77ec2c9f57862236a5c216c6403c06ec411c",
+        "body_witness_ref": {
+          "artifact_id": "source-body-witnesses",
+          "json_pointer": "/rows/306"
+        }
+      },
+      "visual_provenance": {
+        "source_asset_sha256": "8974902d109d6e63672d7c490bde9ccf052410503d9cfa768237154fbc5e3d87",
+        "source_pass_sha256": "23f57b38f89c326fa46b7961d9994342bb7cc92d664201ce1289eb3668955cd6",
+        "witness_sha256": "c5ee7e0af314c45179addeb763e95afc90ab315a67107495da2d2183279febc4",
+        "subset_sha256": "b78eb3ba8663c49adce515749e8fb8bc0cac39792e4aadd5ab337078556f1a36",
+        "captured_candidate_sha": "9d040f4ee70a063f29a709c063908d3f66315257",
+        "captured_source_fixture_sha256": "13d60dff16a92b700763b031945aaf6b3cb8d6a4c05ad2cdff0e04242b19dde3",
+        "visual_inspection_status": "NATIVE_PAGE_IMAGES_VISUALLY_INSPECTED",
+        "subset_creation_tool": "pypdf 6.19.0",
+        "secondary_text_role": "CODEPOINT_COUNTS_ONLY_NOT_VISUAL_SUBSTITUTE",
+        "subset_page_mapping": {"1": 120, "2": 168, "3": 169},
+        "unqualified_subset_page": {"subset_page": 3, "asset_page": 169, "qualified": false, "reason": "Unneeded adjacent boundary page; no obligations or claims qualified from it."}
+      },
+      "asset_page": 168,
+      "subset_page": 2,
+      "outcome_cells": [
+        {"cell_key": "teleport.permanent_circle.mishap", "row_label": "Permanent circle", "outcome": "mishap", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.permanent_circle.similar_area", "row_label": "Permanent circle", "outcome": "similar_area", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.permanent_circle.off_target", "row_label": "Permanent circle", "outcome": "off_target", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.permanent_circle.on_target", "row_label": "Permanent circle", "outcome": "on_target", "literal": "01–00", "normalized_interval": [1, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.linked_object.mishap", "row_label": "Linked object", "outcome": "mishap", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.linked_object.similar_area", "row_label": "Linked object", "outcome": "similar_area", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.linked_object.off_target", "row_label": "Linked object", "outcome": "off_target", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.linked_object.on_target", "row_label": "Linked object", "outcome": "on_target", "literal": "01–00", "normalized_interval": [1, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.very_familiar.mishap", "row_label": "Very familiar", "outcome": "mishap", "literal": "01–05", "normalized_interval": [1, 5], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.very_familiar.similar_area", "row_label": "Very familiar", "outcome": "similar_area", "literal": "06–13", "normalized_interval": [6, 13], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.very_familiar.off_target", "row_label": "Very familiar", "outcome": "off_target", "literal": "14–24", "normalized_interval": [14, 24], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.very_familiar.on_target", "row_label": "Very familiar", "outcome": "on_target", "literal": "25–00", "normalized_interval": [25, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.seen_casually.mishap", "row_label": "Seen casually", "outcome": "mishap", "literal": "01–33", "normalized_interval": [1, 33], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.seen_casually.similar_area", "row_label": "Seen casually", "outcome": "similar_area", "literal": "34–43", "normalized_interval": [34, 43], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.seen_casually.off_target", "row_label": "Seen casually", "outcome": "off_target", "literal": "44–53", "normalized_interval": [44, 53], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.seen_casually.on_target", "row_label": "Seen casually", "outcome": "on_target", "literal": "54–00", "normalized_interval": [54, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.viewed_once_or_described.mishap", "row_label": "Viewed once or described", "outcome": "mishap", "literal": "01–43", "normalized_interval": [1, 43], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.viewed_once_or_described.similar_area", "row_label": "Viewed once or described", "outcome": "similar_area", "literal": "44–53", "normalized_interval": [44, 53], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.viewed_once_or_described.off_target", "row_label": "Viewed once or described", "outcome": "off_target", "literal": "54–73", "normalized_interval": [54, 73], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.viewed_once_or_described.on_target", "row_label": "Viewed once or described", "outcome": "on_target", "literal": "74–00", "normalized_interval": [74, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.false_destination.mishap", "row_label": "False destination", "outcome": "mishap", "literal": "01–50", "normalized_interval": [1, 50], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.false_destination.similar_area", "row_label": "False destination", "outcome": "similar_area", "literal": "51–00", "normalized_interval": [51, 100], "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.false_destination.off_target", "row_label": "False destination", "outcome": "off_target", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"},
+        {"cell_key": "teleport.false_destination.on_target", "row_label": "False destination", "outcome": "on_target", "literal": "—", "normalized_interval": null, "visual_locator": "asset p168 / subset p2 / lower-left Teleportation Outcome"}
+      ],
+      "familiarity_conditions": [
+        {"row_label": "Permanent circle", "location": "right column Familiarity bullet 1", "condition_paraphrase": "Permanent teleportation circle whose sigil sequence the caster knows."},
+        {"row_label": "Linked object", "location": "right column Familiarity bullet 2", "condition_paraphrase": "Caster possesses an object taken from the desired destination within the last six months.", "qualification": "Possession and destination provenance/age both apply; mere knowledge of an object is insufficient."},
+        {"row_label": "Very familiar", "location": "right column Familiarity bullet 3", "condition_paraphrase": "Place visited often, carefully studied, or visible when casting."},
+        {"row_label": "Seen casually", "location": "right column Familiarity bullet 4", "condition_paraphrase": "Place seen more than once but not very familiar."},
+        {"row_label": "Viewed once or described", "location": "right column Familiarity bullet 5", "condition_paraphrase": "Place seen once, possibly magically, or known from another person’s description, perhaps a map."},
+        {"row_label": "False destination", "location": "right column Familiarity bullet 6", "condition_paraphrase": "Place does not exist, such as a scryed illusion or location that no longer exists.", "qualification": "Only Mishap or Similar Area cells apply; no ordinary Off Target or On Target outcome."}
+      ],
+      "outcome_explanations": [
+        {"clause_key": "teleport.mishap.explanation", "location": "right column Mishap", "evidence_clause_paraphrase": "Each teleporting creature or target object takes 3d10 Force damage and the GM rerolls the table; multiple mishaps can occur, dealing damage each time.", "qualification": "The source supplies no repeat cap; this establishes source semantics only, not RNG/cursor implementation."},
+        {"clause_key": "teleport.similar_area.explanation", "location": "right column Similar Area", "evidence_clause_paraphrase": "The group or target object appears in a different visually or thematically similar area, at the closest similar place."},
+        {"clause_key": "teleport.off_target.explanation", "location": "right column Off Target", "evidence_clause_paraphrase": "The group or target object appears 2d12 miles away in a random direction; d8 maps 1 east, 2 southeast, 3 south, 4 southwest, 5 west, 6 northwest, 7 north, 8 northeast."},
+        {"clause_key": "teleport.on_target.explanation", "location": "right column On Target", "evidence_clause_paraphrase": "The group or target object appears where intended."}
+      ],
+      "normalization": {
+        "literal_00_retained": true,
+        "normalized_upper_bound": 100,
+        "qualification_ref": "/rows/50/qualifications/0",
+        "general_d100_primary_rule_verified": false
+      },
+      "unicode_profile": {
+        "u2014_em_dash_count": 8,
+        "u2013_en_dash_count": 16,
+        "u2212_minus_count": 0
+      },
+      "machine_execution_proof_status": "NOT_ESTABLISHED"
     },
     {
       "source_exact_name": "Control Weather",
-      "residual": "Independent literal primary-cell census of all three weather-stage tables remains unverified.",
-      "status": "NOT_ESTABLISHED"
+      "status": "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY",
+      "source_pass_ref": {
+        "artifact_id": "source-pass-6-9",
+        "record_index": 56,
+        "json_pointer": "/rows/56",
+        "source_exact_name": "Control Weather",
+        "asset_id": "srd52_en",
+        "edition": "SRD_5_2_1",
+        "printed_page": 120,
+        "source_header_line": 10284,
+        "raw_body_sha256": "1464ca06b0734ab127cce02dfda0f9fea2c1b64006fb9e869fd2a1e2b6d77313",
+        "body_witness_ref": {
+          "artifact_id": "source-body-witnesses",
+          "json_pointer": "/rows/66"
+        }
+      },
+      "visual_provenance": {
+        "source_asset_sha256": "8974902d109d6e63672d7c490bde9ccf052410503d9cfa768237154fbc5e3d87",
+        "source_pass_sha256": "23f57b38f89c326fa46b7961d9994342bb7cc92d664201ce1289eb3668955cd6",
+        "witness_sha256": "c5ee7e0af314c45179addeb763e95afc90ab315a67107495da2d2183279febc4",
+        "subset_sha256": "b78eb3ba8663c49adce515749e8fb8bc0cac39792e4aadd5ab337078556f1a36",
+        "captured_candidate_sha": "9d040f4ee70a063f29a709c063908d3f66315257",
+        "captured_source_fixture_sha256": "13d60dff16a92b700763b031945aaf6b3cb8d6a4c05ad2cdff0e04242b19dde3",
+        "visual_inspection_status": "NATIVE_PAGE_IMAGES_VISUALLY_INSPECTED",
+        "subset_creation_tool": "pypdf 6.19.0",
+        "secondary_text_role": "CODEPOINT_COUNTS_ONLY_NOT_VISUAL_SUBSTITUTE",
+        "subset_page_mapping": {"1": 120, "2": 168, "3": 169},
+        "unqualified_subset_page": {"subset_page": 3, "asset_page": 169, "qualified": false, "reason": "Unneeded adjacent boundary page; no obligations or claims qualified from it."}
+      },
+      "asset_page": 120,
+      "subset_page": 1,
+      "stage_rows": [
+        {"cell_key": "control_weather.precipitation.1", "table": "precipitation", "stage_cell_key": "control_weather.precipitation.1.stage", "condition_cell_key": "control_weather.precipitation.1.condition", "stage": 1, "condition_literal": "Clear"},
+        {"cell_key": "control_weather.precipitation.2", "table": "precipitation", "stage_cell_key": "control_weather.precipitation.2.stage", "condition_cell_key": "control_weather.precipitation.2.condition", "stage": 2, "condition_literal": "Light clouds"},
+        {"cell_key": "control_weather.precipitation.3", "table": "precipitation", "stage_cell_key": "control_weather.precipitation.3.stage", "condition_cell_key": "control_weather.precipitation.3.condition", "stage": 3, "condition_literal": "Overcast or ground fog"},
+        {"cell_key": "control_weather.precipitation.4", "table": "precipitation", "stage_cell_key": "control_weather.precipitation.4.stage", "condition_cell_key": "control_weather.precipitation.4.condition", "stage": 4, "condition_literal": "Rain, hail, or snow"},
+        {"cell_key": "control_weather.precipitation.5", "table": "precipitation", "stage_cell_key": "control_weather.precipitation.5.stage", "condition_cell_key": "control_weather.precipitation.5.condition", "stage": 5, "condition_literal": "Torrential rain, driving hail, or blizzard"},
+        {"cell_key": "control_weather.temperature.1", "table": "temperature", "stage_cell_key": "control_weather.temperature.1.stage", "condition_cell_key": "control_weather.temperature.1.condition", "stage": 1, "condition_literal": "Heat wave"},
+        {"cell_key": "control_weather.temperature.2", "table": "temperature", "stage_cell_key": "control_weather.temperature.2.stage", "condition_cell_key": "control_weather.temperature.2.condition", "stage": 2, "condition_literal": "Hot"},
+        {"cell_key": "control_weather.temperature.3", "table": "temperature", "stage_cell_key": "control_weather.temperature.3.stage", "condition_cell_key": "control_weather.temperature.3.condition", "stage": 3, "condition_literal": "Warm"},
+        {"cell_key": "control_weather.temperature.4", "table": "temperature", "stage_cell_key": "control_weather.temperature.4.stage", "condition_cell_key": "control_weather.temperature.4.condition", "stage": 4, "condition_literal": "Cool"},
+        {"cell_key": "control_weather.temperature.5", "table": "temperature", "stage_cell_key": "control_weather.temperature.5.stage", "condition_cell_key": "control_weather.temperature.5.condition", "stage": 5, "condition_literal": "Cold"},
+        {"cell_key": "control_weather.temperature.6", "table": "temperature", "stage_cell_key": "control_weather.temperature.6.stage", "condition_cell_key": "control_weather.temperature.6.condition", "stage": 6, "condition_literal": "Freezing"},
+        {"cell_key": "control_weather.wind.1", "table": "wind", "stage_cell_key": "control_weather.wind.1.stage", "condition_cell_key": "control_weather.wind.1.condition", "stage": 1, "condition_literal": "Calm"},
+        {"cell_key": "control_weather.wind.2", "table": "wind", "stage_cell_key": "control_weather.wind.2.stage", "condition_cell_key": "control_weather.wind.2.condition", "stage": 2, "condition_literal": "Moderate wind"},
+        {"cell_key": "control_weather.wind.3", "table": "wind", "stage_cell_key": "control_weather.wind.3.stage", "condition_cell_key": "control_weather.wind.3.condition", "stage": 3, "condition_literal": "Strong wind"},
+        {"cell_key": "control_weather.wind.4", "table": "wind", "stage_cell_key": "control_weather.wind.4.stage", "condition_cell_key": "control_weather.wind.4.condition", "stage": 4, "condition_literal": "Gale"},
+        {"cell_key": "control_weather.wind.5", "table": "wind", "stage_cell_key": "control_weather.wind.5.stage", "condition_cell_key": "control_weather.wind.5.condition", "stage": 5, "condition_literal": "Storm"}
+      ],
+      "stage_cell_count": 32,
+      "transition_clauses": [
+        {"clause_key": "control_weather.transition", "location": "right column top, before tables", "evidence_clause_paraphrase": "Find a current condition on the tables and change its stage by one, up or down; wind direction may also change.", "qualification": "Stages are the listed bounded sets, not arbitrary numeric weather values; no unlisted stage or invented wraparound."},
+        {"clause_key": "control_weather.current_and_end", "location": "left column own body and right column top", "evidence_clause_paraphrase": "GM determines current weather; caster must be outdoors; going indoors ends the spell early; weather gradually returns to normal when it ends.", "qualification": "No fixed normalization rate is given in the inspected body."},
+        {"clause_key": "control_weather.delay", "location": "left column final lines continuing at right-column top", "evidence_clause_paraphrase": "New conditions take 1d4 × 10 minutes to take effect; only after they take effect can conditions change again.", "qualification": "Multiplication is preserved; no subtraction, replacement glyph, or fixed ten-minute delay."}
+      ],
+      "transition_formula": "1d4 × 10 minutes",
+      "unicode_profile": {"u00d7_multiplication_count": 1, "u2212_minus_count": 0},
+      "machine_execution_proof_status": "NOT_ESTABLISHED"
     }
   ],
+  "primary_table_evidence_residuals": [],
   "source_unknown_classifications": [
     {
       "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",

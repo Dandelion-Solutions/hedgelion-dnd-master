@@ -387,7 +387,19 @@ class TestSpellSourceQualification(unittest.TestCase):
                 row["source_exact_name"]
                 for row in receipt["primary_table_evidence_residuals"]
             },
+            set(),
+        )
+        table_witnesses = receipt["primary_table_evidence_witnesses"]
+        self.assertEqual(
+            {row["source_exact_name"] for row in table_witnesses},
             {"Teleport", "Control Weather"},
+        )
+        self.assertTrue(
+            all(
+                row["status"] == "PRIMARY_TABLE_EVIDENCE_VERIFIED_SOURCE_ONLY"
+                and row["machine_execution_proof_status"] == "NOT_ESTABLISHED"
+                for row in table_witnesses
+            )
         )
         recipe_classifications = receipt[
             "source_recipe_materialization_classifications"
@@ -497,7 +509,6 @@ class TestSpellSourceQualification(unittest.TestCase):
             {
                 "UNRESOLVED_SOURCE_KEYS",
                 "SOURCE_MODELING_RESIDUALS",
-                "PRIMARY_TABLE_SOURCE_EVIDENCE_PENDING",
                 "SOURCE_RECONSTRUCTION_GAP_PENDING",
                 "SOURCE_MAPPING_REVIEW_PENDING",
                 "SUMMARY_SOURCE_DECOMPOSITION_REVIEW_PENDING",
@@ -508,6 +519,7 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertFalse(
             any("NATIVE" in code or "EXECUTION" in code for code in blocker_codes)
         )
+        self.assertNotIn("PRIMARY_TABLE_SOURCE_EVIDENCE_PENDING", blocker_codes)
         unresolved_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -530,6 +542,118 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertFalse(
             receipt["source_ready_gate"]["future_native_proof_blocks_sp00"]
         )
+
+    def test_primary_table_witnesses_are_asset_bound_and_reject_corruption(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        witnesses = TOOL._validate_primary_table_evidence_witnesses(manifest)
+        self.assertEqual(
+            {row["source_exact_name"] for row in witnesses},
+            {"Teleport", "Control Weather"},
+        )
+        teleport = next(
+            row for row in witnesses if row["source_exact_name"] == "Teleport"
+        )
+        weather = next(
+            row for row in witnesses if row["source_exact_name"] == "Control Weather"
+        )
+        self.assertEqual(len(teleport["outcome_cells"]), 24)
+        self.assertEqual(len(teleport["familiarity_conditions"]), 6)
+        self.assertEqual(len(teleport["outcome_explanations"]), 4)
+        self.assertEqual(len(weather["stage_rows"]), 16)
+        self.assertEqual(weather["stage_cell_count"], 32)
+        source_asset = next(
+            row for row in manifest["source_assets"] if row["asset_id"] == "srd52_en"
+        )
+        expected_locators = {
+            "Teleport": (50, 168, 14887),
+            "Control Weather": (56, 120, 10284),
+        }
+        for witness in witnesses:
+            name = witness["source_exact_name"]
+            source_ref = witness["source_pass_ref"]
+            provenance = witness["visual_provenance"]
+            self.assertEqual(
+                (
+                    source_ref["record_index"],
+                    source_ref["printed_page"],
+                    source_ref["source_header_line"],
+                ),
+                expected_locators[name],
+            )
+            self.assertEqual(provenance["source_asset_sha256"], source_asset["sha256"])
+            self.assertEqual(
+                provenance["source_pass_sha256"],
+                next(
+                    row["sha256"]
+                    for row in manifest["evidence_artifacts"]
+                    if row["artifact_id"] == "source-pass-6-9"
+                ),
+            )
+            self.assertFalse(provenance["unqualified_subset_page"]["qualified"])
+        self.assertTrue(
+            any(
+                cell["literal"].endswith("00") and cell["normalized_interval"][1] == 100
+                for cell in teleport["outcome_cells"]
+                if cell["normalized_interval"] is not None
+            )
+        )
+        self.assertFalse(
+            teleport["normalization"]["general_d100_primary_rule_verified"]
+        )
+        self.assertEqual(weather["transition_formula"], "1d4 × 10 minutes")
+
+        corruptions = (
+            ("missing_cell", lambda t, w: t["outcome_cells"].pop()),
+            (
+                "changed_cell",
+                lambda t, w: t["outcome_cells"][8].__setitem__("literal", "01–06"),
+            ),
+            (
+                "range_overlap",
+                lambda t, w: (
+                    t["outcome_cells"][12].__setitem__("literal", "01–34"),
+                    t["outcome_cells"][12].__setitem__("normalized_interval", [1, 34]),
+                ),
+            ),
+            ("wrong_stage", lambda t, w: w["stage_rows"][0].__setitem__("stage", 6)),
+            (
+                "wrong_source_locator",
+                lambda t, w: w["source_pass_ref"].__setitem__("source_page", 121),
+            ),
+            (
+                "minus_instead_of_en_dash",
+                lambda t, w: next(
+                    cell for cell in t["outcome_cells"] if cell["literal"] == "25–00"
+                ).__setitem__("literal", "25−00"),
+            ),
+            (
+                "multiplication_glyph_corruption",
+                lambda t, w: w.__setitem__("transition_formula", "1d4 - 10 minutes"),
+            ),
+        )
+        for case, mutate in corruptions:
+            with self.subTest(case=case):
+                candidate = copy.deepcopy(manifest)
+                teleport_candidate = next(
+                    row
+                    for row in candidate["primary_table_evidence_witnesses"]
+                    if row["source_exact_name"] == "Teleport"
+                )
+                weather_candidate = next(
+                    row
+                    for row in candidate["primary_table_evidence_witnesses"]
+                    if row["source_exact_name"] == "Control Weather"
+                )
+                mutate(teleport_candidate, weather_candidate)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_primary_table_evidence_witnesses(candidate)
+                if case == "range_overlap":
+                    self.assertEqual(
+                        caught.exception.code, "primary_table_range_partition"
+                    )
 
     def test_mapping_lane_same_count_entry_and_key_substitution_is_rejected(
         self,
