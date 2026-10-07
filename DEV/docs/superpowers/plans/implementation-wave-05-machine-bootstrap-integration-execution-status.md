@@ -5,7 +5,7 @@ SPEC: `DEV/docs/superpowers/specs/2026-09-11-r2-7-WP-27-final-implementation-pla
 BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 
 STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
-CURRENT_TASK: SP03 eligible after accepted SP02/P0; independent published SP00 census and P2 non-HOT preparations remain partial. Continue source/technical holds independently; no full339 support claim.
+CURRENT_TASK: complete SP03 allocated finite policy/membership/evaluator/preflight realization after published read/cache preparation; independent SP00 source/default obligations and P2 non-HOT preparation retain exact holds. No full339 support claim.
 LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
 LAST_SAFE_SHA: `d0c97f623bfb5fd24a44403dc163b16793186673` — latest verified published compiler/foundation/preparation implementation; this cursor synchronization follows. Complete-plan GO remains applicable to unchanged authorized scope.
 
@@ -2916,7 +2916,7 @@ PLAN: existing stable Wave05/Wave06/index;32 additional tasks, complete envelope
 | W05.SP00 | PARTIAL / SOURCE_INPUTS_HELD | reviewed candidate census/tool slice; no source-ready output; exact residuals below |
 | W05.SP01 | COMPLETE / ACCEPTED | `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` at `30c5a66f234b75bec926462c6301454133506884`, independent review and integrated proof/read-back PASS |
 | W05.SP02 | COMPLETE / ACCEPTED | W05_SPELL_SEALED_CATALOG_READY at `d0c97f623bfb5fd24a44403dc163b16793186673`, task/Senior audit and integrated proof/read-back PASS |
-| W05.SP03 | ELIGIBLE_OWN_ENTRY | accepted SP02 plus P0; exact task inputs/envelope/TDD/review required |
+| W05.SP03 | PARTIAL / READ_CACHE_ACCEPTED | read/cache preparation `f68f03ce`; bounded full structural/source allocation GO; complete task output held |
 | W05.SP04 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP05 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
 | W05.SP06 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
@@ -3217,4 +3217,36 @@ page169/general d100 primary rule not qualified; all other source/review/
 Word of Recall/default holds remain. Full source/machine/native/performance
 READY not issued. VERSION_IMPACT NONE — DEV-only draft schema1/evidence;
 no installed or existing owned namespace/projection transition.
-FULL_INTEGRATED_PROOF/PUBLICATION: pending exact committed checks/read-back.
+FULL_INTEGRATED_PROOF/PUBLICATION: clean exact
+`2b00ef58fa05d348b4b2647ac90ee7a0cf19546c`: 1761 pytest passed, 20 outer
+installed-only skips; canonical unittest 1618 OK/skipped20 plus installed inner
+20 OK; version census/legacy hits empty; audit/build PASS. Non-force native
+publication followed by pruned fresh fetch matched exact local/remote refs;
+tree diff empty. Only two source-table residuals cleared; full source READY held.
+
+## Exact continuation after recovered coherent publications — 2026-10-06
+
+LAST_PUBLISHED_IMPLEMENTATION_SHA: `2b00ef58fa05d348b4b2647ac90ee7a0cf19546c`.
+COMPLETED_SLICES: tooling `8f8aaec7`; SP01 `30c5a66f`;
+P2 non-HOT preparation `3032517d`; SP00 progressed partial `4fb8a151`;
+SP02 compiler `d0c97f62`; SP03 read/cache preparation `f68f03ce`;
+two licensed source tables `2b00ef58`. Full SP00/P2/SP03 outputs not issued.
+VERIFICATION: latest integrated 1761 pytest, canonical 1618 unittest with 20
+installed outer cases actually executed by the driver, audit/build/namespace/
+read-back PASS. Task reviewers and SP02 Senior audit independently inspected
+frozen candidates; hosted CI not inspected. GAME target latency not claimed.
+NEXT_EXACT_TASK_OR_SLICE: serialize SP03 closed policy/common-cast carriers,
+compiler/source projection parity and actual complete-membership adapter;
+then calculate/cast conformance from real installed source/owner observations.
+The explicit independent Senior allocation is in stable SP03 and its linked
+`2026-10-06-sp03-read-slice-and-policy-allocation.md`, not a new approval request.
+Independently integrate reviewed source residual resolutions (scratch first12
+report has 9 proposed closures/3 retained holds, not yet accepted) and source/
+default/mapping review obligations. Native kernel SP04 releases full P2 HOT join.
+KNOWN_BLOCKERS: no PO decision. Source/legacy/taxonomy/full membership and
+producer proofs are exact scoped gates; no broad index-absence or caller flag
+shortcut. Original Story/product/wave/Senior/activation gates remain.
+UNPUBLISHED_WORK: NONE in main or required reviewed integrated slices. Task-owned
+intermediate scratch candidates/logs are preserved separately, superseded
+where integrated; first12 source report remains unaccepted evidence. No hidden
+production edits or running obsolete SP01 assignment are required to resume.
