@@ -1,0 +1,933 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hedgelion.invalid/schemas/spell-source-qualification.schema.json",
+  "title": "Local SRD5.2.1 spell source qualification manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "profile_id",
+    "content_basis",
+    "required_attribution",
+    "roster_contract",
+    "evidence_artifacts",
+    "source_name_aliases",
+    "source_mapping_contract",
+    "source_mode_mappings",
+    "source_mapping_lanes",
+    "source_unknown_classifications",
+    "source_unknown_classification_contract",
+    "source_modeling_resolutions",
+    "source_modeling_residuals",
+    "primary_table_evidence_residuals",
+    "source_assets",
+    "corroborating_sources",
+    "source_scope_policy",
+    "source_reconstruction_witnesses",
+    "numeric_glyph_witnesses",
+    "seed_metadata_conflicts",
+    "existing_extra_lane",
+    "content_owner_default_repair",
+    "package_notice_observation"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "profile_id": {"const": "spell.srd52.local"},
+    "content_basis": {"const": "SRD_5_2_1"},
+    "required_attribution": {"type": "string", "minLength": 1},
+    "roster_contract": {"$ref": "#/$defs/rosterContract"},
+    "evidence_artifacts": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {"$ref": "#/$defs/evidenceArtifact"}
+    },
+    "source_name_aliases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/sourceNameAlias"}
+    },
+    "source_mapping_contract": {"$ref": "#/$defs/sourceMappingContract"},
+    "source_mode_mappings": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/sourceModeMapping"}
+    },
+    "source_mapping_lanes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/sourceMappingLane"}
+    },
+    "source_unknown_classifications": {
+      "type": "array",
+      "minItems": 82,
+      "maxItems": 82,
+      "items": {"$ref": "#/$defs/sourceUnknownClassification"}
+    },
+    "source_unknown_classification_contract": {
+      "$ref": "#/$defs/sourceUnknownClassificationContract"
+    },
+    "source_modeling_resolutions": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/sourceModelingResolution"}
+    },
+    "source_modeling_residuals": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/sourceModelingResidual"}
+    },
+    "primary_table_evidence_residuals": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/sourceTableEvidenceResidual"}
+    },
+    "source_assets": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {"$ref": "#/$defs/sourceAsset"}
+    },
+    "corroborating_sources": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/corroboratingSource"}
+    },
+    "source_scope_policy": {"$ref": "#/$defs/sourceScopePolicy"},
+    "source_reconstruction_witnesses": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/reconstructionWitness"}
+    },
+    "numeric_glyph_witnesses": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/numericGlyphWitness"}
+    },
+    "seed_metadata_conflicts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/seedMetadataConflict"}
+    },
+    "existing_extra_lane": {"$ref": "#/$defs/existingExtraLane"},
+    "content_owner_default_repair": {"$ref": "#/$defs/contentOwnerDefaultRepair"},
+    "package_notice_observation": {"$ref": "#/$defs/packageNoticeObservation"}
+  },
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidenceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "path", "sha256", "hash_basis"],
+      "properties": {
+        "artifact_id": {"type": "string", "minLength": 1},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "hash_basis": {"enum": ["RAW_UTF8", "LF_NORMALIZED_UTF8"]},
+        "record_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "rosterContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_entry_count",
+        "by_level",
+        "mode_key_basis",
+        "support_domain_key_basis",
+        "production_support_claim",
+        "source_mode_mapping_status",
+        "source_support_mapping_status"
+      ],
+      "properties": {
+        "source_entry_count": {"const": 339},
+        "by_level": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+          "properties": {
+            "0": {"const": 27},
+            "1": {"const": 57},
+            "2": {"const": 57},
+            "3": {"const": 42},
+            "4": {"const": 34},
+            "5": {"const": 38},
+            "6": {"const": 31},
+            "7": {"const": 20},
+            "8": {"const": 17},
+            "9": {"const": 16}
+          }
+        },
+        "mode_key_basis": {"type": "string", "minLength": 1},
+        "support_domain_key_basis": {"type": "string", "minLength": 1},
+        "production_support_claim": {"const": "NONE"},
+        "source_mode_mapping_status": {"const": "PARTIAL"},
+        "source_support_mapping_status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceMappingContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "source_entry_count",
+        "candidate_entry_map_count",
+        "summary_decomposition_entry_names",
+        "lane_entry_counts",
+        "unresolved_source_key_count",
+        "unresolved_source_entry_count",
+        "source_mapping_review_status",
+        "source_modeling_residual_count",
+        "source_modeling_resolution_count",
+        "source_unknown_classification_record_count",
+        "source_blocking_unknown_key_count",
+        "downstream_only_unknown_key_count",
+        "mixed_unknown_key_count",
+        "source_unknown_classification_status",
+        "primary_table_evidence_residual_count",
+        "summary_string_as_mode_policy",
+        "inventory_dependency_labels_as_support_policy",
+        "source_support_obligation_status",
+        "future_native_proof_status",
+        "production_claim"
+      ],
+      "properties": {
+        "status": {"const": "ALL_339_ENTRY_MAPS_SOURCE_CLOSURE_OPEN"},
+        "source_entry_count": {"const": 339},
+        "candidate_entry_map_count": {"const": 339},
+        "summary_decomposition_entry_names": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["Elementalism", "Alter Self"]}
+        },
+        "lane_entry_counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source-pass-0-2", "source-pass-3-5", "source-pass-6-9", "existing-summary-decompositions"],
+          "properties": {
+            "source-pass-0-2": {"const": 139},
+            "source-pass-3-5": {"const": 114},
+            "source-pass-6-9": {"const": 84},
+            "existing-summary-decompositions": {"const": 2}
+          }
+        },
+        "unresolved_source_key_count": {"const": 82},
+        "unresolved_source_entry_count": {"const": 72},
+        "source_mapping_review_status": {"const": "PENDING_INDEPENDENT_REVIEW"},
+        "source_modeling_residual_count": {"const": 1},
+        "source_modeling_resolution_count": {"const": 5},
+        "source_unknown_classification_record_count": {"const": 82},
+        "source_blocking_unknown_key_count": {"const": 77},
+        "downstream_only_unknown_key_count": {"const": 5},
+        "mixed_unknown_key_count": {"const": 28},
+        "source_unknown_classification_status": {"const": "ALL_82_CLASSIFIED"},
+        "primary_table_evidence_residual_count": {"const": 2},
+        "summary_string_as_mode_policy": {"const": "FORBIDDEN"},
+        "inventory_dependency_labels_as_support_policy": {
+          "const": "NOT_SUPPORT_DOMAIN_MAPPINGS"
+        },
+        "source_support_obligation_status": {"const": "PARTIAL_SOURCE_DESCRIPTORS_DOMAIN_CENSUS_NOT_ESTABLISHED"},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED_NOT_AN_SP00_SOURCE_READY_GATE"},
+        "production_claim": {"const": "NONE"}
+      }
+    },
+    "sourceMappingLane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lane_id",
+        "map_artifact_sha256",
+        "receipt_artifact_sha256",
+        "source_pass_artifact_id",
+        "source_pass_sha256",
+        "source_entry_count",
+        "independent_review_status",
+        "mapping_payload_sha256",
+        "mapping_payload",
+        "receipt_summary"
+      ],
+      "properties": {
+        "lane_id": {"enum": ["source-pass-0-2", "source-pass-3-5", "source-pass-6-9"]},
+        "map_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "receipt_artifact_sha256": {"$ref": "#/$defs/sha256"},
+        "source_pass_artifact_id": {"enum": ["source-pass-0-2", "source-pass-3-5", "source-pass-6-9"]},
+        "source_pass_sha256": {"$ref": "#/$defs/sha256"},
+        "source_entry_count": {"type": "integer", "minimum": 1},
+        "independent_review_status": {"const": "PENDING"},
+        "mapping_payload_sha256": {"$ref": "#/$defs/sha256"},
+        "mapping_payload": {"type": "object"},
+        "receipt_summary": {"type": "object"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"lane_id": {"const": "source-pass-0-2"}}},
+          "then": {
+            "properties": {
+              "source_pass_artifact_id": {"const": "source-pass-0-2"},
+              "source_entry_count": {"const": 139}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"lane_id": {"const": "source-pass-3-5"}}},
+          "then": {
+            "properties": {
+              "source_pass_artifact_id": {"const": "source-pass-3-5"},
+              "source_entry_count": {"const": 114}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"lane_id": {"const": "source-pass-6-9"}}},
+          "then": {
+            "properties": {
+              "source_pass_artifact_id": {"const": "source-pass-6-9"},
+              "source_entry_count": {"const": 84}
+            }
+          }
+        }
+      ]
+    },
+    "r5SourceRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "record_index", "raw_record_name", "source_exact_name",
+        "source_asset_id", "edition", "printed_page", "source_header_line",
+        "source_heading", "raw_body_sha256", "raw_hash_basis", "body_witness_ref",
+        "qualification_ref", "source_qualifications", "source_review",
+        "source_confidence", "inventory_qualification", "inventory_qualifications"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-6-9"},
+        "record_index": {"type": "integer", "minimum": 0},
+        "raw_record_name": {"type": "string", "minLength": 1},
+        "source_exact_name": {"enum": ["Flesh to Stone", "Heroes’ Feast", "Instant Summons", "Move Earth", "Mass Heal", "Word of Recall"]},
+        "source_asset_id": {"const": "srd52_en"},
+        "edition": {"const": "SRD_5_2_1"},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "source_heading": {"type": "string", "minLength": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_hash_basis": {"type": "string", "minLength": 1},
+        "body_witness_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        },
+        "qualification_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-6-9"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/qualifications$"}
+          }
+        },
+        "source_qualifications": {"type": "array", "items": {"type": "string"}},
+        "source_review": {"type": ["string", "null"]},
+        "source_confidence": {"type": "string", "minLength": 1},
+        "inventory_qualification": {"type": ["object", "null"]},
+        "inventory_qualifications": {"type": ["array", "string", "null"]}
+      }
+    },
+    "sourceModelingResolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resolution_id", "source_exact_name", "source_record_ref", "ruling",
+        "ruling_qualifiers", "ruling_basis", "source_modeling_status",
+        "native_consumer_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "resolution_id": {"type": "string", "minLength": 1},
+        "source_exact_name": {"enum": ["Flesh to Stone", "Heroes’ Feast", "Instant Summons", "Move Earth", "Mass Heal"]},
+        "source_record_ref": {"$ref": "#/$defs/r5SourceRecordRef"},
+        "ruling": {"type": "string", "minLength": 1},
+        "ruling_qualifiers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "ruling_basis": {"const": "USER_SUPPLIED_ACCEPTED_SOURCE_SIX_SENIOR_R5_REVIEW"},
+        "source_modeling_status": {"const": "SETTLED_FOR_SOURCE_CLASSIFICATION"},
+        "native_consumer_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
+      }
+    },
+    "sourceModelingResidual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "residual_id", "source_exact_name", "source_record_ref", "residual",
+        "owner_action", "prohibited_inferences", "status"
+      ],
+      "properties": {
+        "residual_id": {"type": "string", "minLength": 1},
+        "source_exact_name": {"const": "Word of Recall"},
+        "source_record_ref": {"$ref": "#/$defs/r5SourceRecordRef"},
+        "residual": {"type": "string", "minLength": 1},
+        "owner_action": {"const": "BOUNDED_CONTENT_OWNER_POLICY_OR_SOURCE_RECONCILIATION_REQUIRED"},
+        "prohibited_inferences": {
+          "type": "array", "minItems": 2, "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["IMPLICIT_LATEST_WINS", "AUTOMATIC_CAP"]}
+        },
+        "status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceUnknownSubobligation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subobligation_id", "category", "description", "gate_phase", "status"],
+      "properties": {
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "category": {"enum": ["source_parameter", "source_semantics", "source_mapping_review", "downstream_domain_consumer_admission_native_proof"]},
+        "description": {"type": "string", "minLength": 1},
+        "gate_phase": {"enum": ["SP00_SOURCE", "FUTURE_PROOF"]},
+        "status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceUnknownEvidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "json_pointer", "exact_record_name", "record_index",
+        "source_asset_id", "edition", "printed_page", "source_header_line",
+        "source_heading", "raw_body_sha256", "raw_hash_basis", "body_witness_ref",
+        "qualification_ref", "evidence_boundary"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/required_modes_or_exceptions$"},
+        "exact_record_name": {"type": "string", "minLength": 1},
+        "record_index": {"type": "integer", "minimum": 0},
+        "source_asset_id": {"const": "srd52_en"},
+        "edition": {"const": "SRD_5_2_1"},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "source_heading": {"type": "string", "minLength": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_hash_basis": {"type": "string", "minLength": 1},
+        "body_witness_ref": {"type": "object"},
+        "qualification_ref": {"type": "object"},
+        "evidence_boundary": {"const": "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF"}
+      }
+    },
+    "sourceUnknownClassification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unresolved_key", "source_exact_name", "original_reason", "evidence_ref",
+        "source_unresolved_record_pointer", "original_status", "original_disposition",
+        "classification_status", "source_ready_blocking", "subobligations"
+      ],
+      "properties": {
+        "unresolved_key": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "original_reason": {"type": "string", "minLength": 1},
+        "evidence_ref": {"$ref": "#/$defs/sourceUnknownEvidenceRef"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/[0-9]+$"},
+        "original_status": {"const": "NOT_ESTABLISHED"},
+        "original_disposition": {"const": "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"},
+        "classification_status": {"enum": ["SOURCE_LEVEL_OPEN", "DOWNSTREAM_PROOF_ONLY", "MIXED_SOURCE_AND_FUTURE_PROOF"]},
+        "source_ready_blocking": {"type": "boolean"},
+        "subobligations": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceUnknownSubobligation"}}
+      }
+    },
+    "sourceUnknownClassificationContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "total_record_count", "source_blocking_key_count",
+        "downstream_only_key_count", "mixed_source_and_downstream_key_count",
+        "subobligation_counts_by_category", "source_level_categories",
+        "downstream_only_category", "original_reason_and_evidence_preserved"
+      ],
+      "properties": {
+        "status": {"const": "ALL_82_EXACT_RECORDS_CLASSIFIED_WITH_SPLIT_SUBOBLIGATIONS"},
+        "total_record_count": {"const": 82},
+        "source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "mixed_source_and_downstream_key_count": {"const": 28},
+        "subobligation_counts_by_category": {
+          "type": "object", "additionalProperties": false,
+          "required": ["source_parameter", "source_semantics", "source_mapping_review", "downstream_domain_consumer_admission_native_proof"],
+          "properties": {
+            "source_parameter": {"const": 36},
+            "source_semantics": {"const": 22},
+            "source_mapping_review": {"const": 23},
+            "downstream_domain_consumer_admission_native_proof": {"const": 33}
+          }
+        },
+        "source_level_categories": {"const": ["source_mapping_review", "source_parameter", "source_semantics"]},
+        "downstream_only_category": {"const": "downstream_domain_consumer_admission_native_proof"},
+        "original_reason_and_evidence_preserved": {"const": true}
+      }
+    },
+    "sourceTableEvidenceResidual": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_exact_name", "residual", "status"],
+      "properties": {
+        "source_exact_name": {"enum": ["Teleport", "Control Weather"]},
+        "residual": {"type": "string", "minLength": 1},
+        "status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceEvidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "asset_id",
+        "edition",
+        "raw_record_name",
+        "source_exact_name",
+        "raw_body_sha256",
+        "source_page",
+        "source_header_line",
+        "source_heading",
+        "summary_field",
+        "summary_item_index",
+        "qualification_boundary"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "asset_id": {"const": "srd52_en"},
+        "edition": {"const": "SRD_5_2_1"},
+        "raw_record_name": {"type": "string", "minLength": 1},
+        "source_exact_name": {"enum": ["Elementalism", "Alter Self"]},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "source_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "source_heading": {"type": "string", "minLength": 1},
+        "summary_field": {"const": "required_modes_or_exceptions"},
+        "summary_item_index": {"const": 0},
+        "qualification_boundary": {"const": "SUMMARY_DECOMPOSITION_ONLY_NO_INDEPENDENT_BRANCH_OR_CONSUMER_PROOF"}
+      }
+    },
+    "modeRequirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requirement_key",
+        "branch_key",
+        "independent_statement",
+        "summary_item_index"
+      ],
+      "properties": {
+        "requirement_key": {"type": "string", "minLength": 1},
+        "branch_key": {"type": "string", "minLength": 1},
+        "independent_statement": {"type": "string", "minLength": 1},
+        "summary_item_index": {"const": 0}
+      }
+    },
+    "sourceMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode_key", "mode_name", "requirements"],
+      "properties": {
+        "mode_key": {"type": "string", "minLength": 1},
+        "mode_name": {"type": "string", "minLength": 1},
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/modeRequirement"}
+        }
+      }
+    },
+    "sourceControlTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transition_key", "requirements"],
+      "properties": {
+        "transition_key": {"type": "string", "minLength": 1},
+        "requirements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/modeRequirement"}
+        }
+      }
+    },
+    "sourceModeMapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_name",
+        "source_record_ref",
+        "mapping_status",
+        "modes",
+        "control_transitions",
+        "research_dependency_labels",
+        "source_owner_obligation_summaries",
+        "support_domain_mappings",
+        "support_domain_mapping_status",
+        "consumer_dependency_edges",
+        "consumer_dependency_status"
+      ],
+      "properties": {
+        "entry_name": {"enum": ["Elementalism", "Alter Self"]},
+        "source_record_ref": {"$ref": "#/$defs/sourceEvidenceRef"},
+        "mapping_status": {
+          "const": "EXPLICIT_SOURCE_SUMMARY_DECOMPOSITION_NOT_MACHINE_ADMISSION"
+        },
+        "modes": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "items": {"$ref": "#/$defs/sourceMode"}
+        },
+        "control_transitions": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {"$ref": "#/$defs/sourceControlTransition"}
+        },
+        "research_dependency_labels": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "source_owner_obligation_summaries": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "support_domain_mappings": {"type": "array", "maxItems": 0},
+        "support_domain_mapping_status": {"const": "NOT_ESTABLISHED"},
+        "consumer_dependency_edges": {"type": "array", "maxItems": 0},
+        "consumer_dependency_status": {"const": "NOT_ESTABLISHED"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"entry_name": {"const": "Elementalism"}}},
+          "then": {
+            "properties": {
+              "modes": {"minItems": 5, "maxItems": 5},
+              "control_transitions": {"maxItems": 0}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"entry_name": {"const": "Alter Self"}}},
+          "then": {
+            "properties": {
+              "modes": {"minItems": 3, "maxItems": 3},
+              "control_transitions": {"minItems": 1, "maxItems": 1}
+            }
+          }
+        }
+      ]
+    },
+    "sourceAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_id",
+        "uri",
+        "language",
+        "edition",
+        "published",
+        "license",
+        "license_uri",
+        "attribution",
+        "sha256"
+      ],
+      "properties": {
+        "asset_id": {"enum": ["srd52_en", "srd52_de", "srd52_es", "srd52_fr", "srd52_it"]},
+        "uri": {"type": "string", "pattern": "^https://"},
+        "language": {"enum": ["en", "de", "es", "fr", "it"]},
+        "edition": {"const": "SRD_5_2_1"},
+        "published": {"type": "string", "format": "date"},
+        "license": {"const": "CC-BY-4.0"},
+        "license_uri": {"const": "https://creativecommons.org/licenses/by/4.0/legalcode"},
+        "attribution": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceNameAlias": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id",
+        "raw_source_pass_name",
+        "source_exact_name",
+        "inventory_exact_name",
+        "asset_id",
+        "printed_page",
+        "source_header_line",
+        "source_heading",
+        "raw_body_sha256",
+        "disposition"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-6-9"},
+        "raw_source_pass_name": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "inventory_exact_name": {"type": "string", "minLength": 1},
+        "asset_id": {"const": "srd52_en"},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "source_heading": {"type": "string", "minLength": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "disposition": {"const": "EXPLICIT_SOURCE_EXACT_NAME_ALIAS_VISUALLY_CONFIRMED"}
+      }
+    },
+    "corroboratingSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_id",
+        "uri",
+        "edition",
+        "role",
+        "license_status",
+        "text_imported",
+        "runtime_dependency"
+      ],
+      "properties": {
+        "source_id": {"enum": ["ddb_2024_basic_rules_telekinesis", "ddb_2014_legacy_telekinesis"]},
+        "uri": {"type": "string", "pattern": "^https://www\\.dndbeyond\\.com/"},
+        "edition": {"enum": ["DND_2024_BASIC_RULES", "DND_2014_LEGACY"]},
+        "role": {"enum": ["OFFICIAL_CURRENT_CORROBORATION_ONLY", "EXCLUDED_LEGACY_SOURCE"]},
+        "license_status": {"enum": ["CC_BY_NOT_ASSERTED_FOR_THIS_SOURCE", "NOT_USED"]},
+        "text_imported": {"const": false},
+        "runtime_dependency": {"const": false}
+      }
+    },
+    "sourceScopePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extracted_body_hash_role",
+        "semantic_hash_role",
+        "non_rule_segments",
+        "primary_spell_text_copied",
+        "machine_admission",
+        "production_support"
+      ],
+      "properties": {
+        "extracted_body_hash_role": {"const": "HISTORICAL_RAW_EXTRACTION_ONLY"},
+        "semantic_hash_role": {"const": "NOT_ESTABLISHED_BY_THIS_SOURCE_WITNESS"},
+        "non_rule_segments": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {"enum": ["PAGE_NUMBER", "DOCUMENT_TITLE", "NEXT_SPELL_HEADING", "PDF_CONTROL_CHARACTER", "FOREIGN_COLUMN_CONTENT"]}
+        },
+        "primary_spell_text_copied": {"const": false},
+        "machine_admission": {"const": "NOT_ESTABLISHED"},
+        "production_support": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "exact_name", "raw_body_sha256"],
+      "properties": {
+        "artifact_id": {"enum": ["source-pass-0-2", "source-pass-3-5", "source-pass-6-9"]},
+        "exact_name": {"type": "string", "minLength": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_id", "printed_page", "heading"],
+      "properties": {
+        "asset_id": {"enum": ["srd52_en", "srd52_de", "srd52_es", "srd52_fr", "srd52_it"]},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "heading": {"type": "string", "minLength": 1}
+      }
+    },
+    "reconstructionWitness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "witness_id",
+        "owner_spell",
+        "source_record",
+        "primary_asset_id",
+        "printed_pages",
+        "source_locators",
+        "accepted_segments",
+        "excluded_segments",
+        "reconstruction_obligation_ids",
+        "source_reconstruction_status",
+        "machine_support"
+      ],
+      "properties": {
+        "witness_id": {"enum": ["animate-objects-owner", "antilife-shell-owner", "antipathy-sympathy-owner", "find-steed-owner", "find-the-path-owner", "telekinesis-owner"]},
+        "owner_spell": {"type": "string", "minLength": 1},
+        "source_record": {"$ref": "#/$defs/sourceRecord"},
+        "primary_asset_id": {"const": "srd52_en"},
+        "printed_pages": {"type": "array", "minItems": 1, "items": {"type": "integer", "minimum": 1}},
+        "source_locators": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/sourceLocator"}},
+        "accepted_segments": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "excluded_segments": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "reconstruction_obligation_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "localized_translation_asset_ids": {"type": "array", "uniqueItems": true, "items": {"enum": ["srd52_de", "srd52_es", "srd52_fr", "srd52_it"]}},
+        "localized_translation_locators": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/sourceLocator"}},
+        "corroborating_source_ids": {"type": "array", "uniqueItems": true, "items": {"enum": ["ddb_2024_basic_rules_telekinesis"]}},
+        "source_reconstruction_status": {"enum": ["VISUALLY_RECONSTRUCTED", "LICENSED_TRANSLATIONS_CLOSE_AT_SIMPLE_TOOL; EXTENDED_EXAMPLES_CORROBORATION_ONLY"]},
+        "machine_support": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "numericGlyphWitness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_id", "owner_spell", "printed_page", "cell_locator", "literal", "codepoint"],
+      "properties": {
+        "asset_id": {"const": "srd52_en"},
+        "owner_spell": {"enum": ["Animate Objects", "Earthquake"]},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "cell_locator": {"type": "string", "minLength": 1},
+        "literal": {"type": "string", "minLength": 1},
+        "codepoint": {"enum": ["U+2212", "U+00D7"]}
+      }
+    },
+    "seedMetadataConflict": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry_id", "source_record", "source_facts", "source_locator", "observed_baseline", "disposition"],
+      "properties": {
+        "entry_id": {"const": "spell.acid_splash"},
+        "source_record": {"$ref": "#/$defs/sourceRecord"},
+        "source_facts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["school_id", "targeting"],
+          "properties": {
+            "school_id": {"const": "school.evocation"},
+            "targeting": {"$ref": "#/$defs/acidSplashTargeting"}
+          }
+        },
+        "source_locator": {"$ref": "#/$defs/sourceLocator"},
+        "observed_baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["path", "sha256", "hash_basis", "records"],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "#/$defs/sha256"},
+            "hash_basis": {"const": "RAW_FILE_BYTES"},
+            "records": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "items": {"$ref": "#/$defs/observedSeedRecord"}
+            }
+          }
+        },
+        "disposition": {"const": "EVIDENCE_ONLY_NO_REWRITE"}
+      }
+    },
+    "acidSplashTargeting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_mode", "point_selection_range_feet", "area_shape_id", "area_radius_feet", "affected_set", "legacy_two_target"],
+      "properties": {
+        "target_mode": {"const": "POINT_CENTERED_SPHERE"},
+        "point_selection_range_feet": {"const": 60},
+        "area_shape_id": {"const": "area.sphere"},
+        "area_radius_feet": {"const": 5},
+        "affected_set": {"const": "CREATURES_IN_SPHERE"},
+        "legacy_two_target": {"const": false}
+      }
+    },
+    "observedSeedRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "record"],
+      "properties": {
+        "record_id": {"enum": ["spell.acid_splash", "activity.spell.acid_splash", "spell.thunderclap", "activity.spell.thunderclap"]},
+        "record": {"type": "object"}
+      }
+    },
+    "existingExtraLane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "definition_id",
+        "roster_membership",
+        "provenance_status",
+        "edition_status",
+        "license_status",
+        "sorcerer_eligibility_status",
+        "all_mode_support_status",
+        "qualification_status",
+        "selectable",
+        "evidence",
+        "existing_owner_disposition"
+      ],
+      "properties": {
+        "name": {"const": "Thunderclap"},
+        "definition_id": {"const": "spell.thunderclap"},
+        "roster_membership": {"const": "OUTSIDE_SRD_339"},
+        "provenance_status": {"enum": ["UNPROVEN", "QUALIFIED"]},
+        "edition_status": {"enum": ["UNPROVEN", "QUALIFIED"]},
+        "license_status": {"enum": ["UNPROVEN", "QUALIFIED"]},
+        "sorcerer_eligibility_status": {"enum": ["UNPROVEN", "QUALIFIED"]},
+        "all_mode_support_status": {"enum": ["UNPROVEN", "QUALIFIED"]},
+        "qualification_status": {"enum": ["NOT_QUALIFIED", "QUALIFIED"]},
+        "selectable": {"type": "boolean"},
+        "evidence": {"type": "array", "items": {"type": "object"}},
+        "existing_owner_disposition": {"type": "string", "minLength": 1}
+      }
+    },
+    "contentOwnerDefaultRepair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_artifact_id",
+        "owner_path",
+        "owner_sha256",
+        "owner_section",
+        "trigger",
+        "status",
+        "authorized_action",
+        "preserve",
+        "record_before_promotion",
+        "product_owner_decision_required",
+        "worker_seed_mutation"
+      ],
+      "properties": {
+        "owner_artifact_id": {"const": "content-acquisition-contracts"},
+        "owner_path": {"type": "string", "minLength": 1},
+        "owner_sha256": {"$ref": "#/$defs/sha256"},
+        "owner_section": {"const": "Defaults, commitments and migration"},
+        "trigger": {"const": "Thunderclap existing-extra provenance/support lane remains unqualified"},
+        "status": {"const": "REQUIRED_BEFORE_PACKAGE_PROMOTION"},
+        "authorized_action": {"const": "REPAIR_NEW_INSTALLED_DEFAULT_ATOMICALLY_FROM_LEGAL_SUPPORTED_POOL"},
+        "preserve": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["legacy snapshots", "accepted work"]}},
+        "record_before_promotion": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["lawful source", "compatibility/migration evidence"]}},
+        "product_owner_decision_required": {"const": false},
+        "worker_seed_mutation": {"const": "NONE"}
+      }
+    },
+    "packageNoticeObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "observed_source_label", "qualified_asset_version", "disposition"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "observed_source_label": {"type": "string", "minLength": 1},
+        "qualified_asset_version": {"const": "SRD 5.2.1"},
+        "disposition": {"const": "SHARED_INTEGRATOR_REVIEW_REQUIRED"}
+      }
+    }
+  }
+}

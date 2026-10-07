@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "paired_rejections": [
+    {
+      "case_id": "animated-object-block-omitted",
+      "witness_id": "animate-objects-owner",
+      "operation": "remove",
+      "field": "accepted_segments",
+      "value": "animated_object_stat_block"
+    },
+    {
+      "case_id": "otherworldly-steed-block-omitted",
+      "witness_id": "find-steed-owner",
+      "operation": "remove",
+      "field": "accepted_segments",
+      "value": "otherworldly_steed_stat_block"
+    },
+    {
+      "case_id": "animated-object-tail-attached-to-antipathy",
+      "witness_id": "antipathy-sympathy-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "animated_object_stat_block"
+    },
+    {
+      "case_id": "antipathy-tail-attached-to-animate-object",
+      "witness_id": "animate-objects-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "antipathy_sympathy_tail"
+    },
+    {
+      "case_id": "find-path-tail-attached-to-steed",
+      "witness_id": "find-steed-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "find_the_path_continuation"
+    },
+    {
+      "case_id": "next-heading-interpreted-as-rule",
+      "witness_id": "telekinesis-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "next_spell_heading"
+    },
+    {
+      "case_id": "footer-interpreted-as-rule",
+      "witness_id": "telekinesis-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "page_number"
+    },
+    {
+      "case_id": "document-title-interpreted-as-rule",
+      "witness_id": "telekinesis-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "document_title"
+    },
+    {
+      "case_id": "pdf-control-character-interpreted-as-rule",
+      "witness_id": "telekinesis-owner",
+      "operation": "append",
+      "field": "accepted_segments",
+      "value": "pdf_control_character"
+    },
+    {
+      "case_id": "localized-tail-witness-omitted",
+      "witness_id": "telekinesis-owner",
+      "operation": "remove_field",
+      "field": "localized_translation_asset_ids"
+    }
+  ],
+  "numeric_rejections": [
+    {
+      "case_id": "minus-sign-normalized-to-hyphen",
+      "operation": "replace",
+      "collection": "numeric_glyph_witnesses",
+      "index": 0,
+      "field": "literal",
+      "value": "-4"
+    },
+    {
+      "case_id": "multiplication-sign-normalized-to-letter",
+      "operation": "replace",
+      "collection": "numeric_glyph_witnesses",
+      "index": 1,
+      "field": "literal",
+      "value": "1d10 x 10 feet"
+    },
+    {
+      "case_id": "required-table-cell-omitted",
+      "operation": "remove_item",
+      "collection": "numeric_glyph_witnesses",
+      "index": 0
+    }
+  ],
+  "corroboration_rejections": [
+    {
+      "case_id": "basic-rules-page-promoted-to-licensed-primary",
+      "source_id": "ddb_2024_basic_rules_telekinesis",
+      "field": "text_imported",
+      "value": true
+    },
+    {
+      "case_id": "basic-rules-license-assumed",
+      "source_id": "ddb_2024_basic_rules_telekinesis",
+      "field": "license_status",
+      "value": "CC-BY-4.0"
+    },
+    {
+      "case_id": "2014-legacy-source-admitted",
+      "source_id": "ddb_2014_legacy_telekinesis",
+      "field": "role",
+      "value": "OFFICIAL_CURRENT_CORROBORATION_ONLY"
+    }
+  ],
+  "mode_rejections": [
+    {
+      "case_id": "elementalism-same-count-mode-replaced",
+      "entry_name": "Elementalism",
+      "mode_index": 1,
+      "mode_name": "unreviewed_replacement"
+    },
+    {
+      "case_id": "alter-self-same-count-mode-replaced",
+      "entry_name": "Alter Self",
+      "mode_index": 2,
+      "mode_name": "unreviewed_replacement"
+    }
+  ]
+}

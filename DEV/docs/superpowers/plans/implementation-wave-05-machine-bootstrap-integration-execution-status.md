@@ -2913,7 +2913,7 @@ PLAN: existing stable Wave05/Wave06/index;32 additional tasks, complete envelope
 
 | Task | State | Activation |
 |---|---|---|
-| W05.SP00 | PLANNED / ELIGIBLE_OWN_ENTRY | fresh own entry/envelope/currentness checks; plan GO accepted |
+| W05.SP00 | PARTIAL / SOURCE_INPUTS_HELD | reviewed candidate census/tool slice; no source-ready output; exact residuals below |
 | W05.SP01 | COMPLETE / ACCEPTED | `W05_SPELL_CLOSED_MACHINE_SHAPES_READY` at `30c5a66f234b75bec926462c6301454133506884`, independent review and integrated proof/read-back PASS |
 | W05.SP02 | ELIGIBLE_OWN_ENTRY | accepted SP01 plus prior catalog/package binding; task-local checks/TDD/review required |
 | W05.SP03 | PLANNED / WAIT_OWN_INPUTS | own exact named published inputs; plan GO accepted |
@@ -3070,7 +3070,7 @@ preparation spec/quality PASS after R1–R4 repairs. Integrated P2 owner bytes a
 unchanged from that candidate; accepted SP01 and worker/tooling metadata retained.
 COORDINATOR_FOCUSED: P2 preparation + exact six-module P2 command + RD12:
 699 passed, 2 existing warnings; diff check PASS.
-FULL_INTEGRATED_PROOF: pending exact committed clean-source execution.
+FULL_INTEGRATED_PROOF: exact clean committed `3032517d606a212af06b0ad148e9611a3a622297`: 1656 pytest passed (24 inherited warnings), canonical unittest 1577 OK; maintenance and runtime build PASS. Non-force publication and fresh fetch matched local/remote HEAD with empty tree diff.
 VERSION_IMPACT: History 1.0.5 -> 1.0.7; Host 1.0.14 -> 1.0.17;
 LIVE 1.0.22 -> 1.0.24; Collaboration 1.0.19 -> 1.0.20;
 EVENT_INDEX schema 1 -> 2 with producers/reader/scaffold synchronization.
@@ -3078,4 +3078,34 @@ No SemanticEvent body/History generation change, migration or coordinated bump.
 SYSTEM_IMPACT: RESOLVED technical allocation within accepted owners; no PO issue.
 CLAIM: reviewed coherent preparation only; full P2 output NOT_PRODUCED, P3 held
 until actual SP04 native producer and full P2 proof. Independent compiler/source
-lanes continue. Publication/read-back pending.
+lanes continue. Preparation publication/read-back PASS at `3032517d606a212af06b0ad148e9611a3a622297`; full P2 output still NOT_PRODUCED.
+
+## SP00 reviewed progressed-partial integration — 2026-10-06
+
+IMPLEMENTATION_START_HEAD: `565b7625c2f04e937cfca4425507af61a366bc01`.
+TASK/SPEC: SP00 canonical source/content qualification, exact five assigned new
+DEV tool/schema/fixture/test paths; frozen inventory/body/pass/matrix source
+artifacts inspect-only. Actual isolated final candidate:
+`f8ac81d0f57a9077bb1cd16f274ed9b8d1ed9991`.
+INDEPENDENT_SLICE_REVIEW: spec/quality PASS, scoped evidence in
+`DEV/docs/superpowers/design/2026-10-06-sp00-partial-census-review.md`.
+CONSUMERS: future SP16/content source gates; no GAME source, seed/NOTICE,
+runtime schema, package or activation change in this slice.
+PROTECTED: no wholesale primary-text public import, no frozen-history rewrite,
+source versus asset/raw/semantic hash distinctions, no false READY/support,
+no additional GAME model/network work. Source-only proof and future native
+consumer/recipe/performance obligations stay separate.
+REVIEWED_PARTIAL: 339 candidate entry maps; 77 source-blocking residual keys,
+5 downstream-only keys, 8 explicit reconstruction gaps versus 106 future
+level-3–5 recipes; exact other source/review/default holds recorded by tool.
+Word of Recall source interpretation remains held; tables have separate later
+scratch evidence only, not accepted by this candidate's source-ready gate.
+COORDINATOR_FOCUSED: 19 passed on integrated identical SP00 owner bytes;
+staged diff check PASS. Full integrated clean-source proof/publication pending.
+VERSION_IMPACT: NONE — new DEV draft schema/manifest starts 1; no existing
+HDM namespace/projected owner changed. Third-party pypdf is the separately
+reviewed and published DEV-only prerequisite, not runtime authority.
+SYSTEM_IMPACT: NONE for partial evidence/tool integration; no PO issue.
+OUTPUT: W05_SPELL_SOURCE_CENSUS_PARTIAL only; qualification/native/machine/
+performance NOT_ESTABLISHED. W05_SPELL_SOURCE_QUALIFICATION_READY NOT_PRODUCED;
+SP16 stays held. This slice can publish without awaiting the whole source task.
