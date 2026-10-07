@@ -3250,3 +3250,63 @@ UNPUBLISHED_WORK: NONE in main or required reviewed integrated slices. Task-owne
 intermediate scratch candidates/logs are preserved separately, superseded
 where integrated; first12 source report remains unaccepted evidence. No hidden
 production edits or running obsolete SP01 assignment are required to resume.
+
+## SP03 carrier/source/root preparation and SP00 first12 checkpoint — 2026-10-08
+
+LAST_PUBLISHED_IMPLEMENTATION_SHA: `b4ae816d693e0abdce964187f2c58de626e38e56`.
+Non-force publication and fresh pruned fetch confirmed exact local/remote ref
+equality and empty tree diff. No obsolete worker execution is required.
+
+COHERENT_SLICES:
+- `f50576a7`: closed optional policy/cast compiler carriers; exact dependency,
+  accessor/fact permission and source-to-compiler tests. Independent spec/quality
+  re-review PASS; four Important findings repaired.
+- `30cdf019`: nine Markdown-bound source-only residual closures; independent
+  source and machine-evidence reviews PASS. Command Approach movement condition
+  preserved. Aid, Arcane Lock and Create/Destroy Water remain held. Active source
+  blockers: 68 keys / 61 entries; original 77-key roster/classifications retained.
+- `5e9b678e`: complete native Git-tree membership conformance preparation, no
+  discovery-index absence inference. Five Important review findings repaired.
+- `b4ae816d`: source-bound root preparation issuer and bounded raw selector DAG;
+  constructor/copy/replace provenance loophole and actor/target projection fixed.
+  Disposable unrelated compiler cache reconstruction no longer invalidates an
+  unchanged preparation; selected compiler/source changes still invalidate.
+  Independent final spec/quality review PASS for F1/F2/R1 and this bounded scope.
+
+Independent review identities and exact candidate/proof limits are preserved in
+`DEV/docs/superpowers/design/2026-10-07-sp03-preparation-checkpoint-review.md`.
+Technical allocations: original policy/source allocation, complete-membership
+realization ruling and root-preparation issuer ruling. NEEDS_PO: NONE.
+
+FINAL_INTEGRATED_VERIFICATION: clean exact-source real-Git clone of `b4ae816d`:
+full pytest `DEV/TESTS -n auto`: 1796 passed / 42 skipped; canonical unittest:
+1644 tests OK / skipped42. Installed drivers actually execute 24 context and
+17 membership inner tests, both OK. Maintenance audit, release build, namespace
+census and diff check PASS. VERSION_UNCLASSIFIED and VERSION_LEGACY_HITS empty.
+Hosted CI and gameplay latency not inspected/measured. Main ignored artifacts
+were preserved; no PDF download or parsing used in source qualification.
+
+VERSION_IMPACT: carrier slice contracts1.0.6->1.0.7, runtime1.0.3->1.0.4;
+new membership module1.0.1; root issuer contracts1.0.7->1.0.8,
+context1.0.2->1.0.3, membership1.0.1->1.0.2, host1.0.17->1.0.18.
+Compatible optional structural projections retain their schema versions;
+catalog2/profile1, engine/campaign/storage/persistent/digest generations unchanged.
+SP00 DEV evidence and checkpoint routing records: NONE under owning bump rules.
+
+ACTUAL_CLAIM: preparation-only slices. Four calculation policies, remaining
+resource/Condition/arbitration/owner-Effect DAG branches and common-cast preflight
+are not implemented. Root issuer supports initial unadvanced Actor/single-Actor
+target roots, not unsupported payer/source/Asset/Procedure mappings, fixed-roll/
+resumed roots or authentic distinct-child acceptance. Production bounded
+membership coverage/atomic fencing joins native integration; broad ordinary cast
+scans remain prohibited. Full SP03/SP00/P2 outputs remain NOT_PRODUCED.
+
+NEXT_EXACT_TASK: serialized finite roll-policy value/result/trace closure and
+exact conformance opposite consumer, then pure calculate_selector cancellation
+proof without RNG or invented fixed rolls. Follow with typed damage-defense,
+legal AC bases, capability surfaces and common-cast result/price/exception/read
+closure. Current semantic laws are selected; metadata tokens alone are not
+complete executable value/result contracts. Continue remaining SP00 obligations
+independently; actual SP04 releases full P2 HOT producer join.
+UNPUBLISHED_PRODUCTION_WORK: NONE. Scratch candidates are preserved but final
+accepted bytes are committed/published; no running worker is needed for recovery.
