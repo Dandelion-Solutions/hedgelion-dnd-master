@@ -3310,3 +3310,47 @@ complete executable value/result contracts. Continue remaining SP00 obligations
 independently; actual SP04 releases full P2 HOT producer join.
 UNPUBLISHED_PRODUCTION_WORK: NONE. Scratch candidates are preserved but final
 accepted bytes are committed/published; no running worker is needed for recovery.
+
+## SP03 finite pre-RNG roll-policy checkpoint — 2026-10-08
+
+LAST_PUBLISHED_IMPLEMENTATION_SHA: `36987abf9e73187ff946b167d6dcca0db2256c96`.
+FROZEN_WORKER: `68dd7e1567a24e297303c0f094056623be75fb07`; all seven integrated
+paths and the full tree match the independently reviewed worker snapshot.
+INDEPENDENT_REVIEW: `ses_ee70bd82affeeSB7I39V93DEQ6`, final SPEC/QUALITY PASS;
+F1 exact supplied-context issuance, F2 unsupported Resource/priority/stacking
+gates and F3 cold exact-value validation repaired. No open blocking findings.
+Review/proof limits: `2026-10-08-sp03-roll-policy-checkpoint-review.md` in design.
+
+REALIZED: closed Contribution/result/trace, exact source/activity/native Asset
+eligibility, scalar flat modifiers and advantage/disadvantage cancellation by
+presence regardless of count/order. Genuine issued context is checked before
+evaluator acquisition. Opposite operation exists only in isolated conformance
+metadata; production `rule.grant_disadvantage` remains dormant. Fixed-roll
+selection is held; no raw values are invented and no RNG is drawn. Unsupported
+gate/priority/stacking forms reject at admission or yield typed hold if encountered
+at consumption, never an ungated result or false-from-missing substitution.
+
+FINAL_INTEGRATED_PROOF: clean real-Git source snapshot of `36987abf`:
+full unfiltered pytest: 1809 passed / 42 skipped; canonical unittest: 1644 tests
+OK / skipped42, actual installed context24 and membership17 both OK. Roll-policy
+installed-source suite has13 pytest cases. Maintenance audit, release build,
+namespace census and diff check PASS; unclassified/legacy census sets empty.
+The earlier uncommitted worker clean-head provenance assertion failed and was
+not a PASS; final unfiltered clean committed verification closes that condition.
+Hosted CI and gameplay latency not inspected/measured.
+
+PUBLICATION_READBACK: fresh pruned fetch and native ref/tree comparison exactly
+match `36987abf`; non-force publication PASS. VERSION_IMPACT: activity_runtime
+1.0.4->1.0.5; new calculation module1.0.1; compatible additive projection/schema
+and existing catalog/profile/persistent/campaign/storage/digest namespaces unchanged.
+Checkpoint review/status docs NONE under owning version rules.
+
+NEXT_EXACT_TASK: typed damage-defense value/result contracts with exact type/
+origin/bypass/source and input-component/instance/group retention, source-defined
+adjustment->resistance->vulnerability rounding and 7->3/14/0/6 goldens, then
+nonadditive AC bases and exact native capability/cast consumers. Use compiled/
+source-owned damage inputs; no caller amount/base, unknown rule names, generic
+argument bag, arbitrary operation or broad production activation. Remaining
+DAG/gated/fixed-roll/native issuer joins stay exact owned obligations.
+Full SP03/SP00/P2 outputs remain NOT_PRODUCED; SP04 waits for complete SP03.
+NEEDS_PO: NONE. UNPUBLISHED_PRODUCTION_WORK: NONE. No task worker is running.
