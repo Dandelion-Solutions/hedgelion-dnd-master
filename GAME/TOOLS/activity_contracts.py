@@ -41,8 +41,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -1042,6 +1042,26 @@ class ContextFactBinding(ContractValue):
 
 
 @dataclass(frozen=True, slots=True)
+class ArmorClassNativeBaseDescriptor(ContractValue):
+    """One fixed Dex source read owned by the selected AC profile."""
+
+    kind: Literal["ACTOR_DEXTERITY_BASE"]
+    ability_id: Literal["ability.dexterity"]
+    subject_role: Literal["actor", "target"]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "armor_class_native_base_descriptor",
+            {
+                "kind": self.kind,
+                "ability_id": self.ability_id,
+                "subject_role": self.subject_role,
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
 class CalculationPolicyBinding(ContractValue):
     """Exact occurrence and read/pair references; never a policy argument bag."""
 
@@ -1057,9 +1077,48 @@ class CalculationPolicyBinding(ContractValue):
     selector_operation_pairs: tuple[SelectorOperationPair, ...]
     context_fact_bindings: tuple[ContextFactBinding, ...]
     native_role_bindings: tuple[NativeRoleBinding, ...]
+    native_base_descriptor: ArmorClassNativeBaseDescriptor | None = None
 
     def __post_init__(self) -> None:
         ContractValue.__post_init__(self)
+        if self.profile_id == "calculation.armor_class_srd521":
+            descriptor = self.native_base_descriptor
+            selector_roles = tuple(
+                role_binding
+                for role_binding in self.native_role_bindings
+                if role_binding.read_ref == "selector:defense.armor_class"
+            )
+            if (
+                type(descriptor) is not ArmorClassNativeBaseDescriptor
+                or self.reads != ("selector:defense.armor_class",)
+                or self.selector_operation_pairs
+                != (
+                    SelectorOperationPair(
+                        "defense.armor_class",
+                        ("rule.add_flat", "rule.override"),
+                    ),
+                )
+                or self.context_fact_bindings
+                or self.native_role_bindings != selector_roles
+                or len(selector_roles) != 1
+                or selector_roles[0].role_names != (descriptor.subject_role,)
+            ):
+                raise ActivityContractError(
+                    "AC policy requires one exact Dex-bound subject and base/modifier pair"
+                )
+        elif self.native_base_descriptor is not None:
+            raise ActivityContractError(
+                "native AC base descriptor belongs only to the AC policy"
+            )
+        native_base_descriptor = (
+            None
+            if self.native_base_descriptor is None
+            else {
+                "kind": self.native_base_descriptor.kind,
+                "ability_id": self.native_base_descriptor.ability_id,
+                "subject_role": self.native_base_descriptor.subject_role,
+            }
+        )
         _wire_contract(
             "calculation_policy_binding",
             {
@@ -1088,6 +1147,7 @@ class CalculationPolicyBinding(ContractValue):
                     }
                     for binding in self.native_role_bindings
                 ),
+                "native_base_descriptor": native_base_descriptor,
             },
         )
 
@@ -1194,6 +1254,15 @@ class CompiledCalculationPolicy(ContractValue):
                             "role_names": binding.role_names,
                         }
                         for binding in self.binding.native_role_bindings
+                    ),
+                    "native_base_descriptor": (
+                        None
+                        if self.binding.native_base_descriptor is None
+                        else {
+                            "kind": self.binding.native_base_descriptor.kind,
+                            "ability_id": self.binding.native_base_descriptor.ability_id,
+                            "subject_role": self.binding.native_base_descriptor.subject_role,
+                        }
                     ),
                 },
                 "selector_contracts": self.selector_contracts,

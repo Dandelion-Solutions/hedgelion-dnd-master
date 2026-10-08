@@ -10,8 +10,8 @@ from . import activity_contracts as contracts
 from . import mechanical_context, structural_contracts
 from .current_owner import NativeOwnerRef
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
 ROLL_POLICY_GENERATION: Final[int] = 1
@@ -21,6 +21,49 @@ DAMAGE_POLICY_ID: Final[str] = "calculation.damage_defense_srd521"
 DAMAGE_POLICY_GENERATION: Final[int] = 1
 DAMAGE_SELECTOR_ID: Final[str] = "damage.received"
 DAMAGE_COMBINATION_POLICY: Final[str] = "damage_defense_source_ordered_v1"
+ARMOR_CLASS_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
+ARMOR_CLASS_POLICY_GENERATION: Final[int] = 1
+ARMOR_CLASS_SELECTOR_ID: Final[str] = "defense.armor_class"
+ARMOR_CLASS_COMBINATION_POLICY: Final[str] = "armor_class_nonadditive_base_v1"
+ARMOR_CLASS_OPERATION_IDS: Final[tuple[str, str]] = (
+    "rule.add_flat",
+    "rule.override",
+)
+_ARMOR_CLASS_OPERATION_CONTRACTS: Final[Mapping[str, Mapping[str, object]]] = (
+    MappingProxyType(
+        {
+            "rule.add_flat": MappingProxyType(
+                {
+                    "value_kind": "numeric_scalar",
+                    "normalization": "SUM",
+                    "constraints": ("finite_integer",),
+                    "calculation_policy_id": ARMOR_CLASS_POLICY_ID,
+                    "calculation_policy_generation": ARMOR_CLASS_POLICY_GENERATION,
+                }
+            ),
+            "rule.override": MappingProxyType(
+                {
+                    "value_kind": "armor_class_base",
+                    "normalization": "SELECT_ONE_LEGAL_BASE",
+                    "constraints": ("eligible_nonadditive_ac_base",),
+                    "calculation_policy_id": ARMOR_CLASS_POLICY_ID,
+                    "calculation_policy_generation": ARMOR_CLASS_POLICY_GENERATION,
+                }
+            ),
+        }
+    )
+)
+_ARMOR_CLASS_REJECTION_ORDER: Final[tuple[str, ...]] = (
+    "PREDICATE_FALSE",
+    "SOURCE_NOT_ELIGIBLE",
+)
+_UNSUPPORTED_ARMOR_CLASS_ELEMENT_MEMBERS: Final[frozenset[str]] = frozenset(
+    {"gate", "priority", "stacking_key"}
+)
+_MAGE_ARMOR_DEFINITION_ID: Final[str] = "effect.spell.mage_armor"
+_MAGE_ARMOR_RULES_ORIGIN_ID: Final[str] = "source.spell.mage_armor"
+_SHIELD_DEFINITION_ID: Final[str] = "effect.spell.shield"
+_SHIELD_RULES_ORIGIN_ID: Final[str] = "source.spell.shield"
 DAMAGE_OPERATION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
     {
         "rule.add_flat": "ADJUSTMENT",
@@ -102,7 +145,11 @@ def calculate_selector(
     """
     if type(context) is not contracts.NativePreparationContext:
         raise CalculationError("roll calculation requires a typed preparation context")
-    if selector_id not in {ROLL_SELECTOR_ID, DAMAGE_SELECTOR_ID}:
+    if selector_id not in {
+        ROLL_SELECTOR_ID,
+        DAMAGE_SELECTOR_ID,
+        ARMOR_CLASS_SELECTOR_ID,
+    }:
         raise CalculationError(
             "calculation selector is outside the finite selected policy set"
         )
@@ -113,6 +160,8 @@ def calculate_selector(
 
     if selector_id == DAMAGE_SELECTOR_ID:
         return _calculate_damage_selector(context)
+    if selector_id == ARMOR_CLASS_SELECTOR_ID:
+        return _calculate_armor_class_selector(context)
 
     # The evaluator enforces exact issuance/currentness while acquiring the
     # complete native read union and again before returning.
@@ -167,6 +216,1032 @@ def _calculate_damage_selector(
             "normalized damage result violates its installed closed contract"
         ) from error
     return normalized
+
+
+def _calculate_armor_class_selector(
+    context: contracts.NativePreparationContext,
+) -> Mapping[str, object]:
+    policy = _issued_armor_class_policy(context)
+    raw_evaluation = mechanical_context.evaluate_selector(
+        context.compiled,
+        ARMOR_CLASS_SELECTOR_ID,
+        consumer_id=context.consumer_id,
+        observation=context.observation,
+        role_bindings=context.role_bindings,
+        accepted_command=context.accepted_command,
+    )
+    normalized = _normalize_armor_class_policy(context, policy, raw_evaluation)
+    try:
+        structural_contracts.validate_contract("armor_class_policy_result", normalized)
+    except structural_contracts.StructuralContractError as error:
+        raise CalculationError(
+            "normalized Armor Class result violates its installed closed contract: "
+            f"{error}"
+        ) from error
+    return normalized
+
+
+def _issued_armor_class_policy(
+    context: contracts.NativePreparationContext,
+) -> contracts.CompiledCalculationPolicy:
+    matches = tuple(
+        policy
+        for policy in context.compiled.calculation_policy_bindings
+        if policy.binding.consumer_id == context.consumer_id
+        and policy.binding.profile_id == ARMOR_CLASS_POLICY_ID
+        and policy.binding.profile_generation == ARMOR_CLASS_POLICY_GENERATION
+    )
+    if len(matches) != 1:
+        raise CalculationError(
+            "issued consumer does not retain one exact Armor Class policy"
+        )
+    policy = matches[0]
+    binding = policy.binding
+    descriptor = binding.native_base_descriptor
+    if type(descriptor) is not contracts.ArmorClassNativeBaseDescriptor:
+        raise CalculationError("issued Armor Class policy has no typed native base")
+    expected_role_binding = contracts.NativeRoleBinding(
+        f"selector:{ARMOR_CLASS_SELECTOR_ID}", (descriptor.subject_role,)
+    )
+    if (
+        descriptor.kind != "ACTOR_DEXTERITY_BASE"
+        or descriptor.ability_id != "ability.dexterity"
+        or descriptor.subject_role not in {"actor", "target"}
+        or binding.reads != (f"selector:{ARMOR_CLASS_SELECTOR_ID}",)
+        or binding.selector_operation_pairs
+        != (
+            contracts.SelectorOperationPair(
+                ARMOR_CLASS_SELECTOR_ID, ARMOR_CLASS_OPERATION_IDS
+            ),
+        )
+        or binding.context_fact_bindings
+        or binding.native_role_bindings != (expected_role_binding,)
+        or policy.context_fact_contracts
+        or policy.dependency_read_refs
+    ):
+        raise CalculationError(
+            "issued Armor Class pair/fact/role/native-base closure is incomplete"
+        )
+
+    role_contract = policy.role_contracts.get(descriptor.subject_role)
+    if (
+        not isinstance(role_contract, Mapping)
+        or role_contract.get("family_key") != "world.actor"
+        or role_contract.get("required") is not True
+    ):
+        raise CalculationError(
+            "issued Armor Class subject is not a required Actor role"
+        )
+
+    selector = policy.selector_contracts.get(ARMOR_CLASS_SELECTOR_ID)
+    if not isinstance(selector, Mapping):
+        raise CalculationError("issued Armor Class selector metadata is unavailable")
+    expected_selector_values = {
+        "calculation_policy_id": ARMOR_CLASS_POLICY_ID,
+        "calculation_policy_generation": ARMOR_CLASS_POLICY_GENERATION,
+        "contribution_type": "armor_class",
+        "result_type": "integer",
+        "result_constraints": {},
+        "combination_policy": ARMOR_CLASS_COMBINATION_POLICY,
+        "resolution_owner": "SELECTOR_METADATA",
+        "trace_policy": "RETAIN_ACCEPTED_REJECTED_PROVENANCE",
+        "allowed_dependency_kinds": (),
+        "allowed_input_classes": ("ENGINE_STATE",),
+        "permitted_context_fact_ids": (),
+        "static_dependencies": (),
+        "subject_kinds": ("world.actor",),
+        "binding_kinds": ("subject",),
+    }
+    if any(
+        not _same_value(selector.get(name), expected)
+        for name, expected in expected_selector_values.items()
+    ):
+        raise CalculationError(
+            "issued Armor Class selector is not the exact selected profile"
+        )
+    allowed_operations = selector.get("allowed_operations")
+    if (
+        not isinstance(allowed_operations, (tuple, list))
+        or len(allowed_operations) != len(ARMOR_CLASS_OPERATION_IDS)
+        or set(allowed_operations) != set(ARMOR_CLASS_OPERATION_IDS)
+    ):
+        raise CalculationError("issued Armor Class operation pair is not exact")
+    operation_contracts = selector.get("operation_contracts")
+    if not isinstance(operation_contracts, Mapping) or set(operation_contracts) != set(
+        ARMOR_CLASS_OPERATION_IDS
+    ):
+        raise CalculationError("issued Armor Class operation contracts are incomplete")
+    for operation_id, expected in _ARMOR_CLASS_OPERATION_CONTRACTS.items():
+        operation = operation_contracts.get(operation_id)
+        if not isinstance(operation, Mapping) or not _same_value(operation, expected):
+            raise CalculationError(
+                f"issued Armor Class operation contract is not exact: {operation_id}"
+            )
+    return policy
+
+
+def _normalize_armor_class_policy(
+    context: contracts.NativePreparationContext,
+    policy: contracts.CompiledCalculationPolicy,
+    raw_evaluation: Mapping[str, object],
+) -> dict[str, object]:
+    expected_evaluation_members = {
+        "selector_id",
+        "consumer_id",
+        "calculation_policy_id",
+        "calculation_policy_generation",
+        "selector_result",
+        "context_facts",
+        "read_refs",
+        "native_membership",
+        "provenance",
+    }
+    if set(raw_evaluation) != expected_evaluation_members:
+        raise CalculationError(
+            "raw Armor Class evaluation is not the closed selector result"
+        )
+    if (
+        raw_evaluation.get("selector_id") != ARMOR_CLASS_SELECTOR_ID
+        or raw_evaluation.get("consumer_id") != context.consumer_id
+        or raw_evaluation.get("calculation_policy_id") != ARMOR_CLASS_POLICY_ID
+        or raw_evaluation.get("calculation_policy_generation")
+        != ARMOR_CLASS_POLICY_GENERATION
+        or raw_evaluation.get("context_facts") not in ((), [])
+    ):
+        raise CalculationError(
+            "raw selector result differs from the issued Armor Class binding"
+        )
+    selector_result = raw_evaluation.get("selector_result")
+    if not isinstance(selector_result, Mapping) or set(selector_result) != {
+        "node_ref",
+        "value_type",
+        "contribution_type",
+        "combination_policy",
+        "operation_ids",
+        "resolution_owner",
+        "trace_policy",
+        "policy_id",
+        "dependencies",
+        "raw_contributions",
+        "native_base_inputs",
+    }:
+        raise CalculationError(
+            "raw Armor Class node is not the closed native-base contribution set"
+        )
+    operation_ids = selector_result.get("operation_ids")
+    if (
+        selector_result.get("node_ref") != f"selector:{ARMOR_CLASS_SELECTOR_ID}"
+        or selector_result.get("value_type") != "integer"
+        or selector_result.get("contribution_type") != "armor_class"
+        or selector_result.get("combination_policy") != ARMOR_CLASS_COMBINATION_POLICY
+        or selector_result.get("policy_id") != ARMOR_CLASS_POLICY_ID
+        or selector_result.get("resolution_owner") != "SELECTOR_METADATA"
+        or selector_result.get("trace_policy") != "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+        or not isinstance(operation_ids, (tuple, list))
+        or len(operation_ids) != len(ARMOR_CLASS_OPERATION_IDS)
+        or set(operation_ids) != set(ARMOR_CLASS_OPERATION_IDS)
+        or not isinstance(selector_result.get("dependencies"), Mapping)
+        or selector_result.get("dependencies")
+        or "value" in selector_result
+    ):
+        raise CalculationError(
+            "raw selector result violates the selected Armor Class contract"
+        )
+
+    native_membership = raw_evaluation.get("native_membership")
+    provenance = raw_evaluation.get("provenance")
+    if not isinstance(native_membership, Mapping) or not isinstance(
+        provenance, Mapping
+    ):
+        raise CalculationError(
+            "Armor Class source membership/provenance evidence is unavailable"
+        )
+    if set(native_membership) != {
+        "source_revision",
+        "source_tree_sha",
+        "effect_ids",
+        "effect_dependencies",
+        "effects",
+        "excluded_effect_ids",
+        "exclusions",
+        "asset_ids",
+        "assets",
+        "family_coverage",
+        "owner_reads",
+    }:
+        raise CalculationError(
+            "Armor Class membership evidence is not the closed native source proof"
+        )
+    if set(provenance) != {
+        "activity_id",
+        "consumer_id",
+        "occurrence_id",
+        "command_id",
+        "resolution_id",
+        "definition_semantic_hash",
+        "compiler_generation",
+        "catalog_context_fingerprint",
+        "role_bindings",
+        "accepted_fact_refs",
+        "policy_refs",
+        "observation_fingerprint",
+        "source_revision",
+        "source_tree_sha",
+    }:
+        raise CalculationError("Armor Class provenance fields are not closed")
+    source_revision = native_membership.get("source_revision")
+    source_tree_sha = native_membership.get("source_tree_sha")
+    observation_fingerprint = provenance.get("observation_fingerprint")
+    if not all(
+        isinstance(value, str) and value
+        for value in (source_revision, source_tree_sha, observation_fingerprint)
+    ):
+        raise CalculationError("Armor Class source observation identity is incomplete")
+    expected_provenance_roles = {
+        role_name: _owner_ref_wire(owner_ref)
+        for role_name, owner_ref in sorted(context.role_bindings.items())
+        if type(owner_ref) is NativeOwnerRef
+    }
+    if (
+        provenance.get("activity_id") != context.compiled.activity_id
+        or provenance.get("consumer_id") != context.consumer_id
+        or provenance.get("occurrence_id") != context.occurrence_id
+        or provenance.get("command_id") != context.execution_ref.command_id
+        or provenance.get("resolution_id") != context.execution_ref.resolution_id
+        or provenance.get("definition_semantic_hash")
+        != context.compiled.definition_semantic_hash
+        or provenance.get("compiler_generation") != context.compiled.compiler_generation
+        or provenance.get("catalog_context_fingerprint")
+        != context.compiled.catalog_context_fingerprint
+        or not _same_value(provenance.get("role_bindings"), expected_provenance_roles)
+        or provenance.get("accepted_fact_refs") not in ((), [])
+        or provenance.get("policy_refs") not in ((), [])
+        or provenance.get("source_revision") != source_revision
+        or provenance.get("source_tree_sha") != source_tree_sha
+    ):
+        raise CalculationError(
+            "Armor Class provenance differs across its issued source join"
+        )
+    read_refs = raw_evaluation.get("read_refs")
+    if not isinstance(read_refs, (tuple, list)) or tuple(read_refs) != (
+        f"selector:{ARMOR_CLASS_SELECTOR_ID}",
+    ):
+        raise CalculationError("Armor Class policy reads differ from its exact profile")
+    if set(context.role_bindings) - set(expected_provenance_roles):
+        raise CalculationError("Armor Class role binding contains an untyped owner")
+
+    descriptor = policy.binding.native_base_descriptor
+    subject_ref = context.role_bindings.get(descriptor.subject_role)
+    if (
+        type(subject_ref) is not NativeOwnerRef
+        or subject_ref.family_key != "world.actor"
+        or len(subject_ref.identity) != 1
+    ):
+        raise CalculationError("Armor Class subject role is not an exact Actor owner")
+    native_base_inputs = selector_result.get("native_base_inputs")
+    subject_id = _validate_armor_class_native_inputs(
+        context,
+        native_base_inputs,
+        native_membership,
+        subject_ref,
+        descriptor,
+    )
+
+    fixed_roll_results = context.resolution.get("fixed_rng_results")
+    if not isinstance(fixed_roll_results, (tuple, list)):
+        raise CalculationError(
+            "Armor Class fixed-roll evidence is not a closed sequence"
+        )
+    if context.fixed_roll_refs or fixed_roll_results:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+
+    raw_contributions = selector_result.get("raw_contributions")
+    if not isinstance(raw_contributions, (tuple, list)):
+        raise CalculationError(
+            "raw Armor Class contributions are not an ordered source sequence"
+        )
+    effect_evidence = _membership_evidence_by_application(
+        native_membership.get("effects"), "world.effect"
+    )
+    asset_evidence = _membership_evidence_by_application(
+        native_membership.get("assets"), "world.asset"
+    )
+    selector_metadata = policy.selector_contracts.get(ARMOR_CLASS_SELECTOR_ID)
+    operation_contracts = (
+        selector_metadata.get("operation_contracts")
+        if isinstance(selector_metadata, Mapping)
+        else None
+    )
+    if not isinstance(operation_contracts, Mapping):
+        raise CalculationError("compiled Armor Class operation metadata is unavailable")
+
+    base_contributions: list[dict[str, object]] = []
+    modifier_contributions: list[dict[str, object]] = []
+    mage_candidates: list[dict[str, object]] = []
+    seen_sources: set[tuple[object, ...]] = set()
+    for raw in raw_contributions:
+        trace, candidate = _normalize_armor_class_contribution(
+            context,
+            raw,
+            operation_contracts,
+            effect_evidence,
+            asset_evidence,
+            subject_id,
+            native_base_inputs["native_ability_basis"]["dexterity_modifier"],
+            native_base_inputs["equipment_membership"]["assets"],
+        )
+        source_ref = trace["source_owner_ref"]
+        if not isinstance(source_ref, Mapping):
+            raise CalculationError("Armor Class contribution source is malformed")
+        identity = source_ref.get("identity")
+        if not isinstance(identity, (tuple, list)):
+            raise CalculationError("Armor Class contribution identity is malformed")
+        source_key = (
+            source_ref.get("family_key"),
+            tuple(identity),
+            trace["owner_application_id"],
+            trace["rule_element_ordinal"],
+            trace["operation_id"],
+        )
+        if source_key in seen_sources:
+            raise CalculationError(
+                "Armor Class source repeated one Rule Element contribution"
+            )
+        seen_sources.add(source_key)
+        if trace["operation_id"] == "rule.override":
+            base_contributions.append(trace)
+            if candidate is not None:
+                mage_candidates.append(candidate)
+        else:
+            modifier_contributions.append(trace)
+    if len(mage_candidates) > 1:
+        # This profile has no admitted arbitration rule for competing Mage Armor
+        # applications or multiple eligible base elements.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    base_contributions.sort(key=_armor_class_contribution_sort_key)
+    modifier_contributions.sort(key=_armor_class_contribution_sort_key)
+    mage_candidates.sort(
+        key=lambda candidate: (
+            tuple(candidate["source_owner_ref"]["identity"]),
+            candidate["source_application_id"],
+            candidate["rule_element_ordinal"],
+        )
+    )
+    shield_application_ids = {
+        trace["owner_application_id"]
+        for trace in modifier_contributions
+        if trace["owner_definition_id"] == _SHIELD_DEFINITION_ID
+        and trace["rules_origin_id"] == _SHIELD_RULES_ORIGIN_ID
+        and trace["source_id"] == subject_id
+        and trace["disposition"] == "APPLIED"
+    }
+    if len(shield_application_ids) > 1:
+        # The AC profile has no admitted resolver for competing Shield apps.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+
+    ability_basis = native_base_inputs["native_ability_basis"]
+    default_candidate = {
+        "base_kind": "UNARMORED_10_PLUS_DEX",
+        "base_value": 10 + ability_basis["dexterity_modifier"],
+        "source_owner_ref": _plain(ability_basis["subject_owner_ref"]),
+        "source_definition_id": None,
+        "source_application_id": None,
+        "rule_element_ordinal": None,
+        "source_id": None,
+        "rules_origin_id": None,
+        "source_basis": ability_basis["actor_read"]["source_basis"],
+        "fingerprint": ability_basis["actor_read"]["fingerprint"],
+    }
+    base_candidates = [*mage_candidates, default_candidate]
+    modifier_total = sum(
+        trace["value"]
+        for trace in modifier_contributions
+        if trace["disposition"] == "APPLIED"
+    )
+    selection_status = (
+        "SELECTED_SOLE_LEGAL_BASE" if len(base_candidates) == 1 else "CHOICE_REQUIRED"
+    )
+    result: dict[str, object] = {
+        "selector_id": ARMOR_CLASS_SELECTOR_ID,
+        "consumer_id": context.consumer_id,
+        "profile_id": ARMOR_CLASS_POLICY_ID,
+        "profile_generation": ARMOR_CLASS_POLICY_GENERATION,
+        "activity_id": context.compiled.activity_id,
+        "occurrence_id": context.occurrence_id,
+        "execution_ref": _execution_ref_wire(context.execution_ref),
+        "compiled_policy": _compiled_policy_wire(policy),
+        "read_refs": list(read_refs),
+        "context_facts": [],
+        "subject_binding": {
+            "role_name": descriptor.subject_role,
+            "owner_ref": _owner_ref_wire(subject_ref),
+        },
+        "native_base_inputs": _plain(native_base_inputs),
+        "selection_status": selection_status,
+        "modifier_total": modifier_total,
+        "fixed_roll_refs": [],
+        "rng_draw_count": 0,
+        "trace": {
+            "base_candidates": base_candidates,
+            "base_contributions": base_contributions,
+            "modifier_contributions": modifier_contributions,
+        },
+        "source_evidence": {
+            "observation_fingerprint": observation_fingerprint,
+            "source_revision": source_revision,
+            "source_tree_sha": source_tree_sha,
+            "catalog_context_fingerprint": context.compiled.catalog_context_fingerprint,
+            "definition_semantic_hash": context.compiled.definition_semantic_hash,
+            "compiler_generation": context.compiled.compiler_generation,
+            "native_membership": _plain(native_membership),
+        },
+    }
+    if len(base_candidates) == 1:
+        selected_base = base_candidates[0]
+        result.update(
+            {
+                "selected_base_kind": selected_base["base_kind"],
+                "selected_base_value": selected_base["base_value"],
+                "selected_ac": selected_base["base_value"] + modifier_total,
+            }
+        )
+    return result
+
+
+def _validate_armor_class_native_inputs(
+    context: contracts.NativePreparationContext,
+    value: object,
+    native_membership: Mapping[str, object],
+    subject_ref: NativeOwnerRef,
+    descriptor: contracts.ArmorClassNativeBaseDescriptor,
+) -> str:
+    if not isinstance(value, Mapping):
+        raise CalculationError("Armor Class native base inputs are unavailable")
+    try:
+        structural_contracts.validate_contract("armor_class_native_base_inputs", value)
+    except structural_contracts.StructuralContractError as error:
+        raise CalculationError(
+            "Armor Class native base inputs are malformed"
+        ) from error
+    ability = value.get("native_ability_basis")
+    equipment = value.get("equipment_membership")
+    if not isinstance(ability, Mapping) or not isinstance(equipment, Mapping):
+        raise CalculationError("Armor Class native base inputs are not closed")
+    subject_id = subject_ref.identity[0]
+    if (
+        ability.get("subject_role") not in {"actor", "target"}
+        or ability.get("subject_role") != descriptor.subject_role
+        or ability.get("ability_id") != "ability.dexterity"
+        or not _same_value(
+            ability.get("subject_owner_ref"), _owner_ref_wire(subject_ref)
+        )
+        or equipment.get("subject_actor_id") != subject_id
+    ):
+        raise CalculationError(
+            "Armor Class native base is not bound to its issued Actor"
+        )
+    base_score = ability.get("base_score")
+    adjustment = ability.get("instance_adjustment")
+    resolved_score = ability.get("resolved_score")
+    dexterity_modifier = ability.get("dexterity_modifier")
+    if (
+        type(base_score) is not int
+        or type(adjustment) is not int
+        or type(resolved_score) is not int
+        or type(dexterity_modifier) is not int
+        or resolved_score != base_score + adjustment
+        or dexterity_modifier != (resolved_score - 10) // 2
+    ):
+        raise CalculationError("Armor Class native Dex math is inconsistent")
+    if ability.get("base_source") == "ACTOR_ARCHETYPE":
+        archetype_id = ability.get("archetype_definition_id")
+        archetype = (
+            context.catalog.frozen_definitions.get(archetype_id)
+            if isinstance(archetype_id, str)
+            else None
+        )
+        data = archetype.get("data") if isinstance(archetype, Mapping) else None
+        abilities = data.get("abilities") if isinstance(data, Mapping) else None
+        if (
+            not isinstance(archetype, Mapping)
+            or archetype.get("id") != archetype_id
+            or archetype.get("kind") != "definition.actor_archetype"
+            or not isinstance(abilities, Mapping)
+            or type(abilities.get("ability.dexterity")) is not int
+            or abilities["ability.dexterity"] != base_score
+        ):
+            raise CalculationError("Armor Class archetype Dex source is not exact")
+
+    actor_read = ability.get("actor_read")
+    owner_reads = native_membership.get("owner_reads")
+    if not isinstance(actor_read, Mapping) or not isinstance(
+        owner_reads, (tuple, list)
+    ):
+        raise CalculationError("Armor Class Actor read evidence is unavailable")
+    actor_reads = [
+        row
+        for row in owner_reads
+        if isinstance(row, Mapping)
+        and _same_value(row.get("owner_ref"), _owner_ref_wire(subject_ref))
+    ]
+    if (
+        len(actor_reads) != 1
+        or not _same_value(actor_reads[0], actor_read)
+        or actor_read.get("status") != "RESOLVED"
+        or not isinstance(actor_read.get("source_basis"), str)
+        or not actor_read.get("source_basis")
+        or not isinstance(actor_read.get("fingerprint"), str)
+        or len(actor_read["fingerprint"]) != 64
+    ):
+        raise CalculationError(
+            "Armor Class Actor read does not match native membership"
+        )
+
+    asset_evidence = _membership_evidence_by_application(
+        native_membership.get("assets"), "world.asset"
+    )
+    expected_equipment = [
+        member
+        for _asset_id, member in sorted(asset_evidence.items())
+        if member.get("placement_owner_id") == subject_id
+    ]
+    retained_equipment = equipment.get("assets")
+    if not isinstance(retained_equipment, (tuple, list)) or len(
+        retained_equipment
+    ) != len(expected_equipment):
+        raise CalculationError(
+            "Armor Class equipment closure differs from native membership"
+        )
+    for member, retained in zip(expected_equipment, retained_equipment, strict=True):
+        if not isinstance(retained, Mapping):
+            raise CalculationError("Armor Class retained equipment member is malformed")
+        if any(
+            not _same_value(retained.get(name), member.get(name))
+            for name in (
+                "owner_ref",
+                "equipment_mode",
+                "placement_owner_id",
+                "container_path",
+                "accessible",
+                "blocker_asset_id",
+                "conversion_mode",
+                "source_basis",
+                "fingerprint",
+            )
+        ):
+            raise CalculationError(
+                "Armor Class equipment member differs from its native membership"
+            )
+        definition_id = retained.get("definition_id")
+        asset_definition = (
+            context.catalog.frozen_definitions.get(definition_id)
+            if isinstance(definition_id, str)
+            else None
+        )
+        facets = (
+            asset_definition.get("facets")
+            if isinstance(asset_definition, Mapping)
+            else None
+        )
+        if (
+            not isinstance(asset_definition, Mapping)
+            or asset_definition.get("id") != definition_id
+            or asset_definition.get("kind") != "definition.asset"
+            or not isinstance(facets, (tuple, list))
+            or not _same_value(retained.get("facets"), facets)
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+    for member in retained_equipment:
+        facets = member.get("facets")
+        if (
+            member.get("equipment_mode") == "worn"
+            and isinstance(facets, (tuple, list))
+            and "asset.armor" in facets
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+    return subject_id
+
+
+def _normalize_armor_class_contribution(
+    context: contracts.NativePreparationContext,
+    raw: object,
+    expected_operation_contracts: Mapping[str, object],
+    effect_evidence: Mapping[str, Mapping[str, object]],
+    asset_evidence: Mapping[str, Mapping[str, object]],
+    subject_id: str,
+    dexterity_modifier: int,
+    equipment_members: object,
+) -> tuple[dict[str, object], dict[str, object] | None]:
+    required_members = {
+        "owner_ref",
+        "owner_definition_id",
+        "owner_kind",
+        "owner_application_id",
+        "rule_element_ordinal",
+        "operation_id",
+        "value_kind",
+        "operation_contract",
+        "value",
+        "rule_element",
+        "predicate",
+        "predicate_result",
+        "predicate_state",
+    }
+    if not isinstance(raw, Mapping) or set(raw) != required_members:
+        raise CalculationError("raw Armor Class contribution provenance is not closed")
+    operation_id = raw.get("operation_id")
+    if (
+        not isinstance(operation_id, str)
+        or operation_id not in _ARMOR_CLASS_OPERATION_CONTRACTS
+    ):
+        raise CalculationError(
+            "raw Armor Class operation is outside the exact selected pair"
+        )
+    expected_operation = expected_operation_contracts.get(operation_id)
+    operation = raw.get("operation_contract")
+    if (
+        not isinstance(operation, Mapping)
+        or not isinstance(expected_operation, Mapping)
+        or not _same_value(operation, expected_operation)
+        or not _same_value(operation, _ARMOR_CLASS_OPERATION_CONTRACTS[operation_id])
+    ):
+        raise CalculationError(
+            f"raw Armor Class operation contract is not exact: {operation_id}"
+        )
+
+    value = raw.get("value")
+    if operation_id == "rule.add_flat":
+        if type(value) is not int:
+            raise CalculationError("raw Armor Class flat modifier is not an integer")
+    else:
+        try:
+            structural_contracts.validate_contract("armor_class_base_value", value)
+        except structural_contracts.StructuralContractError as error:
+            raise CalculationError(
+                "raw Armor Class base is not the exact Mage Armor value"
+            ) from error
+
+    rule_element = raw.get("rule_element")
+    if not isinstance(rule_element, Mapping):
+        raise CalculationError("raw Armor Class Rule Element source is unavailable")
+    unsupported = _UNSUPPORTED_ARMOR_CLASS_ELEMENT_MEMBERS.intersection(rule_element)
+    if unsupported:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    if set(rule_element) - {"selector", "operation_id", "value", "predicate"}:
+        raise CalculationError(
+            "Armor Class Rule Element has unsupported source members"
+        )
+    if (
+        rule_element.get("selector") != ARMOR_CLASS_SELECTOR_ID
+        or rule_element.get("operation_id") != operation_id
+        or not _same_value(rule_element.get("value"), value)
+        or not _same_value(raw.get("predicate"), rule_element.get("predicate"))
+    ):
+        raise CalculationError(
+            "raw Armor Class Rule Element differs from its typed contribution"
+        )
+
+    owner_ref = raw.get("owner_ref")
+    owner_definition_id = raw.get("owner_definition_id")
+    owner_kind = raw.get("owner_kind")
+    application_id = raw.get("owner_application_id")
+    ordinal = raw.get("rule_element_ordinal")
+    if (
+        not isinstance(owner_ref, Mapping)
+        or not isinstance(owner_definition_id, str)
+        or not owner_definition_id
+        or owner_kind not in {"definition.effect", "definition.asset"}
+        or not isinstance(application_id, str)
+        or not application_id
+        or type(ordinal) is not int
+        or ordinal < 0
+    ):
+        raise CalculationError("raw Armor Class source identity is malformed")
+    expected_family = (
+        "world.effect" if owner_kind == "definition.effect" else "world.asset"
+    )
+    identity = owner_ref.get("identity")
+    if (
+        owner_ref.get("family_key") != expected_family
+        or not isinstance(identity, (tuple, list))
+        or len(identity) != 1
+        or identity[0] != application_id
+    ):
+        raise CalculationError(
+            "raw Armor Class source is not its exact native application"
+        )
+
+    definition = context.catalog.frozen_definitions.get(owner_definition_id)
+    definition_data = (
+        definition.get("data") if isinstance(definition, Mapping) else None
+    )
+    source_elements = (
+        definition_data.get("rule_elements")
+        if isinstance(definition_data, Mapping)
+        else None
+    )
+    if (
+        not isinstance(definition, Mapping)
+        or definition.get("id") != owner_definition_id
+        or definition.get("kind") != owner_kind
+        or not isinstance(source_elements, (tuple, list))
+        or ordinal >= len(source_elements)
+        or not _same_value(source_elements[ordinal], rule_element)
+    ):
+        raise CalculationError(
+            "Armor Class Rule Element differs from its exact source definition"
+        )
+    if owner_definition_id == _MAGE_ARMOR_DEFINITION_ID:
+        mage_armor_ac_elements = [
+            element
+            for element in source_elements
+            if isinstance(element, Mapping)
+            and element.get("selector") == ARMOR_CLASS_SELECTOR_ID
+        ]
+        if len(mage_armor_ac_elements) != 1:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+    if owner_definition_id == _SHIELD_DEFINITION_ID:
+        shield_ac_elements = [
+            element
+            for element in source_elements
+            if isinstance(element, Mapping)
+            and element.get("selector") == ARMOR_CLASS_SELECTOR_ID
+        ]
+        expected_shield_element = {
+            "selector": ARMOR_CLASS_SELECTOR_ID,
+            "operation_id": "rule.add_flat",
+            "value": 5,
+        }
+        if (
+            owner_kind != "definition.effect"
+            or definition.get("kind") != "definition.effect"
+            or len(shield_ac_elements) != 1
+            or not _same_value(shield_ac_elements[0], expected_shield_element)
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+    if (
+        owner_kind == "definition.effect"
+        and isinstance(definition_data, Mapping)
+        and "arbitration_policy_id" in definition_data
+    ):
+        # This AC binding has no Effect-arbitration read. Membership proves
+        # existence, not participation, so do not combine unarbitrated sources.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+
+    predicate_result = raw.get("predicate_result")
+    predicate_state = raw.get("predicate_state")
+    if type(predicate_result) is not bool or predicate_state not in {"TRUE", "FALSE"}:
+        raise CalculationError("raw Armor Class predicate is not a closed boolean")
+    if predicate_result is not (predicate_state == "TRUE"):
+        raise CalculationError("raw Armor Class predicate result/state disagree")
+
+    if owner_kind == "definition.effect":
+        native_source = effect_evidence.get(application_id, {})
+    else:
+        native_source = asset_evidence.get(application_id, {})
+    if not native_source or not _same_value(native_source.get("owner_ref"), owner_ref):
+        raise CalculationError(
+            "Armor Class contribution lacks exact native membership evidence"
+        )
+    source_id = (
+        native_source.get("source_id") if owner_kind == "definition.effect" else None
+    )
+    rules_origin_id = (
+        native_source.get("rules_origin_id")
+        if owner_kind == "definition.effect"
+        else None
+    )
+    mage_armor_source_claimed = (
+        owner_definition_id == _MAGE_ARMOR_DEFINITION_ID
+        or rules_origin_id == _MAGE_ARMOR_RULES_ORIGIN_ID
+    )
+    if operation_id == "rule.add_flat" and mage_armor_source_claimed:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    shield_source_claimed = (
+        owner_definition_id == _SHIELD_DEFINITION_ID
+        or rules_origin_id == _SHIELD_RULES_ORIGIN_ID
+    )
+    if shield_source_claimed and (
+        owner_kind != "definition.effect"
+        or
+        operation_id != "rule.add_flat"
+        or owner_definition_id != _SHIELD_DEFINITION_ID
+        or rules_origin_id != _SHIELD_RULES_ORIGIN_ID
+        or source_id != subject_id
+        or value != 5
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    source_basis = native_source.get("source_basis")
+    fingerprint = native_source.get("fingerprint")
+    if (
+        not isinstance(source_basis, str)
+        or not source_basis
+        or not isinstance(fingerprint, str)
+        or len(fingerprint) != 64
+    ):
+        raise CalculationError("Armor Class native source evidence is incomplete")
+
+    if (
+        operation_id == "rule.override"
+        and owner_kind == "definition.effect"
+        and owner_definition_id == _MAGE_ARMOR_DEFINITION_ID
+        and predicate_result
+        and native_source.get("lifecycle") == "effect_lifecycle.active"
+        and native_source.get("is_target_local") is True
+        and native_source.get("target_id") == subject_id
+        and (
+            native_source.get("support_effect_id") is not None
+            or not isinstance(source_id, str)
+            or not source_id
+            or rules_origin_id != _MAGE_ARMOR_RULES_ORIGIN_ID
+        )
+    ):
+        # A potentially participating exact Mage Armor application cannot be
+        # demoted to ordinary source ineligibility when its support or source
+        # provenance is unproved. This profile has no support/arbitration reader.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+
+    if owner_kind == "definition.effect":
+        source_is_target_local = (
+            native_source.get("lifecycle") == "effect_lifecycle.active"
+            and native_source.get("is_target_local") is True
+            and native_source.get("target_id") == subject_id
+            and isinstance(source_id, str)
+            and bool(source_id)
+            and isinstance(rules_origin_id, str)
+            and bool(rules_origin_id)
+            and native_source.get("support_effect_id") is None
+        )
+    else:
+        source_is_target_local = (
+            native_source.get("accessible") is True
+            and native_source.get("placement_owner_id") == subject_id
+            and native_source.get("equipment_mode") in {"held", "worn"}
+            and native_source.get("blocker_asset_id") is None
+            and native_source.get("conversion_mode") is None
+            and isinstance(equipment_members, (tuple, list))
+            and any(
+                isinstance(member, Mapping)
+                and _same_value(member.get("owner_ref"), owner_ref)
+                for member in equipment_members
+            )
+        )
+        attunement = (
+            definition_data.get("attunement")
+            if isinstance(definition_data, Mapping)
+            else None
+        )
+        if attunement is not None:
+            if (
+                not isinstance(attunement, Mapping)
+                or set(attunement) - {"required", "allowed_class_ids"}
+                or type(attunement.get("required")) is not bool
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            allowed_class_ids = attunement.get("allowed_class_ids", ())
+            if (
+                not isinstance(allowed_class_ids, (tuple, list))
+                or any(
+                    not isinstance(class_id, str) or not class_id
+                    for class_id in allowed_class_ids
+                )
+                or len(allowed_class_ids) != len(set(allowed_class_ids))
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            if attunement["required"]:
+                if native_source.get("attuned_actor_id") != subject_id:
+                    source_is_target_local = False
+                elif allowed_class_ids:
+                    # This profile has no compiled class-prerequisite proof.
+                    raise contracts.NativePreparationHold(
+                        "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                    )
+        attunement = definition_data.get("attunement")
+        if attunement is not None:
+            if (
+                not isinstance(attunement, Mapping)
+                or set(attunement) - {"required", "allowed_class_ids"}
+                or type(attunement.get("required")) is not bool
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            allowed_class_ids = attunement.get("allowed_class_ids", ())
+            if (
+                not isinstance(allowed_class_ids, (tuple, list))
+                or any(
+                    not isinstance(class_id, str) or not class_id
+                    for class_id in allowed_class_ids
+                )
+                or len(allowed_class_ids) != len(set(allowed_class_ids))
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            if attunement["required"]:
+                attunement_is_eligible = (
+                    native_source.get("attuned_actor_id") == subject_id
+                )
+                if attunement_is_eligible and allowed_class_ids:
+                    # This profile has no compiled prerequisite/class-membership
+                    # proof. Never treat a declared restriction as decorative.
+                    raise contracts.NativePreparationHold(
+                        "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                    )
+                source_is_target_local = (
+                    source_is_target_local and attunement_is_eligible
+                )
+
+    if operation_id == "rule.override":
+        source_is_eligible = (
+            source_is_target_local
+            and owner_kind == "definition.effect"
+            and owner_definition_id == _MAGE_ARMOR_DEFINITION_ID
+            and rules_origin_id == _MAGE_ARMOR_RULES_ORIGIN_ID
+        )
+    else:
+        source_is_eligible = source_is_target_local
+
+    rejection_reasons: set[str] = set()
+    if not predicate_result:
+        rejection_reasons.add("PREDICATE_FALSE")
+    if not source_is_eligible:
+        rejection_reasons.add("SOURCE_NOT_ELIGIBLE")
+    is_candidate = not rejection_reasons and operation_id == "rule.override"
+    disposition = (
+        "CANDIDATE"
+        if is_candidate
+        else "APPLIED"
+        if not rejection_reasons
+        else "REJECTED"
+    )
+    trace = {
+        "operation_id": operation_id,
+        "source_owner_ref": _plain(owner_ref),
+        "owner_definition_id": owner_definition_id,
+        "owner_kind": owner_kind,
+        "owner_application_id": application_id,
+        "rule_element_ordinal": ordinal,
+        "source_id": source_id,
+        "rules_origin_id": rules_origin_id,
+        "value": _plain(value),
+        "predicate": _plain(raw.get("predicate")),
+        "predicate_source_present": raw.get("predicate") is not None,
+        "predicate_result": predicate_result,
+        "predicate_state": predicate_state,
+        "source_eligibility": "ELIGIBLE" if source_is_eligible else "INELIGIBLE",
+        "disposition": disposition,
+        "rejection_reasons": [
+            reason
+            for reason in _ARMOR_CLASS_REJECTION_ORDER
+            if reason in rejection_reasons
+        ],
+        "source_basis": source_basis,
+        "fingerprint": fingerprint,
+    }
+    candidate = None
+    if is_candidate:
+        candidate = {
+            "base_kind": "MAGE_ARMOR_13_PLUS_DEX",
+            "base_value": 13 + dexterity_modifier,
+            "source_owner_ref": _plain(owner_ref),
+            "source_definition_id": owner_definition_id,
+            "source_application_id": application_id,
+            "rule_element_ordinal": ordinal,
+            "source_id": source_id,
+            "rules_origin_id": rules_origin_id,
+            "source_basis": source_basis,
+            "fingerprint": fingerprint,
+        }
+    return trace, candidate
 
 
 def _issued_damage_input_binding(
@@ -1687,6 +2762,24 @@ def _contribution_sort_key(row: Mapping[str, object]) -> tuple[object, ...]:
     )
 
 
+def _armor_class_contribution_sort_key(
+    row: Mapping[str, object],
+) -> tuple[object, ...]:
+    owner_ref = row.get("source_owner_ref")
+    if not isinstance(owner_ref, Mapping):
+        raise CalculationError("normalized Armor Class source identity is malformed")
+    identity = owner_ref.get("identity")
+    if not isinstance(identity, (tuple, list)):
+        raise CalculationError("normalized Armor Class source identity is malformed")
+    return (
+        owner_ref.get("family_key", ""),
+        tuple(str(item) for item in identity),
+        row["owner_application_id"],
+        row["rule_element_ordinal"],
+        row["operation_id"],
+    )
+
+
 def _membership_evidence_by_application(
     raw_members: object, family_key: str
 ) -> dict[str, Mapping[str, object]]:
@@ -1741,28 +2834,36 @@ def _compiled_policy_wire(
     policy: contracts.CompiledCalculationPolicy,
 ) -> dict[str, object]:
     binding = policy.binding
+    binding_wire: dict[str, object] = {
+        "consumer_id": binding.consumer_id,
+        "profile_id": binding.profile_id,
+        "profile_generation": binding.profile_generation,
+        "reads": list(binding.reads),
+        "selector_operation_pairs": [
+            {
+                "selector_id": pair.selector_id,
+                "operation_ids": list(pair.operation_ids),
+            }
+            for pair in binding.selector_operation_pairs
+        ],
+        "context_fact_bindings": [
+            {"consumer_ref": item.consumer_ref, "fact_ids": list(item.fact_ids)}
+            for item in binding.context_fact_bindings
+        ],
+        "native_role_bindings": [
+            {"read_ref": item.read_ref, "role_names": list(item.role_names)}
+            for item in binding.native_role_bindings
+        ],
+    }
+    if binding.native_base_descriptor is not None:
+        descriptor = binding.native_base_descriptor
+        binding_wire["native_base_descriptor"] = {
+            "kind": descriptor.kind,
+            "ability_id": descriptor.ability_id,
+            "subject_role": descriptor.subject_role,
+        }
     return {
-        "binding": {
-            "consumer_id": binding.consumer_id,
-            "profile_id": binding.profile_id,
-            "profile_generation": binding.profile_generation,
-            "reads": list(binding.reads),
-            "selector_operation_pairs": [
-                {
-                    "selector_id": pair.selector_id,
-                    "operation_ids": list(pair.operation_ids),
-                }
-                for pair in binding.selector_operation_pairs
-            ],
-            "context_fact_bindings": [
-                {"consumer_ref": item.consumer_ref, "fact_ids": list(item.fact_ids)}
-                for item in binding.context_fact_bindings
-            ],
-            "native_role_bindings": [
-                {"read_ref": item.read_ref, "role_names": list(item.role_names)}
-                for item in binding.native_role_bindings
-            ],
-        },
+        "binding": binding_wire,
         "selector_contracts": _plain(policy.selector_contracts),
         "accessor_contracts": _plain(policy.accessor_contracts),
         "derived_node_contracts": _plain(policy.derived_node_contracts),

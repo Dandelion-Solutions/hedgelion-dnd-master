@@ -30,8 +30,8 @@ from .policy_basis import (
 )
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 _DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
     {
         "rule.add_flat": "ADJUSTMENT",
@@ -40,6 +40,8 @@ _DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
         "rule.immunity": "IMMUNITY",
     }
 )
+_AC_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
+_AC_SELECTOR_ID: Final[str] = "defense.armor_class"
 
 
 class MechanicalContextError(ValueError):
@@ -722,6 +724,348 @@ def _membership_wire(membership: object) -> dict[str, object]:
     }
 
 
+def _ac_native_base_inputs(
+    context: contracts.NativePreparationContext,
+    membership: object,
+    policy: contracts.CompiledCalculationPolicy,
+    role_names: tuple[str, ...],
+) -> dict[str, object]:
+    """Read only the selected Actor's closed native Dex and complete equipment set."""
+    descriptor = policy.binding.native_base_descriptor
+    if (
+        type(descriptor) is not contracts.ArmorClassNativeBaseDescriptor
+        or descriptor.kind != "ACTOR_DEXTERITY_BASE"
+        or descriptor.ability_id != "ability.dexterity"
+        or role_names != (descriptor.subject_role,)
+        or descriptor.subject_role not in {"actor", "target"}
+    ):
+        raise MechanicalContextError("compiled AC native base descriptor is not exact")
+    subject = context.role_bindings.get(descriptor.subject_role)
+    if (
+        type(subject) is not NativeOwnerRef
+        or subject.family_key != "world.actor"
+        or len(subject.identity) != 1
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    subject_id = subject.identity[0]
+    if subject_id not in membership.subject_actor_ids:
+        raise MechanicalContextError("AC subject is not in complete native membership")
+
+    actor_payload, actor_read = _owner_payload(
+        membership.p0_observation, subject, context.execution_ref
+    )
+    if (
+        actor_payload.get("kind") != "world.actor"
+        or actor_payload.get("id") != subject_id
+        or not isinstance(actor_payload.get("definition_id"), str)
+        or not isinstance(actor_payload.get("state"), Mapping)
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    state = actor_payload["state"]
+    if "embodiment" in state:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    if "build" in state:
+        # Build grants and selections can add ability/defense mechanics. The
+        # bounded AC profile has no closed build-contribution reconstruction.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    archetype_definition_id = actor_payload["definition_id"]
+    archetype = context.catalog.frozen_definitions.get(archetype_definition_id)
+    archetype_data = archetype.get("data") if isinstance(archetype, Mapping) else None
+    if (
+        not isinstance(archetype, Mapping)
+        or archetype.get("id") != archetype_definition_id
+        or archetype.get("kind") != "definition.actor_archetype"
+        or not isinstance(archetype_data, Mapping)
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    feature_ids = archetype_data.get("feature_ids", ())
+    if (
+        not isinstance(feature_ids, (tuple, list))
+        or any(
+            not isinstance(feature_id, str) or not feature_id
+            for feature_id in feature_ids
+        )
+        or len(feature_ids) != len(set(feature_ids))
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    if feature_ids:
+        # Missing/unexpanded feature definitions do not prove an empty grant
+        # closure, even when the Actor carries a native ability base.
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    raw_abilities = state.get("abilities", {})
+    if not isinstance(raw_abilities, Mapping) or "dex" in raw_abilities:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    components = raw_abilities.get("ability.dexterity")
+    adjustment = 0
+    base_score: int | None = None
+    if components is not None:
+        if (
+            not isinstance(components, Mapping)
+            or not components
+            or set(components) - {"base", "adjustment"}
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        raw_adjustment = components.get("adjustment", 0)
+        if type(raw_adjustment) is not int:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        adjustment = raw_adjustment
+        if "base" in components:
+            raw_base = components.get("base")
+            if type(raw_base) is not int or raw_base < 0:
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            base_score = raw_base
+
+    archetype_definition_id: str | None = None
+    base_source = "ACTOR_STATE"
+    if base_score is None:
+        archetype_definition_id = actor_payload["definition_id"]
+        archetype_abilities = (
+            archetype_data.get("abilities")
+            if isinstance(archetype_data, Mapping)
+            else None
+        )
+        if (
+            not isinstance(archetype, Mapping)
+            or archetype.get("id") != archetype_definition_id
+            or archetype.get("kind") != "definition.actor_archetype"
+            or not isinstance(archetype_abilities, Mapping)
+            or "dex" in archetype_abilities
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        raw_base = archetype_abilities.get("ability.dexterity")
+        if type(raw_base) is not int or raw_base < 0:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        base_score = raw_base
+        base_source = "ACTOR_ARCHETYPE"
+
+    resolved_score = base_score + adjustment
+    if resolved_score < 0:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    dexterity_modifier = (resolved_score - 10) // 2
+    actor_read_wire = {
+        "owner_ref": _owner_ref_wire(subject),
+        "status": actor_read.status.value,
+        "source": actor_read.source.value,
+        "source_basis": actor_read.source_basis,
+        "generation": actor_read.generation,
+        "fingerprint": actor_read.fingerprint,
+    }
+    if (
+        not isinstance(actor_read.source_basis, str)
+        or not actor_read.source_basis
+        or not isinstance(actor_read.fingerprint, str)
+        or len(actor_read.fingerprint) != 64
+    ):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+
+    # A base calculation cannot silently reuse unproved form or ability changes.
+    for effect in membership.effects:
+        if effect.target_id != subject_id or not effect.is_target_local:
+            continue
+        if effect.lifecycle != "effect_lifecycle.active":
+            continue
+        effect_payload, _effect_read = _owner_payload(
+            membership.p0_observation, effect.owner_ref, context.execution_ref
+        )
+        effect_state = effect_payload.get("state")
+        if not isinstance(effect_state, Mapping) or any(
+            key in effect_state
+            for key in ("form_state", "conversion_state", "identity_state")
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        effect_definition_id = effect_payload.get("definition_id")
+        effect_definition = (
+            context.catalog.frozen_definitions.get(effect_definition_id)
+            if isinstance(effect_definition_id, str)
+            else None
+        )
+        effect_data = (
+            effect_definition.get("data")
+            if isinstance(effect_definition, Mapping)
+            else None
+        )
+        if (
+            not isinstance(effect_definition, Mapping)
+            or effect_definition.get("kind") != "definition.effect"
+            or not isinstance(effect_data, Mapping)
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        effect_elements = effect_data.get("rule_elements", ())
+        if not isinstance(effect_elements, (list, tuple)):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        if any(
+            isinstance(element, Mapping)
+            and isinstance(element.get("selector"), str)
+            and element["selector"].startswith("ability.")
+            for element in effect_elements
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+
+    equipment_assets: list[dict[str, object]] = []
+    if not isinstance(membership.assets, (list, tuple)):
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        )
+    for asset in membership.assets:
+        if asset.placement_owner_id != subject_id:
+            continue
+        if asset.conversion_mode is not None:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        asset_payload, asset_read = _owner_payload(
+            membership.p0_observation, asset.owner_ref, context.execution_ref
+        )
+        if (
+            asset_payload.get("kind") != "world.asset"
+            or asset_payload.get("id") != asset.owner_ref.identity[0]
+            or not isinstance(asset_payload.get("definition_id"), str)
+            or not isinstance(asset_payload.get("state"), Mapping)
+        ):
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        asset_state = asset_payload["state"]
+        raw_equipment = asset_state.get("equipment")
+        equipment_mode: str | None = None
+        if raw_equipment is not None:
+            if (
+                not isinstance(raw_equipment, Mapping)
+                or set(raw_equipment) != {"mode"}
+                or raw_equipment.get("mode") not in {"held", "worn"}
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            equipment_mode = raw_equipment["mode"]
+        if equipment_mode != asset.equipment_mode:
+            raise contracts.NativePreparationHold(
+                "REVALIDATION_REQUIRED", context.execution_ref, ()
+            )
+        definition_id = asset_payload["definition_id"]
+        asset_definition = context.catalog.frozen_definitions.get(definition_id)
+        facets = asset_definition.get("facets", ()) if isinstance(asset_definition, Mapping) else None
+        if (
+            not isinstance(asset_definition, Mapping)
+            or asset_definition.get("id") != definition_id
+            or asset_definition.get("kind") != "definition.asset"
+            or not isinstance(facets, (list, tuple))
+            or any(not isinstance(facet, str) or not facet for facet in facets)
+            or len(facets) != len(set(facets))
+        ):
+            if equipment_mode == "worn":
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            facets = ()
+        if equipment_mode == "worn" and not facets:
+            raise contracts.NativePreparationHold(
+                "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+            )
+        if equipment_mode in {"held", "worn"}:
+            asset_data = asset_definition.get("data") if isinstance(asset_definition, Mapping) else None
+            asset_elements = asset_data.get("rule_elements", ()) if isinstance(asset_data, Mapping) else ()
+            if not isinstance(asset_elements, (list, tuple)):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+            if any(
+                isinstance(element, Mapping)
+                and isinstance(element.get("selector"), str)
+                and element["selector"].startswith("ability.")
+                for element in asset_elements
+            ):
+                raise contracts.NativePreparationHold(
+                    "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+                )
+        equipment_assets.append(
+            {
+                "owner_ref": _owner_ref_wire(asset.owner_ref),
+                "definition_id": definition_id,
+                "equipment_mode": equipment_mode,
+                "placement_owner_id": asset.placement_owner_id,
+                "container_path": list(asset.container_path),
+                "accessible": asset.accessible,
+                "blocker_asset_id": asset.blocker_asset_id,
+                "conversion_mode": asset.conversion_mode,
+                "facets": list(facets),
+                "source_basis": asset.source_basis,
+                "fingerprint": asset_read.fingerprint or "",
+            }
+        )
+    equipment_assets.sort(
+        key=lambda item: (
+            item["owner_ref"]["family_key"],
+            tuple(item["owner_ref"]["identity"]),
+        )
+    )
+    native_base_inputs: dict[str, object] = {
+        "native_ability_basis": {
+            "subject_role": descriptor.subject_role,
+            "subject_owner_ref": _owner_ref_wire(subject),
+            "ability_id": descriptor.ability_id,
+            "base_source": base_source,
+            "base_score": base_score,
+            "instance_adjustment": adjustment,
+            "resolved_score": resolved_score,
+            "dexterity_modifier": dexterity_modifier,
+            "actor_read": actor_read_wire,
+            "archetype_definition_id": archetype_definition_id,
+        },
+        "equipment_membership": {
+            "subject_actor_id": subject_id,
+            "assets": equipment_assets,
+        },
+    }
+    try:
+        structural_contracts.validate_contract(
+            "armor_class_native_base_inputs", native_base_inputs
+        )
+    except structural_contracts.StructuralContractError as error:
+        raise MechanicalContextError(
+            "source-bound AC base inputs violate their installed closed contract"
+        ) from error
+    return native_base_inputs
+
+
 def _closed_operation_value(
     operation_id: str, operation: Mapping[str, object], value: object
 ) -> object:
@@ -778,7 +1122,26 @@ def _closed_operation_value(
                 f"damage Rule Element value is not closed for {operation_id}"
             ) from error
         return value
-    if value_kind in {"roll_modifier", "damage_defense", "armor_class_base", "capability_change"}:
+    if value_kind == "armor_class_base":
+        if (
+            operation_id != "rule.override"
+            or operation.get("calculation_policy_id")
+            != "calculation.armor_class_srd521"
+            or operation.get("calculation_policy_generation") != 1
+            or operation.get("normalization") != "SELECT_ONE_LEGAL_BASE"
+            or frozenset(constraints) != frozenset({"eligible_nonadditive_ac_base"})
+        ):
+            raise MechanicalContextError(
+                f"AC base operation contract is not the finite selected pair: {operation_id}"
+            )
+        try:
+            structural_contracts.validate_contract("armor_class_base_value", value)
+        except structural_contracts.StructuralContractError as error:
+            raise MechanicalContextError(
+                "AC base Rule Element value is not the exact Mage Armor discriminator"
+            ) from error
+        return value
+    if value_kind in {"roll_modifier", "damage_defense", "capability_change"}:
         raise MechanicalContextError(
             f"operation value shape is not closed by the current finite schema: {operation_id}"
         )
@@ -1192,6 +1555,14 @@ def evaluate_selector(
                 "dependencies": dependencies,
                 "raw_contributions": contributions,
             }
+            if node_id == _AC_SELECTOR_ID:
+                if policy.binding.profile_id != _AC_POLICY_ID:
+                    raise MechanicalContextError(
+                        "AC selector requires its exact native-base policy binding"
+                    )
+                result["native_base_inputs"] = _ac_native_base_inputs(
+                    context, membership, policy, role_names
+                )
             if node_id == "health.maximum":
                 owner = _role_owner(context, role_names, metadata["subject_kinds"])
                 payload, owner_read = _owner_payload(

@@ -8,6 +8,7 @@ consumers produce CompiledActivity values.
 
 from __future__ import annotations
 
+import math
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -33,10 +34,15 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
+_AC_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
+_AC_SELECTOR_ID: Final[str] = "defense.armor_class"
+_AC_OPERATION_IDS: Final[tuple[str, str]] = ("rule.add_flat", "rule.override")
+_AC_MAGE_ARMOR_DEFINITION_ID: Final[str] = "effect.spell.mage_armor"
+_AC_SHIELD_DEFINITION_ID: Final[str] = "effect.spell.shield"
 _DAMAGE_POLICY_ID: Final[str] = "calculation.damage_defense_srd521"
 _DAMAGE_SELECTOR_ID: Final[str] = "damage.received"
 _DAMAGE_OPERATION_IDS: Final[frozenset[str]] = frozenset(
@@ -73,6 +79,94 @@ class ActivityRuntimeError(ValueError):
 
 class ActivityNotSelectable(ActivityRuntimeError):
     """Raised for structurally loaded content without an admitted compiler edge."""
+
+
+def _ac_profile_selector_contract(
+    base_selector: Mapping[str, object],
+) -> dict[str, object]:
+    """Materialize the one profile-local AC overlay without changing admission."""
+    required_members = {
+        "allowed_operations",
+        "operation_contracts",
+        "contribution_type",
+        "result_type",
+        "result_constraints",
+        "subject_kinds",
+        "binding_kinds",
+        "allowed_dependency_kinds",
+        "allowed_input_classes",
+        "permitted_context_fact_ids",
+        "static_dependencies",
+        "combination_policy",
+        "resolution_owner",
+        "trace_policy",
+    }
+    raw_operations = base_selector.get("allowed_operations")
+    raw_contracts = base_selector.get("operation_contracts")
+    if (
+        set(base_selector) != required_members
+        or not isinstance(raw_operations, (list, tuple))
+        or tuple(raw_operations) != ("rule.add_flat",)
+        or not isinstance(raw_contracts, Mapping)
+        or set(raw_contracts) != {"rule.add_flat"}
+        or base_selector.get("contribution_type") != "numeric"
+        or base_selector.get("result_type") != "integer"
+        or base_selector.get("result_constraints") != {"minimum": 0}
+        or base_selector.get("subject_kinds") not in (["world.actor"], ("world.actor",))
+        or base_selector.get("binding_kinds") not in (["subject"], ("subject",))
+        or base_selector.get("allowed_input_classes")
+        not in (["ENGINE_STATE"], ("ENGINE_STATE",))
+        or base_selector.get("permitted_context_fact_ids") not in ([], ())
+        or base_selector.get("static_dependencies") not in ([], ())
+        or base_selector.get("combination_policy") != "integer_additive_v1"
+        or base_selector.get("resolution_owner") != "SELECTOR_METADATA"
+        or base_selector.get("trace_policy") != "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+    ):
+        raise ActivityNotSelectable(
+            "AC profile overlay requires the unchanged active additive selector"
+        )
+    flat_contract = raw_contracts["rule.add_flat"]
+    if not isinstance(flat_contract, Mapping) or (
+        set(flat_contract) != {"value_kind", "normalization", "constraints"}
+        or flat_contract.get("value_kind") != "numeric_scalar"
+        or flat_contract.get("normalization") != "SUM"
+        or flat_contract.get("constraints")
+        not in (["finite_integer"], ("finite_integer",))
+    ):
+        raise ActivityNotSelectable(
+            "AC modifier must preserve the existing integer SUM pair"
+        )
+
+    profile_flat = {
+        **dict(flat_contract),
+        "calculation_policy_id": _AC_POLICY_ID,
+        "calculation_policy_generation": 1,
+    }
+    profile_base = {
+        "value_kind": "armor_class_base",
+        "normalization": "SELECT_ONE_LEGAL_BASE",
+        "constraints": ["eligible_nonadditive_ac_base"],
+        "calculation_policy_id": _AC_POLICY_ID,
+        "calculation_policy_generation": 1,
+    }
+    return {
+        **dict(base_selector),
+        "allowed_operations": list(_AC_OPERATION_IDS),
+        "operation_contracts": {
+            "rule.add_flat": profile_flat,
+            "rule.override": profile_base,
+        },
+        "contribution_type": "armor_class",
+        "result_type": "integer",
+        "result_constraints": {},
+        "allowed_dependency_kinds": [],
+        "allowed_input_classes": ["ENGINE_STATE"],
+        "permitted_context_fact_ids": [],
+        "static_dependencies": [],
+        "combination_policy": "armor_class_nonadditive_base_v1",
+        "calculation_policy_id": _AC_POLICY_ID,
+        "calculation_policy_generation": 1,
+    }
 
 
 @dataclass(frozen=True, slots=True)
@@ -688,6 +782,20 @@ def _compile_calculation_policy_bindings(
                 )
             )
         )
+        raw_native_base = value.get("native_base_descriptor")
+        native_base_descriptor: contracts.ArmorClassNativeBaseDescriptor | None = None
+        if raw_native_base is not None:
+            descriptor = _mapping(raw_native_base, "AC native base descriptor")
+            try:
+                native_base_descriptor = contracts.ArmorClassNativeBaseDescriptor(
+                    descriptor["kind"],
+                    descriptor["ability_id"],
+                    descriptor["subject_role"],
+                )
+            except (KeyError, contracts.ActivityContractError) as exc:
+                raise ActivityRuntimeError(
+                    "AC native base descriptor is not the closed Dex source"
+                ) from exc
         try:
             binding = contracts.CalculationPolicyBinding(
                 str(value["consumer_id"]),
@@ -697,6 +805,7 @@ def _compile_calculation_policy_bindings(
                 tuple(pairs),
                 fact_bindings,
                 native_role_bindings,
+                native_base_descriptor,
             )
         except contracts.ActivityContractError as exc:
             raise ActivityRuntimeError(f"calculation policy binding is invalid: {exc}") from exc
@@ -733,8 +842,20 @@ def _compile_calculation_policy_bindings(
             raise ActivityNotSelectable(
                 "selector reads must equal paired policy roots; dependencies are source-closed"
             )
+        policy_selector_contracts = dict(selectors)
+        if binding.profile_id == _AC_POLICY_ID:
+            if set(pair_by_selector) != {_AC_SELECTOR_ID}:
+                raise ActivityNotSelectable(
+                    "AC policy may close only defense.armor_class"
+                )
+            base_selector = selectors.get(_AC_SELECTOR_ID)
+            if not isinstance(base_selector, Mapping):
+                raise ActivityNotSelectable("AC selector is unavailable")
+            policy_selector_contracts[_AC_SELECTOR_ID] = (
+                _ac_profile_selector_contract(base_selector)
+            )
         for selector_id, pair in pair_by_selector.items():
-            selector = selectors.get(selector_id)
+            selector = policy_selector_contracts.get(selector_id)
             if not isinstance(selector, Mapping):
                 raise ActivityNotSelectable(f"calculation selector is unavailable: {selector_id}")
             _validate_shape(schema + "#/$defs/selectorMetadata", selector)
@@ -770,6 +891,7 @@ def _compile_calculation_policy_bindings(
                     mechanical=mechanical,
                     core=core,
                     ledger_rows=ledger_rows,
+                    calculation_policy_id=binding.profile_id,
                 )
             _validate_typed_roll_policy_pair(
                 selector_id,
@@ -783,6 +905,14 @@ def _compile_calculation_policy_bindings(
                 pair,
                 binding,
                 selector,
+                source_definitions,
+            )
+            _validate_typed_ac_policy_pair(
+                selector_id,
+                pair,
+                binding,
+                selector,
+                role_contracts,
                 source_definitions,
             )
 
@@ -828,6 +958,7 @@ def _compile_calculation_policy_bindings(
             node_ref: str,
             parent_ref: str | None,
             *,
+            policy_selector_contracts: Mapping[str, object] = policy_selector_contracts,
             selector_sink: dict[str, object] = selector_contracts,
             accessor_sink: dict[str, object] = accessor_contracts,
             derived_sink: dict[str, object] = derived_contracts,
@@ -839,7 +970,6 @@ def _compile_calculation_policy_bindings(
                 raw = selectors.get(node_id)
                 if not isinstance(raw, Mapping):
                     raise ActivityNotSelectable(f"unproven dependency: {node_ref}")
-                _validate_shape(schema + "#/$defs/selectorMetadata", raw)
                 if parent_ref is None:
                     _validate_selector_read(
                         node_id,
@@ -848,6 +978,10 @@ def _compile_calculation_policy_bindings(
                         core=core,
                         ledger_rows=ledger_rows,
                     )
+                    raw = policy_selector_contracts.get(node_id, raw)
+                _validate_shape(schema + "#/$defs/selectorMetadata", raw)
+                if parent_ref is None:
+                    selector_sink[node_id] = raw
                 else:
                     if node_id not in _sequence(
                         _mapping(core.get("registries"), "core registries").get(
@@ -877,7 +1011,7 @@ def _compile_calculation_policy_bindings(
                             core=core,
                             ledger_rows=ledger_rows,
                         )
-                selector_sink[node_id] = raw
+                    selector_sink[node_id] = raw
                 return kind, node_id, raw
             if kind == "accessor":
                 raw = accessors.get(node_id)
@@ -1522,6 +1656,7 @@ def _selector_operation_pair_is_admitted(
     mechanical: Mapping[str, object],
     core: Mapping[str, object],
     ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
+    calculation_policy_id: str | None = None,
 ) -> None:
     selectors = _mapping(mechanical.get("selectors"), "mechanical selectors")
     selector = selectors.get(selector_id)
@@ -1538,6 +1673,26 @@ def _selector_operation_pair_is_admitted(
         else ()
     )
     ledger = ledger_rows.get(("rule_operations", operation_id))
+    if (
+        selector_id == _AC_SELECTOR_ID
+        and operation_id == "rule.override"
+        and calculation_policy_id == _AC_POLICY_ID
+    ):
+        if (
+            not isinstance(selector, Mapping)
+            or tuple(allowed) != ("rule.add_flat",)
+            or "rule.override" in operation_contracts
+            or operation_id not in operations
+            or not isinstance(ledger, Mapping)
+            or ledger.get("admission_disposition") != "DORMANT_NONSELECTABLE"
+            or ledger.get("realization_state") != "DOWNSTREAM_S6D_03"
+            or not isinstance(ledger.get("activation_trigger"), str)
+            or not ledger.get("activation_trigger")
+        ):
+            raise ActivityNotSelectable(
+                "AC rule.override conformance pair differs from the dormant registered owner"
+            )
+        return
     if (
         not isinstance(selector, Mapping)
         or operation_id not in allowed
@@ -1827,6 +1982,259 @@ def _validate_typed_damage_policy_source_values(
                 raise ActivityNotSelectable(
                     f"damage Rule Element value is not closed: {definition_id}[{ordinal}]"
                 ) from error
+
+
+def _validate_typed_ac_policy_pair(
+    selector_id: str,
+    pair: contracts.SelectorOperationPair,
+    binding: contracts.CalculationPolicyBinding,
+    selector: Mapping[str, object],
+    role_contracts: Mapping[str, object],
+    source_definitions: Mapping[str, Mapping[str, object]] | None,
+) -> None:
+    """Close the one finite profile-local AC base/modifier pair."""
+    if binding.profile_id != _AC_POLICY_ID or selector_id != _AC_SELECTOR_ID:
+        return
+    descriptor = binding.native_base_descriptor
+    selector_roles = tuple(
+        role_binding
+        for role_binding in binding.native_role_bindings
+        if role_binding.read_ref == f"selector:{_AC_SELECTOR_ID}"
+    )
+    role_contract = (
+        role_contracts.get(descriptor.subject_role)
+        if type(descriptor) is contracts.ArmorClassNativeBaseDescriptor
+        else None
+    )
+    if (
+        type(descriptor) is not contracts.ArmorClassNativeBaseDescriptor
+        or descriptor.kind != "ACTOR_DEXTERITY_BASE"
+        or descriptor.ability_id != "ability.dexterity"
+        or descriptor.subject_role not in {"actor", "target"}
+        or pair.operation_ids != _AC_OPERATION_IDS
+        or binding.reads != (f"selector:{_AC_SELECTOR_ID}",)
+        or binding.context_fact_bindings
+        or binding.native_role_bindings != selector_roles
+        or len(selector_roles) != 1
+        or selector_roles[0].role_names != (descriptor.subject_role,)
+        or not isinstance(role_contract, Mapping)
+        or role_contract.get("family_key") != "world.actor"
+        or role_contract.get("required") is not True
+    ):
+        raise ActivityNotSelectable(
+            "AC policy requires one exact Dex-bound Actor subject and base/modifier pair"
+        )
+    if (
+        selector.get("calculation_policy_id") != _AC_POLICY_ID
+        or selector.get("calculation_policy_generation") != 1
+        or selector.get("contribution_type") != "armor_class"
+        or selector.get("result_type") != "integer"
+        or selector.get("result_constraints") != {}
+        or selector.get("combination_policy") != "armor_class_nonadditive_base_v1"
+        or selector.get("resolution_owner") != "SELECTOR_METADATA"
+        or selector.get("trace_policy") != "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+        or selector.get("subject_kinds") not in (["world.actor"], ("world.actor",))
+        or selector.get("binding_kinds") not in (["subject"], ("subject",))
+        or selector.get("allowed_dependency_kinds") not in ([], ())
+        or selector.get("allowed_input_classes") not in (["ENGINE_STATE"], ("ENGINE_STATE",))
+        or selector.get("permitted_context_fact_ids") not in ([], ())
+        or selector.get("static_dependencies") not in ([], ())
+        or set(selector.get("allowed_operations", ())) != set(_AC_OPERATION_IDS)
+    ):
+        raise ActivityNotSelectable("AC selector metadata differs from its finite profile")
+    operation_contracts = selector.get("operation_contracts")
+    if not isinstance(operation_contracts, Mapping) or set(operation_contracts) != set(
+        _AC_OPERATION_IDS
+    ):
+        raise ActivityNotSelectable("AC profile operation contracts are incomplete")
+    expected_operation_contracts = {
+        "rule.add_flat": {
+            "value_kind": "numeric_scalar",
+            "normalization": "SUM",
+            "constraints": ("finite_integer",),
+            "calculation_policy_id": _AC_POLICY_ID,
+            "calculation_policy_generation": 1,
+        },
+        "rule.override": {
+            "value_kind": "armor_class_base",
+            "normalization": "SELECT_ONE_LEGAL_BASE",
+            "constraints": ("eligible_nonadditive_ac_base",),
+            "calculation_policy_id": _AC_POLICY_ID,
+            "calculation_policy_generation": 1,
+        },
+    }
+    for operation_id, expected in expected_operation_contracts.items():
+        operation = operation_contracts.get(operation_id)
+        if not isinstance(operation, Mapping) or set(operation) != set(expected):
+            raise ActivityNotSelectable(
+                f"AC operation contract is not exact: {operation_id}"
+            )
+        if any(
+            operation.get(name) not in (value, list(value) if isinstance(value, tuple) else value)
+            for name, value in expected.items()
+        ):
+            raise ActivityNotSelectable(
+                f"AC operation contract is not exact: {operation_id}"
+            )
+    if source_definitions is None:
+        raise ActivityNotSelectable(
+            "AC policy compilation requires exact source definitions"
+        )
+    _validate_typed_ac_policy_source_values(source_definitions)
+
+
+def _ac_predicate_is_literal(predicate: object) -> bool:
+    if not isinstance(predicate, Mapping):
+        return False
+    if set(predicate) in ({"all"}, {"any"}):
+        key = "all" if "all" in predicate else "any"
+        members = predicate.get(key)
+        return isinstance(members, (list, tuple)) and bool(members) and all(
+            _ac_predicate_is_literal(member) for member in members
+        )
+    if set(predicate) == {"not"}:
+        return _ac_predicate_is_literal(predicate.get("not"))
+    if set(predicate) != {"compare"}:
+        return False
+    comparison = predicate.get("compare")
+    if not isinstance(comparison, Mapping) or set(comparison) != {
+        "left",
+        "operator",
+        "right",
+    }:
+        return False
+    left, right = comparison.get("left"), comparison.get("right")
+    return (
+        type(left) in {str, int, float, bool}
+        and type(right) is type(left)
+        and comparison.get("operator") in {"eq", "ne", "lt", "lte", "gt", "gte"}
+        and (type(left) is not float or math.isfinite(left))
+    )
+
+
+def _validate_typed_ac_policy_source_values(
+    source_definitions: Mapping[str, Mapping[str, object]],
+) -> None:
+    """Cold-validate the finite AC Rule Element values in admitted definitions."""
+    for definition_id, definition in sorted(source_definitions.items()):
+        if definition.get("kind") not in {"definition.effect", "definition.asset"}:
+            continue
+        data = definition.get("data")
+        if not isinstance(data, Mapping):
+            raise ActivityNotSelectable(
+                f"AC source definition data is unavailable: {definition_id}"
+            )
+        elements = data.get("rule_elements", ())
+        if not isinstance(elements, (list, tuple)):
+            raise ActivityNotSelectable(
+                f"AC source Rule Elements are malformed: {definition_id}"
+            )
+        if definition_id == _AC_MAGE_ARMOR_DEFINITION_ID:
+            if (
+                definition.get("id") != _AC_MAGE_ARMOR_DEFINITION_ID
+                or definition.get("kind") != "definition.effect"
+            ):
+                raise ActivityNotSelectable(
+                    "Mage Armor source must be its exact Effect definition"
+                )
+            mage_armor_ac_elements = [
+                element
+                for element in elements
+                if isinstance(element, Mapping)
+                and element.get("selector") == _AC_SELECTOR_ID
+            ]
+            if len(mage_armor_ac_elements) != 1:
+                raise ActivityNotSelectable(
+                    "Mage Armor source requires exactly one AC base Rule Element"
+                )
+        if definition_id == _AC_SHIELD_DEFINITION_ID:
+            if (
+                definition.get("id") != _AC_SHIELD_DEFINITION_ID
+                or definition.get("kind") != "definition.effect"
+            ):
+                raise ActivityNotSelectable(
+                    "Shield source must be an Effect definition"
+                )
+            shield_ac_elements = [
+                element
+                for element in elements
+                if isinstance(element, Mapping)
+                and element.get("selector") == _AC_SELECTOR_ID
+            ]
+            if len(shield_ac_elements) != 1:
+                raise ActivityNotSelectable(
+                    "Shield source requires exactly one AC flat +5 Rule Element"
+                )
+            shield_ac_element = shield_ac_elements[0]
+            if (
+                set(shield_ac_element) != {"selector", "operation_id", "value"}
+                or shield_ac_element.get("operation_id") != "rule.add_flat"
+                or type(shield_ac_element.get("value")) is not int
+                or shield_ac_element.get("value") != 5
+            ):
+                raise ActivityNotSelectable(
+                    "Shield source requires exactly one AC flat +5 Rule Element"
+                )
+        for ordinal, raw_element in enumerate(elements):
+            if not isinstance(raw_element, Mapping):
+                raise ActivityNotSelectable(
+                    f"AC source Rule Element is malformed: {definition_id}[{ordinal}]"
+                )
+            if raw_element.get("selector") != _AC_SELECTOR_ID:
+                continue
+            unknown_members = set(raw_element) - {
+                "selector",
+                "operation_id",
+                "value",
+                "predicate",
+            }
+            if unknown_members:
+                raise ActivityNotSelectable(
+                    "AC Rule Element has unsupported source members: "
+                    + ",".join(sorted(unknown_members))
+                    + f" ({definition_id}[{ordinal}])"
+                )
+            operation_id = raw_element.get("operation_id")
+            value = raw_element.get("value")
+            if (
+                definition_id == _AC_MAGE_ARMOR_DEFINITION_ID
+                and operation_id != "rule.override"
+            ):
+                raise ActivityNotSelectable(
+                    "Mage Armor source is base-only for Armor Class: "
+                    f"{definition_id}[{ordinal}]"
+                )
+            if definition_id == _AC_SHIELD_DEFINITION_ID and (
+                operation_id != "rule.add_flat" or type(value) is not int or value != 5
+            ):
+                raise ActivityNotSelectable(
+                    f"Shield AC source must remain exact +5 modifier: {definition_id}[{ordinal}]"
+                )
+            if operation_id == "rule.add_flat":
+                if type(value) is not int:
+                    raise ActivityNotSelectable(
+                        f"AC flat modifier is not an integer: {definition_id}[{ordinal}]"
+                    )
+            elif operation_id == "rule.override":
+                if definition.get("kind") != "definition.effect":
+                    raise ActivityNotSelectable(
+                        "AC base candidate must originate from an Effect definition"
+                    )
+                try:
+                    _validate_shape("armor_class_base_value", value)
+                except ActivityRuntimeError as error:
+                    raise ActivityNotSelectable(
+                        f"AC base value is not the Mage Armor discriminator: {definition_id}[{ordinal}]"
+                    ) from error
+            else:
+                raise ActivityNotSelectable(
+                    f"AC source uses an unpaired operation: {definition_id}[{ordinal}]"
+                )
+            predicate = raw_element.get("predicate")
+            if predicate is not None and not _ac_predicate_is_literal(predicate):
+                raise ActivityNotSelectable(
+                    f"AC Rule Element predicate requires an unbound read: {definition_id}[{ordinal}]"
+                )
 
 
 def _validate_fact_read(

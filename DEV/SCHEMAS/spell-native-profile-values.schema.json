@@ -112,6 +112,39 @@
     "damagePolicyTrace": {"type":"object","additionalProperties":false,"required":["stage_order","contributions"],"properties":{"stage_order":{"const":["ADJUSTMENT","RESISTANCE","VULNERABILITY","IMMUNITY"]},"contributions":{"type":"array","items":{"$ref":"#/$defs/damagePolicyContributionTrace"}}}},
     "damagePolicySourceEvidence": {"type":"object","additionalProperties":false,"required":["observation_fingerprint","source_revision","source_tree_sha","catalog_context_fingerprint","definition_semantic_hash","compiler_generation","native_membership"],"properties":{"observation_fingerprint":{"type":"string","pattern":"^[a-f0-9]{64}$"},"source_revision":{"type":"string","minLength":1},"source_tree_sha":{"type":"string","pattern":"^[a-f0-9]{40}$"},"catalog_context_fingerprint":{"type":"string","pattern":"^[a-f0-9]{64}$"},"definition_semantic_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"compiler_generation":{"$ref":"#/$defs/generation"},"native_membership":{"$ref":"#/$defs/rollPolicyNativeMembership"}}},
     "damagePolicyResult": {"type":"object","additionalProperties":false,"required":["selector_id","consumer_id","profile_id","profile_generation","activity_id","occurrence_id","execution_ref","compiled_policy","read_refs","context_facts","input_binding","input_roles","logical_identity","amount_basis","components","component_results","total_damage","fixed_roll_refs","rng_draw_count","trace","source_evidence"],"properties":{"selector_id":{"const":"damage.received"},"consumer_id":{"$ref":"#/$defs/id"},"profile_id":{"const":"calculation.damage_defense_srd521"},"profile_generation":{"const":1},"activity_id":{"$ref":"#/$defs/id"},"occurrence_id":{"type":"string","minLength":1},"execution_ref":{"$ref":"#/$defs/executionRef"},"compiled_policy":{"$ref":"#/$defs/compiledCalculationPolicy"},"read_refs":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/mechanicalNodeRef"}},"context_facts":{"type":"array","maxItems":0},"input_binding":{"$ref":"https://hedgelion.invalid/schemas/activity-compiler-declaration.schema.json#/$defs/damageInputBinding"},"input_roles":{"$ref":"#/$defs/damageInputRoles"},"logical_identity":{"$ref":"#/$defs/logicalDamagePreparationIdentity"},"amount_basis":{"$ref":"#/$defs/damageAmountBasis"},"components":{"type":"array","minItems":1,"items":{"$ref":"https://hedgelion.invalid/schemas/activity-primitive-values.schema.json#/$defs/damageDefenseInputComponent"}},"component_results":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/damagePolicyComponentResult"}},"total_damage":{"$ref":"#/$defs/ordinal"},"fixed_roll_refs":{"type":"array","maxItems":0},"rng_draw_count":{"const":0},"trace":{"$ref":"#/$defs/damagePolicyTrace"},"source_evidence":{"$ref":"#/$defs/damagePolicySourceEvidence"}}},
+    "armorClassPolicyTrace": {"type": "object", "additionalProperties": false, "required": ["base_candidates", "base_contributions", "modifier_contributions"], "properties": {"base_candidates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/armorClassBaseCandidate"}}, "base_contributions": {"type": "array", "items": {"$ref": "#/$defs/armorClassBaseContribution"}}, "modifier_contributions": {"type": "array", "items": {"$ref": "#/$defs/armorClassModifierContribution"}}}},
+    "armorClassPolicyResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector_id", "consumer_id", "profile_id", "profile_generation", "activity_id", "occurrence_id", "execution_ref", "compiled_policy", "read_refs", "context_facts", "subject_binding", "native_base_inputs", "selection_status", "modifier_total", "fixed_roll_refs", "rng_draw_count", "trace", "source_evidence"],
+      "properties": {
+        "selector_id": {"const": "defense.armor_class"},
+        "consumer_id": {"$ref": "#/$defs/id"},
+        "profile_id": {"const": "calculation.armor_class_srd521"},
+        "profile_generation": {"const": 1},
+        "activity_id": {"$ref": "#/$defs/id"},
+        "occurrence_id": {"type": "string", "minLength": 1},
+        "execution_ref": {"$ref": "#/$defs/executionRef"},
+        "compiled_policy": {"$ref": "#/$defs/compiledCalculationPolicy"},
+        "read_refs": {"const": ["selector:defense.armor_class"]},
+        "context_facts": {"type": "array", "maxItems": 0},
+        "subject_binding": {"type": "object", "additionalProperties": false, "required": ["role_name", "owner_ref"], "properties": {"role_name": {"enum": ["actor", "target"]}, "owner_ref": {"$ref": "#/$defs/armorClassActorOwnerRef"}}},
+        "native_base_inputs": {"$ref": "#/$defs/armorClassNativeBaseInputs"},
+        "selection_status": {"enum": ["SELECTED_SOLE_LEGAL_BASE", "CHOICE_REQUIRED"]},
+        "selected_base_kind": {"enum": ["UNARMORED_10_PLUS_DEX", "MAGE_ARMOR_13_PLUS_DEX"]},
+        "selected_base_value": {"type": "integer"},
+        "modifier_total": {"type": "integer"},
+        "selected_ac": {"type": "integer"},
+        "fixed_roll_refs": {"type": "array", "maxItems": 0},
+        "rng_draw_count": {"const": 0},
+        "trace": {"$ref": "#/$defs/armorClassPolicyTrace"},
+        "source_evidence": {"$ref": "#/$defs/damagePolicySourceEvidence"}
+      },
+      "allOf": [
+        {"if": {"properties": {"selection_status": {"const": "SELECTED_SOLE_LEGAL_BASE"}}, "required": ["selection_status"]}, "then": {"required": ["selected_base_kind", "selected_base_value", "selected_ac"], "properties": {"trace": {"properties": {"base_candidates": {"minItems": 1, "maxItems": 1}}}}}},
+        {"if": {"properties": {"selection_status": {"const": "CHOICE_REQUIRED"}}, "required": ["selection_status"]}, "then": {"properties": {"trace": {"properties": {"base_candidates": {"minItems": 2}}}}, "not": {"anyOf": [{"required": ["selected_base_kind"]}, {"required": ["selected_base_value"]}, {"required": ["selected_ac"]}]}}}
+      ]
+    },
     "castProfileId": {"enum":["execution.spell_cast.srd521","execution.spell_cast.ritual","execution.spell_cast.long","execution.spell_cast.invalid_target","execution.spell_cast.countered"]},
     "mechanicalNodeRef": {"type":"string","pattern":"^(selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"},
     "policyReadRef": {"type":"string","pattern":"^(selector|accessor|fact):[A-Za-z][A-Za-z0-9_.:-]*$"},
@@ -121,8 +154,205 @@
     "nativeRoleBinding": {"type":"object","additionalProperties":false,"required":["read_ref","role_names"],"properties":{"read_ref":{"type":"string","pattern":"^(selector|accessor):[A-Za-z][A-Za-z0-9_.:-]*$"},"role_names":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/roleName"},"uniqueItems":true}}},
     "contextFactBinding": {"type":"object","additionalProperties":false,"required":["consumer_ref","fact_ids"],"properties":{"consumer_ref":{"type":"string","pattern":"^(selector|accessor|derived):[A-Za-z][A-Za-z0-9_.:-]*$"},"fact_ids":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/id"},"uniqueItems":true}}},
     "compilerContextFactMetadata": {"type":"object","additionalProperties":false,"required":["disposition","source_class","value_type","producer","acceptance_authority","occurrence_scope","provenance_policy","missing_policy","permitted_consumer_ids","retention_policy","portable_realization_owner","activation_trigger","binding_policy","optional_boundary_context"],"properties":{"disposition":{"enum":["ACTIVE_ADMITTED","DORMANT_RESERVED"]},"source_class":{"const":"INVOCATION_ADJUDICATED"},"value_type":{"const":"boolean"},"producer":{"const":"HOST_LLM_BOUNDARY"},"acceptance_authority":{"const":"ACTIVITY_INVOCATION_VALIDATOR"},"occurrence_scope":{"const":"ACTIVITY_RESOLUTION_GENERATION"},"provenance_policy":{"const":"STABLE_REF_AND_FINGERPRINT_REQUIRED"},"missing_policy":{"const":"TYPED_MISSING_INPUT"},"permitted_consumer_ids":{"type":"array","uniqueItems":true,"items":{"type":"string","pattern":"^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"}},"retention_policy":{"const":"FIXED_CAUSAL_INPUT_WHILE_ACCEPTED_WORK_LIVE"},"portable_realization_owner":{"const":"https://hedgelion.invalid/schemas/invocation-fact.schema.json"},"activation_trigger":{"enum":["S6D-07_TO_09_EXACT_COMPILED_CONSUMER","SATISFIED_BY_S6D_09_EXACT_SPATIAL_CONSUMERS"]},"binding_policy":{"const":"EXACT_COMPILED_CONSUMER_ROLES"},"optional_boundary_context":{"const":"ONLY_WHEN_INVOCATION_ARISES_FROM_BOUNDARY"}}},
+    "armorClassNativeBaseDescriptor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "ability_id", "subject_role"],
+      "properties": {
+        "kind": {"const": "ACTOR_DEXTERITY_BASE"},
+        "ability_id": {"const": "ability.dexterity"},
+        "subject_role": {"enum": ["actor", "target"]}
+      }
+    },
+    "armorClassBaseValue": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_kind"],
+      "properties": {"base_kind": {"const": "MAGE_ARMOR_13_PLUS_DEX"}}
+    },
+    "armorClassActorOwnerRef": {"type": "object", "additionalProperties": false, "required": ["family_key", "identity"], "properties": {"family_key": {"const": "world.actor"}, "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}},
+    "armorClassEffectOwnerRef": {"type": "object", "additionalProperties": false, "required": ["family_key", "identity"], "properties": {"family_key": {"const": "world.effect"}, "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}},
+    "armorClassEquipmentMember": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["owner_ref", "definition_id", "equipment_mode", "placement_owner_id", "container_path", "accessible", "blocker_asset_id", "conversion_mode", "facets", "source_basis", "fingerprint"],
+      "properties": {
+        "owner_ref": {"type": "object", "additionalProperties": false, "required": ["family_key", "identity"], "properties": {"family_key": {"const": "world.asset"}, "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}},
+        "definition_id": {"$ref": "#/$defs/id"},
+        "equipment_mode": {"anyOf": [{"type": "null"}, {"enum": ["held", "worn"]}]},
+        "placement_owner_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "container_path": {"type": "array", "items": {"$ref": "#/$defs/id"}},
+        "accessible": {"type": "boolean"},
+        "blocker_asset_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "conversion_mode": {"anyOf": [{"type": "null"}, {"enum": ["active_object", "suspended_gear", "dormant_object"]}]},
+        "facets": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+        "source_basis": {"type": "string", "minLength": 1},
+        "fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
+    "armorClassNativeDexterityBasis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_role", "subject_owner_ref", "ability_id", "base_source", "base_score", "instance_adjustment", "resolved_score", "dexterity_modifier", "actor_read", "archetype_definition_id"],
+      "properties": {
+        "subject_role": {"enum": ["actor", "target"]},
+        "subject_owner_ref": {"$ref": "#/$defs/armorClassActorOwnerRef"},
+        "ability_id": {"const": "ability.dexterity"},
+        "base_source": {"enum": ["ACTOR_STATE", "ACTOR_ARCHETYPE"]},
+        "base_score": {"type": "integer", "minimum": 0},
+        "instance_adjustment": {"type": "integer"},
+        "resolved_score": {"type": "integer", "minimum": 0},
+        "dexterity_modifier": {"type": "integer"},
+        "actor_read": {"$ref": "#/$defs/rollPolicyOwnerRead"},
+        "archetype_definition_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"base_source": {"const": "ACTOR_STATE"}}, "required": ["base_source"]}, "then": {"properties": {"archetype_definition_id": {"type": "null"}}}},
+        {"if": {"properties": {"base_source": {"const": "ACTOR_ARCHETYPE"}}, "required": ["base_source"]}, "then": {"properties": {"archetype_definition_id": {"$ref": "#/$defs/id"}}}}
+      ]
+    },
+    "armorClassEquipmentMembership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_actor_id", "assets"],
+      "properties": {
+        "subject_actor_id": {"$ref": "#/$defs/id"},
+        "assets": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/armorClassEquipmentMember"}}
+      }
+    },
+    "armorClassNativeBaseInputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["native_ability_basis", "equipment_membership"],
+      "properties": {
+        "native_ability_basis": {"$ref": "#/$defs/armorClassNativeDexterityBasis"},
+        "equipment_membership": {"$ref": "#/$defs/armorClassEquipmentMembership"}
+      }
+    },
+    "armorClassBaseCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base_kind", "base_value", "source_owner_ref", "source_definition_id", "source_application_id", "rule_element_ordinal", "source_id", "rules_origin_id", "source_basis", "fingerprint"],
+      "properties": {
+        "base_kind": {"enum": ["UNARMORED_10_PLUS_DEX", "MAGE_ARMOR_13_PLUS_DEX"]},
+        "base_value": {"type": "integer"},
+        "source_owner_ref": {"oneOf": [{"$ref": "#/$defs/armorClassActorOwnerRef"}, {"$ref": "#/$defs/armorClassEffectOwnerRef"}]},
+        "source_definition_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "source_application_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "rule_element_ordinal": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/ordinal"}]},
+        "source_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "rules_origin_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "source_basis": {"type": "string", "minLength": 1},
+        "fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "allOf": [
+        {"if": {"properties": {"base_kind": {"const": "UNARMORED_10_PLUS_DEX"}}, "required": ["base_kind"]}, "then": {"properties": {"source_owner_ref": {"$ref": "#/$defs/armorClassActorOwnerRef"}, "source_definition_id": {"type": "null"}, "source_application_id": {"type": "null"}, "rule_element_ordinal": {"type": "null"}, "source_id": {"type": "null"}, "rules_origin_id": {"type": "null"}}}},
+        {"if": {"properties": {"base_kind": {"const": "MAGE_ARMOR_13_PLUS_DEX"}}, "required": ["base_kind"]}, "then": {"properties": {"source_owner_ref": {"$ref": "#/$defs/armorClassEffectOwnerRef"}, "source_definition_id": {"$ref": "#/$defs/id"}, "source_application_id": {"$ref": "#/$defs/id"}, "rule_element_ordinal": {"$ref": "#/$defs/ordinal"}, "source_id": {"$ref": "#/$defs/id"}, "rules_origin_id": {"$ref": "#/$defs/id"}}}}
+      ]
+    },
+    "armorClassBaseContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_id", "source_owner_ref", "owner_definition_id", "owner_kind", "owner_application_id", "rule_element_ordinal", "source_id", "rules_origin_id", "value", "predicate", "predicate_source_present", "predicate_result", "predicate_state", "source_eligibility", "disposition", "rejection_reasons", "source_basis", "fingerprint"],
+      "properties": {
+        "operation_id": {"const": "rule.override"},
+        "source_owner_ref": {"$ref": "#/$defs/armorClassEffectOwnerRef"},
+        "owner_definition_id": {"$ref": "#/$defs/id"},
+        "owner_kind": {"const": "definition.effect"},
+        "owner_application_id": {"$ref": "#/$defs/id"},
+        "rule_element_ordinal": {"$ref": "#/$defs/ordinal"},
+        "source_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "rules_origin_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "value": {"$ref": "#/$defs/armorClassBaseValue"},
+        "predicate": {"anyOf": [{"type": "null"}, {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"}]},
+        "predicate_source_present": {"type": "boolean"},
+        "predicate_result": {"type": "boolean"},
+        "predicate_state": {"enum": ["TRUE", "FALSE"]},
+        "source_eligibility": {"enum": ["ELIGIBLE", "INELIGIBLE"]},
+        "disposition": {"enum": ["CANDIDATE", "REJECTED"]},
+        "rejection_reasons": {"type": "array", "uniqueItems": true, "items": {"enum": ["PREDICATE_FALSE", "SOURCE_NOT_ELIGIBLE"]}},
+        "source_basis": {"type": "string", "minLength": 1},
+        "fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "allOf": [
+        {"if": {"properties": {"disposition": {"const": "CANDIDATE"}}, "required": ["disposition"]}, "then": {"properties": {"predicate_state": {"const": "TRUE"}, "predicate_result": {"const": true}, "source_eligibility": {"const": "ELIGIBLE"}, "rejection_reasons": {"maxItems": 0}}}},
+        {"if": {"properties": {"predicate_state": {"const": "FALSE"}}, "required": ["predicate_state"]}, "then": {"properties": {"predicate_result": {"const": false}, "disposition": {"const": "REJECTED"}, "rejection_reasons": {"contains": {"const": "PREDICATE_FALSE"}}}}},
+        {"if": {"properties": {"source_eligibility": {"const": "INELIGIBLE"}}, "required": ["source_eligibility"]}, "then": {"properties": {"disposition": {"const": "REJECTED"}, "rejection_reasons": {"contains": {"const": "SOURCE_NOT_ELIGIBLE"}}}}}
+      ]
+    },
+    "armorClassModifierContribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_id", "source_owner_ref", "owner_definition_id", "owner_kind", "owner_application_id", "rule_element_ordinal", "source_id", "rules_origin_id", "value", "predicate", "predicate_source_present", "predicate_result", "predicate_state", "source_eligibility", "disposition", "rejection_reasons", "source_basis", "fingerprint"],
+      "properties": {
+        "operation_id": {"const": "rule.add_flat"},
+        "source_owner_ref": {"oneOf": [{"$ref": "#/$defs/armorClassEffectOwnerRef"}, {"type": "object", "additionalProperties": false, "required": ["family_key", "identity"], "properties": {"family_key": {"const": "world.asset"}, "identity": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/id"}}}}]},
+        "owner_definition_id": {"$ref": "#/$defs/id"},
+        "owner_kind": {"enum": ["definition.effect", "definition.asset"]},
+        "owner_application_id": {"$ref": "#/$defs/id"},
+        "rule_element_ordinal": {"$ref": "#/$defs/ordinal"},
+        "source_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "rules_origin_id": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/id"}]},
+        "value": {"type": "integer"},
+        "predicate": {"anyOf": [{"type": "null"}, {"$ref": "https://hedgelion.invalid/schemas/mechanical-predicate.schema.json"}]},
+        "predicate_source_present": {"type": "boolean"},
+        "predicate_result": {"type": "boolean"},
+        "predicate_state": {"enum": ["TRUE", "FALSE"]},
+        "source_eligibility": {"enum": ["ELIGIBLE", "INELIGIBLE"]},
+        "disposition": {"enum": ["APPLIED", "REJECTED"]},
+        "rejection_reasons": {"type": "array", "uniqueItems": true, "items": {"enum": ["PREDICATE_FALSE", "SOURCE_NOT_ELIGIBLE"]}},
+        "source_basis": {"type": "string", "minLength": 1},
+        "fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      },
+      "allOf": [
+        {"if": {"properties": {"disposition": {"const": "APPLIED"}}, "required": ["disposition"]}, "then": {"properties": {"predicate_state": {"const": "TRUE"}, "predicate_result": {"const": true}, "source_eligibility": {"const": "ELIGIBLE"}, "rejection_reasons": {"maxItems": 0}}}},
+        {"if": {"properties": {"predicate_state": {"const": "FALSE"}}, "required": ["predicate_state"]}, "then": {"properties": {"predicate_result": {"const": false}, "disposition": {"const": "REJECTED"}, "rejection_reasons": {"contains": {"const": "PREDICATE_FALSE"}}}}},
+        {"if": {"properties": {"source_eligibility": {"const": "INELIGIBLE"}}, "required": ["source_eligibility"]}, "then": {"properties": {"disposition": {"const": "REJECTED"}, "rejection_reasons": {"contains": {"const": "SOURCE_NOT_ELIGIBLE"}}}}}
+      ]
+    },
     "selectorOperationPair": {"type":"object","additionalProperties":false,"required":["selector_id","operation_ids"],"properties":{"selector_id":{"$ref":"#/$defs/id"},"operation_ids":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/id"},"uniqueItems":true}}},
-    "calculationPolicyBinding": {"type":"object","additionalProperties":false,"required":["consumer_id","profile_id","profile_generation","reads","selector_operation_pairs","context_fact_bindings","native_role_bindings"],"properties":{"consumer_id":{"$ref":"#/$defs/id"},"profile_id":{"$ref":"#/$defs/calculationPolicyId"},"profile_generation":{"const":1},"reads":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/policyReadRef"},"uniqueItems":true},"selector_operation_pairs":{"type":"array","items":{"$ref":"#/$defs/selectorOperationPair"},"uniqueItems":true},"context_fact_bindings":{"type":"array","items":{"$ref":"#/$defs/contextFactBinding"},"uniqueItems":true},"native_role_bindings":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/nativeRoleBinding"},"uniqueItems":true}},"allOf":[{"if":{"properties":{"profile_id":{"enum":["calculation.roll_advantage_srd521","calculation.damage_defense_srd521","calculation.armor_class_srd521"]}},"required":["profile_id"]},"then":{"properties":{"selector_operation_pairs":{"minItems":1}}}}]},
+    "calculationPolicyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["consumer_id", "profile_id", "profile_generation", "reads", "selector_operation_pairs", "context_fact_bindings", "native_role_bindings"],
+      "properties": {
+        "consumer_id": {"$ref": "#/$defs/id"},
+        "profile_id": {"$ref": "#/$defs/calculationPolicyId"},
+        "profile_generation": {"const": 1},
+        "reads": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/policyReadRef"}, "uniqueItems": true},
+        "selector_operation_pairs": {"type": "array", "items": {"$ref": "#/$defs/selectorOperationPair"}, "uniqueItems": true},
+        "context_fact_bindings": {"type": "array", "items": {"$ref": "#/$defs/contextFactBinding"}, "uniqueItems": true},
+        "native_role_bindings": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/nativeRoleBinding"}, "uniqueItems": true},
+        "native_base_descriptor": {"anyOf": [{"$ref": "#/$defs/armorClassNativeBaseDescriptor"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {"if": {"properties": {"profile_id": {"enum": ["calculation.roll_advantage_srd521", "calculation.damage_defense_srd521", "calculation.armor_class_srd521"]}}, "required": ["profile_id"]}, "then": {"properties": {"selector_operation_pairs": {"minItems": 1}}}},
+        {"if": {"properties": {"profile_id": {"const": "calculation.armor_class_srd521"}}, "required": ["profile_id"]}, "then": {
+          "required": ["native_base_descriptor"],
+          "properties": {
+            "native_base_descriptor": {"$ref": "#/$defs/armorClassNativeBaseDescriptor"},
+            "reads": {"const": ["selector:defense.armor_class"]},
+            "selector_operation_pairs": {"const": [{"selector_id": "defense.armor_class", "operation_ids": ["rule.add_flat", "rule.override"]}]},
+            "context_fact_bindings": {"maxItems": 0},
+            "native_role_bindings": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["read_ref", "role_names"],
+                "properties": {
+                  "read_ref": {"const": "selector:defense.armor_class"},
+                  "role_names": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"enum": ["actor", "target"]}, "uniqueItems": true}
+                }
+              }
+            }
+          }
+        }},
+        {"if": {"properties": {"profile_id": {"not": {"const": "calculation.armor_class_srd521"}}}, "required": ["profile_id"]}, "then": {"properties": {"native_base_descriptor": {"type": "null"}}}}
+      ]
+    },
     "castProfileBinding": {"type":"object","additionalProperties":false,"required":["consumer_id","profile_id","profile_generation"],"properties":{"consumer_id":{"$ref":"#/$defs/id"},"profile_id":{"$ref":"#/$defs/castProfileId"},"profile_generation":{"const":1}}},
     "castPreflightInput": {"type":"object","additionalProperties":false,"required":["consumer_id","subject_binding","source_actor_id","origin_subject_id","cost_payer_actor_id","acquisition_binding_ref","component_owner_refs","target_bindings"],"properties":{"consumer_id":{"$ref":"#/$defs/id"},"subject_binding":{"$ref":"#/$defs/subjectBinding"},"source_actor_id":{"$ref":"#/$defs/id"},"origin_subject_id":{"$ref":"#/$defs/id"},"cost_payer_actor_id":{"$ref":"#/$defs/id"},"acquisition_binding_ref":{"$ref":"#/$defs/id"},"component_owner_refs":{"type":"array","items":{"$ref":"#/$defs/ownerRef"},"uniqueItems":true},"target_bindings":{"type":"array","items":{"oneOf":[{"$ref":"#/$defs/subjectBinding"},{"$ref":"#/$defs/objectSubjectBinding"}]},"uniqueItems":true},"slot_resource_definition_id":{"$ref":"#/$defs/id"},"control_effect_id":{"$ref":"#/$defs/id"}}},
     "compiledCalculationPolicy": {"type":"object","additionalProperties":false,"required":["binding","selector_contracts","accessor_contracts","derived_node_contracts","context_fact_contracts","role_contracts","dependency_read_refs"],"properties":{"binding":{"$ref":"#/$defs/calculationPolicyBinding"},"selector_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/selectorMetadata"}},"accessor_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/accessorMetadata"}},"derived_node_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/derivedNodeMetadata"}},"context_fact_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"#/$defs/compilerContextFactMetadata"}},"role_contracts":{"$ref":"#/$defs/nativeRoleContracts"},"dependency_read_refs":{"type":"array","items":{"$ref":"#/$defs/mechanicalNodeRef"},"uniqueItems":true}}},
