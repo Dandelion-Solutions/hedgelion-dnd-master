@@ -35,6 +35,22 @@ FIRST12_SOURCE_HELD_KEYS = {
     "source.spell.arcane_lock.unresolved.destruction_access_policy",
     "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
 }
+NEXT12_SOURCE_CLOSED_KEYS = {
+    "source.spell.arcanist_s_magic_aura.unresolved.alternate_type_domain",
+    "source.spell.arcanist_s_magic_aura.unresolved.false_aura_choice_domain",
+    "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+    "source.spell.detect_evil_and_good.unresolved.supernatural_type_members",
+    "source.spell.detect_poison_and_disease.unresolved.barrier_and_catalog_domain",
+    "source.spell.detect_thoughts.unresolved.deeper_failure_disclosure",
+    "source.spell.dragon_s_breath.unresolved.five_damage_type_members",
+    "source.spell.druidcraft.unresolved.plant_and_fire_eligibility",
+    "source.spell.enhance_ability.unresolved.five_ability_members",
+    "source.spell.enlarge_reduce.unresolved.mode_exact_modifiers",
+    "source.spell.feather_fall.unresolved.descent_rate",
+}
+NEXT12_SOURCE_HELD_KEYS = {
+    "source.spell.detect_magic.unresolved.aura_overlay_policy",
+}
 
 
 def load_json(path: Path) -> dict[str, object]:
@@ -548,8 +564,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 68)
-        self.assertEqual(unresolved_blocker["entry_count"], 61)
+        self.assertEqual(unresolved_blocker["count"], 57)
+        self.assertEqual(unresolved_blocker["entry_count"], 51)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -837,7 +853,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 68)
+        self.assertEqual(classification["source_blocking_key_count"], 57)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -887,19 +903,33 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 68)
+        self.assertEqual(classification["source_blocking_key_count"], 57)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 9)
-        self.assertEqual(classification["source_held_subobligation_count"], 3)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 21)
+        self.assertEqual(classification["source_held_subobligation_count"], 4)
+        self.assertEqual(
+            manifest["source_unknown_resolution_contract"][
+                "source_closed_subobligation_count"
+            ],
+            9,
+        )
+        self.assertEqual(
+            manifest["source_unknown_resolution_contract"][
+                "source_held_subobligation_count"
+            ],
+            3,
+        )
+        self.assertEqual(
+            manifest["source_unknown_resolution_contract"][
+                "active_source_blocker_count"
+            ],
+            68,
+        )
         source_blocking_keys = set(classification["source_blocking_keys"])
         self.assertTrue(FIRST12_SOURCE_CLOSED_KEYS.isdisjoint(source_blocking_keys))
         self.assertTrue(FIRST12_SOURCE_HELD_KEYS.issubset(source_blocking_keys))
-        self.assertTrue(
-            {
-                "source.spell.augury.unresolved.four_omen_members",
-                "source.spell.chromatic_orb.unresolved.six_damage_type_members",
-                "source.spell.detect_evil_and_good.unresolved.supernatural_type_members",
-            }.issubset(source_blocking_keys)
+        self.assertIn(
+            "source.spell.augury.unresolved.four_omen_members", source_blocking_keys
         )
 
         evidence = manifest["source_unknown_resolution_evidence"]
@@ -995,6 +1025,240 @@ class TestSpellSourceQualification(unittest.TestCase):
         tampered["source_unknown_classifications"][0]["original_reason"] += " Changed."
         with self.assertRaises(TOOL.SourceQualificationError):
             TOOL._validate_source_unknown_classifications(tampered)
+
+    def test_next12_source_closures_preserve_first12_and_detect_magic_hold(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        roster = TOOL.derive_source_requirement_roster(manifest)
+        receipt = TOOL._source_qualification_receipt(manifest, roster)
+        classification = receipt["source_unknown_classification"]
+
+        self.assertEqual(classification["source_blocking_key_count"], 57)
+        self.assertEqual(classification["historical_source_blocking_key_count"], 77)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 21)
+        self.assertEqual(classification["source_held_subobligation_count"], 4)
+        resolved_keys = set(classification["source_resolved_keys"])
+        held_keys = set(classification["source_held_keys"])
+        self.assertEqual(
+            resolved_keys, FIRST12_SOURCE_CLOSED_KEYS | NEXT12_SOURCE_CLOSED_KEYS
+        )
+        self.assertEqual(held_keys, FIRST12_SOURCE_HELD_KEYS | NEXT12_SOURCE_HELD_KEYS)
+        self.assertEqual(len(classification["source_resolved_keys"]), 20)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 20)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 25)
+        self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
+        self.assertIn(
+            "source.spell.augury.unresolved.four_omen_members",
+            classification["source_blocking_keys"],
+        )
+        self.assertIn(
+            "source.spell.detect_poison_and_disease.unresolved.barrier_and_catalog_domain",
+            resolved_keys,
+        )
+        self.assertIn(
+            "source.spell.detect_magic.unresolved.aura_overlay_policy", held_keys
+        )
+        self.assertNotIn(
+            "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+            classification["source_blocking_keys"],
+        )
+        self.assertNotIn(
+            "source.spell.detect_evil_and_good.unresolved.supernatural_type_members",
+            classification["source_blocking_keys"],
+        )
+
+        evidence_by_key = {
+            row["unresolved_key"]: row
+            for row in manifest["source_unknown_resolution_evidence"]
+        }
+        self.assertEqual(
+            set(evidence_by_key), FIRST12_SOURCE_CLOSED_KEYS | FIRST12_SOURCE_HELD_KEYS
+        )
+        for key in FIRST12_SOURCE_HELD_KEYS:
+            self.assertEqual(evidence_by_key[key]["disposition"], "SOURCE_HELD")
+        command = evidence_by_key[
+            "source.spell.command.unresolved.command_exact_restrictions"
+        ]
+        self.assertIn("if it moves within 5 feet", command["source_interpretation"])
+
+        next_evidence = manifest["source_next12_resolution_evidence"]
+        next_by_key = {row["unresolved_key"]: row for row in next_evidence}
+        self.assertEqual(
+            set(next_by_key), NEXT12_SOURCE_CLOSED_KEYS | NEXT12_SOURCE_HELD_KEYS
+        )
+        for key in NEXT12_SOURCE_CLOSED_KEYS:
+            self.assertEqual(next_by_key[key]["disposition"], "SOURCE_CLOSED")
+        self.assertEqual(
+            next_by_key["source.spell.detect_magic.unresolved.aura_overlay_policy"][
+                "disposition"
+            ],
+            "SOURCE_HELD",
+        )
+        self.assertEqual(len(next_evidence), 13)
+
+        druidcraft = [
+            row
+            for row in next_evidence
+            if row["unresolved_key"]
+            == "source.spell.druidcraft.unresolved.plant_and_fire_eligibility"
+        ]
+        self.assertEqual(
+            {row["subobligation_id"].rsplit("::", 1)[-1] for row in druidcraft},
+            {"source_mapping_review", "source_parameter"},
+        )
+        tables = manifest["primary_table_evidence_witnesses"]
+        self.assertEqual(
+            {row["source_exact_name"] for row in tables},
+            {"Teleport", "Control Weather"},
+        )
+        self.assertEqual(manifest["primary_table_evidence_residuals"], [])
+        classifications = {
+            row["unresolved_key"]: row
+            for row in manifest["source_unknown_classifications"]
+        }
+        poison_subobligations = classifications[
+            "source.spell.detect_poison_and_disease.unresolved.barrier_and_catalog_domain"
+        ]["subobligations"]
+        downstream = next(
+            row
+            for row in poison_subobligations
+            if row["category"] == "downstream_domain_consumer_admission_native_proof"
+        )
+        self.assertEqual(downstream["status"], "NOT_ESTABLISHED")
+        self.assertEqual(downstream["gate_phase"], "FUTURE_PROOF")
+        self.assertEqual(
+            manifest["source_next12_resolution_contract"][
+                "active_source_blocker_count"
+            ],
+            57,
+        )
+
+    def test_next12_source_resolution_rejects_borrowed_provenance_and_qualifiers(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+
+        def next_evidence_for(
+            candidate: dict[str, object], key: str
+        ) -> dict[str, object]:
+            rows = candidate["source_next12_resolution_evidence"]
+            return next(row for row in rows if row["unresolved_key"] == key)
+
+        def alter_detect_thoughts_escape_turn(candidate: dict[str, object]) -> None:
+            row = next_evidence_for(
+                candidate,
+                "source.spell.detect_thoughts.unresolved.deeper_failure_disclosure",
+            )
+            row["source_interpretation"] = row["source_interpretation"].replace(
+                "on its own turn", "outside its turn"
+            )
+            row["material_qualifiers"][2] = (
+                "The deeper probe uses the next-turn Magic action; the escape is an action "
+                "the target can take outside its turn, not an opposed roll."
+            )
+
+        def weaken_feather_fall_clear_path(candidate: dict[str, object]) -> None:
+            row = next_evidence_for(
+                candidate, "source.spell.feather_fall.unresolved.descent_rate"
+            )
+            row["source_interpretation"] = row["source_interpretation"].replace(
+                "The existing target-clear-path rule still applies: a target cannot be behind Total Cover.",
+                "The chosen-target wording allows access through Total Cover.",
+            )
+            row["material_qualifiers"][0] = (
+                "The chosen-target sentence does not repeat trigger visibility; Total Cover does not block it."
+            )
+
+        def remove_druidcraft_parameter_record(candidate: dict[str, object]) -> None:
+            rows = candidate["source_next12_resolution_evidence"]
+            row = next(value for value in rows if value["review_item_id"] == "NEXT-09B")
+            rows.remove(row)
+
+        def broaden_druidcraft_cube_limit(candidate: dict[str, object]) -> None:
+            row = next(
+                value
+                for value in candidate["source_next12_resolution_evidence"]
+                if value["review_item_id"] == "NEXT-09B"
+            )
+            row["source_interpretation"] = row["source_interpretation"].replace(
+                "the harmless Sensory Effect alone must fit within a 5-foot Cube",
+                "all Druidcraft modes must fit within a 5-foot Cube",
+            )
+            row["material_qualifiers"][0] = (
+                "The five-foot Cube is a global restriction on all Druidcraft modes."
+            )
+
+        cases = (
+            (
+                "borrowed-key-record",
+                lambda candidate: next_evidence_for(
+                    candidate,
+                    "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+                )[
+                    "source_record_ref"
+                ].update({"json_pointer": "/rows/8/required_modes_or_exceptions"}),
+            ),
+            (
+                "borrowed-entry-map",
+                lambda candidate: next_evidence_for(
+                    candidate,
+                    "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+                ).update(
+                    {
+                        "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/7"
+                    }
+                ),
+            ),
+            (
+                "borrowed-body-witness",
+                lambda candidate: next_evidence_for(
+                    candidate,
+                    "source.spell.enhance_ability.unresolved.five_ability_members",
+                )[
+                    "source_record_ref"
+                ]["body_witness_ref"].update({"json_pointer": "/rows/81"}),
+            ),
+            (
+                "wrong-markdown-hash",
+                lambda candidate: candidate["source_next12_review"].update(
+                    {"candidate_sha256": "0" * 64}
+                ),
+            ),
+            (
+                "wrong-qualifier",
+                alter_detect_thoughts_escape_turn,
+            ),
+            (
+                "clear-path-qualifier",
+                weaken_feather_fall_clear_path,
+            ),
+            (
+                "missing-druidcraft-subobligation",
+                remove_druidcraft_parameter_record,
+            ),
+            (
+                "global-druidcraft-cube-limit",
+                broaden_druidcraft_cube_limit,
+            ),
+            (
+                "removed-detect-magic-hold",
+                lambda candidate: next_evidence_for(
+                    candidate,
+                    "source.spell.detect_magic.unresolved.aura_overlay_policy",
+                ).update({"disposition": "SOURCE_CLOSED"}),
+            ),
+        )
+        for case, mutate in cases:
+            candidate = copy.deepcopy(manifest)
+            with (
+                self.subTest(case=case),
+                self.assertRaises(TOOL.SourceQualificationError),
+            ):
+                mutate(candidate)
+                TOOL._validate_source_unknown_classifications(candidate)
 
     def test_r5_source_modeling_rulings_close_five_and_preserve_word_recall(
         self,

@@ -21,6 +21,9 @@
     "source_residual_review",
     "source_unknown_resolution_contract",
     "source_unknown_resolution_evidence",
+    "source_next12_review",
+    "source_next12_resolution_contract",
+    "source_next12_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -86,6 +89,16 @@
       "minItems": 12,
       "maxItems": 12,
       "items": {"$ref": "#/$defs/sourceUnknownResolutionEvidence"}
+    },
+    "source_next12_review": {"$ref": "#/$defs/sourceNext12Review"},
+    "source_next12_resolution_contract": {
+      "$ref": "#/$defs/sourceNext12ResolutionContract"
+    },
+    "source_next12_resolution_evidence": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {"$ref": "#/$defs/sourceNext12ResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -528,6 +541,135 @@
         "accepted_review_sha256": {"$ref": "#/$defs/sha256"},
         "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-07-sp00-first12-markdown-source-qualification.md"},
         "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceNext12Review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "candidate_source_base_sha",
+        "candidate_path", "candidate_sha256", "candidate_summary_path",
+        "candidate_summary_sha256", "accepted_review_path",
+        "accepted_review_sha256", "task_evidence_path", "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_NEXT12_MARKDOWN_REVIEW_20261008"},
+        "integration_base_sha": {"const": "0792404d33baf1d7ce2d4223655dd30a049e8f58"},
+        "candidate_source_base_sha": {"const": "0792404d33baf1d7ce2d4223655dd30a049e8f58"},
+        "candidate_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-20261008.json"},
+        "candidate_sha256": {"const": "ee747f131a118932fbe73d3c1136bbf72d1e6cd5c76f93ee06ac6a03d1259fb6"},
+        "candidate_summary_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-20261008.md"},
+        "candidate_summary_sha256": {"const": "f6e5c36af4b8b2e4abff78d0083f2eecec79271375ec50af901591f772908bf8"},
+        "accepted_review_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-review-20261008.md"},
+        "accepted_review_sha256": {"const": "e12bdbe94481c9cd757fd15dfc7966c34fcb576e9350a1099b521cd66715d4bd"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-08-sp00-next-markdown-source-qualification.md"},
+        "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceNext12ResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_source_closed_key_count", "selected_source_closed_subobligation_count",
+        "selected_source_held_key_count", "selected_source_held_subobligation_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_closed_key_count", "cumulative_source_closed_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "active_source_blocker_count", "future_native_proof_status",
+        "full_339_source_qualification_status"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_TWO_REVIEWED_SETS_SOURCE_ONLY"},
+        "selected_key_count": {"const": 12},
+        "resolution_record_count": {"const": 13},
+        "selected_source_closed_key_count": {"const": 11},
+        "selected_source_closed_subobligation_count": {"const": 12},
+        "selected_source_held_key_count": {"const": 1},
+        "selected_source_held_subobligation_count": {"const": 1},
+        "cumulative_reviewed_key_count": {"const": 24},
+        "cumulative_resolution_record_count": {"const": 25},
+        "cumulative_source_closed_key_count": {"const": 20},
+        "cumulative_source_closed_subobligation_count": {"const": 21},
+        "cumulative_source_held_key_count": {"const": 4},
+        "cumulative_source_held_subobligation_count": {"const": 4},
+        "active_source_blocker_count": {"const": 57},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "sourceNext12RecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "json_pointer", "source_exact_name", "printed_page",
+        "source_header_line", "raw_body_sha256", "raw_hash_basis",
+        "body_witness_ref", "qualification_ref"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/required_modes_or_exceptions$"},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_hash_basis": {"const": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"},
+        "body_witness_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        },
+        "qualification_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/qualifications$"}
+          }
+        }
+      }
+    },
+    "sourceNext12ResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "subobligation_id",
+        "disposition", "source_record_ref", "source_classification_pointer",
+        "source_unresolved_record_pointer", "current_map_pointer",
+        "source_markdown_locators", "source_interpretation", "material_qualifiers",
+        "retained_source_residual", "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {"enum": ["NEXT-01", "NEXT-02", "NEXT-03", "NEXT-04", "NEXT-05", "NEXT-06", "NEXT-07", "NEXT-08", "NEXT-09A", "NEXT-09B", "NEXT-10", "NEXT-11", "NEXT-12"]},
+        "unresolved_key": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["SOURCE_CLOSED", "SOURCE_HELD"]},
+        "source_record_ref": {"$ref": "#/$defs/sourceNext12RecordRef"},
+        "source_classification_pointer": {"type": "string", "pattern": "^/source_unknown_classifications/[0-9]+$"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/[0-9]+$"},
+        "current_map_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/entries/[0-9]+$"},
+        "source_markdown_locators": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/sourceMarkdownLocator"}},
+        "shared_common_source_requirement_key": {"const": "source.common.target_clear_path"},
+        "shared_common_source_record_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"const": "/common_obligations/0"}
+          }
+        },
+        "source_interpretation": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "material_qualifiers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "retained_source_residual": {"type": "string", "minLength": 1},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }
     },
     "sourceUnknownResolutionContract": {

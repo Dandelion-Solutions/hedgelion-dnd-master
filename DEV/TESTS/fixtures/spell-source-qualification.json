@@ -114321,6 +114321,482 @@
       "actual_native_proof_refs": []
     }
   ],
+  "source_next12_review": {
+    "review_id": "SP00_NEXT12_MARKDOWN_REVIEW_20261008",
+    "integration_base_sha": "0792404d33baf1d7ce2d4223655dd30a049e8f58",
+    "candidate_source_base_sha": "0792404d33baf1d7ce2d4223655dd30a049e8f58",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-20261008.json",
+    "candidate_sha256": "ee747f131a118932fbe73d3c1136bbf72d1e6cd5c76f93ee06ac6a03d1259fb6",
+    "candidate_summary_path": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-20261008.md",
+    "candidate_summary_sha256": "f6e5c36af4b8b2e4abff78d0083f2eecec79271375ec50af901591f772908bf8",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-next-residuals-review-20261008.md",
+    "accepted_review_sha256": "e12bdbe94481c9cd757fd15dfc7966c34fcb576e9350a1099b521cd66715d4bd",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-08-sp00-next-markdown-source-qualification.md",
+    "task_evidence_sha256": "02bbe067448e9c8b0502c960ad39891cdb67d7981d5e00f5a6c14374001a5fd5"
+  },
+  "source_next12_resolution_contract": {
+    "status": "PARTIAL_TWO_REVIEWED_SETS_SOURCE_ONLY",
+    "selected_key_count": 12,
+    "resolution_record_count": 13,
+    "selected_source_closed_key_count": 11,
+    "selected_source_closed_subobligation_count": 12,
+    "selected_source_held_key_count": 1,
+    "selected_source_held_subobligation_count": 1,
+    "cumulative_reviewed_key_count": 24,
+    "cumulative_resolution_record_count": 25,
+    "cumulative_source_closed_key_count": 20,
+    "cumulative_source_closed_subobligation_count": 21,
+    "cumulative_source_held_key_count": 4,
+    "cumulative_source_held_subobligation_count": 4,
+    "active_source_blocker_count": 57,
+    "future_native_proof_status": "NOT_ESTABLISHED",
+    "full_339_source_qualification_status": "NOT_ESTABLISHED"
+  },
+  "source_next12_resolution_evidence": [
+    {
+      "review_item_id": "NEXT-01",
+      "unresolved_key": "source.spell.arcanist_s_magic_aura.unresolved.alternate_type_domain",
+      "source_exact_name": "Arcanist’s Magic Aura",
+      "subobligation_id": "source.spell.arcanist_s_magic_aura.unresolved.alternate_type_domain::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/8/required_modes_or_exceptions",
+        "source_exact_name": "Arcanist’s Magic Aura",
+        "printed_page": 110,
+        "source_header_line": 9376,
+        "raw_body_sha256": "95dc368e392b20b55d54119445800bf9b06a65ff265ab10c48594f2f3c0ae41b",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/17"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/8/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/4",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/4",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/7",
+      "source_markdown_locators": [
+        {"heading": "Arcanist’s Magic Aura", "line_start": 9626, "line_end": 9642},
+        {"heading": "Creature Type", "line_start": 16344, "line_end": 16350}
+      ],
+      "source_interpretation": "A willing touched creature's Mask selects one of the fourteen named types other than its actual type; spells and magical effects treat it as the selected type. This is not actual type or species replacement. Objects instead receive False Aura; the base duration is 24 hours, with the same target cast on every day for 30 days lasting until dispelled.",
+      "material_qualifiers": [
+        "Exclude the target's actual creature type dynamically; do not use a fixed thirteen-type roster.",
+        "Mask is a conditioned alternative on a willing creature and changes magical treatment, not actual type/species truth.",
+        "An object receives False Aura instead of Mask.",
+        "Effective-type projection and native consumers remain NOT_ESTABLISHED."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; effective-type projection and native consumer proof remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-02",
+      "unresolved_key": "source.spell.arcanist_s_magic_aura.unresolved.false_aura_choice_domain",
+      "source_exact_name": "Arcanist’s Magic Aura",
+      "subobligation_id": "source.spell.arcanist_s_magic_aura.unresolved.false_aura_choice_domain::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/8/required_modes_or_exceptions",
+        "source_exact_name": "Arcanist’s Magic Aura",
+        "printed_page": 110,
+        "source_header_line": 9376,
+        "raw_body_sha256": "95dc368e392b20b55d54119445800bf9b06a65ff265ab10c48594f2f3c0ae41b",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/17"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/8/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/5",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/5",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/7",
+      "source_markdown_locators": [
+        {"heading": "Arcanist’s Magic Aura", "line_start": 9626, "line_end": 9642},
+        {"heading": "School of Magic", "line_start": 9114, "line_end": 9131},
+        {"heading": "Detect Magic", "line_start": 10912, "line_end": 10926}
+      ],
+      "source_interpretation": "An object neither worn nor carried may be presented as magical when nonmagical, nonmagical when a magic item, or as having an aura of one chosen school. The eight named school choices describe apparent aura only; they do not grant school effects or rewrite actual spell origins.",
+      "material_qualifiers": [
+        "False presence starts with a nonmagical object; false absence starts with a magic item.",
+        "The eight schools are named choices, not powers and not a free choice to apply Mask or False Aura to either target kind.",
+        "Do not infer independently combinable simultaneous options or actual origin mutation.",
+        "Detect Magic multi-origin and self-illusion overlay arbitration remains held separately."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; Detect Magic's separately held multi-origin/self-illusion presentation policy and native consumers remain open.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-03",
+      "unresolved_key": "source.spell.chromatic_orb.unresolved.six_damage_type_members",
+      "source_exact_name": "Chromatic Orb",
+      "subobligation_id": "source.spell.chromatic_orb.unresolved.six_damage_type_members::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/19/required_modes_or_exceptions",
+        "source_exact_name": "Chromatic Orb",
+        "printed_page": 115,
+        "source_header_line": 9801,
+        "raw_body_sha256": "6a1f9ba224b9661d66cafe826aaf7c3f28a02ecb7cb46eb6b36a678dc5f2da42",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/42"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/19/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/11",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/11",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/18",
+      "source_markdown_locators": [{"heading": "Chromatic Orb", "line_start": 10105, "line_end": 10121}],
+      "source_interpretation": "Choose exactly one of Acid, Cold, Fire, Lightning, Poison or Thunder before the ranged spell attack. A hit deals 3d8 plus one d8 for each slot level above 1.",
+      "material_qualifiers": [
+        "The six named damage types are the complete selected source domain; no additional type is inferred.",
+        "Type selection precedes the attack; preserve the separately closed raw-d8 leap and target-history condition.",
+        "Attack, chaining, defense, executable-member admission and native support remain NOT_ESTABLISHED."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the separate leap/history key and attack/dice/native proof remain independent.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-04",
+      "unresolved_key": "source.spell.detect_evil_and_good.unresolved.supernatural_type_members",
+      "source_exact_name": "Detect Evil and Good",
+      "subobligation_id": "source.spell.detect_evil_and_good.unresolved.supernatural_type_members::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/29/required_modes_or_exceptions",
+        "source_exact_name": "Detect Evil and Good",
+        "printed_page": 123,
+        "source_header_line": 10560,
+        "raw_body_sha256": "db5ac0c968464e9f0b8c495ce7d8a1ac5ba13bd34d7e91dc96c97548171e29c4",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/80"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/29/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/18",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/18",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/28",
+      "source_markdown_locators": [
+        {"heading": "Detect Evil and Good", "line_start": 10894, "line_end": 10908},
+        {"heading": "Arcanist’s Magic Aura", "line_start": 9626, "line_end": 9640}
+      ],
+      "source_interpretation": "The spell senses locations of Aberration, Celestial, Elemental, Fey, Fiend and Undead within 30 feet during concentration. Active Hallow presence and location are a separate fact, not another type member.",
+      "material_qualifiers": [
+        "These six names are a direct filter domain, not six selectable sensing modes or alignment tests.",
+        "No other creature types are added to the direct source filter.",
+        "Preserve the prior material barriers; Mask affects magical treatment, while effective-type and native query behavior remain unproved.",
+        "Hallow presence/location remains separate from creature-type membership."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; Mask/effective-type, Hallow, spatial and native consumers remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-05",
+      "unresolved_key": "source.spell.detect_magic.unresolved.aura_overlay_policy",
+      "source_exact_name": "Detect Magic",
+      "subobligation_id": "source.spell.detect_magic.unresolved.aura_overlay_policy::source_semantics",
+      "disposition": "SOURCE_HELD",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/30/required_modes_or_exceptions",
+        "source_exact_name": "Detect Magic",
+        "printed_page": 123,
+        "source_header_line": 10571,
+        "raw_body_sha256": "e0cdc16bbfdea122a6617dfc7b12d108a55301af2ffef39b15f1dfb7c2b5b45a",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/81"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/30/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/20",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/20",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/29",
+      "source_markdown_locators": [
+        {"heading": "Detect Magic", "line_start": 10912, "line_end": 10926},
+        {"heading": "Arcanist’s Magic Aura", "line_start": 9626, "line_end": 9642}
+      ],
+      "source_interpretation": "The source distinguishes magical-effect presence sensing from a later Magic-action aura on visible bearers and from school disclosure for spell-created effects. False Aura changes how an eligible object's aura appears, not actual spell origin. The two bounded paragraphs do not determine exact presentation or precedence when a bearer has multiple independent effects including the illusion.",
+      "material_qualifiers": [
+        "Presence, visible aura and spell-origin school are distinct disclosure facts; aura requires a visible bearer and Magic action after sensing.",
+        "No automatic item identification or aura on an invisible bearer is stated.",
+        "Do not force actual Illusion-school leakage or suppress all independent magical effects because an object bears False Aura.",
+        "Keep exact multi-origin and self-illusion aura-overlay precedence SOURCE_HELD."
+      ],
+      "retained_source_residual": "The cited paragraphs do not specify a complete multi-origin presentation or precedence rule for an object's independent magical effects and the aura-changing illusion itself; this exact source policy remains held.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-06",
+      "unresolved_key": "source.spell.detect_poison_and_disease.unresolved.barrier_and_catalog_domain",
+      "source_exact_name": "Detect Poison and Disease",
+      "subobligation_id": "source.spell.detect_poison_and_disease.unresolved.barrier_and_catalog_domain::source_parameter",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/31/required_modes_or_exceptions",
+        "source_exact_name": "Detect Poison and Disease",
+        "printed_page": 123,
+        "source_header_line": 10585,
+        "raw_body_sha256": "aa3e92445702ecaf4f18edae3ccea418bc7cf9d2055a162ab1c192bab0520680",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/82"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/31/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/21",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/21",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/30",
+      "source_markdown_locators": [{"heading": "Detect Poison and Disease", "line_start": 10930, "line_end": 10944}],
+      "source_interpretation": "During concentration (up to 10 minutes), sense location and kind of poisons, poisonous or venomous creatures, and magical contagions within 30 feet. The source barriers are one foot of stone, dirt or wood, one inch of metal, or a thin lead sheet.",
+      "material_qualifiers": [
+        "No numeric lead thickness is supplied.",
+        "The named search subjects include magical contagions, not every mundane disease; Poison damage, the Poisoned condition or creature type alone does not define eligibility.",
+        "Close only the source_parameter subobligation; the lawful poison/contagion catalog census and downstream consumers remain open."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; downstream_domain_consumer_admission_native_proof and the complete lawful catalog/search domain remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-07",
+      "unresolved_key": "source.spell.detect_thoughts.unresolved.deeper_failure_disclosure",
+      "source_exact_name": "Detect Thoughts",
+      "subobligation_id": "source.spell.detect_thoughts.unresolved.deeper_failure_disclosure::source_semantics",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/32/required_modes_or_exceptions",
+        "source_exact_name": "Detect Thoughts",
+        "printed_page": 123,
+        "source_header_line": 10597,
+        "raw_body_sha256": "0438b5af49c583315faf6a21369e3f40d2d18258d85c9c2b489fdf12380f07c9",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/83"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/32/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/22",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/22",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/31",
+      "source_markdown_locators": [{"heading": "Detect Thoughts", "line_start": 10948, "line_end": 10964}],
+      "source_interpretation": "Sense Thoughts reports only thinking presence for creatures that know languages or are telepathic; Read Thoughts may target a visible or previously sensed creature and reveals its foremost current thought, or nothing for an ineligible mind. A deeper probe is a Magic action on the next turn. A failed Wisdom save reveals reasoning, emotions and a salient current matter; success ends the spell, and either outcome alerts the target. Until attention shifts away, the target may take an action on its own turn to make Intelligence (Arcana) against the caster's spell-save DC to end the spell on success.",
+      "material_qualifiers": [
+        "Worry, love and hate are examples, not a finite choice menu; no full memory dump or universal truth detector is stated.",
+        "Preserve later-turn reactivation, Sense-versus-Read eligibility, presence-only Sense and exact barriers.",
+        "The deeper probe uses the next-turn Magic action; the escape is an action the target can take on its own turn, not an opposed roll or a check outside that turn.",
+        "Private information, action, attention and recovery consumers remain future proof."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; private information, disclosure, attention, action, escape and recovery consumers remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-08",
+      "unresolved_key": "source.spell.dragon_s_breath.unresolved.five_damage_type_members",
+      "source_exact_name": "Dragon’s Breath",
+      "subobligation_id": "source.spell.dragon_s_breath.unresolved.five_damage_type_members::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/37/required_modes_or_exceptions",
+        "source_exact_name": "Dragon’s Breath",
+        "printed_page": 126,
+        "source_header_line": 10862,
+        "raw_body_sha256": "2e78a4c1fd96986216faf7a582b198cb444021d3da17a2dc444b8b0f34b46873",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/97"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/37/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/24",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/24",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/36",
+      "source_markdown_locators": [{"heading": "Dragon’s Breath", "line_start": 11221, "line_end": 11235}],
+      "source_interpretation": "A bonus-action touch of one willing creature chooses Acid, Cold, Fire, Lightning or Poison. During concentration that recipient can take a Magic action to exhale a 15-foot Cone; each creature saves Dexterity for full or half 3d6 damage, increased by 1d6 per slot above level 2.",
+      "material_qualifiers": [
+        "Thunder is not a member, even though it is listed for Chromatic Orb.",
+        "This grants the recipient a repeatable Magic-action capability; it is not an immediate caster attack or a once-per-cast breath.",
+        "No creature-mouth/anatomy restriction or new target count is inferred.",
+        "Area roster, action capability, save/damage, defenses and native support remain NOT_ESTABLISHED."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; recipient capability and native area/save/damage support remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-09A",
+      "unresolved_key": "source.spell.druidcraft.unresolved.plant_and_fire_eligibility",
+      "source_exact_name": "Druidcraft",
+      "subobligation_id": "source.spell.druidcraft.unresolved.plant_and_fire_eligibility::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/38/required_modes_or_exceptions",
+        "source_exact_name": "Druidcraft",
+        "printed_page": 126,
+        "source_header_line": 10901,
+        "raw_body_sha256": "de059ae3515d9589f7c956818f35a9ef4e62fb7ed8554f61bb3668146839789e",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/99"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/38/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/25",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/25",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/37",
+      "source_markdown_locators": [
+        {"heading": "Druidcraft", "line_start": 11257, "line_end": 11277},
+        {"heading": "Duration", "line_start": 9205, "line_end": 9219}
+      ],
+      "source_interpretation": "The named Bloom outcomes are a flower blossoming, a seed pod opening, or a leaf bud blooming. Fire Play lights or snuffs a candle, torch or campfire. These explicit source forms do not define arbitrary plant growth or general fire transformation.",
+      "material_qualifiers": [
+        "Retain only the named flower, seed-pod and leaf-bud Bloom forms.",
+        "Retain only lighting or snuffing the named candle, torch and campfire forms.",
+        "No arbitrary plant growth, wildfire extinction, added damage or quantified fire/material threshold is inferred.",
+        "Ambiguous world examples beyond named effects remain GM adjudication rather than a new guaranteed domain."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; ambiguous world exemplars and environment/material consumers remain outside this source closure.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-09B",
+      "unresolved_key": "source.spell.druidcraft.unresolved.plant_and_fire_eligibility",
+      "source_exact_name": "Druidcraft",
+      "subobligation_id": "source.spell.druidcraft.unresolved.plant_and_fire_eligibility::source_parameter",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/38/required_modes_or_exceptions",
+        "source_exact_name": "Druidcraft",
+        "printed_page": 126,
+        "source_header_line": 10901,
+        "raw_body_sha256": "de059ae3515d9589f7c956818f35a9ef4e62fb7ed8554f61bb3668146839789e",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/99"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/38/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/25",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/25",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/37",
+      "source_markdown_locators": [
+        {"heading": "Druidcraft", "line_start": 11257, "line_end": 11277},
+        {"heading": "Duration", "line_start": 9205, "line_end": 9219}
+      ],
+      "source_interpretation": "Druidcraft has a 30-foot range. Weather Sensor is a Tiny harmless sensory effect that forecasts weather at the caster's location over the following 24 hours and persists for one round; the harmless Sensory Effect alone must fit within a 5-foot Cube. Its instantaneous header does not erase the explicit one-round sensor duration.",
+      "material_qualifiers": [
+        "Keep the five-foot Cube restriction on harmless Sensory Effect only, not as a global Druidcraft limit.",
+        "The Tiny harmless forecast is for the caster's location over the next 24 hours and the created sensor lasts one round.",
+        "The instantaneous spell header does not erase the sensor's explicit lifetime.",
+        "No external weather service, exhaustive manifestation list or invented quantitative world limit is inferred."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; native environmental, weather and sensory presentation consumers remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-10",
+      "unresolved_key": "source.spell.enhance_ability.unresolved.five_ability_members",
+      "source_exact_name": "Enhance Ability",
+      "subobligation_id": "source.spell.enhance_ability.unresolved.five_ability_members::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/41/required_modes_or_exceptions",
+        "source_exact_name": "Enhance Ability",
+        "printed_page": 127,
+        "source_header_line": 11000,
+        "raw_body_sha256": "6fe763535996d5c1e5ca28202e6fc4b80d437bbb5876379c6f8ac9aba761a020",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/103"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/41/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/26",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/26",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/39",
+      "source_markdown_locators": [{"heading": "Enhance Ability", "line_start": 11347, "line_end": 11361}],
+      "source_interpretation": "On a touched creature, choose Strength, Dexterity, Intelligence, Wisdom or Charisma; during concentration (up to one hour), the target has Advantage on ability checks using that ability. Each slot above level 2 adds one target, and each target may use a different chosen ability.",
+      "material_qualifiers": [
+        "Constitution is not selectable.",
+        "Advantage applies to checks using the selected ability, not attacks or saving throws.",
+        "Higher-slot targets may each choose a different ability.",
+        "No willingness, saving-throw prerequisite or legacy animal-named rider is added; modifier consumers remain unproved."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; roll-modifier, per-target choice, expiry and native consumers remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-11",
+      "unresolved_key": "source.spell.enlarge_reduce.unresolved.mode_exact_modifiers",
+      "source_exact_name": "Enlarge/Reduce",
+      "subobligation_id": "source.spell.enlarge_reduce.unresolved.mode_exact_modifiers::source_parameter",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/42/required_modes_or_exceptions",
+        "source_exact_name": "Enlarge/Reduce",
+        "printed_page": 127,
+        "source_header_line": 11014,
+        "raw_body_sha256": "036b77513b31c9c822aade79e3ee3518ca3d9ea59e024ff989e11498522280a0",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/104"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/42/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/27",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/27",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/40",
+      "source_markdown_locators": [
+        {"heading": "Enlarge/Reduce", "line_start": 11365, "line_end": 11383},
+        {"heading": "Damage Rolls", "line_start": 1396, "line_end": 1400}
+      ],
+      "source_interpretation": "Enlarge moves a target one size category up, grants Advantage on Strength checks/saves and adds 1d4 to hits with enlarged weapons or Unarmed Strikes. Reduce moves one category down, grants Disadvantage on those checks/saves and subtracts 1d4 from hits with reduced weapons or Unarmed Strikes, with that subtraction not lowering damage below 1.",
+      "material_qualifiers": [
+        "A size category is not a doubled/halved dimension or weight; no obsolete space-limited growth rule is imported.",
+        "Only qualifying weapon or Unarmed Strike hits receive the signed 1d4 change.",
+        "Reduce's specific damage floor of 1 applies only to that subtraction; it does not establish immunity bypass or defense ordering.",
+        "Preserve visible target, unworn/uncarried object, unwilling-creature save, gear-drop and projectile-restoration conditions; native ordering remains unproved."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; size boundaries, modifier composition/order and native lifecycle remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "NEXT-12",
+      "unresolved_key": "source.spell.feather_fall.unresolved.descent_rate",
+      "source_exact_name": "Feather Fall",
+      "subobligation_id": "source.spell.feather_fall.unresolved.descent_rate::source_parameter",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/49/required_modes_or_exceptions",
+        "source_exact_name": "Feather Fall",
+        "printed_page": 130,
+        "source_header_line": 11229,
+        "raw_body_sha256": "19861be011d3111781160ea69876e5523ce6dba9c7688b089abb004657fc380b",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/116"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/49/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/28",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/28",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/47",
+      "source_markdown_locators": [
+        {"heading": "Feather Fall", "line_start": 11593, "line_end": 11605},
+        {"heading": "Falling [Hazard]", "line_start": 16593, "line_end": 16597},
+        {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+        {"heading": "Targets", "line_start": 9223, "line_end": 9227}
+      ],
+      "shared_common_source_requirement_key": "source.common.target_clear_path",
+      "shared_common_source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/common_obligations/0"},
+      "source_interpretation": "The Reaction trigger is the caster falling or a visible creature within 60 feet falling. Separately choose up to five falling creatures within 60 feet; that chosen-target sentence does not repeat the trigger's visibility condition. The existing target-clear-path rule still applies: a target cannot be behind Total Cover. Affected creatures descend at 60 feet per round until the spell ends (at most one minute); landing before then prevents that fall's damage and ends only that creature's effect.",
+      "material_qualifiers": [
+        "Do not copy trigger visibility into the separate chosen-target sentence, but do not infer unrestricted target access: source.common.target_clear_path still requires a clear path and bars Total Cover.",
+        "A one-minute midair expiry ends slowed descent, not the fall; native fall chronology and later damage remain unproved.",
+        "Landing protection is target-local; do not infer hover, reversal, teleport, global fall cancellation or immunity to unrelated damage.",
+        "Avoiding all fall damage also avoids the general falling-hazard Prone result; time-span dismissal without action requires a non-Incapacitated caster and is not concentration."
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_DESCENT_RATE_AND_DURATION_ONLY; Reaction admission, clear-path execution, fall/time simulation, damage, target-local expiry and native recovery remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    }
+  ],
   "source_modeling_resolutions": [
     {
       "resolution_id": "r5.source_modeling.flesh_to_stone.initial_failure_count",
