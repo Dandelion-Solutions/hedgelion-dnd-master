@@ -10,9 +10,11 @@ from __future__ import annotations
 import math
 from collections.abc import Mapping, Sequence
 from dataclasses import replace
+from types import MappingProxyType
 from typing import Final
 
 from . import activity_contracts as contracts
+from . import structural_contracts
 from .catalog_runtime import _thaw
 from .current_owner import (
     CurrentOwnerObservation,
@@ -28,8 +30,16 @@ from .policy_basis import (
 )
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+_DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
+    {
+        "rule.add_flat": "ADJUSTMENT",
+        "rule.resistance": "RESISTANCE",
+        "rule.vulnerability": "VULNERABILITY",
+        "rule.immunity": "IMMUNITY",
+    }
+)
 
 
 class MechanicalContextError(ValueError):
@@ -740,6 +750,33 @@ def _closed_operation_value(
             raise MechanicalContextError(
                 f"operation value differs from its fixed boolean contract: {operation_id}"
             )
+        return value
+    if value_kind == "damage_defense":
+        contribution_type = _DAMAGE_CONTRIBUTION_TYPES.get(operation_id)
+        if (
+            contribution_type is None
+            or operation.get("damage_contribution_type") != contribution_type
+            or operation.get("normalization") != "SOURCE_DEFINED_ORDER"
+            or operation.get("calculation_policy_id")
+            != "calculation.damage_defense_srd521"
+            or operation.get("calculation_policy_generation") != 1
+            or frozenset(constraints)
+            != frozenset({"damage_type_origin_bypass_order_and_rounding"})
+        ):
+            raise MechanicalContextError(
+                f"damage operation contract is not exact: {operation_id}"
+            )
+        contract_name = (
+            "damage_defense_adjustment"
+            if contribution_type == "ADJUSTMENT"
+            else "damage_defense_match"
+        )
+        try:
+            structural_contracts.validate_contract(contract_name, value)
+        except structural_contracts.StructuralContractError as error:
+            raise MechanicalContextError(
+                f"damage Rule Element value is not closed for {operation_id}"
+            ) from error
         return value
     if value_kind in {"roll_modifier", "damage_defense", "armor_class_base", "capability_change"}:
         raise MechanicalContextError(

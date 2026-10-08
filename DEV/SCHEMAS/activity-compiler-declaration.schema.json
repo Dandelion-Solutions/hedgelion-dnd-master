@@ -9,9 +9,28 @@
     "symbols": {"type": "object", "propertyNames": {"pattern": "^compiled\\.[a-z][a-z0-9_]*$"}, "additionalProperties": {"$ref": "#/$defs/symbol"}},
     "profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/profileBinding"}},
     "calculation_policies": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/calculationPolicyBinding"}},
-    "cast_profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/castProfileBinding"}}
+    "cast_profiles": {"type": "array", "uniqueItems": true, "items": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/castProfileBinding"}},
+    "damage_input_bindings": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/damageInputBinding"}}
   },
   "$defs": {
+    "damageInputBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_id", "consumer_id", "profile_id", "profile_generation", "selector_id", "components_symbol_id", "component_annotations", "source_role", "recipient_role", "instance_key", "simultaneous_group_key"],
+      "properties": {
+        "binding_id": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/id"},
+        "consumer_id": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/id"},
+        "profile_id": {"const": "calculation.damage_defense_srd521"},
+        "profile_generation": {"const": 1},
+        "selector_id": {"const": "damage.received"},
+        "components_symbol_id": {"type": "string", "pattern": "^compiled\\.[a-z][a-z0-9_]*$"},
+        "component_annotations": {"$ref": "https://hedgelion.invalid/schemas/activity-primitive-values.schema.json#/$defs/damageDefenseComponentAnnotations"},
+        "source_role": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/roleName"},
+        "recipient_role": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/roleName"},
+        "instance_key": {"$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/id"},
+        "simultaneous_group_key": {"type": ["string", "null"], "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
+      }
+    },
     "symbol": {
       "type": "object", "additionalProperties": false,
       "required": ["value_kind", "cardinality", "dependencies", "reads", "permitted_occurrence_ids"],

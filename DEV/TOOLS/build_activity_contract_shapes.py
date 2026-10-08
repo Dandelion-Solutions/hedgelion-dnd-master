@@ -133,6 +133,11 @@ def build_projection(root=ROOT):
     named = {
         "calculation_policy_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/calculationPolicyBinding"),
         "roll_policy_result": reference(BASE + "spell-native-profile-values.schema.json#/$defs/rollPolicyResult"),
+        "damage_input_binding": reference(BASE + "activity-compiler-declaration.schema.json#/$defs/damageInputBinding"),
+        "damage_defense_input_components": reference(BASE + "activity-primitive-values.schema.json#/$defs/damageDefenseInputComponents"),
+        "damage_defense_adjustment": reference(BASE + "spell-native-profile-values.schema.json#/$defs/damageDefenseAdjustment"),
+        "damage_defense_match": reference(BASE + "spell-native-profile-values.schema.json#/$defs/damageDefenseMatch"),
+        "damage_policy_result": reference(BASE + "spell-native-profile-values.schema.json#/$defs/damagePolicyResult"),
         "cast_profile_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castProfileBinding"),
         "cast_preflight_input": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castPreflightInput"),
         "compiled_calculation_policy": reference(BASE + "spell-native-profile-values.schema.json#/$defs/compiledCalculationPolicy"),

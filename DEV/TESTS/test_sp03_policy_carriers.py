@@ -93,19 +93,20 @@ def _mechanical_policy_contract(
             "native_role_form_equipment_movement_sense_projection",
         ),
     }[profile_id]
+    operation_contract = {
+        "value_kind": operation_kind,
+        "normalization": normalization,
+        "constraints": [constraint],
+        "calculation_policy_id": profile_id,
+        "calculation_policy_generation": 1,
+    }
+    if profile_id == CALCULATION_PROFILES[1]:
+        operation_contract["damage_contribution_type"] = "ADJUSTMENT"
     return {
         "calculation_policy_id": profile_id,
         "calculation_policy_generation": 1,
         "allowed_operations": [FIXTURE_OPERATION_ID],
-        "operation_contracts": {
-            FIXTURE_OPERATION_ID: {
-                "value_kind": operation_kind,
-                "normalization": normalization,
-                "constraints": [constraint],
-                "calculation_policy_id": profile_id,
-                "calculation_policy_generation": 1,
-            }
-        },
+        "operation_contracts": {FIXTURE_OPERATION_ID: operation_contract},
         "contribution_type": contribution,
         "result_type": result,
         "result_constraints": {},
@@ -650,6 +651,7 @@ def _prepare_sp03_source_tree(source_root: Path, mutation: str | None = None) ->
                 "normalization": "SOURCE_DEFINED_ORDER",
                 "constraints": ["damage_type_origin_bypass_order_and_rounding"],
                 "calculation_policy_id": CALCULATION_PROFILES[1],
+                "damage_contribution_type": "ADJUSTMENT",
             }
         )
     mechanical_path.write_text(json.dumps(mechanical), encoding="utf-8")

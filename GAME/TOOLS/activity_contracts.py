@@ -41,8 +41,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -1088,6 +1088,66 @@ class CalculationPolicyBinding(ContractValue):
                     }
                     for binding in self.native_role_bindings
                 ),
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class CompiledDamageComponentAnnotation(ContractValue):
+    """Binding-local origin/bypass enrichment for one legacy damage component."""
+
+    source_component_ordinal: Ordinal
+    origin_id: NativeId
+    bypass_ids: tuple[NativeId, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class CompiledDamageInputBinding(ContractValue):
+    """Source-compiled damage input edge; never a caller-provided cause."""
+
+    binding_id: NativeId
+    consumer_id: NativeId
+    profile_id: Literal["calculation.damage_defense_srd521"]
+    profile_generation: Literal[1]
+    selector_id: Literal["damage.received"]
+    components_symbol_id: NativeId
+    component_annotations: tuple[CompiledDamageComponentAnnotation, ...]
+    source_role: NativeId
+    recipient_role: NativeId
+    instance_key: NativeId
+    simultaneous_group_key: NativeId | None
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        ordinals = tuple(
+            annotation.source_component_ordinal
+            for annotation in self.component_annotations
+        )
+        if ordinals != tuple(sorted(set(ordinals))):
+            raise ActivityContractError(
+                "damage component annotations need unique canonical source ordinals"
+            )
+        _wire_contract(
+            "damage_input_binding",
+            {
+                "binding_id": self.binding_id,
+                "consumer_id": self.consumer_id,
+                "profile_id": self.profile_id,
+                "profile_generation": self.profile_generation,
+                "selector_id": self.selector_id,
+                "components_symbol_id": self.components_symbol_id,
+                "component_annotations": tuple(
+                    {
+                        "source_component_ordinal": annotation.source_component_ordinal,
+                        "origin_id": annotation.origin_id,
+                        "bypass_ids": annotation.bypass_ids,
+                    }
+                    for annotation in self.component_annotations
+                ),
+                "source_role": self.source_role,
+                "recipient_role": self.recipient_role,
+                "instance_key": self.instance_key,
+                "simultaneous_group_key": self.simultaneous_group_key,
             },
         )
 
@@ -2203,6 +2263,7 @@ class CompiledActivity(_SealedValue):
     symbol_contracts: Mapping[str, object] = field(default_factory=dict)
     calculation_policy_bindings: tuple[CompiledCalculationPolicy, ...] = ()
     cast_profile_bindings: tuple[CastProfileBinding, ...] = ()
+    damage_input_bindings: tuple[CompiledDamageInputBinding, ...] = ()
     _issue_seal: object = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self) -> None:
@@ -2219,6 +2280,92 @@ class CompiledActivity(_SealedValue):
         for binding in self.cast_profile_bindings:
             if not isinstance(binding, CastProfileBinding):
                 raise ActivityContractError("compiled cast profile is untyped")
+        damage_binding_consumers: set[str] = set()
+        damage_binding_ids: set[str] = set()
+        instruction_by_consumer: dict[str, CompiledInstruction] = {}
+        pending_instructions = list(self.instructions)
+        while pending_instructions:
+            instruction = pending_instructions.pop()
+            instruction_by_consumer[instruction.consumer_id] = instruction
+            pending_instructions.extend(instruction.children)
+        damage_policy_consumers = {
+            policy.binding.consumer_id
+            for policy in self.calculation_policy_bindings
+            if policy.binding.profile_id == "calculation.damage_defense_srd521"
+        }
+        for damage_binding in self.damage_input_bindings:
+            if not isinstance(damage_binding, CompiledDamageInputBinding):
+                raise ActivityContractError("compiled damage input binding is untyped")
+            if (
+                damage_binding.consumer_id in damage_binding_consumers
+                or damage_binding.binding_id in damage_binding_ids
+            ):
+                raise ActivityContractError("compiled damage input binding is duplicated")
+            instruction = instruction_by_consumer.get(damage_binding.consumer_id)
+            if instruction is None or instruction.primitive_id != "op.apply_damage":
+                raise ActivityContractError(
+                    "damage input binding is not attached to its exact apply_damage consumer"
+                )
+            symbol = self.symbol_contracts.get(damage_binding.components_symbol_id)
+            if (
+                not isinstance(symbol, Mapping)
+                or symbol.get("value_kind") != "damage_components"
+                or symbol.get("cardinality") != "single"
+            ):
+                raise ActivityContractError(
+                    "damage input binding has no exact typed component symbol"
+                )
+            if instruction.arguments.get("components") != {
+                "symbol_ref": damage_binding.components_symbol_id,
+                "value_kind": "damage_components",
+            }:
+                raise ActivityContractError(
+                    "damage input binding differs from its compiled primitive argument"
+                )
+            target_role = instruction.arguments.get("target_role")
+            if target_role != damage_binding.recipient_role:
+                raise ActivityContractError(
+                    "damage recipient role differs from the apply_damage target"
+                )
+            for role_name in (damage_binding.source_role, damage_binding.recipient_role):
+                role_contract = self.role_contracts.get(role_name)
+                if (
+                    not isinstance(role_contract, Mapping)
+                    or role_contract.get("family_key") != "world.actor"
+                ):
+                    raise ActivityContractError(
+                        "damage source/recipient role is not an Actor binding"
+                    )
+            policies = tuple(
+                policy
+                for policy in self.calculation_policy_bindings
+                if policy.binding.consumer_id == damage_binding.consumer_id
+                and policy.binding.profile_id == damage_binding.profile_id
+                and policy.binding.profile_generation
+                == damage_binding.profile_generation
+            )
+            if (
+                len(policies) != 1
+                or len(policies[0].binding.selector_operation_pairs) != 1
+                or policies[0].binding.selector_operation_pairs[0].selector_id
+                != damage_binding.selector_id
+                or policies[0].binding.native_role_bindings
+                != (
+                    NativeRoleBinding(
+                        f"selector:{damage_binding.selector_id}",
+                        (damage_binding.recipient_role,),
+                    ),
+                )
+            ):
+                raise ActivityContractError(
+                    "damage input binding has no exact recipient-bound policy"
+                )
+            damage_binding_consumers.add(damage_binding.consumer_id)
+            damage_binding_ids.add(damage_binding.binding_id)
+        if damage_binding_consumers != damage_policy_consumers:
+            raise ActivityContractError(
+                "damage policy consumers differ from exact source input bindings"
+            )
         for name, value in (("mechanical-predicate", self.requirements),
                             ("duration-spec", self.duration_contract),
                             ("target-spec", self.targeting_contract)):

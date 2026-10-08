@@ -33,10 +33,28 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
+_DAMAGE_POLICY_ID: Final[str] = "calculation.damage_defense_srd521"
+_DAMAGE_SELECTOR_ID: Final[str] = "damage.received"
+_DAMAGE_OPERATION_IDS: Final[frozenset[str]] = frozenset(
+    {
+        "rule.add_flat",
+        "rule.resistance",
+        "rule.vulnerability",
+        "rule.immunity",
+    }
+)
+_DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
+    {
+        "rule.add_flat": "ADJUSTMENT",
+        "rule.resistance": "RESISTANCE",
+        "rule.vulnerability": "VULNERABILITY",
+        "rule.immunity": "IMMUNITY",
+    }
+)
 _ROLL_OPERATION_KINDS: Final[Mapping[str, str]] = MappingProxyType(
     {
         "rule.add_flat": "FLAT_MODIFIER",
@@ -760,6 +778,13 @@ def _compile_calculation_policy_bindings(
                 selector,
                 source_definitions,
             )
+            _validate_typed_damage_policy_pair(
+                selector_id,
+                pair,
+                binding,
+                selector,
+                source_definitions,
+            )
 
         native_roles_by_root: dict[str, tuple[str, ...]] = {}
         for role_binding in binding.native_role_bindings:
@@ -1106,6 +1131,390 @@ def _compile_cast_profile_bindings(
     return tuple(declared)
 
 
+def _validate_damage_input_symbol(
+    binding: contracts.CompiledDamageInputBinding,
+    *,
+    symbols: Mapping[str, object],
+) -> None:
+    symbol_id = binding.components_symbol_id
+    consumer_id = binding.consumer_id
+    descriptor = symbols.get(symbol_id)
+    if (
+        not isinstance(descriptor, Mapping)
+        or descriptor.get("value_kind") != "damage_components"
+        or descriptor.get("cardinality") != "single"
+        or descriptor.get("scope") is not None
+        or descriptor.get("reads") != ()
+        and descriptor.get("reads") != []
+        or consumer_id not in descriptor.get("permitted_occurrence_ids", ())
+    ):
+        raise ActivityNotSelectable(
+            "damage input symbol is not an exact source-local single component producer"
+        )
+    if "value" in descriptor and "template" not in descriptor:
+        if descriptor.get("dependencies") not in ((), []):
+            raise ActivityNotSelectable(
+                "literal damage input cannot acquire undeclared symbol dependencies"
+            )
+        _validate_shape(
+            "typed_export_value",
+            {"value_kind": "damage_components", "value": descriptor["value"]},
+        )
+        components = _join_damage_component_annotations(
+            descriptor["value"], binding.component_annotations, symbol_id=symbol_id
+        )
+        _validate_damage_component_partition(
+            components,
+            symbol_id=symbol_id,
+            instance_key=binding.instance_key,
+        )
+        return
+
+    if "template" not in descriptor or "value" in descriptor:
+        raise ActivityNotSelectable(
+            "damage input must be a literal or an exact half-damage template"
+        )
+    template = descriptor.get("template")
+    if (
+        not isinstance(template, Mapping)
+        or set(template) != {"kind", "source_symbol", "input_contract"}
+        or template.get("kind") != "HALF_DAMAGE_FLOOR_MIN_ZERO"
+        or template.get("input_contract") != "SAME_FIXED_FULL_DAMAGE_RESULT"
+    ):
+        raise ActivityNotSelectable(
+            "damage input template is not the selected source-defined half-damage form"
+        )
+    source_symbol_id = template.get("source_symbol")
+    if (
+        not isinstance(source_symbol_id, str)
+        or descriptor.get("dependencies") not in ((source_symbol_id,), [source_symbol_id])
+    ):
+        raise ActivityNotSelectable(
+            "half-damage input must retain its exact full-damage dependency"
+        )
+    source_descriptor = symbols.get(source_symbol_id)
+    if (
+        not isinstance(source_descriptor, Mapping)
+        or source_descriptor.get("value_kind") != "damage_components"
+        or source_descriptor.get("cardinality") != "single"
+        or "value" not in source_descriptor
+        or "template" in source_descriptor
+        or source_descriptor.get("dependencies") not in ((), [])
+        or source_descriptor.get("reads") not in ((), [])
+        or source_descriptor.get("scope") is not None
+        or consumer_id not in source_descriptor.get("permitted_occurrence_ids", ())
+    ):
+        raise ActivityNotSelectable(
+            "half-damage template lacks its exact complete full-damage source"
+        )
+    _validate_shape(
+        "typed_export_value",
+        {"value_kind": "damage_components", "value": source_descriptor["value"]},
+    )
+    components = _join_damage_component_annotations(
+        source_descriptor["value"], binding.component_annotations, symbol_id=source_symbol_id
+    )
+    _validate_damage_component_partition(
+        components,
+        symbol_id=source_symbol_id,
+        instance_key=binding.instance_key,
+    )
+
+
+def _join_damage_component_annotations(
+    legacy_components: object,
+    annotations: tuple[contracts.CompiledDamageComponentAnnotation, ...],
+    *,
+    symbol_id: str,
+) -> tuple[dict[str, object], ...]:
+    if not isinstance(legacy_components, (tuple, list)) or not legacy_components:
+        raise ActivityNotSelectable(
+            f"legacy damage component producer is malformed: {symbol_id}"
+        )
+    if len(legacy_components) != len(annotations):
+        raise ActivityNotSelectable(
+            f"damage annotations do not cover the exact source components: {symbol_id}"
+        )
+    if tuple(annotation.source_component_ordinal for annotation in annotations) != tuple(
+        range(len(legacy_components))
+    ):
+        raise ActivityNotSelectable(
+            f"damage annotations do not bind each source component exactly once: {symbol_id}"
+        )
+    typed_components: list[dict[str, object]] = []
+    for index, (legacy_component, annotation) in enumerate(
+        zip(legacy_components, annotations, strict=True)
+    ):
+        if not isinstance(legacy_component, Mapping) or set(legacy_component) - {
+            "amount",
+            "damage_type_ref",
+            "source_ref",
+        }:
+            raise ActivityNotSelectable(
+                f"legacy damage component has unsupported source members: {symbol_id}[{index}]"
+            )
+        if "source_ref" in legacy_component:
+            raise ActivityNotSelectable(
+                f"legacy damage source_ref has no selected damage-binding mapping: {symbol_id}[{index}]"
+            )
+        if set(legacy_component) != {"amount", "damage_type_ref"}:
+            raise ActivityNotSelectable(
+                f"legacy damage component is not the exact admitted shape: {symbol_id}[{index}]"
+            )
+        typed_components.append(
+            {
+                "amount": legacy_component["amount"],
+                "damage_type_id": legacy_component["damage_type_ref"],
+                "origin_id": annotation.origin_id,
+                "bypass_ids": annotation.bypass_ids,
+            }
+        )
+    try:
+        _validate_shape("damage_defense_input_components", typed_components)
+    except ActivityRuntimeError as error:
+        raise ActivityNotSelectable(
+            f"damage annotations do not form a closed bound component source: {symbol_id}"
+        ) from error
+    return tuple(typed_components)
+
+
+def _validate_damage_component_partition(
+    value: object, *, symbol_id: str, instance_key: str
+) -> None:
+    if not isinstance(value, (tuple, list)):
+        raise ActivityNotSelectable(
+            f"damage component partition is malformed: {symbol_id}"
+        )
+    seen: set[tuple[str, str, tuple[str, ...]]] = set()
+    for index, component in enumerate(value):
+        if not isinstance(component, Mapping):
+            raise ActivityNotSelectable(
+                f"damage component partition is malformed: {symbol_id}[{index}]"
+            )
+        damage_type_id = component.get("damage_type_id")
+        origin_id = component.get("origin_id")
+        bypass_ids = component.get("bypass_ids")
+        if (
+            not isinstance(damage_type_id, str)
+            or not isinstance(origin_id, str)
+            or not isinstance(bypass_ids, (tuple, list))
+            or any(not isinstance(item, str) for item in bypass_ids)
+        ):
+            raise ActivityNotSelectable(
+                f"damage component partition is malformed: {symbol_id}[{index}]"
+            )
+        partition = (damage_type_id, origin_id, tuple(sorted(bypass_ids)))
+        if partition in seen:
+            raise ActivityNotSelectable(
+                "ambiguous repeated same-type/origin/bypass damage components "
+                f"inside declared instance {instance_key}: {symbol_id}[{index}]"
+            )
+        seen.add(partition)
+
+
+def _compile_damage_input_bindings(
+    primitive_rows: Mapping[str, Mapping[str, object]],
+    *,
+    activity_id: str,
+    instructions: Sequence[contracts.CompiledInstruction],
+    policies: Sequence[contracts.CompiledCalculationPolicy],
+    symbols: Mapping[str, object],
+    role_contracts: Mapping[str, object],
+) -> tuple[contracts.CompiledDamageInputBinding, ...]:
+    instruction_by_consumer: dict[str, contracts.CompiledInstruction] = {}
+    pending = list(instructions)
+    while pending:
+        instruction = pending.pop()
+        if instruction.consumer_id in instruction_by_consumer:
+            raise ActivityNotSelectable("damage binding compiler saw a duplicate instruction")
+        instruction_by_consumer[instruction.consumer_id] = instruction
+        pending.extend(instruction.children)
+
+    raw_bindings: list[Mapping[str, object]] = []
+    for primitive_id, primitive in primitive_rows.items():
+        raw_declaration = _mapping(
+            primitive.get("compiler_declarations", {}),
+            "compiler declarations",
+        ).get(activity_id)
+        if not isinstance(raw_declaration, Mapping):
+            continue
+        declaration = _mapping(raw_declaration, "compiler declaration")
+        entries = tuple(
+            _mapping(item, "damage input binding")
+            for item in _sequence(
+                declaration.get("damage_input_bindings", ()),
+                "damage input bindings",
+            )
+        )
+        if entries and primitive_id != "op.apply_damage":
+            raise ActivityNotSelectable(
+                "damage input bindings belong only to op.apply_damage declarations"
+            )
+        raw_bindings.extend(entries)
+
+    damage_policy_consumers = {
+        policy.binding.consumer_id
+        for policy in policies
+        if policy.binding.profile_id == _DAMAGE_POLICY_ID
+    }
+    if len(raw_bindings) != len(damage_policy_consumers):
+        raise ActivityNotSelectable(
+            "damage policy consumers need one exact source input binding each"
+        )
+
+    compiled: list[contracts.CompiledDamageInputBinding] = []
+    seen_consumers: set[str] = set()
+    seen_binding_ids: set[str] = set()
+    for raw in raw_bindings:
+        _validate_shape("damage_input_binding", raw)
+        try:
+            binding = contracts.CompiledDamageInputBinding(
+                str(raw["binding_id"]),
+                str(raw["consumer_id"]),
+                str(raw["profile_id"]),
+                raw["profile_generation"],
+                str(raw["selector_id"]),
+                str(raw["components_symbol_id"]),
+                tuple(
+                    contracts.CompiledDamageComponentAnnotation(
+                        annotation["source_component_ordinal"],
+                        str(annotation["origin_id"]),
+                        tuple(
+                            str(item)
+                            for item in _sequence(
+                                annotation["bypass_ids"],
+                                "damage component bypass IDs",
+                            )
+                        ),
+                    )
+                    for annotation in (
+                        _mapping(item, "damage component annotation")
+                        for item in _sequence(
+                            raw["component_annotations"],
+                            "damage component annotations",
+                        )
+                    )
+                ),
+                str(raw["source_role"]),
+                str(raw["recipient_role"]),
+                str(raw["instance_key"]),
+                raw["simultaneous_group_key"],
+            )
+        except contracts.ActivityContractError as error:
+            raise ActivityNotSelectable(
+                f"damage input binding is structurally invalid: {error}"
+            ) from error
+        consumer_id = binding.consumer_id
+        instruction = instruction_by_consumer.get(consumer_id)
+        if (
+            binding.binding_id in seen_binding_ids
+            or consumer_id in seen_consumers
+            or consumer_id not in damage_policy_consumers
+            or instruction is None
+            or instruction.primitive_id != "op.apply_damage"
+        ):
+            raise ActivityNotSelectable(
+                "damage input binding is duplicated, foreign, or not its exact apply_damage consumer"
+            )
+        if instruction.arguments.get("components") != {
+            "symbol_ref": binding.components_symbol_id,
+            "value_kind": "damage_components",
+        }:
+            raise ActivityNotSelectable(
+                "damage input binding differs from its compiled components symbol"
+            )
+        if instruction.arguments.get("target_role") != binding.recipient_role:
+            raise ActivityNotSelectable(
+                "damage recipient role differs from op.apply_damage target_role"
+            )
+        for role_name in (binding.source_role, binding.recipient_role):
+            role = role_contracts.get(role_name)
+            if not isinstance(role, Mapping) or role.get("family_key") != "world.actor":
+                raise ActivityNotSelectable(
+                    "damage source and recipient roles must retain exact Actor families"
+                )
+        policy_rows = tuple(
+            policy
+            for policy in policies
+            if policy.binding.consumer_id == consumer_id
+            and policy.binding.profile_id == _DAMAGE_POLICY_ID
+            and policy.binding.profile_generation == 1
+        )
+        if len(policy_rows) != 1:
+            raise ActivityNotSelectable(
+                "damage input binding has no unique exact calculation profile"
+            )
+        policy = policy_rows[0]
+        pairs = policy.binding.selector_operation_pairs
+        selector = policy.selector_contracts.get(_DAMAGE_SELECTOR_ID)
+        if (
+            len(pairs) != 1
+            or pairs[0].selector_id != _DAMAGE_SELECTOR_ID
+            or set(pairs[0].operation_ids) != _DAMAGE_OPERATION_IDS
+            or not isinstance(selector, Mapping)
+            or selector.get("calculation_policy_id") != _DAMAGE_POLICY_ID
+            or selector.get("calculation_policy_generation") != 1
+            or set(selector.get("allowed_operations", ())) != _DAMAGE_OPERATION_IDS
+            or selector.get("contribution_type") != "damage_defense"
+            or selector.get("result_type") != "damage_result"
+            or selector.get("result_constraints") != {"minimum": 0}
+            or selector.get("combination_policy") != "damage_defense_source_ordered_v1"
+            or selector.get("resolution_owner") != "SELECTOR_METADATA"
+            or selector.get("trace_policy") != "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+            or selector.get("allowed_input_classes") != ("ENGINE_STATE",)
+            or selector.get("permitted_context_fact_ids") != ()
+            or selector.get("static_dependencies") != ()
+            or policy.binding.reads != (f"selector:{_DAMAGE_SELECTOR_ID}",)
+            or policy.binding.context_fact_bindings
+            or policy.context_fact_contracts
+            or policy.dependency_read_refs
+            or policy.binding.native_role_bindings
+            != (
+                contracts.NativeRoleBinding(
+                    f"selector:{_DAMAGE_SELECTOR_ID}",
+                    (binding.recipient_role,),
+                ),
+            )
+        ):
+            raise ActivityNotSelectable(
+                "damage input binding requires the exact recipient-only, fact-free damage policy"
+            )
+        source_operation_contracts = selector.get("operation_contracts")
+        if not isinstance(source_operation_contracts, Mapping) or set(
+            source_operation_contracts
+        ) != _DAMAGE_OPERATION_IDS:
+            raise ActivityNotSelectable(
+                "damage input binding requires the complete exact operation contract set"
+            )
+        for operation_id, contribution_type in _DAMAGE_CONTRIBUTION_TYPES.items():
+            operation = source_operation_contracts.get(operation_id)
+            constraints = operation.get("constraints") if isinstance(operation, Mapping) else None
+            if (
+                not isinstance(operation, Mapping)
+                or operation.get("damage_contribution_type") != contribution_type
+                or operation.get("value_kind") != "damage_defense"
+                or operation.get("normalization") != "SOURCE_DEFINED_ORDER"
+                or operation.get("calculation_policy_id") != _DAMAGE_POLICY_ID
+                or operation.get("calculation_policy_generation") != 1
+                or not isinstance(constraints, (tuple, list))
+                or set(constraints)
+                != {"damage_type_origin_bypass_order_and_rounding"}
+            ):
+                raise ActivityNotSelectable(
+                    f"damage input operation contract is not exact: {operation_id}"
+                )
+        _validate_damage_input_symbol(binding, symbols=symbols)
+        compiled.append(binding)
+        seen_consumers.add(consumer_id)
+        seen_binding_ids.add(binding.binding_id)
+
+    if seen_consumers != damage_policy_consumers:
+        raise ActivityNotSelectable(
+            "damage policy consumers and source input bindings differ"
+        )
+    return tuple(sorted(compiled, key=lambda binding: binding.consumer_id))
+
+
 def _selector_operation_pair_is_admitted(
     selector_id: str,
     operation_id: str,
@@ -1295,6 +1704,129 @@ def _validate_typed_roll_policy_source_values(
                     "roll state Rule Element value is not literal true: "
                     f"{definition_id}[{ordinal}]"
                 )
+
+
+def _validate_typed_damage_policy_pair(
+    selector_id: str,
+    pair: contracts.SelectorOperationPair,
+    binding: contracts.CalculationPolicyBinding,
+    selector: Mapping[str, object],
+    source_definitions: Mapping[str, Mapping[str, object]] | None,
+) -> None:
+    """Cold-close exact damage pair values when the selected type is present."""
+    if binding.profile_id != _DAMAGE_POLICY_ID or selector_id != _DAMAGE_SELECTOR_ID:
+        return
+    raw_contracts = selector.get("operation_contracts")
+    if not isinstance(raw_contracts, Mapping):
+        raise ActivityNotSelectable("typed damage policy has no operation contracts")
+    contracts_by_id = {
+        operation_id: _mapping(raw_contracts.get(operation_id), "damage operation contract")
+        for operation_id in _DAMAGE_OPERATION_IDS
+        if operation_id in raw_contracts
+    }
+    if not any("damage_contribution_type" in operation for operation in contracts_by_id.values()):
+        return
+
+    if (
+        set(pair.operation_ids) != _DAMAGE_OPERATION_IDS
+        or set(selector.get("allowed_operations", ())) != _DAMAGE_OPERATION_IDS
+        or set(contracts_by_id) != _DAMAGE_OPERATION_IDS
+        or selector.get("contribution_type") != "damage_defense"
+        or selector.get("result_type") != "damage_result"
+        or selector.get("result_constraints") != {"minimum": 0}
+        or selector.get("combination_policy") != "damage_defense_source_ordered_v1"
+        or selector.get("calculation_policy_id") != _DAMAGE_POLICY_ID
+        or selector.get("calculation_policy_generation") != 1
+        or selector.get("resolution_owner") != "SELECTOR_METADATA"
+        or selector.get("trace_policy") != "RETAIN_ACCEPTED_REJECTED_PROVENANCE"
+        or tuple(selector.get("static_dependencies", ()))
+    ):
+        raise ActivityNotSelectable(
+            "typed damage policy requires its exact registered damage.received pair"
+        )
+    if (
+        tuple(selector.get("allowed_input_classes", ())) != ("ENGINE_STATE",)
+        or tuple(selector.get("permitted_context_fact_ids", ()))
+        or binding.context_fact_bindings
+        or any(reference.startswith("fact:") for reference in binding.reads)
+    ):
+        raise ActivityNotSelectable(
+            "typed damage policy requires ENGINE_STATE-only reads and no facts"
+        )
+    for operation_id, contribution_type in _DAMAGE_CONTRIBUTION_TYPES.items():
+        operation = contracts_by_id[operation_id]
+        constraints = operation.get("constraints")
+        if (
+            operation.get("damage_contribution_type") != contribution_type
+            or operation.get("value_kind") != "damage_defense"
+            or operation.get("normalization") != "SOURCE_DEFINED_ORDER"
+            or operation.get("calculation_policy_id") != _DAMAGE_POLICY_ID
+            or operation.get("calculation_policy_generation") != 1
+            or not isinstance(constraints, (tuple, list))
+            or set(constraints) != {"damage_type_origin_bypass_order_and_rounding"}
+        ):
+            raise ActivityNotSelectable(
+                f"typed damage operation contract is not exact: {operation_id}"
+            )
+    if source_definitions is None:
+        raise ActivityNotSelectable(
+            "typed damage policy compilation requires exact source definitions"
+        )
+    _validate_typed_damage_policy_source_values(source_definitions)
+
+
+def _validate_typed_damage_policy_source_values(
+    source_definitions: Mapping[str, Mapping[str, object]],
+) -> None:
+    """Cold-validate source values from the already-admitted definition set."""
+    for definition_id, definition in sorted(source_definitions.items()):
+        if definition.get("kind") not in {"definition.effect", "definition.asset"}:
+            continue
+        data = definition.get("data")
+        if not isinstance(data, Mapping):
+            raise ActivityNotSelectable(
+                f"damage source definition data is unavailable: {definition_id}"
+            )
+        elements = data.get("rule_elements", ())
+        if not isinstance(elements, (tuple, list)):
+            raise ActivityNotSelectable(
+                f"damage source Rule Elements are malformed: {definition_id}"
+            )
+        for ordinal, raw_element in enumerate(elements):
+            if not isinstance(raw_element, Mapping):
+                raise ActivityNotSelectable(
+                    f"damage source Rule Element is malformed: {definition_id}[{ordinal}]"
+                )
+            if raw_element.get("selector") != _DAMAGE_SELECTOR_ID:
+                continue
+            operation_id = raw_element.get("operation_id")
+            if not isinstance(operation_id, str) or operation_id not in _DAMAGE_CONTRIBUTION_TYPES:
+                raise ActivityNotSelectable(
+                    f"damage source has an unpaired operation: {definition_id}[{ordinal}]"
+                )
+            unknown_members = set(raw_element) - {
+                "selector",
+                "operation_id",
+                "value",
+                "predicate",
+            }
+            if unknown_members:
+                raise ActivityNotSelectable(
+                    "damage Rule Element has unsupported members: "
+                    + ",".join(sorted(unknown_members))
+                    + f" ({definition_id}[{ordinal}])"
+                )
+            value_contract = (
+                "damage_defense_adjustment"
+                if operation_id == "rule.add_flat"
+                else "damage_defense_match"
+            )
+            try:
+                _validate_shape(value_contract, raw_element.get("value"))
+            except ActivityRuntimeError as error:
+                raise ActivityNotSelectable(
+                    f"damage Rule Element value is not closed: {definition_id}[{ordinal}]"
+                ) from error
 
 
 def _validate_fact_read(
@@ -2162,6 +2694,14 @@ def _compile_activity_definition(
         profile_bindings=bindings,
         occurrence_ids=tuple(occurrences),
     )
+    damage_input_bindings = _compile_damage_input_bindings(
+        primitive_rows,
+        activity_id=activity_id,
+        instructions=tuple(instructions),
+        policies=tuple(calculation_policy_bindings),
+        symbols=retained_symbols,
+        role_contracts=role_contracts,
+    )
     activation = data.get("activation")
     timing_refs: list[str] = []
     if activation is not None and "economy_id" in activation:
@@ -2268,6 +2808,7 @@ def _compile_activity_definition(
             symbol_contracts=retained_symbols,
             calculation_policy_bindings=tuple(calculation_policy_bindings),
             cast_profile_bindings=cast_profile_bindings,
+            damage_input_bindings=damage_input_bindings,
             _issue_seal=contracts._CONTRACT_SEAL,
         )
     except contracts.ActivityContractError as exc:
