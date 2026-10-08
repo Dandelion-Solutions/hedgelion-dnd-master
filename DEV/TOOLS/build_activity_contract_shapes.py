@@ -132,6 +132,7 @@ def build_projection(root=ROOT):
                                      "family_key": {"enum": ["world.actor", "world.asset", "runtime.procedure"]}}}
     named = {
         "calculation_policy_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/calculationPolicyBinding"),
+        "roll_policy_result": reference(BASE + "spell-native-profile-values.schema.json#/$defs/rollPolicyResult"),
         "cast_profile_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castProfileBinding"),
         "cast_preflight_input": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castPreflightInput"),
         "compiled_calculation_policy": reference(BASE + "spell-native-profile-values.schema.json#/$defs/compiledCalculationPolicy"),

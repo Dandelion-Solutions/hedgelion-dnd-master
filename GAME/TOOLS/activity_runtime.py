@@ -33,9 +33,20 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
+_ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
+_ROLL_OPERATION_KINDS: Final[Mapping[str, str]] = MappingProxyType(
+    {
+        "rule.add_flat": "FLAT_MODIFIER",
+        "rule.grant_advantage": "ADVANTAGE",
+        "rule.grant_disadvantage": "DISADVANTAGE",
+    }
+)
+_ROLL_UNSUPPORTED_RULE_ELEMENT_MEMBERS: Final[frozenset[str]] = frozenset(
+    {"gate", "priority", "stacking_key"}
+)
 
 
 class ActivityRuntimeError(ValueError):
@@ -595,6 +606,7 @@ def _compile_calculation_policy_bindings(
     core: Mapping[str, object],
     ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
     role_contracts: Mapping[str, object],
+    source_definitions: Mapping[str, Mapping[str, object]] | None = None,
 ) -> tuple[contracts.CompiledCalculationPolicy, ...]:
     """Compile each selected policy's finite source-backed mechanical closure."""
     schema = "https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json"
@@ -741,6 +753,13 @@ def _compile_calculation_policy_bindings(
                     core=core,
                     ledger_rows=ledger_rows,
                 )
+            _validate_typed_roll_policy_pair(
+                selector_id,
+                pair,
+                binding,
+                selector,
+                source_definitions,
+            )
 
         native_roles_by_root: dict[str, tuple[str, ...]] = {}
         for role_binding in binding.native_role_bindings:
@@ -1123,6 +1142,159 @@ def _selector_operation_pair_is_admitted(
             f"selector-operation pair is unknown, dormant, or unadmitted: "
             f"{selector_id}+{operation_id}"
         )
+
+
+def _validate_typed_roll_policy_pair(
+    selector_id: str,
+    pair: contracts.SelectorOperationPair,
+    binding: contracts.CalculationPolicyBinding,
+    selector: Mapping[str, object],
+    source_definitions: Mapping[str, Mapping[str, object]] | None,
+) -> None:
+    """Close the exact typed attack-roll pair when its typed carrier is present.
+
+    Earlier SP03 raw-DAG preparation fixtures carry the selected profile tag but
+    intentionally stop before a closed Contribution contract. They remain
+    compile/read witnesses only; ``calculation.calculate_selector`` refuses to
+    execute them. Once the finite type discriminator is supplied, compilation
+    requires the complete exact pair, state eligibility, and empty fact boundary.
+    """
+    if binding.profile_id != _ROLL_POLICY_ID or selector_id != "attack.roll":
+        return
+    raw_contracts = selector.get("operation_contracts")
+    if not isinstance(raw_contracts, Mapping):
+        raise ActivityNotSelectable("typed roll policy has no operation contracts")
+    contracts_by_id = {
+        operation_id: _mapping(raw_contracts.get(operation_id), "roll operation contract")
+        for operation_id in _ROLL_OPERATION_KINDS
+        if operation_id in raw_contracts
+    }
+    if not any("roll_contribution_type" in value for value in contracts_by_id.values()):
+        return
+
+    expected_operations = set(_ROLL_OPERATION_KINDS)
+    if (
+        set(pair.operation_ids) != expected_operations
+        or set(selector.get("allowed_operations", ())) != expected_operations
+        or set(contracts_by_id) != expected_operations
+    ):
+        raise ActivityNotSelectable(
+            "typed roll policy requires its exact registered attack.roll pair"
+        )
+    if (
+        tuple(selector.get("allowed_input_classes", ())) != ("ENGINE_STATE",)
+        or tuple(selector.get("permitted_context_fact_ids", ()))
+        or binding.context_fact_bindings
+        or any(reference.startswith("fact:") for reference in binding.reads)
+    ):
+        raise ActivityNotSelectable(
+            "typed roll policy requires ENGINE_STATE-only reads and no context facts"
+        )
+
+    for operation_id, contribution_kind in _ROLL_OPERATION_KINDS.items():
+        operation = contracts_by_id[operation_id]
+        constraints = operation.get("constraints")
+        if not isinstance(constraints, (tuple, list)):
+            raise ActivityNotSelectable("typed roll operation constraints are malformed")
+        required_constraints = (
+            {"finite_integer", "stable_raw_dice_identity_and_contribution_provenance"}
+            if contribution_kind == "FLAT_MODIFIER"
+            else {
+                "literal_true",
+                "effect.innate_sorcery_source_only",
+                "bound_activity_family.activity.spell_attack_only",
+                "stable_raw_dice_identity_and_contribution_provenance",
+            }
+        )
+        if (
+            operation.get("roll_contribution_type") != contribution_kind
+            or operation.get("value_kind") != "roll_modifier"
+            or operation.get("normalization") != "CANCEL_APPLICABLE_OPPOSITES"
+            or operation.get("calculation_policy_id") != _ROLL_POLICY_ID
+            or operation.get("calculation_policy_generation") != 1
+            or set(constraints) != required_constraints
+            or (
+                contribution_kind != "FLAT_MODIFIER"
+                and operation.get("fixed_value") is not True
+            )
+        ):
+            raise ActivityNotSelectable(
+                f"typed roll operation contract is not exact: {operation_id}"
+            )
+    if source_definitions is None:
+        raise ActivityNotSelectable(
+            "typed roll policy compilation requires exact source definitions"
+        )
+    _validate_typed_roll_policy_source_values(source_definitions)
+
+
+def _validate_typed_roll_policy_source_values(
+    source_definitions: Mapping[str, Mapping[str, object]],
+) -> None:
+    """Cold-validate every admitted attack.roll Rule Element source value.
+
+    Only source definitions from the already admitted immutable catalog are
+    traversed. Campaign Effect/Asset instances remain on the bounded native
+    membership route; this does not add a campaign-body scan.
+    """
+    for definition_id, definition in sorted(source_definitions.items()):
+        if definition.get("kind") not in {"definition.effect", "definition.asset"}:
+            continue
+        data = definition.get("data")
+        if not isinstance(data, Mapping):
+            raise ActivityNotSelectable(
+                f"roll source definition data is unavailable: {definition_id}"
+            )
+        elements = data.get("rule_elements", ())
+        if not isinstance(elements, (tuple, list)):
+            raise ActivityNotSelectable(
+                f"roll source Rule Elements are malformed: {definition_id}"
+            )
+        for ordinal, raw_element in enumerate(elements):
+            if not isinstance(raw_element, Mapping):
+                raise ActivityNotSelectable(
+                    f"roll source Rule Element is malformed: {definition_id}[{ordinal}]"
+                )
+            if raw_element.get("selector") != "attack.roll":
+                continue
+            unknown_members = set(raw_element) - {
+                "operation_id",
+                "selector",
+                "value",
+                "predicate",
+                *_ROLL_UNSUPPORTED_RULE_ELEMENT_MEMBERS,
+            }
+            if unknown_members:
+                unknown_member = min(unknown_members)
+                raise ActivityNotSelectable(
+                    "attack.roll Rule Element has an unknown source member: "
+                    f"{unknown_member} ({definition_id}[{ordinal}])"
+                )
+            operation_id = raw_element.get("operation_id")
+            if not isinstance(operation_id, str) or operation_id not in _ROLL_OPERATION_KINDS:
+                raise ActivityNotSelectable(
+                    f"attack.roll source has an unpaired operation: {definition_id}[{ordinal}]"
+                )
+            unsupported = _ROLL_UNSUPPORTED_RULE_ELEMENT_MEMBERS & set(raw_element)
+            if unsupported:
+                unsupported_member = min(unsupported)
+                raise ActivityNotSelectable(
+                    "attack.roll Rule Element has unsupported optional member: "
+                    f"{unsupported_member} ({definition_id}[{ordinal}])"
+                )
+            value = raw_element.get("value")
+            contribution_kind = _ROLL_OPERATION_KINDS[operation_id]
+            if contribution_kind == "FLAT_MODIFIER":
+                if type(value) is not int:
+                    raise ActivityNotSelectable(
+                        "flat roll Rule Element value is not an integer: "
+                        f"{definition_id}[{ordinal}]"
+                    )
+            elif type(value) is not bool or value is not True:
+                raise ActivityNotSelectable(
+                    "roll state Rule Element value is not literal true: "
+                    f"{definition_id}[{ordinal}]"
+                )
 
 
 def _validate_fact_read(
@@ -1841,6 +2013,7 @@ def _compile_activity_definition(
                 core=core,
                 ledger_rows=ledger_rows,
                 role_contracts=role_contracts,
+                source_definitions=source_definitions,
             )
             calculation_policy_bindings.extend(compiled_policies)
             for policy in compiled_policies:

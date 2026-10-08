@@ -145,6 +145,7 @@
         "normalization": {"enum": ["SUM", "ANY_TRUE", "CANCEL_APPLICABLE_OPPOSITES", "SOURCE_DEFINED_ORDER", "SELECT_ONE_LEGAL_BASE", "NATIVE_GRANTS_AND_RESTRICTIONS"]},
         "constraints": {"type": "array", "items": {"enum": ["finite_integer", "literal_true", "effect.innate_sorcery_source_only", "bound_activity_family.activity.spell_attack_only", "stable_raw_dice_identity_and_contribution_provenance", "damage_type_origin_bypass_order_and_rounding", "eligible_nonadditive_ac_base", "native_role_form_equipment_movement_sense_projection"]}, "minItems": 1, "uniqueItems": true},
         "fixed_value": {"type": ["string", "number", "integer", "boolean"]},
+        "roll_contribution_type": {"enum": ["FLAT_MODIFIER", "ADVANTAGE", "DISADVANTAGE"]},
         "calculation_policy_id": {"$ref": "#/$defs/calculationPolicyId"},
         "calculation_policy_generation": {"const": 1}
       },
@@ -153,7 +154,9 @@
         {"if": {"properties": {"calculation_policy_id": {"const": "calculation.roll_advantage_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "roll_modifier"}, "normalization": {"const": "CANCEL_APPLICABLE_OPPOSITES"}, "constraints": {"contains": {"const": "stable_raw_dice_identity_and_contribution_provenance"}}}}},
         {"if": {"properties": {"calculation_policy_id": {"const": "calculation.damage_defense_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "damage_defense"}, "normalization": {"const": "SOURCE_DEFINED_ORDER"}, "constraints": {"contains": {"const": "damage_type_origin_bypass_order_and_rounding"}}}}},
         {"if": {"properties": {"calculation_policy_id": {"const": "calculation.armor_class_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "armor_class_base"}, "normalization": {"const": "SELECT_ONE_LEGAL_BASE"}, "constraints": {"contains": {"const": "eligible_nonadditive_ac_base"}}}}},
-        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.capability_projection_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "capability_change"}, "normalization": {"const": "NATIVE_GRANTS_AND_RESTRICTIONS"}, "constraints": {"contains": {"const": "native_role_form_equipment_movement_sense_projection"}}}}}
+        {"if": {"properties": {"calculation_policy_id": {"const": "calculation.capability_projection_srd521"}}, "required": ["calculation_policy_id"]}, "then": {"properties": {"value_kind": {"const": "capability_change"}, "normalization": {"const": "NATIVE_GRANTS_AND_RESTRICTIONS"}, "constraints": {"contains": {"const": "native_role_form_equipment_movement_sense_projection"}}}}},
+        {"if": {"properties": {"roll_contribution_type": {"const": "FLAT_MODIFIER"}}, "required": ["roll_contribution_type"]}, "then": {"properties": {"value_kind": {"const": "roll_modifier"}, "normalization": {"const": "CANCEL_APPLICABLE_OPPOSITES"}, "constraints": {"contains": {"const": "finite_integer"}}}}},
+        {"if": {"properties": {"roll_contribution_type": {"enum": ["ADVANTAGE", "DISADVANTAGE"]}}, "required": ["roll_contribution_type"]}, "then": {"properties": {"value_kind": {"const": "roll_modifier"}, "normalization": {"const": "CANCEL_APPLICABLE_OPPOSITES"}, "constraints": {"allOf": [{"contains": {"const": "literal_true"}}, {"contains": {"const": "effect.innate_sorcery_source_only"}}, {"contains": {"const": "bound_activity_family.activity.spell_attack_only"}}]}}}}
       ]
     },
     "dependencyGraphContract": {
