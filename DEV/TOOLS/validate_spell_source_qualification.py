@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "2e295a3f9923a66ce9c950f48643aea5af27d89ec956d3d99ec52d8144e30c25"
+    "e43d3da19c27a38f1cf0c21303f08d5547f01aafc3dc8bf5e9af08653737b1f6"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -3730,6 +3730,559 @@ NEXT12_REQUIRED_EVIDENCE_TOKENS = (
     "F12-01 incorporation",
     "does not claim the coordinator's original working checkout is currently clean",
 )
+SOURCE_THIRD12_EVIDENCE_RELATIVE_PATH = (
+    "DEV/docs/superpowers/design/2026-10-09-sp00-third-markdown-source-qualification.md"
+)
+SOURCE_THIRD12_EVIDENCE_SHA256 = (
+    "b7aaf272827328ffa1542cc1c26fed4f0d68fcc8f11405b1763b36e7d834504f"
+)
+THIRD12_REVIEW = {
+    "review_id": "SP00_THIRD_RESIDUALS_REVIEW_20261008",
+    "integration_base_sha": "84e3f23020e6d7bdf582222573f96a2901d53dee",
+    "candidate_source_base_sha": "061cbe7f9ae4ee7148f62c89c30ea0917aeccc02",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-third-residuals-20261008.json",
+    "candidate_sha256": "3e8ed04871f835bb8ec4ab2fd4070fbb219d8a77373b459f5bdef35970984099",
+    "candidate_summary_path": "/tmp/hdm-dev/spell-recovery/SP00-third-residuals-20261008.md",
+    "candidate_summary_sha256": "5f5f3d448088c92a67e833933d3d4cd1a80ee7a1d768696d028b50be6bd26c62",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-third-residuals-review-20261008.md",
+    "accepted_review_sha256": "0921119d7f91c71ee8251fac229b6c2f5d586eedcddadc439e0eb1dd3545ed9d",
+    "task_evidence_path": SOURCE_THIRD12_EVIDENCE_RELATIVE_PATH,
+    "task_evidence_sha256": SOURCE_THIRD12_EVIDENCE_SHA256,
+}
+THIRD12_COMMON_MARKDOWN_LOCATORS = [
+    {"heading": "Range", "line_start": 9165, "line_end": 9175},
+    {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+    {"heading": "Effects", "line_start": 9217, "line_end": 9219},
+    {"heading": "Targets", "line_start": 9223, "line_end": 9227},
+    {"heading": "Area of Effect", "line_start": 16087, "line_end": 16095},
+    {"heading": "Concentration", "line_start": 16296, "line_end": 16304},
+    {"heading": "Combining Spell Effects", "line_start": 9255, "line_end": 9257},
+]
+THIRD12_COMMON_QUALIFIERS = [
+    "Clear path to a targeted subject is required; Total Cover prevents targeting (9223-9227). Absent repeated visibility never grants through-cover targeting. Area membership/cover realization is not proved.",
+    "Range limits origin as the description specifies; movable effects are not generally range-leashed absent an explicit spell restriction (9165-9175).",
+    "Effects beyond source statements remain GM purview (9217-9219); no numeric, actor-kind, choice, turn or damage default fills missing semantic proof.",
+    "Concentration is a maximum, not guaranteed persistence: creator may end it without action; another concentration effect, Incapacitated/dead creator, or failed damage save ends it (16296-16304).",
+    "Time-span spells can be dismissed without action by a non-Incapacitated caster (9205-9213).",
+    "Same-spell effects do not combine; most potent applies, then most recent if equal, while durations overlap (9255-9257). Different-spell coexistence does not prove downstream ordering.",
+    "No source choice name in this candidate is an admitted recipe/machine/native identifier. Every whole-map, support, admission, execution, recovery, disclosure and performance proof remains NOT_ESTABLISHED.",
+]
+THIRD12_EVIDENCE_ORDER = (
+    (
+        "THIRD-01",
+        "source.spell.find_familiar.unresolved.override_type_members",
+        "source_mapping_review",
+    ),
+    (
+        "THIRD-02",
+        "source.spell.find_traps.unresolved.magical_trap_examples",
+        "source_mapping_review",
+    ),
+    (
+        "THIRD-03",
+        "source.spell.flaming_sphere.unresolved.geometry_bounds",
+        "source_parameter",
+    ),
+    (
+        "THIRD-04",
+        "source.spell.floating_disk.unresolved.disk_numeric_limits",
+        "source_parameter",
+    ),
+    (
+        "THIRD-05",
+        "source.spell.fog_cloud.unresolved.strong_wind_judgment",
+        "source_semantics",
+    ),
+    (
+        "THIRD-06",
+        "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
+        "source_semantics",
+    ),
+    (
+        "THIRD-07",
+        "source.spell.guidance.unresolved.skill_domain",
+        "source_mapping_review",
+    ),
+    (
+        "THIRD-08",
+        "source.spell.gust_of_wind.unresolved.wind_numeric_profile",
+        "source_parameter",
+    ),
+    (
+        "THIRD-09",
+        "source.spell.hex.unresolved.ability_member_domain",
+        "source_mapping_review",
+    ),
+    ("THIRD-10", "source.spell.hex.unresolved.duration_bands", "source_parameter"),
+    (
+        "THIRD-11",
+        "source.spell.hunter_s_mark.unresolved.duration_bands",
+        "source_parameter",
+    ),
+    ("THIRD-12", "source.spell.jump.unresolved.jump_distance_cost", "source_parameter"),
+)
+THIRD12_SELECTED_KEYS = tuple(key for _, key, _ in THIRD12_EVIDENCE_ORDER)
+THIRD12_SOURCE_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.find_familiar.unresolved.override_type_members": {
+        "source_exact_name": "Find Familiar",
+        "category": "source_mapping_review",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 29,
+        "map_entry_index": 48,
+        "source_pass_row": 50,
+        "body_witness_row": 117,
+        "printed_page": 130,
+        "source_header_line": 11241,
+        "raw_body_sha256": "7ad9e1e88ac2c18e7f7573442ad84ecab53c842c4f0d22616cfd1b446215aac6",
+        "locators": [
+            {"heading": "Find Familiar", "line_start": 11609, "line_end": 11629}
+        ],
+        "source_phrases": (
+            (0, "Celestial, Fey, or Fiend"),
+            (0, "within 100 feet of you"),
+            (0, "take a Reaction to deliver the touch"),
+            (0, "leaves behind in its space anything it was wearing or carrying"),
+        ),
+        "required_qualifiers": (
+            "not the completed form census",
+            "not create that restriction",
+            "within100 feet and its Reaction",
+            "zeroHP or pocket disappearance",
+            "no invented permanent-dismissal gear rule",
+        ),
+        "members": ["Celestial", "Fey", "Fiend"],
+    },
+    "source.spell.find_traps.unresolved.magical_trap_examples": {
+        "source_exact_name": "Find Traps",
+        "category": "source_mapping_review",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 33,
+        "map_entry_index": 50,
+        "source_pass_row": 52,
+        "body_witness_row": 119,
+        "printed_page": 131,
+        "source_header_line": 11313,
+        "raw_body_sha256": "76a88e76bd6f5df2d688064a529fccf7c6eabf3cb1cd8c527644ed9cf81f8068",
+        "locators": [{"heading": "Find Traps", "line_start": 11718, "line_end": 11732}],
+        "source_phrases": (
+            (0, "within line of sight"),
+            (0, "created to cause damage or other danger"),
+            (0, "Alarm"),
+            (0, "Glyph of Warding"),
+            (0, "mechanical pit trap"),
+            (0, "not its location"),
+        ),
+        "required_qualifiers": (
+            "examples, not an exhaustive catalog",
+            "line of sight",
+            "not trap location",
+            "Natural floor weakness",
+        ),
+    },
+    "source.spell.flaming_sphere.unresolved.geometry_bounds": {
+        "source_exact_name": "Flaming Sphere",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 34,
+        "map_entry_index": 53,
+        "source_pass_row": 55,
+        "body_witness_row": 128,
+        "printed_page": 132,
+        "source_header_line": 11474,
+        "raw_body_sha256": "302ebd4433a46a10b817f6ff8bfdb652a78e760f8fb5ce3308b0a820bcf4a49a",
+        "locators": [
+            {"heading": "Flaming Sphere", "line_start": 11866, "line_end": 11882},
+            {"heading": "Range", "line_start": 9165, "line_end": 9175},
+        ],
+        "source_phrases": (
+            (0, "5-foot-diameter"),
+            (0, "within 5 feet"),
+            (0, "2d6 Fire"),
+            (0, "up to 30 feet"),
+            (0, "up to 5 feet tall"),
+            (0, "up to 10 feet wide"),
+            (0, "aren’t being worn or carried"),
+        ),
+        "required_qualifiers": (
+            "Diameter is not radius",
+            "not an invented ongoing leash",
+            "Collision and nearby end-turn events remain distinct",
+            "no universal once-per-turn damage cap",
+            "neither worn nor carried",
+        ),
+    },
+    "source.spell.floating_disk.unresolved.disk_numeric_limits": {
+        "source_exact_name": "Floating Disk",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 35,
+        "map_entry_index": 54,
+        "source_pass_row": 56,
+        "body_witness_row": 130,
+        "printed_page": 133,
+        "source_header_line": 11515,
+        "raw_body_sha256": "24d5b9598689bf0dd79188ea1b112e0af252b7ceaad7a7d2a76d2fd8796086e0",
+        "locators": [
+            {"heading": "Floating Disk", "line_start": 11904, "line_end": 11918},
+            {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+        ],
+        "source_phrases": (
+            (0, "3 feet in diameter and 1 inch thick"),
+            (0, "floats 3 feet above the ground"),
+            (0, "within range"),
+            (0, "up to 500 pounds"),
+            (0, "more than 20 feet away"),
+            (0, "10 feet or more"),
+            (0, "more than 100 feet"),
+        ),
+        "required_qualifiers": (
+            "500 pounds/20 feet/100 feet equality alone does not trigger",
+            "10-foot elevation equality does bar crossing",
+            "Overload expressly drops contents",
+            "Other termination/fall placement",
+        ),
+    },
+    "source.spell.fog_cloud.unresolved.strong_wind_judgment": {
+        "source_exact_name": "Fog Cloud",
+        "category": "source_semantics",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 36,
+        "map_entry_index": 55,
+        "source_pass_row": 57,
+        "body_witness_row": 132,
+        "printed_page": 133,
+        "source_header_line": 11550,
+        "raw_body_sha256": "ac0631a710bf18d7ea01b794c1a7427599384740aa4e914687ac6061b082eb67",
+        "locators": [
+            {"heading": "Fog Cloud", "line_start": 11940, "line_end": 11954},
+            {"heading": "Gust of Wind", "line_start": 12417, "line_end": 12431},
+            {"heading": "Strong Wind", "line_start": 17693, "line_end": 17697},
+            {"heading": "Effects", "line_start": 9217, "line_end": 9219},
+        ],
+        "source_phrases": (
+            (0, "20-foot-radius Sphere"),
+            (0, "strong wind"),
+            (0, "Gust of Wind"),
+            (0, "radius increases by 20 feet"),
+            (1, "Line of strong wind"),
+        ),
+        "required_qualifiers": (
+            "qualitative predicate, not a speed threshold",
+            "Other wind strength is GM scene judgment",
+            "whole-cloud versus partial-overlap implementation rule",
+            "not acceptance of a particular scene wind fact",
+        ),
+    },
+    "source.spell.gentle_repose.unresolved.corpse_and_revival_binding": {
+        "source_exact_name": "Gentle Repose",
+        "category": "source_semantics",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 37,
+        "map_entry_index": 56,
+        "source_pass_row": 58,
+        "body_witness_row": 141,
+        "printed_page": 135,
+        "source_header_line": 11749,
+        "raw_body_sha256": "72f180622ffb4cd5c343a0d87ba79e0f6cfba5e392f24575c248fc72ce7673dd",
+        "locators": [
+            {"heading": "Gentle Repose", "line_start": 12108, "line_end": 12122},
+            {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+            {
+                "heading": "Combining Spell Effects",
+                "line_start": 9255,
+                "line_end": 9257,
+            },
+            {"heading": "Raise Dead", "line_start": 14236, "line_end": 14250},
+        ],
+        "source_phrases": (
+            (0, "corpse or other remains"),
+            (0, "protected from decay"),
+            (0, "can’t become Undead"),
+            (0, "days spent under the influence of this spell don’t count"),
+            (3, "Raise Dead"),
+        ),
+        "required_qualifiers": (
+            "not global chronology pause",
+            "Raise Dead requires death no longer than10 days",
+            "exact body-identity binding",
+            "No semantic default chosen",
+            "separate downstream_domain_consumer_admission_native_proof",
+        ),
+    },
+    "source.spell.guidance.unresolved.skill_domain": {
+        "source_exact_name": "Guidance",
+        "category": "source_mapping_review",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 38,
+        "map_entry_index": 59,
+        "source_pass_row": 61,
+        "body_witness_row": 152,
+        "printed_page": 138,
+        "source_header_line": 12004,
+        "raw_body_sha256": "d844c7a9a6d1a5c680c6e7057356623a126d19eb0754d4b74603e40a08a1b733",
+        "locators": [
+            {"heading": "Guidance", "line_start": 12383, "line_end": 12395},
+            {"heading": "Skill Proficiencies", "line_start": 833, "line_end": 868},
+            {
+                "heading": "Combining Spell Effects",
+                "line_start": 9255,
+                "line_end": 9257,
+            },
+        ],
+        "source_phrases": (
+            (0, "willing creature"),
+            (0, "choose a skill"),
+            (0, "adds 1d4 to any ability check using the chosen skill"),
+            (1, "Acrobatics"),
+            (1, "Survival"),
+        ),
+        "required_qualifiers": (
+            "No proficiency prerequisite",
+            "Repeated qualifying checks",
+            "not an exclusive matching-ability restriction",
+            "No tool choice or extra nineteenth skill",
+        ),
+        "members": [
+            "Acrobatics",
+            "Animal Handling",
+            "Arcana",
+            "Athletics",
+            "Deception",
+            "History",
+            "Insight",
+            "Intimidation",
+            "Investigation",
+            "Medicine",
+            "Nature",
+            "Perception",
+            "Performance",
+            "Persuasion",
+            "Religion",
+            "Sleight of Hand",
+            "Stealth",
+            "Survival",
+        ],
+    },
+    "source.spell.gust_of_wind.unresolved.wind_numeric_profile": {
+        "source_exact_name": "Gust of Wind",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 39,
+        "map_entry_index": 61,
+        "source_pass_row": 63,
+        "body_witness_row": 154,
+        "printed_page": 138,
+        "source_header_line": 12024,
+        "raw_body_sha256": "e250e6255bc7969a01417ec41312795906db25902a2d1f3d022a81df927aa0d8",
+        "locators": [
+            {"heading": "Gust of Wind", "line_start": 12417, "line_end": 12431},
+            {"heading": "Line", "line_start": 16841, "line_end": 16845},
+        ],
+        "source_phrases": (
+            (0, "Line of strong wind 60 feet long and 10 feet wide"),
+            (0, "pushed 15 feet away"),
+            (0, "spend 2 feet of movement for every 1 foot"),
+            (0, "on your later turns"),
+            (0, "50 percent chance to extinguish them"),
+        ),
+        "required_qualifiers": (
+            "later turns",
+            "Initial and end-turn saves remain distinct",
+            "No arbitrary save-on-entry",
+            "Closer-to-caster movement predicate is not all movement",
+            "wind-speed value inferred",
+        ),
+    },
+    "source.spell.hex.unresolved.ability_member_domain": {
+        "source_exact_name": "Hex",
+        "category": "source_mapping_review",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 40,
+        "map_entry_index": 66,
+        "source_pass_row": 68,
+        "body_witness_row": 165,
+        "printed_page": 140,
+        "source_header_line": 12220,
+        "raw_body_sha256": "df12f3cda388af329ebf931ae0502b5d98a19a6e56f52af8e4fc22391e6207e3",
+        "locators": [
+            {"heading": "Hex", "line_start": 12637, "line_end": 12653},
+            {"heading": "Ability Descriptions", "line_start": 535, "line_end": 544},
+        ],
+        "source_phrases": (
+            (0, "choose one ability when you cast the spell"),
+            (0, "ability checks made with the chosen ability"),
+            (0, "drops to 0 Hit Points"),
+            (0, "on a later turn"),
+            (1, "Constitution"),
+        ),
+        "required_qualifiers": (
+            "Constitution is included",
+            "not skill or saving throw",
+            "caster attack-roll hit",
+            "on a later turn",
+            "no death prerequisite",
+            "no unrestricted transfer",
+            "no freely repeatable ability reselection",
+        ),
+        "members": [
+            "Strength",
+            "Dexterity",
+            "Constitution",
+            "Intelligence",
+            "Wisdom",
+            "Charisma",
+        ],
+    },
+    "source.spell.hex.unresolved.duration_bands": {
+        "source_exact_name": "Hex",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 41,
+        "map_entry_index": 66,
+        "source_pass_row": 68,
+        "body_witness_row": 165,
+        "printed_page": 140,
+        "source_header_line": 12220,
+        "raw_body_sha256": "df12f3cda388af329ebf931ae0502b5d98a19a6e56f52af8e4fc22391e6207e3",
+        "locators": [
+            {"heading": "Hex", "line_start": 12637, "line_end": 12653},
+            {"heading": "Concentration", "line_start": 16296, "line_end": 16304},
+            {
+                "heading": "Using a Higher-Level Spell Slot",
+                "line_start": 9106,
+                "line_end": 9110,
+            },
+        ],
+        "source_phrases": (
+            (0, "up to 1 hour"),
+            (0, "level 2 (up to 4 hours)"),
+            (0, "3–4 (up to 8 hours)"),
+            (0, "5+ (24 hours)"),
+        ),
+        "required_qualifiers": (
+            "slot2 has its own4-hour band",
+            "maximum concentration lifetimes",
+            "Transfer uses continuing original spell episode",
+            "do not import Hunter's Mark",
+        ),
+        "duration_hours_by_slot": {
+            "1": 1,
+            "2": 4,
+            "3": 8,
+            "4": 8,
+            "5": 24,
+            "6": 24,
+            "7": 24,
+            "8": 24,
+            "9": 24,
+        },
+    },
+    "source.spell.hunter_s_mark.unresolved.duration_bands": {
+        "source_exact_name": "Hunter’s Mark",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 42,
+        "map_entry_index": 69,
+        "source_pass_row": 71,
+        "body_witness_row": 170,
+        "printed_page": 141,
+        "source_header_line": 12299,
+        "raw_body_sha256": "3b0fe49e69de7ead35d81cdf685039b1ce31d41238458d91facd84c1ae08a43d",
+        "locators": [
+            {"heading": "Hunter’s Mark", "line_start": 12729, "line_end": 12745},
+            {"heading": "Concentration", "line_start": 16296, "line_end": 16304},
+            {
+                "heading": "Using a Higher-Level Spell Slot",
+                "line_start": 9106,
+                "line_end": 9110,
+            },
+        ],
+        "source_phrases": (
+            (0, "one creature you can see within range"),
+            (0, "extra 1d6 Force damage"),
+            (0, "Bonus Action to move the mark"),
+            (0, "level 3–4 (up to 8 hours)"),
+            (0, "5+ (up to 24 hours)"),
+        ),
+        "required_qualifiers": (
+            "Slots1-2",
+            "Slot2 has no Hex-like4-hour increase",
+            "find this target",
+            "Unlike Hex no later-turn restriction is stated",
+            "ordinary Bonus Action entitlement still applies",
+        ),
+        "duration_hours_by_slot": {
+            "1": 1,
+            "2": 1,
+            "3": 8,
+            "4": 8,
+            "5": 24,
+            "6": 24,
+            "7": 24,
+            "8": 24,
+            "9": 24,
+        },
+    },
+    "source.spell.jump.unresolved.jump_distance_cost": {
+        "source_exact_name": "Jump",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 43,
+        "map_entry_index": 75,
+        "source_pass_row": 77,
+        "body_witness_row": 183,
+        "printed_page": 143,
+        "source_header_line": 12533,
+        "raw_body_sha256": "74e5149b5098fe7446df95ef3ef64bdd23fefe7de49b77d67f03a66d1bffaa13",
+        "locators": [
+            {"heading": "Jump", "line_start": 12983, "line_end": 12997},
+            {"heading": "Duration", "line_start": 9205, "line_end": 9213},
+            {"heading": "Jumping", "line_start": 16821, "line_end": 16823},
+        ],
+        "source_phrases": (
+            (0, "Once on each of its turns"),
+            (0, "jump up to 30 feet by spending 10 feet of movement"),
+            (0, "one additional creature"),
+        ),
+        "required_qualifiers": (
+            "spending10 feet",
+            "Own-turn restriction excludes arbitrary off-turn uses",
+            "not a proportional1-for3 conversion",
+            "No guaranteed jump per turn without movement available",
+            "no extra action",
+        ),
+    },
+}
+THIRD12_SOURCE_CLOSED_KEYS = frozenset(
+    key
+    for key, item in THIRD12_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_CLOSED"
+)
+THIRD12_SOURCE_HELD_KEYS = frozenset(
+    key
+    for key, item in THIRD12_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_HELD"
+)
+THIRD12_REQUIRED_EVIDENCE_TOKENS = (
+    THIRD12_REVIEW["candidate_sha256"],
+    THIRD12_REVIEW["candidate_summary_sha256"],
+    THIRD12_REVIEW["accepted_review_sha256"],
+    "**I01 — Find Familiar:**",
+    "not a universal command leash",
+    "zero-HP or pocket-dimension disappearance only",
+    "**I02 — common range, cover and qualitative wind:**",
+    "Total Cover at 9223–9227",
+    "area-origin / line-of-effect membership and origin placement at 16087–16095",
+    "Strong wind remains qualitative",
+    "**I03 — actors, negative guards, timing and repeated occurrences:**",
+    "Hex later-turn versus Hunter's lack of that restriction",
+    "**I04 — additive evidence and totals:**",
+    "24 prior qualified keys / 20 closed keys / 21 closed subobligations / 4 held",
+    "conditional cumulative totals are 36 qualified / 31 closed keys / 32 closed subobligations / 5 held",
+    "46 active source keys",
+    "W05_SPELL_SOURCE_QUALIFICATION_READY",
+    *THIRD12_SELECTED_KEYS,
+)
 
 
 def _read_pinned_local_evidence(
@@ -4501,6 +5054,495 @@ def _validate_source_next12_resolution_evidence(
     }
 
 
+def _validate_source_third12_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind the accepted third12 source-only dispositions to exact source witnesses."""
+    review = _object(manifest.get("source_third12_review"), "source_third12_review")
+    if review != THIRD12_REVIEW:
+        _fail(
+            "source_third12_review",
+            "frozen candidate, accepted review or task evidence identity differs",
+        )
+    task_evidence_bytes = _read_pinned_local_evidence(
+        SOURCE_THIRD12_EVIDENCE_RELATIVE_PATH,
+        SOURCE_THIRD12_EVIDENCE_SHA256,
+        "source_third12_review",
+    )
+    try:
+        task_evidence = task_evidence_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_third12_review", "task evidence is not UTF-8")
+    if any(token not in task_evidence for token in THIRD12_REQUIRED_EVIDENCE_TOKENS):
+        _fail(
+            "source_third12_review",
+            "bounded evidence omits frozen identities, selected keys or I01-I04 precision",
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_third12_markdown",
+    )
+    try:
+        markdown_lines = markdown_bytes.decode("utf-8").splitlines()
+    except UnicodeDecodeError:
+        _fail("source_third12_markdown", "source Markdown is not UTF-8")
+
+    contract = _object(
+        manifest.get("source_third12_resolution_contract"),
+        "source_third12_resolution_contract",
+    )
+    expected_contract = {
+        "status": "PARTIAL_THREE_REVIEWED_SETS_SOURCE_ONLY",
+        "selected_key_count": 12,
+        "selected_spell_count": 11,
+        "resolution_record_count": 12,
+        "selected_source_closed_key_count": 11,
+        "selected_source_closed_subobligation_count": 11,
+        "selected_source_held_key_count": 1,
+        "selected_source_held_subobligation_count": 1,
+        "prior_reviewed_key_count": 24,
+        "prior_source_closed_key_count": 20,
+        "prior_source_closed_subobligation_count": 21,
+        "prior_source_held_key_count": 4,
+        "prior_source_held_subobligation_count": 4,
+        "prior_active_source_blocker_count": 57,
+        "cumulative_reviewed_key_count": 36,
+        "cumulative_resolution_record_count": 37,
+        "cumulative_source_closed_key_count": 31,
+        "cumulative_source_closed_subobligation_count": 32,
+        "cumulative_source_held_key_count": 5,
+        "cumulative_source_held_subobligation_count": 5,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 46,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "common_markdown_locators": THIRD12_COMMON_MARKDOWN_LOCATORS,
+        "common_qualifiers": THIRD12_COMMON_QUALIFIERS,
+    }
+    if contract != expected_contract:
+        _fail(
+            "source_third12_contract",
+            "third12 source closure/HOLD/cumulative counts or common qualifiers differ",
+        )
+
+    for locator_index, locator in enumerate(THIRD12_COMMON_MARKDOWN_LOCATORS):
+        start = int(locator["line_start"])
+        end = int(locator["line_end"])
+        if start < 1 or end < start or end > len(markdown_lines):
+            _fail("source_third12_common_locator", "common source span is invalid")
+        section = "\n".join(markdown_lines[start - 1 : end])
+        first_line = markdown_lines[start - 1].strip()
+        if (locator_index == 0 or first_line.startswith("#")) and str(
+            locator["heading"]
+        ) not in first_line:
+            _fail(
+                "source_third12_common_locator",
+                f"common locator {locator['heading']} has a mismatched heading",
+            )
+        required_common_phrases = {
+            "Range": ("spell’s description says otherwise",),
+            "Duration": ("dismiss it (no action required)", "Incapacitated"),
+            "Effects": ("under the GM’s purview",),
+            "Targets": ("A Clear Path to the Target", "Total Cover"),
+            "Area of Effect": (
+                "point of origin",
+                "Total Cover",
+                "near side of the obstruction",
+            ),
+            "Concentration": (
+                "another effect that requires Concentration",
+                "Incapacitated",
+                "you die",
+            ),
+            "Combining Spell Effects": (
+                "don’t combine",
+                "most potent effect",
+                "most recent effect",
+            ),
+        }[str(locator["heading"])]
+        if any(phrase not in section for phrase in required_common_phrases):
+            _fail(
+                "source_third12_common_locator",
+                f"common source span {locator['heading']} omits a reviewed clause",
+            )
+
+    rows = [
+        _object(value, f"source_third12_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_third12_resolution_evidence"),
+                "source_third12_resolution_evidence",
+            )
+        )
+    ]
+    expected_order = tuple(
+        (item_id, key, category) for item_id, key, category in THIRD12_EVIDENCE_ORDER
+    )
+    actual_order: list[tuple[str, str, str]] = []
+    for row_index, row in enumerate(rows):
+        actual_order.append(
+            (
+                str(row.get("review_item_id")),
+                str(row.get("unresolved_key")),
+                str(row.get("source_category")),
+            )
+        )
+    if (
+        len(rows) != 12
+        or tuple(actual_order) != expected_order
+        or len({row.get("unresolved_key") for row in rows}) != 12
+    ):
+        _fail(
+            "source_third12_census",
+            "selected third12 key/category/order census differs",
+        )
+
+    prior_keys = set(SOURCE_RESOLUTION_KEYS) | set(NEXT12_SELECTED_KEYS)
+    if prior_keys & set(THIRD12_SELECTED_KEYS):
+        _fail(
+            "source_third12_census", "third12 replaces a key from a prior accepted set"
+        )
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_witnesses = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    witness_rows = _rows(body_witnesses, "rows", "source-body-witnesses")
+    closed_keys: list[str] = []
+    held_keys: list[str] = []
+    closed_subobligation_ids: list[str] = []
+    held_subobligation_ids: list[str] = []
+    previous_selected_keys = set(SOURCE_RESOLUTION_KEYS) | set(NEXT12_SELECTED_KEYS)
+    for row_index, ((item_id, key, category), row) in enumerate(
+        zip(THIRD12_EVIDENCE_ORDER, rows, strict=True)
+    ):
+        spec = THIRD12_SOURCE_ITEMS[key]
+        classification_index = int(spec["classification_index"])
+        map_entry_index = int(spec["map_entry_index"])
+        source_pass_row = int(spec["source_pass_row"])
+        body_witness_row = int(spec["body_witness_row"])
+        source_name = str(spec["source_exact_name"])
+        disposition = str(spec["disposition"])
+        expected_subobligation_id = f"{key}::{category}"
+        classification_pointer = (
+            f"/source_unknown_classifications/{classification_index}"
+        )
+        history_pointer = (
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+            f"{classification_index}"
+        )
+        map_pointer = (
+            f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+        )
+        source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+        body_pointer = f"/rows/{body_witness_row}"
+        classification = classified_by_key.get(key)
+        if classification is None or key in previous_selected_keys:
+            _fail(
+                "source_third12_key",
+                f"{key} is absent or replaces prior selected evidence",
+            )
+        original_classification = _object(
+            _resolve_json_pointer(
+                manifest, classification_pointer, "third12 classification pointer"
+            ),
+            f"{key}.classification",
+        )
+        original_history = _object(
+            _resolve_json_pointer(manifest, history_pointer, "third12 history pointer"),
+            f"{key}.original_history",
+        )
+        map_entry = _object(
+            _resolve_json_pointer(manifest, map_pointer, "third12 map pointer"),
+            f"{key}.current_map",
+        )
+        map_unresolved_keys = [
+            _object(value, f"{key}.map.unresolved_keys[{index}]")
+            for index, value in enumerate(
+                _array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys")
+            )
+        ]
+        evidence_ref = _object(
+            classification.get("evidence_ref"), f"{key}.evidence_ref"
+        )
+        history_matches = (
+            original_history.get("unresolved_key") == key
+            and original_history.get("source_exact_name") == source_name
+            and original_history.get("reason") == classification.get("original_reason")
+            and original_history.get("evidence_ref") == evidence_ref
+            and original_history.get("status") == classification.get("original_status")
+            and original_history.get("disposition")
+            == classification.get("original_disposition")
+        )
+        map_matches = map_entry.get("source_exact_name") == source_name and any(
+            value.get("unresolved_key") == key for value in map_unresolved_keys
+        )
+        source_subobligations = [
+            _object(value, f"{key}.source_subobligations[{index}]")
+            for index, value in enumerate(
+                _array(classification.get("subobligations"), f"{key}.subobligations")
+            )
+            if isinstance(value, dict)
+            and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        exact_subobligation = any(
+            value.get("subobligation_id") == expected_subobligation_id
+            and value.get("category") == category
+            and value.get("status") == "NOT_ESTABLISHED"
+            for value in source_subobligations
+        )
+        if (
+            row.get("review_item_id") != item_id
+            or row.get("unresolved_key") != key
+            or row.get("source_exact_name") != source_name
+            or row.get("source_category") != category
+            or row.get("subobligation_id") != expected_subobligation_id
+            or row.get("disposition") != disposition
+            or row.get("source_classification_pointer") != classification_pointer
+            or row.get("source_unresolved_record_pointer") != history_pointer
+            or row.get("current_map_pointer") != map_pointer
+            or classification != original_classification
+            or original_classification.get("unresolved_key") != key
+            or original_classification.get("source_exact_name") != source_name
+            or original_classification.get("source_unresolved_record_pointer")
+            != history_pointer
+            or original_classification.get("source_ready_blocking") is not True
+            or original_classification.get("original_status") != "NOT_ESTABLISHED"
+            or not history_matches
+            or not map_matches
+            or not exact_subobligation
+        ):
+            _fail(
+                "source_third12_binding",
+                f"{key} differs from its original category, classification, history or map association",
+            )
+
+        source_record = source_rows[source_pass_row]
+        body_witness = witness_rows[body_witness_row]
+        expected_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": source_name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": source_record.get("hash_basis"),
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+        }
+        if (
+            source_record.get("name") != source_name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or not isinstance(source_record.get("qualifications"), list)
+            or body_witness.get("name") != source_name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+            or row.get("source_record_ref") != expected_ref
+            or evidence_ref.get("artifact_id") != "source-pass-0-2"
+            or evidence_ref.get("json_pointer") != source_pointer
+            or evidence_ref.get("exact_record_name") != source_name
+            or evidence_ref.get("printed_page") != spec["printed_page"]
+            or evidence_ref.get("source_header_line") != spec["source_header_line"]
+            or evidence_ref.get("raw_body_sha256") != spec["raw_body_sha256"]
+            or evidence_ref.get("body_witness_ref")
+            != {"artifact_id": "source-body-witnesses", "json_pointer": body_pointer}
+        ):
+            _fail(
+                "source_third12_provenance",
+                f"{key} borrows a foreign source-pass, qualification or body-witness record",
+            )
+
+        locators = [
+            _object(value, f"{key}.source_markdown_locators[{locator_index}]")
+            for locator_index, value in enumerate(
+                _array(
+                    row.get("source_markdown_locators"),
+                    f"{key}.source_markdown_locators",
+                )
+            )
+        ]
+        if locators != spec["locators"]:
+            _fail(
+                "source_third12_locator",
+                f"{key} Markdown locators differ from the reviewed bounds",
+            )
+        locator_texts: list[str] = []
+        for locator_index, locator in enumerate(locators):
+            start = locator.get("line_start")
+            end = locator.get("line_end")
+            if (
+                type(start) is not int
+                or type(end) is not int
+                or start < 1
+                or end < start
+                or end > len(markdown_lines)
+            ):
+                _fail("source_third12_locator", f"{key} has an invalid Markdown span")
+            section_text = "\n".join(markdown_lines[start - 1 : end])
+            locator_texts.append(section_text)
+            first_line = markdown_lines[start - 1].strip()
+            if locator_index == 0 and first_line != f"##### {source_name}":
+                _fail(
+                    "source_third12_locator",
+                    f"{key} primary span does not start at its exact heading",
+                )
+            if first_line.startswith("#") and str(locator["heading"]) not in first_line:
+                _fail(
+                    "source_third12_locator",
+                    f"{key} locator heading does not match its Markdown span",
+                )
+        for locator_index, phrase in spec["source_phrases"]:
+            if phrase not in locator_texts[locator_index]:
+                _fail(
+                    "source_third12_source_text", f"{key} source span omits {phrase!r}"
+                )
+
+        interpretation = row.get("source_interpretation")
+        qualifiers = row.get("material_qualifiers")
+        retained_residual = row.get("retained_source_residual")
+        if (
+            not isinstance(interpretation, str)
+            or not interpretation.strip()
+            or not isinstance(qualifiers, list)
+            or not qualifiers
+            or not all(isinstance(value, str) and value.strip() for value in qualifiers)
+            or not isinstance(retained_residual, str)
+            or not retained_residual.strip()
+            or row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail(
+                "source_third12_formulation",
+                f"{key} lacks bounded source formulation or proof limit",
+            )
+        combined_formulation = (
+            f"{interpretation}\n" + "\n".join(qualifiers) + f"\n{retained_residual}"
+        )
+        for phrase in spec["required_qualifiers"]:
+            if str(phrase).casefold() not in combined_formulation.casefold():
+                _fail(
+                    "source_third12_qualifier",
+                    f"{key} omits required qualifier {phrase!r}",
+                )
+
+        expected_members = spec.get("members")
+        if expected_members is None:
+            if "members" in row:
+                _fail(
+                    "source_third12_enum", f"{key} introduces an unreviewed source enum"
+                )
+        elif row.get("members") != expected_members:
+            _fail("source_third12_enum", f"{key} source enum members differ")
+        expected_duration_bands = spec.get("duration_hours_by_slot")
+        if expected_duration_bands is None:
+            if "duration_hours_by_slot" in row:
+                _fail(
+                    "source_third12_duration",
+                    f"{key} introduces an unreviewed duration map",
+                )
+        elif row.get("duration_hours_by_slot") != expected_duration_bands:
+            _fail("source_third12_duration", f"{key} slot duration bands differ")
+
+        if disposition == "SOURCE_CLOSED":
+            if not retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+            ):
+                _fail(
+                    "source_third12_closure",
+                    f"{key} closure exceeds its selected source subobligation",
+                )
+            closed_keys.append(key)
+            closed_subobligation_ids.append(expected_subobligation_id)
+        else:
+            if (
+                key
+                != "source.spell.gentle_repose.unresolved.corpse_and_revival_binding"
+            ):
+                _fail(
+                    "source_third12_hold", f"unexpected third12 source HOLD for {key}"
+                )
+            if retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY"
+            ):
+                _fail("source_third12_hold", "Gentle Repose source HOLD was removed")
+            downstream_subobligations = [
+                value
+                for value in _array(
+                    classification.get("subobligations"), f"{key}.subobligations"
+                )
+                if isinstance(value, dict)
+                and value.get("category")
+                == "downstream_domain_consumer_admission_native_proof"
+            ]
+            if (
+                len(downstream_subobligations) != 1
+                or downstream_subobligations[0].get("status") != "NOT_ESTABLISHED"
+            ):
+                _fail(
+                    "source_third12_downstream",
+                    "Gentle Repose downstream HOLD was removed or promoted",
+                )
+            held_keys.append(key)
+            held_subobligation_ids.append(expected_subobligation_id)
+
+    contract_previous = _object(
+        manifest.get("source_next12_resolution_contract"),
+        "source_next12_resolution_contract",
+    )
+    if (
+        contract_previous.get("cumulative_reviewed_key_count") != 24
+        or contract_previous.get("cumulative_source_closed_key_count") != 20
+        or contract_previous.get("cumulative_source_closed_subobligation_count") != 21
+        or contract_previous.get("cumulative_source_held_key_count") != 4
+        or contract_previous.get("active_source_blocker_count") != 57
+    ):
+        _fail(
+            "source_third12_prior_contract",
+            "third12 integration replaces prior cumulative evidence",
+        )
+    if (
+        set(closed_keys) != THIRD12_SOURCE_CLOSED_KEYS
+        or set(held_keys) != THIRD12_SOURCE_HELD_KEYS
+        or len(set(closed_keys)) != 11
+        or len(closed_subobligation_ids) != 11
+        or len(set(closed_subobligation_ids)) != 11
+        or len(held_subobligation_ids) != 1
+        or len(
+            {str(spec["source_exact_name"]) for spec in THIRD12_SOURCE_ITEMS.values()}
+        )
+        != 11
+    ):
+        _fail(
+            "source_third12_contract",
+            "third12 source closure/HOLD or spell counts differ",
+        )
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": closed_keys,
+        "source_held_keys": held_keys,
+        "source_closed_subobligation_ids": closed_subobligation_ids,
+        "source_held_subobligation_ids": held_subobligation_ids,
+        "source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "source_held_subobligation_count": len(held_subobligation_ids),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -4694,11 +5736,17 @@ def _validate_source_unknown_classifications(
     next12_resolution = _validate_source_next12_resolution_evidence(
         manifest, classified_by_key
     )
+    third12_resolution = _validate_source_third12_resolution_evidence(
+        manifest, classified_by_key
+    )
     closed_subobligation_ids = set(
         first12_resolution["source_closed_subobligation_ids"]
     )
     closed_subobligation_ids.update(
         next12_resolution["source_closed_subobligation_ids"]
+    )
+    closed_subobligation_ids.update(
+        third12_resolution["source_closed_subobligation_ids"]
     )
     source_blocking_keys = [
         key
@@ -4710,10 +5758,10 @@ def _validate_source_unknown_classifications(
         )
     ]
     resolution_contract = _object(
-        manifest.get("source_next12_resolution_contract"),
-        "source_next12_resolution_contract",
+        manifest.get("source_third12_resolution_contract"),
+        "source_third12_resolution_contract",
     )
-    if len(source_blocking_keys) != 57 or resolution_contract.get(
+    if len(source_blocking_keys) != 46 or resolution_contract.get(
         "active_source_blocker_count"
     ) != len(source_blocking_keys):
         _fail(
@@ -4730,19 +5778,31 @@ def _validate_source_unknown_classifications(
         "source_resolved_keys": [
             *first12_resolution["source_resolved_keys"],
             *next12_resolution["source_resolved_keys"],
+            *third12_resolution["source_resolved_keys"],
         ],
         "source_held_subobligation_count": (
             first12_resolution["source_held_subobligation_count"]
             + next12_resolution["source_held_subobligation_count"]
+            + third12_resolution["source_held_subobligation_count"]
         ),
         "source_held_keys": [
             *first12_resolution["source_held_keys"],
             *next12_resolution["source_held_keys"],
+            *third12_resolution["source_held_keys"],
         ],
         "source_resolution_evidence": [
             *first12_resolution["source_resolution_records"],
             *next12_resolution["source_resolution_records"],
+            *third12_resolution["source_resolution_records"],
         ],
+        "source_reviewed_key_count": len(
+            set(first12_resolution["source_resolved_keys"])
+            | set(first12_resolution["source_held_keys"])
+            | set(next12_resolution["source_resolved_keys"])
+            | set(next12_resolution["source_held_keys"])
+            | set(third12_resolution["source_resolved_keys"])
+            | set(third12_resolution["source_held_keys"])
+        ),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[
             "command_approach_source_text"

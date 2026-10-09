@@ -564,8 +564,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 57)
-        self.assertEqual(unresolved_blocker["entry_count"], 51)
+        self.assertEqual(unresolved_blocker["count"], 46)
+        self.assertEqual(unresolved_blocker["entry_count"], 42)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -853,7 +853,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 57)
+        self.assertEqual(classification["source_blocking_key_count"], 46)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -903,10 +903,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 57)
+        self.assertEqual(classification["source_blocking_key_count"], 46)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 21)
-        self.assertEqual(classification["source_held_subobligation_count"], 4)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
+        self.assertEqual(classification["source_held_subobligation_count"], 5)
         self.assertEqual(
             manifest["source_unknown_resolution_contract"][
                 "source_closed_subobligation_count"
@@ -1035,19 +1035,27 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 57)
+        self.assertEqual(classification["source_blocking_key_count"], 46)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 21)
-        self.assertEqual(classification["source_held_subobligation_count"], 4)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
+        self.assertEqual(classification["source_held_subobligation_count"], 5)
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
         self.assertEqual(
-            resolved_keys, FIRST12_SOURCE_CLOSED_KEYS | NEXT12_SOURCE_CLOSED_KEYS
+            resolved_keys,
+            FIRST12_SOURCE_CLOSED_KEYS
+            | NEXT12_SOURCE_CLOSED_KEYS
+            | TOOL.THIRD12_SOURCE_CLOSED_KEYS,
         )
-        self.assertEqual(held_keys, FIRST12_SOURCE_HELD_KEYS | NEXT12_SOURCE_HELD_KEYS)
-        self.assertEqual(len(classification["source_resolved_keys"]), 20)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 20)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 25)
+        self.assertEqual(
+            held_keys,
+            FIRST12_SOURCE_HELD_KEYS
+            | NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS,
+        )
+        self.assertEqual(len(classification["source_resolved_keys"]), 31)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 31)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 37)
         self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
         self.assertIn(
             "source.spell.augury.unresolved.four_omen_members",
@@ -1134,6 +1142,385 @@ class TestSpellSourceQualification(unittest.TestCase):
             ],
             57,
         )
+
+    def test_third12_source_qualification_adds_only_reviewed_closures_and_hold(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+
+        self.assertEqual(classification["historical_source_blocking_key_count"], 77)
+        self.assertEqual(classification["downstream_only_key_count"], 5)
+        self.assertEqual(classification["source_blocking_key_count"], 46)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
+        self.assertEqual(classification["source_held_subobligation_count"], 5)
+        self.assertEqual(len(classification["source_resolved_keys"]), 31)
+        self.assertEqual(len(classification["source_held_keys"]), 5)
+        self.assertEqual(classification["source_reviewed_key_count"], 36)
+        self.assertEqual(
+            set(classification["source_resolved_keys"]),
+            TOOL.SOURCE_RESOLVED_KEYS
+            | TOOL.NEXT12_SOURCE_CLOSED_KEYS
+            | TOOL.THIRD12_SOURCE_CLOSED_KEYS,
+        )
+        self.assertEqual(
+            set(classification["source_held_keys"]),
+            TOOL.SOURCE_HELD_KEYS
+            | TOOL.NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS,
+        )
+        self.assertIn(
+            "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
+            classification["source_held_keys"],
+        )
+        self.assertEqual(len(classification["source_resolution_evidence"]), 37)
+
+    def test_third12_rejects_binding_provenance_enum_bound_actor_and_hash_drift(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+
+        def third_evidence_for(
+            candidate: dict[str, object], key: str
+        ) -> dict[str, object]:
+            rows = candidate["source_third12_resolution_evidence"]
+            return next(row for row in rows if row["unresolved_key"] == key)
+
+        def change_disk_equality(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.floating_disk.unresolved.disk_numeric_limits"
+            )
+            row["material_qualifiers"][0] = (
+                "500 pounds/20 feet/100 feet equality triggers the respective excess rule; "
+                "10-foot elevation equality does bar crossing."
+            )
+
+        def broaden_familiar_command_leash(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.find_familiar.unresolved.override_type_members"
+            )
+            row["material_qualifiers"][3] = (
+                "The 100-foot predicate limits every familiar command."
+            )
+
+        def remove_flaming_sphere_gear_guard(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.flaming_sphere.unresolved.geometry_bounds"
+            )
+            row["material_qualifiers"][3] = (
+                "Contact ignites flammable objects, including worn and carried objects."
+            )
+
+        def weaken_hex_later_turn(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.hex.unresolved.ability_member_domain"
+            )
+            row["material_qualifiers"][1] = (
+                "Before spell ends, target dropping to0HP authorizes a same-turn Bonus Action; "
+                "death is not required."
+            )
+
+        def import_hex_timing_into_hunters_mark(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.hunter_s_mark.unresolved.duration_bands"
+            )
+            row["material_qualifiers"][2] = (
+                "Transfer requires a Bonus Action on a later turn, as with Hex."
+            )
+
+        def weaken_jump_actor_boundary(candidate: dict[str, object]) -> None:
+            row = third_evidence_for(
+                candidate, "source.spell.jump.unresolved.jump_distance_cost"
+            )
+            row["material_qualifiers"][1] = (
+                "A once-per-round use may occur outside the recipient's own turn."
+            )
+
+        cases = (
+            (
+                "wrong-key",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update({"unresolved_key": "source.spell.borrowed.unresolved.key"}),
+                "source_third12_census",
+            ),
+            (
+                "wrong-category",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update({"source_category": "source_parameter"}),
+                "source_third12_census",
+            ),
+            (
+                "wrong-classification-pointer",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update(
+                    {
+                        "source_classification_pointer": "/source_unknown_classifications/30"
+                    }
+                ),
+                "source_third12_binding",
+            ),
+            (
+                "borrowed-history-pointer",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update(
+                    {
+                        "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/30"
+                    }
+                ),
+                "source_third12_binding",
+            ),
+            (
+                "borrowed-map-pointer",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update(
+                    {
+                        "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/30"
+                    }
+                ),
+                "source_third12_binding",
+            ),
+            (
+                "borrowed-source-pass-row",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                )[
+                    "source_record_ref"
+                ].update({"json_pointer": "/rows/31/required_modes_or_exceptions"}),
+                "source_third12_provenance",
+            ),
+            (
+                "borrowed-body-witness",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                )[
+                    "source_record_ref"
+                ]["body_witness_ref"].update({"json_pointer": "/rows/82"}),
+                "source_third12_provenance",
+            ),
+            (
+                "foreign-historical-body-hash",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                )["source_record_ref"].update({"raw_body_sha256": "0" * 64}),
+                "source_third12_provenance",
+            ),
+            (
+                "foreign-candidate-hash",
+                lambda candidate: candidate["source_third12_review"].update(
+                    {"candidate_sha256": "0" * 64}
+                ),
+                "source_third12_review",
+            ),
+            (
+                "foreign-review-hash",
+                lambda candidate: candidate["source_third12_review"].update(
+                    {"accepted_review_sha256": "0" * 64}
+                ),
+                "source_third12_review",
+            ),
+            (
+                "wrong-markdown-locator",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                )["source_markdown_locators"][0].update({"line_start": 11719}),
+                "source_third12_locator",
+            ),
+            (
+                "missing-familiar-enum-member",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_familiar.unresolved.override_type_members",
+                )["members"].remove("Fey"),
+                "source_third12_enum",
+            ),
+            (
+                "extra-guidance-skill",
+                lambda candidate: third_evidence_for(
+                    candidate, "source.spell.guidance.unresolved.skill_domain"
+                )["members"].append("Animal Empathy"),
+                "source_third12_enum",
+            ),
+            (
+                "wrong-guidance-enum-member",
+                lambda candidate: third_evidence_for(
+                    candidate, "source.spell.guidance.unresolved.skill_domain"
+                )["members"].__setitem__(0, "Animal Empathy"),
+                "source_third12_enum",
+            ),
+            (
+                "hex-slot-2-band",
+                lambda candidate: third_evidence_for(
+                    candidate, "source.spell.hex.unresolved.duration_bands"
+                )["duration_hours_by_slot"].update({"2": 1}),
+                "source_third12_duration",
+            ),
+            (
+                "hunters-mark-slot-2-band",
+                lambda candidate: third_evidence_for(
+                    candidate, "source.spell.hunter_s_mark.unresolved.duration_bands"
+                )["duration_hours_by_slot"].update({"2": 4}),
+                "source_third12_duration",
+            ),
+            (
+                "floating-disk-equality",
+                change_disk_equality,
+                "source_third12_qualifier",
+            ),
+            (
+                "familiar-command-leash",
+                broaden_familiar_command_leash,
+                "source_third12_qualifier",
+            ),
+            (
+                "worn-carried-guard",
+                remove_flaming_sphere_gear_guard,
+                "source_third12_qualifier",
+            ),
+            ("hex-later-turn", weaken_hex_later_turn, "source_third12_qualifier"),
+            (
+                "hunter-immediate-transfer",
+                import_hex_timing_into_hunters_mark,
+                "source_third12_qualifier",
+            ),
+            (
+                "jump-own-turn-actor",
+                weaken_jump_actor_boundary,
+                "source_third12_qualifier",
+            ),
+        )
+        for case, mutate, expected_code in cases:
+            candidate = copy.deepcopy(baseline)
+            with self.subTest(case=case):
+                mutate(candidate)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(caught.exception.code, expected_code)
+
+    def test_third12_preserves_prior_sets_and_gentle_repose_source_and_downstream_holds(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+
+        def third_evidence_for(
+            candidate: dict[str, object], key: str
+        ) -> dict[str, object]:
+            rows = candidate["source_third12_resolution_evidence"]
+            return next(row for row in rows if row["unresolved_key"] == key)
+
+        cases = (
+            (
+                "source-hold-closed",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
+                ).update({"disposition": "SOURCE_CLOSED"}),
+                "source_third12_binding",
+            ),
+            (
+                "source-hold-residual-removed",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
+                ).update(
+                    {
+                        "retained_source_residual": (
+                            "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; exact existing "
+                            "corpse/body/effect owner reconciliation and identity/expiry/overlap "
+                            "proof are still required. The separate "
+                            "downstream_domain_consumer_admission_native_proof subobligation "
+                            "remains NOT_ESTABLISHED."
+                        )
+                    }
+                ),
+                "source_third12_hold",
+            ),
+            (
+                "downstream-hold-promoted",
+                lambda candidate: next(
+                    value
+                    for value in candidate["source_unknown_classifications"][37][
+                        "subobligations"
+                    ]
+                    if value["category"]
+                    == "downstream_domain_consumer_admission_native_proof"
+                ).update({"status": "SOURCE_CLOSED"}),
+                "source_unknown_subobligation",
+            ),
+            (
+                "changed-cumulative-count",
+                lambda candidate: candidate[
+                    "source_third12_resolution_contract"
+                ].update({"cumulative_source_closed_key_count": 32}),
+                "source_third12_contract",
+            ),
+            (
+                "native-proof-promotion",
+                lambda candidate: third_evidence_for(
+                    candidate,
+                    "source.spell.find_traps.unresolved.magical_trap_examples",
+                ).update({"actual_native_proof_refs": ["unreviewed-proof"]}),
+                "source_third12_formulation",
+            ),
+            (
+                "common-total-cover-qualifier-removed",
+                lambda candidate: candidate["source_third12_resolution_contract"][
+                    "common_qualifiers"
+                ].__setitem__(0, "No universal targeting rule is asserted."),
+                "source_third12_contract",
+            ),
+        )
+        for case, mutate, expected_code in cases:
+            candidate = copy.deepcopy(baseline)
+            with self.subTest(case=case):
+                mutate(candidate)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(caught.exception.code, expected_code)
+
+        prior_first12_removed = copy.deepcopy(baseline)
+        prior_first12_removed["source_unknown_resolution_evidence"].pop()
+        with self.assertRaises(TOOL.SourceQualificationError):
+            TOOL._validate_source_unknown_classifications(prior_first12_removed)
+
+        prior_first12_replaced = copy.deepcopy(baseline)
+        prior_first12_replaced["source_unknown_resolution_evidence"][0] = copy.deepcopy(
+            prior_first12_replaced["source_third12_resolution_evidence"][0]
+        )
+        with self.assertRaises(TOOL.SourceQualificationError):
+            TOOL._validate_source_unknown_classifications(prior_first12_replaced)
+
+        prior_next12_replaced = copy.deepcopy(baseline)
+        prior_next12_replaced["source_next12_resolution_evidence"].pop()
+        with self.assertRaises(TOOL.SourceQualificationError):
+            TOOL._validate_source_unknown_classifications(prior_next12_replaced)
+
+        prior_next12_replaced_by_third = copy.deepcopy(baseline)
+        prior_next12_replaced_by_third["source_next12_resolution_evidence"][0] = (
+            copy.deepcopy(
+                prior_next12_replaced_by_third["source_third12_resolution_evidence"][0]
+            )
+        )
+        with self.assertRaises(TOOL.SourceQualificationError):
+            TOOL._validate_source_unknown_classifications(
+                prior_next12_replaced_by_third
+            )
 
     def test_next12_source_resolution_rejects_borrowed_provenance_and_qualifiers(
         self,
