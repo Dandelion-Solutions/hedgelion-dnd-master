@@ -3354,3 +3354,55 @@ argument bag, arbitrary operation or broad production activation. Remaining
 DAG/gated/fixed-roll/native issuer joins stay exact owned obligations.
 Full SP03/SP00/P2 outputs remain NOT_PRODUCED; SP04 waits for complete SP03.
 NEEDS_PO: NONE. UNPUBLISHED_PRODUCTION_WORK: NONE. No task worker is running.
+
+## Published damage/AC preparation and second source set — 2026-10-09
+
+LAST_PUBLISHED_IMPLEMENTATION_SHA: `84e3f23020e6d7bdf582222573f96a2901d53dee`.
+Normal non-force publication and fresh pruned fetch matched exact ref/tree.
+Earlier code checkpoint061cbe7f contains sourcef9d07359 and the combined repaired
+damage implementation; no globally widened legacy intermediate was published.
+
+SOURCE: second12 set adds11 source-only closures; cumulative20 closed keys /
+21 source subobligations / four retained source holds / 57 active keys. Original
+82/77/5 records, priorfirst12/tables and downstream dimensions unchanged.
+Independent source/integration review SPEC/QUALITY PASS after precise caster
+choice and provenance-hash corrections; owning source module24 passed.
+
+DAMAGE: exact compiled literal/half dependency plus immutable component origin/
+bypass annotations on the selected consumer's source binding; original primitive
+damageComponents/generic exports remain legacy, not a global new variant.
+Preparation-local instance/group identity is explicitly not native allocation.
+Source-defined adjustments/resistance/vulnerability/immunity and7->3/14/0/6
+proved. Ambiguous equivalent repeated component partitions reject/hold;
+distinct source instances/qualifiers/groups retained. R1 rounding and Senior R2
+unbound/generic/sibling permission-lending defects repaired and re-reviewed.
+
+AC: finite native Dex/archetype+adjustment/default10+Dex, exact Mage Armor
+candidate13+Dex and Shield5 modifier. Multi-base results require choice rather
+than max/latest/order; no selected16/21 proof. Whole-source/duplicate Shield and
+Mage Armor, Asset attunement, unproved build/archetype grants and active support/
+provenance participation hold safely. Independent task reviews plus Senior
+AC-A1/A2/A3 affected audit PASS. General build/arbitration/controller/form and
+native establishment remain unimplemented, not implied by arithmetic candidates.
+
+FINAL_CLEAN_PROOF84e3f230: fullpytest1886 passed/42 skipped; canonicalunittest1646
+OK/skipped42; actual installed context24/membership17 OK. Audit/build/census/diff
+PASS; unclassified and legacy census sets empty. Earlier dirty/cached worker
+failures were not counted as acceptance. HostedCI/latency/full339 not claimed.
+
+VERSION_IMPACT: damage contracts.8->.9/runtime.5->.6/context.3->.4/calculation.1->.2;
+AC contracts.9->.10/runtime.6->.7/context.4->.5/calculation.2->.3. Repairs within
+each unaccepted logical slice add no extra bump. Compatible schema/projection and
+catalog2/profile1/engine/campaign/storage/persistent/digest generations unchanged;
+DEV-only source evidence/ruling/status records NONE under owning rules.
+
+NEXT: source descriptor compilation and reconstruction final proof, native ordinary
+Sorcerer1 basis, concrete Procedure/turn and Interaction/Player/controller joins,
+component/anatomy/voice/Zone/focus/material/slot/armor/target/private outcome
+contracts. Actual source mode remains NOT_EVALUATED until owning descriptor exists.
+Independently integrate the reviewed third source set11 closures/Gentle Repose
+hold (projected46, not yet active count). Complete remaining DAG/policy/native joins.
+Full SP03/SP00/P2 outputs NOT_PRODUCED; actual SP04 releases fullP2.
+NEEDS_PO: NONE. Main production tree clean; three bounded technical ruling files
+and this status synchronization are documentary checkpoint work. Isolated source
+descriptor/cache and third-source candidates are frozen separately for integration.

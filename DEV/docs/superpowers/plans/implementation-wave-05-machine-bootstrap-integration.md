@@ -1630,6 +1630,19 @@ not prove a separate child Resolution or execution-branch acceptance. Genuine
 distinct-child causal acceptance joins its native owner and remains held where
 unavailable. Structural DTO construction/copying never issues authority.
 
+Further bounded source realizations and their inspected limits are recorded in
+the `2026-10-08-sp03-damage-input-preparation-ruling.md`,
+`2026-10-08-sp03-ac-contract-allocation-ruling.md` and
+`2026-10-08-sp03-capability-cast-source-allocation-ruling.md` design records.
+Damage uses exact frozen compiled source and logical preparation identity,
+not a fabricated native Health cause/ID; legacy primitive boundaries remain.
+AC admits only the finite Mage Armor candidate/independent modifier/native Dex
+route and honest unresolved-participation/controller holds. Capability/cast
+source bindings are bound-definition nodes in the existing DAG; ordinary source
+basis is not complete preflight. Read-only existing Procedure/turn/controller
+joins and exact source descriptors may be realized under those envelopes;
+no production activation, new persistent authority or reversed SP03->SP04 gate.
+
 **Interfaces:** execution section 7 `evaluate_selector(compiled: CompiledActivity, selector_id: str, *, consumer_id: str, observation: CurrentOwnerObservation, role_bindings: Mapping[str,NativeOwnerRef], accepted_command: Mapping[str,object], prospective_documents: tuple[OwnerDocument,...] = ()) -> Mapping[str,object]`; prospective documents must originate from the same sealed builder. `calculation.calculate_selector(context: NativePreparationContext, selector_id: str) -> Mapping[str,object]` evaluates the closed policy/result/provenance. `spell_cast.prepare_cast(context: NativePreparationContext, transition: CastTransitionInput) -> PreparedNativeFragment`; `spell_cast.preflight_cast(context: NativePreparationContext, inputs: CastPreflightInput) -> Mapping[str,object]` returns a closed validated preflight decision, never authoritative caller state. SP04 issues production contexts; SP03 tests can use the SP01 trusted context issuer over real read observations, without claiming establishment.
 
 Close the four selected policy profiles exactly, with complete pair/value/subject/normalization/composition/dependency/fact/conflict/trace contracts for each concrete consumer. Advantage/disadvantage cancels applicable contributions, damage defense preserves type/origin/bypass/order/rounding, AC chooses a legal nonadditive base, and capability projection reads source/current native form/equipment restrictions. Do not activate an entire rule.* family or accept model-computed bases. Common casting retains one slot expended to cast per turn, source exceptions, armor training, component access/free hand/focus/material substitution and DC/attack/slot/upcast rules. Physical origin, principal, source and each cost payer remain separate. Binding fault differs from a valid secret-invalid-target result.
