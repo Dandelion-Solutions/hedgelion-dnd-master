@@ -41,8 +41,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -925,6 +925,17 @@ class NativeSpellPlace(_NativeClosedValue):
     contract_fragment = "spellPlace"
 
 
+@dataclass(frozen=True, slots=True)
+class SourceBasisResult(_NativeClosedValue):
+    """Unissued structural Sorcerer source evidence, never cast permission."""
+
+    contract_fragment = "sourceBasisResult"
+
+    def __post_init__(self) -> None:
+        _NativeClosedValue.__post_init__(self)
+        _validate_source_basis_result_semantics(self.value)
+
+
 class _SealedValue(ContractValue):
     __slots__ = ()
 
@@ -1033,6 +1044,136 @@ class SelectorOperationPair(ContractValue):
 class NativeRoleBinding(ContractValue):
     read_ref: NativeId
     role_names: tuple[NativeId, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class SourceDefinitionRef(ContractValue):
+    definition_id: NativeId
+    kind: str
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "source_definition_ref",
+            {"definition_id": self.definition_id, "kind": self.kind},
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SourceChoiceSlotBinding(ContractValue):
+    slot_id: NativeId
+    minimum: int
+    maximum: int
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "source_choice_slot_binding",
+            {
+                "slot_id": self.slot_id,
+                "minimum": self.minimum,
+                "maximum": self.maximum,
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SourceDependencyEdge(ContractValue):
+    source_ref: str
+    dependency_ref: str
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "source_dependency_edge",
+            {"source_ref": self.source_ref, "dependency_ref": self.dependency_ref},
+        )
+
+
+def _source_binding_wire(
+    binding: CapabilitySourceBinding | CastSourceBinding,
+) -> dict[str, object]:
+    return {
+        "consumer_id": binding.consumer_id,
+        "profile_id": binding.profile_id,
+        "profile_generation": binding.profile_generation,
+        "source_variant": binding.source_variant,
+        "source_definition_refs": tuple(
+            {"definition_id": item.definition_id, "kind": item.kind}
+            for item in binding.source_definition_refs
+        ),
+        "source_spell_id": binding.source_spell_id,
+        "choice_slots": tuple(
+            {
+                "slot_id": item.slot_id,
+                "minimum": item.minimum,
+                "maximum": item.maximum,
+            }
+            for item in binding.choice_slots
+        ),
+        "source_ability_id": binding.source_ability_id,
+        "native_role_bindings": tuple(
+            {"read_ref": item.read_ref, "role_names": item.role_names}
+            for item in binding.native_role_bindings
+        ),
+        "dependency_refs": binding.dependency_refs,
+        "context_fact_ids": binding.context_fact_ids,
+        "evaluated_facets": binding.evaluated_facets,
+    }
+
+
+@dataclass(frozen=True, slots=True)
+class CapabilitySourceBinding(ContractValue):
+    """Exact Sorcerer1 capability/acquisition source descriptor."""
+
+    consumer_id: NativeId
+    profile_id: Literal["calculation.capability_projection_srd521"]
+    profile_generation: Literal[1]
+    source_variant: Literal["SORCERER_1"]
+    source_definition_refs: tuple[SourceDefinitionRef, ...]
+    source_spell_id: NativeId
+    choice_slots: tuple[SourceChoiceSlotBinding, ...]
+    source_ability_id: Literal["ability.charisma"]
+    native_role_bindings: tuple[NativeRoleBinding, ...]
+    dependency_refs: tuple[str, ...]
+    context_fact_ids: tuple[NativeId, ...]
+    evaluated_facets: tuple[
+        Literal["source_class", "acquisition", "source_ability", "proficiency"], ...
+    ]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract("capability_source_binding", _source_binding_wire(self))
+
+
+@dataclass(frozen=True, slots=True)
+class CastSourceBinding(ContractValue):
+    """Exact source spell binding; mode identity remains unproven in this slice."""
+
+    consumer_id: NativeId
+    profile_id: Literal["execution.spell_cast.srd521"]
+    profile_generation: Literal[1]
+    source_variant: Literal["SORCERER_1"]
+    source_definition_refs: tuple[SourceDefinitionRef, ...]
+    source_spell_id: NativeId
+    choice_slots: tuple[SourceChoiceSlotBinding, ...]
+    source_ability_id: Literal["ability.charisma"]
+    native_role_bindings: tuple[NativeRoleBinding, ...]
+    dependency_refs: tuple[str, ...]
+    context_fact_ids: tuple[NativeId, ...]
+    evaluated_facets: tuple[
+        Literal[
+            "source_spell",
+            "activity_closure",
+            "source_ability",
+            "proficiency",
+        ],
+        ...,
+    ]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract("cast_source_binding", _source_binding_wire(self))
 
 
 @dataclass(frozen=True, slots=True)
@@ -1271,6 +1412,74 @@ class CompiledCalculationPolicy(ContractValue):
                 "context_fact_contracts": self.context_fact_contracts,
                 "role_contracts": self.role_contracts,
                 "dependency_read_refs": self.dependency_read_refs,
+            },
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class CompiledSourceBinding(ContractValue):
+    """Compiler-retained source descriptor and its exact DAG closure."""
+
+    binding: CapabilitySourceBinding | CastSourceBinding
+    definition_contracts: Mapping[str, object]
+    choice_slot_contracts: Mapping[str, object]
+    selector_contracts: Mapping[str, object]
+    accessor_contracts: Mapping[str, object]
+    derived_node_contracts: Mapping[str, object]
+    source_activity_primitive_ids: Mapping[str, tuple[str, ...]]
+    role_contracts: Mapping[str, object]
+    dependency_read_refs: tuple[str, ...]
+    dependency_edges: tuple[SourceDependencyEdge, ...]
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        if set(self.source_activity_primitive_ids) - set(self.definition_contracts):
+            raise ActivityContractError(
+                "source Activity primitive IDs reference a foreign definition"
+            )
+        if any(
+            tuple(primitive_ids) != tuple(sorted(set(primitive_ids)))
+            for primitive_ids in self.source_activity_primitive_ids.values()
+        ):
+            raise ActivityContractError(
+                "source Activity primitive IDs are not canonical"
+            )
+        if any(
+            self.definition_contracts[activity_id].get("kind")
+            != "definition.activity"
+            for activity_id in self.source_activity_primitive_ids
+        ):
+            raise ActivityContractError(
+                "source primitive IDs must be indexed by exact Activity definitions"
+            )
+        expected_activity_ids = {
+            identity
+            for identity, definition in self.definition_contracts.items()
+            if definition.get("kind") == "definition.activity"
+        }
+        if set(self.source_activity_primitive_ids) != expected_activity_ids:
+            raise ActivityContractError(
+                "source primitive closure differs from retained Activity definitions"
+            )
+        _wire_contract(
+            "compiled_source_binding",
+            {
+                "binding": _source_binding_wire(self.binding),
+                "definition_contracts": self.definition_contracts,
+                "choice_slot_contracts": self.choice_slot_contracts,
+                "selector_contracts": self.selector_contracts,
+                "accessor_contracts": self.accessor_contracts,
+                "derived_node_contracts": self.derived_node_contracts,
+                "source_activity_primitive_ids": self.source_activity_primitive_ids,
+                "role_contracts": self.role_contracts,
+                "dependency_read_refs": self.dependency_read_refs,
+                "dependency_edges": tuple(
+                    {
+                        "source_ref": edge.source_ref,
+                        "dependency_ref": edge.dependency_ref,
+                    }
+                    for edge in self.dependency_edges
+                ),
             },
         )
 
@@ -2333,6 +2542,8 @@ class CompiledActivity(_SealedValue):
     calculation_policy_bindings: tuple[CompiledCalculationPolicy, ...] = ()
     cast_profile_bindings: tuple[CastProfileBinding, ...] = ()
     damage_input_bindings: tuple[CompiledDamageInputBinding, ...] = ()
+    capability_source_bindings: tuple[CompiledSourceBinding, ...] = ()
+    cast_source_bindings: tuple[CompiledSourceBinding, ...] = ()
     _issue_seal: object = field(default=None, repr=False, compare=False, kw_only=True)
 
     def __post_init__(self) -> None:
@@ -2349,14 +2560,117 @@ class CompiledActivity(_SealedValue):
         for binding in self.cast_profile_bindings:
             if not isinstance(binding, CastProfileBinding):
                 raise ActivityContractError("compiled cast profile is untyped")
-        damage_binding_consumers: set[str] = set()
-        damage_binding_ids: set[str] = set()
         instruction_by_consumer: dict[str, CompiledInstruction] = {}
         pending_instructions = list(self.instructions)
+        consumers: set[str] = set()
         while pending_instructions:
             instruction = pending_instructions.pop()
+            if instruction.consumer_id in consumers:
+                raise ActivityContractError("duplicate instruction occurrence")
             instruction_by_consumer[instruction.consumer_id] = instruction
+            consumers.add(instruction.consumer_id)
             pending_instructions.extend(instruction.children)
+        profile_keys = {
+            (binding.consumer_id, binding.profile_id, binding.profile_generation)
+            for binding in self.profile_bindings
+        }
+        capability_source_consumers: dict[str, CompiledSourceBinding] = {}
+        cast_source_consumers: dict[str, CompiledSourceBinding] = {}
+        for source_rows, expected_type, destination, expected_profile in (
+            (
+                self.capability_source_bindings,
+                CapabilitySourceBinding,
+                capability_source_consumers,
+                "calculation.capability_projection_srd521",
+            ),
+            (
+                self.cast_source_bindings,
+                CastSourceBinding,
+                cast_source_consumers,
+                "execution.spell_cast.srd521",
+            ),
+        ):
+            for source_row in source_rows:
+                if (
+                    not isinstance(source_row, CompiledSourceBinding)
+                    or type(source_row.binding) is not expected_type
+                ):
+                    raise ActivityContractError("compiled source binding has the wrong profile type")
+                binding = source_row.binding
+                consumer_id = str(binding.consumer_id)
+                if consumer_id in destination:
+                    raise ActivityContractError("duplicate source binding for one occurrence")
+                if (
+                    consumer_id not in instruction_by_consumer
+                    or binding.profile_id != expected_profile
+                    or (consumer_id, binding.profile_id, binding.profile_generation)
+                    not in profile_keys
+                ):
+                    raise ActivityContractError(
+                        "source binding has no exact compiled profile occurrence"
+                    )
+                if binding.context_fact_ids:
+                    raise ActivityContractError("source binding cannot carry invocation facts")
+                for role_name, role_contract in source_row.role_contracts.items():
+                    if self.role_contracts.get(role_name) != role_contract:
+                        raise ActivityContractError(
+                            "source binding role contract differs from the compiled Activity"
+                        )
+                source_ref_ids = {
+                    str(reference.definition_id): str(reference.kind)
+                    for reference in binding.source_definition_refs
+                }
+                retained_definition_ids = set(source_row.definition_contracts)
+                if source_ref_ids != {
+                    identity: str(contract.get("kind"))
+                    for identity, contract in source_row.definition_contracts.items()
+                    if isinstance(contract, Mapping)
+                } or set(source_ref_ids) != retained_definition_ids:
+                    raise ActivityContractError(
+                        "compiled source definition closure differs from its exact binding"
+                    )
+                slot_ids = {str(slot.slot_id) for slot in binding.choice_slots}
+                if set(source_row.choice_slot_contracts) != slot_ids:
+                    raise ActivityContractError(
+                        "compiled choice slot contracts differ from their exact source binding"
+                    )
+                for slot in binding.choice_slots:
+                    source_slot = source_row.choice_slot_contracts.get(
+                        str(slot.slot_id)
+                    )
+                    if (
+                        not isinstance(source_slot, Mapping)
+                        or source_slot.get("choice_id") != slot.slot_id
+                        or source_slot.get("minimum") != slot.minimum
+                        or source_slot.get("maximum") != slot.maximum
+                    ):
+                        raise ActivityContractError(
+                            "compiled choice slot contract differs from its source binding"
+                        )
+                if not set(binding.dependency_refs) <= set(source_row.dependency_read_refs):
+                    raise ActivityContractError(
+                        "compiled source dependency closure dropped an explicit root"
+                    )
+                expected_definition_refs = {
+                    f"bound_definition:{identity}" for identity in retained_definition_ids
+                }
+                if not expected_definition_refs <= set(source_row.dependency_read_refs):
+                    raise ActivityContractError(
+                        "compiled source dependency closure dropped a bound definition"
+                    )
+                dependency_nodes = set(source_row.dependency_read_refs)
+                if any(
+                    edge.source_ref not in dependency_nodes
+                    or edge.dependency_ref not in dependency_nodes
+                    for edge in source_row.dependency_edges
+                ):
+                    raise ActivityContractError(
+                        "compiled source DAG edge escapes its retained closure"
+                    )
+                destination[consumer_id] = source_row
+
+        damage_binding_consumers: set[str] = set()
+        damage_binding_ids: set[str] = set()
         damage_policy_consumers = {
             policy.binding.consumer_id
             for policy in self.calculation_policy_bindings
@@ -2444,20 +2758,9 @@ class CompiledActivity(_SealedValue):
             _wire_contract("https://hedgelion.invalid/schemas/activity-definition-data.schema.json#/$defs/activation", self.activation_contract)
         for cost in self.cost_contracts:
             _wire_contract("cost-spec", cost)
-        pending, consumers = list(self.instructions), set()
-        while pending:
-            instruction = pending.pop()
-            if instruction.consumer_id in consumers:
-                raise ActivityContractError("duplicate instruction occurrence")
-            consumers.add(instruction.consumer_id)
-            pending.extend(instruction.children)
         if any(binding.consumer_id not in consumers for binding in self.profile_bindings):
             raise ActivityContractError("profile binding references a foreign instruction occurrence")
         policy_keys: set[tuple[str, str]] = set()
-        profile_keys = {
-            (binding.consumer_id, binding.profile_id, binding.profile_generation)
-            for binding in self.profile_bindings
-        }
         for policy in self.calculation_policy_bindings:
             binding = policy.binding
             key = (binding.consumer_id, binding.profile_id)
@@ -2789,6 +3092,494 @@ def validate_spell_capabilities(
         raise ActivityContractError("spell/mode roster mismatch")
     if value["coverage_stage"] == "MECHANICALLY_COMPLETE" and len(rosters[0]) != 339:
         raise ActivityContractError("full coverage requires the exact proved SRD roster")
+
+
+def _validate_source_basis_result_semantics(value: Mapping[str, object]) -> None:
+    """Validate the finite Sorcerer1 basis without evaluating final modifiers."""
+    activity_id = value["activity_id"]
+    consumer_id = value["consumer_id"]
+    if not isinstance(activity_id, str) or not isinstance(consumer_id, str) or not consumer_id.startswith(
+        f"{activity_id}.step."
+    ):
+        raise ActivityContractError("source-basis consumer is not an exact Activity occurrence")
+
+    source_actor_ref = value["source_actor_ref"]
+    if not isinstance(source_actor_ref, Mapping) or source_actor_ref.get("family_key") != "world.actor":
+        raise ActivityContractError("source-basis role must bind the native Actor owner")
+
+    raw_definition_refs = value["source_definition_refs"]
+    if not isinstance(raw_definition_refs, (tuple, list)):
+        raise ActivityContractError("source-basis definition closure must be finite")
+    definition_ids: list[str] = []
+    definition_kinds: dict[str, str] = {}
+    for reference in raw_definition_refs:
+        if not isinstance(reference, Mapping):
+            raise ActivityContractError("source-basis definition reference is not typed")
+        definition_id = reference.get("definition_id")
+        kind = reference.get("kind")
+        if not isinstance(definition_id, str) or not isinstance(kind, str):
+            raise ActivityContractError("source-basis definition reference is incomplete")
+        if definition_id in definition_kinds:
+            raise ActivityContractError("source-basis definition identity is duplicated")
+        definition_ids.append(definition_id)
+        definition_kinds[definition_id] = kind
+    if tuple(definition_ids) != tuple(sorted(definition_ids)):
+        raise ActivityContractError("source-basis definition references are not canonical")
+
+    expected_definition_kinds = {
+        "class.sorcerer": "definition.class",
+        "advancement.sorcerer.mvp_1": "definition.advancement",
+        "feature.sorcerer.spellcasting": "definition.feature",
+        "feature.sorcerer.innate_sorcery": "definition.feature",
+        "effect.innate_sorcery": "definition.effect",
+    }
+    if any(
+        definition_kinds.get(identity) != kind
+        for identity, kind in expected_definition_kinds.items()
+    ):
+        raise ActivityContractError("source-basis class/feature lineage is incomplete")
+    source_spell_id = value["source_spell_id"]
+    if definition_kinds.get(source_spell_id) != "definition.spell":
+        raise ActivityContractError("source-basis spell is not bound to its immutable definition")
+    activity_closure = value["activity_closure_ids"]
+    if not isinstance(activity_closure, (tuple, list)) or tuple(activity_closure) != tuple(
+        sorted(set(activity_closure))
+    ):
+        raise ActivityContractError("source-basis Activity closure is not canonical")
+    if not set(activity_closure) <= {
+        identity
+        for identity, kind in definition_kinds.items()
+        if kind == "definition.activity"
+    }:
+        raise ActivityContractError("source-basis Activity closure is not definition-bound")
+
+    read_refs = value["read_refs"]
+    if (
+        not isinstance(read_refs, (tuple, list))
+        or tuple(read_refs) != tuple(sorted(set(read_refs)))
+        or not {
+            f"bound_definition:{identity}" for identity in definition_ids
+        } <= set(read_refs)
+    ):
+        raise ActivityContractError(
+            "source-basis reads are not canonical for its bound definition closure"
+        )
+    if value["context_facts"] not in ((), []):
+        raise ActivityContractError("source-basis result cannot carry invocation facts")
+
+    source_spell_level = value["source_spell_level"]
+    if type(source_spell_level) is not int or source_spell_level < 0:
+        raise ActivityContractError("source-basis spell level is not a nonnegative integer")
+
+    facets = value["facets"]
+    if not isinstance(facets, Mapping):
+        raise ActivityContractError("source-basis facet statuses are unavailable")
+    acquisition = value["acquisition"]
+    disposition = value["source_disposition"]
+    if acquisition is None:
+        if (
+            disposition != "NOT_EVALUATED"
+            or value["activity_closure_ids"] not in ((), [])
+            or value["ability_basis"] is not None
+            or any(
+                facets[facet] != "NOT_EVALUATED"
+                for facet in (
+                    "class_progression",
+                    "acquisition",
+                    "source_spell",
+                    "source_mode",
+                    "activity_closure",
+                    "source_ability",
+                    "proficiency",
+                    "base_spell_values",
+                )
+            )
+        ):
+            raise ActivityContractError(
+                "missing acquisition evidence must remain explicitly not evaluated"
+            )
+        return
+    if not isinstance(acquisition, Mapping):
+        raise ActivityContractError("source-basis acquisition is malformed")
+    progression = acquisition["class_progression"]
+    if (
+        not isinstance(progression, (tuple, list))
+        or len(progression) != 1
+        or not isinstance(progression[0], Mapping)
+        or progression[0].get("class_id") != "class.sorcerer"
+        or type(progression[0].get("level")) is not int
+        or progression[0]["level"] != 1
+        or acquisition["advancement_id"] != "advancement.sorcerer.mvp_1"
+        or acquisition["spellcasting_feature_id"] != "feature.sorcerer.spellcasting"
+        or acquisition["cantrip_choice_slot_id"] != "advancement.sorcerer.level_1.cantrips"
+        or acquisition["prepared_choice_slot_id"] != "advancement.sorcerer.level_1.prepared_spells"
+    ):
+        raise ActivityContractError("source-basis acquisition is not ordinary Sorcerer1")
+
+    def spell_ids(member: str, expected_count: int) -> tuple[str, ...]:
+        raw_ids = acquisition[member]
+        if (
+            not isinstance(raw_ids, (tuple, list))
+            or len(raw_ids) != expected_count
+            or any(not isinstance(identity, str) or not identity.startswith("spell.") for identity in raw_ids)
+            or tuple(raw_ids) != tuple(sorted(set(raw_ids)))
+        ):
+            raise ActivityContractError(f"source-basis {member} is not a canonical finite selection")
+        return tuple(raw_ids)
+
+    cantrips = spell_ids("cantrip_spell_ids", 4)
+    prepared_level1 = spell_ids("level1_spell_ids", 2)
+    known = spell_ids("known_spell_ids", 6)
+    prepared = spell_ids("prepared_spell_ids", 2)
+    for member, selected in (
+        ("cantrip_option_ids", cantrips),
+        ("prepared_option_ids", prepared_level1),
+    ):
+        option_ids = acquisition[member]
+        expected_option_ids = tuple(f"option.{spell_id}" for spell_id in selected)
+        if not isinstance(option_ids, (tuple, list)) or tuple(option_ids) != expected_option_ids:
+            raise ActivityContractError(
+                f"Sorcerer1 {member} do not bind their exact spell grants"
+            )
+    if set(cantrips) & set(prepared_level1):
+        raise ActivityContractError("Sorcerer1 cantrip and prepared slots must be disjoint")
+    if known != tuple(sorted((*cantrips, *prepared_level1))):
+        raise ActivityContractError("Sorcerer1 known spells must equal the selected C union P")
+    if prepared != prepared_level1:
+        raise ActivityContractError("Sorcerer1 prepared membership must equal P")
+
+    selected_cantrip = source_spell_level == 0 and source_spell_id in cantrips
+    selected_prepared = source_spell_level == 1 and source_spell_id in prepared_level1
+    if selected_cantrip:
+        expected_disposition = "SELECTED_KNOWN_CANTRIP"
+        expected_spell_status = "RESOLVED"
+    elif selected_prepared:
+        expected_disposition = "SELECTED_PREPARED_LEVEL1"
+        expected_spell_status = "RESOLVED"
+    elif source_spell_level > 1:
+        expected_disposition = "PROHIBITED"
+        expected_spell_status = "PROHIBITED"
+    else:
+        if disposition not in {"UNAVAILABLE", "NOT_EVALUATED"}:
+            raise ActivityContractError(
+                "an unselected low-level source cannot be resolved or prohibited"
+            )
+        expected_disposition = disposition
+        expected_spell_status = disposition
+    if disposition != expected_disposition:
+        raise ActivityContractError(
+            "source disposition differs from selected, unavailable, or prohibited source"
+        )
+    if any(
+        facets[facet] != "RESOLVED"
+        for facet in ("class_progression", "acquisition")
+    ):
+        raise ActivityContractError("Sorcerer1 acquisition facets are not resolved")
+    if (
+        facets["source_spell"] != expected_spell_status
+        or facets["source_mode"] != "NOT_EVALUATED"
+        or facets["activity_closure"] != "RESOLVED"
+    ):
+        raise ActivityContractError("source spell/Activity status differs from acquisition")
+
+    ability = value["ability_basis"]
+    if ability is None:
+        if any(
+            facets[facet] != "NOT_EVALUATED"
+            for facet in ("source_ability", "proficiency", "base_spell_values")
+        ):
+            raise ActivityContractError(
+                "missing native source ability evidence must remain not evaluated"
+            )
+        return
+    if not isinstance(ability, Mapping):
+        raise ActivityContractError("source ability basis is malformed")
+    if any(
+        facets[facet] != "RESOLVED"
+        for facet in ("source_ability", "proficiency", "base_spell_values")
+    ):
+        raise ActivityContractError("source ability facets are not resolved")
+    base_source_ref = ability["base_source_ref"]
+    if not isinstance(base_source_ref, Mapping):
+        raise ActivityContractError("source ability base lacks its exact native source ref")
+    base_source = ability["base_source"]
+    if base_source == "ACTOR":
+        if (
+            base_source_ref.get("kind") != "ACTOR"
+            or base_source_ref.get("source_actor_ref") != source_actor_ref
+        ):
+            raise ActivityContractError("Actor ability base source ref is mismatched")
+    elif base_source == "BUILD":
+        if (
+            base_source_ref.get("kind") != "BUILD"
+            or base_source_ref.get("source_actor_ref") != source_actor_ref
+            or base_source_ref.get("source_field") != "build"
+        ):
+            raise ActivityContractError("build ability base source ref is mismatched")
+    elif base_source == "ARCHETYPE":
+        archetype_ref = base_source_ref.get("source_definition_ref")
+        if (
+            base_source_ref.get("kind") != "ARCHETYPE"
+            or not isinstance(archetype_ref, Mapping)
+            or archetype_ref.get("kind")
+            not in {
+                "definition.actor_archetype",
+                "definition.species",
+                "definition.background",
+            }
+            or definition_kinds.get(str(archetype_ref.get("definition_id")))
+            != archetype_ref.get("kind")
+        ):
+            raise ActivityContractError("archetype ability base source ref is mismatched")
+    else:
+        raise ActivityContractError("unknown Charisma base source discriminator")
+    base_score = ability["base_score"]
+    adjustment = ability["adjustment"]
+    score = ability["score"]
+    modifier = ability["modifier"]
+    proficiency_bonus = ability["proficiency_bonus"]
+    if any(type(member) is not int for member in (base_score, adjustment, score, modifier, proficiency_bonus)):
+        raise ActivityContractError("source ability basis payload must use integer values")
+    if (
+        ability["ability_id"] != "ability.charisma"
+        or score != base_score + adjustment
+        or modifier != (score - 10) // 2
+        or proficiency_bonus != 2
+        or ability["base_spell_save_dc"] != 8 + modifier + proficiency_bonus
+        or ability["base_spell_attack_bonus"] != modifier + proficiency_bonus
+        or tuple(ability["modifier_source_definition_ids"]) != ("effect.innate_sorcery",)
+    ):
+        raise ActivityContractError("Sorcerer1 Charisma/proficiency base values are inconsistent")
+
+
+def validate_source_basis_result(
+    value: object, *, compiled: CompiledActivity
+) -> SourceBasisResult:
+    """Validate a source result against its compiler-issued consumer closure.
+
+    The result remains a structural value. This check does not issue native reads,
+    spell eligibility, execution, cost, mutation, or final-modifier authority.
+    """
+    if not _compiler_value_is_issued(compiled, kind="compiled"):
+        raise ActivityContractError(
+            "source-basis validation requires a compiler-issued Activity"
+        )
+    result = value if isinstance(value, SourceBasisResult) else SourceBasisResult(value)
+    evidence = result.value
+    if evidence["activity_id"] != compiled.activity_id:
+        raise ActivityContractError(
+            "source-basis Activity differs from its compiler-issued source"
+        )
+    consumer_id = evidence["consumer_id"]
+    profile_id = evidence["profile_id"]
+    candidates = tuple(
+        item
+        for item in (
+            *compiled.capability_source_bindings,
+            *compiled.cast_source_bindings,
+        )
+        if item.binding.consumer_id == consumer_id
+        and item.binding.profile_id == profile_id
+        and item.binding.profile_generation == evidence["profile_generation"]
+    )
+    if len(candidates) != 1:
+        raise ActivityContractError(
+            "source-basis result has no unique exact compiled source binding"
+        )
+    compiled_binding = candidates[0]
+    binding = compiled_binding.binding
+    if (
+        evidence["source_spell_id"] != binding.source_spell_id
+    ):
+        raise ActivityContractError(
+            "source-basis spell differs from its compiled binding"
+        )
+    source_definition_refs = {
+        (reference["definition_id"], reference["kind"])
+        for reference in evidence["source_definition_refs"]
+    }
+    binding_definition_refs = {
+        (str(reference.definition_id), str(reference.kind))
+        for reference in binding.source_definition_refs
+    }
+    if source_definition_refs != binding_definition_refs:
+        raise ActivityContractError(
+            "source-basis definition refs differ from the compiled source binding"
+        )
+    if tuple(evidence["read_refs"]) != compiled_binding.dependency_read_refs:
+        raise ActivityContractError(
+            "source-basis dependency reads differ from the compiled DAG closure"
+        )
+
+    spell_definition = compiled_binding.definition_contracts.get(
+        str(binding.source_spell_id)
+    )
+    if (
+        not isinstance(spell_definition, Mapping)
+        or not isinstance(spell_definition.get("data"), Mapping)
+        or spell_definition["data"].get("level") != evidence["source_spell_level"]
+    ):
+        raise ActivityContractError(
+            "source-basis spell level differs from its immutable source definition"
+        )
+
+    acquisition = evidence["acquisition"]
+    if acquisition is None:
+        if evidence["source_disposition"] != "NOT_EVALUATED":
+            raise ActivityContractError(
+                "missing source acquisition cannot resolve availability"
+            )
+        return result
+    if not isinstance(acquisition, Mapping):
+        raise ActivityContractError("source-basis acquisition is malformed")
+    slot_expectations = (
+        (
+            str(acquisition["cantrip_choice_slot_id"]),
+            tuple(acquisition["cantrip_option_ids"]),
+            tuple(acquisition["cantrip_spell_ids"]),
+            False,
+        ),
+        (
+            str(acquisition["prepared_choice_slot_id"]),
+            tuple(acquisition["prepared_option_ids"]),
+            tuple(acquisition["level1_spell_ids"]),
+            True,
+        ),
+    )
+    for slot_id, selected_option_ids, selected_spell_ids, prepared in slot_expectations:
+        source_slot = compiled_binding.choice_slot_contracts.get(slot_id)
+        if not isinstance(source_slot, Mapping):
+            raise ActivityContractError(
+                "source-basis choice slot is absent from the compiled definition"
+            )
+        options = source_slot.get("options")
+        if not isinstance(options, (tuple, list)):
+            raise ActivityContractError(
+                "compiled source choice slot has no finite options"
+            )
+        legal_spell_ids: set[str] = set()
+        for option in options:
+            if not isinstance(option, Mapping):
+                raise ActivityContractError("compiled Sorcerer choice option is malformed")
+            grants = option.get("grant_definition_ids")
+            if (
+                not isinstance(grants, (tuple, list))
+                or len(grants) != 1
+                or not isinstance(grants[0], str)
+            ):
+                raise ActivityContractError(
+                    "compiled Sorcerer choice option lacks one exact spell grant"
+                )
+            legal_spell_ids.add(grants[0])
+        option_by_id = {
+            option["option_id"]: option
+            for option in options
+            if isinstance(option, Mapping)
+        }
+        for option_id, spell_id in zip(
+            selected_option_ids, selected_spell_ids, strict=True
+        ):
+            option = option_by_id.get(option_id)
+            if not isinstance(option, Mapping):
+                raise ActivityContractError(
+                    "selected Sorcerer option is not owned by its source choice slot"
+                )
+            grants = option.get("grant_definition_ids")
+            spell_bindings = option.get("spell_bindings")
+            if (
+                not isinstance(grants, (tuple, list))
+                or tuple(grants) != (spell_id,)
+                or not isinstance(spell_bindings, Mapping)
+                or tuple(spell_bindings.get("known_spell_ids", ())) != (spell_id,)
+            ):
+                raise ActivityContractError(
+                    "selected Sorcerer option differs from its source spell grant"
+                )
+            if prepared and tuple(
+                spell_bindings.get("prepared_spell_ids", ())
+            ) != (spell_id,):
+                raise ActivityContractError(
+                    "selected prepared spell differs from its source option payload"
+                )
+        if prepared:
+            legal_prepared_spell_ids = legal_spell_ids
+        else:
+            legal_cantrip_spell_ids = legal_spell_ids
+
+    definition_edges = {
+        (edge.source_ref, edge.dependency_ref)
+        for edge in compiled_binding.dependency_edges
+    }
+    selected_activity_ids: set[str] = set()
+    selected_spell_levels = (
+        *((spell_id, 0) for spell_id in acquisition["cantrip_spell_ids"]),
+        *((spell_id, 1) for spell_id in acquisition["level1_spell_ids"]),
+    )
+    for selected_spell_id, expected_level in selected_spell_levels:
+        spell_definition = compiled_binding.definition_contracts.get(selected_spell_id)
+        if (
+            not isinstance(spell_definition, Mapping)
+            or spell_definition.get("kind") != "definition.spell"
+            or not isinstance(spell_definition.get("data"), Mapping)
+            or spell_definition["data"].get("level") != expected_level
+        ):
+            raise ActivityContractError(
+                "selected Sorcerer spell differs from its immutable source definition"
+            )
+        activity_ids = spell_definition["data"].get("activity_ids")
+        if (
+            not isinstance(activity_ids, (tuple, list))
+            or not activity_ids
+            or len(activity_ids) != len(set(activity_ids))
+            or any(not isinstance(activity_id, str) for activity_id in activity_ids)
+        ):
+            raise ActivityContractError(
+                "selected Sorcerer spell has no finite source Activity closure"
+            )
+        for activity_id in activity_ids:
+            activity_definition = compiled_binding.definition_contracts.get(activity_id)
+            if (
+                not isinstance(activity_definition, Mapping)
+                or activity_definition.get("kind") != "definition.activity"
+                or (
+                    f"bound_definition:{selected_spell_id}",
+                    f"bound_definition:{activity_id}",
+                )
+                not in definition_edges
+            ):
+                raise ActivityContractError(
+                    "selected Sorcerer Activity is missing from its compiled source closure"
+                )
+            selected_activity_ids.add(activity_id)
+    if tuple(evidence["activity_closure_ids"]) != tuple(sorted(selected_activity_ids)):
+        raise ActivityContractError(
+            "source-basis Activity closure differs from the full selected C/P union"
+        )
+    source_spell_id = str(binding.source_spell_id)
+    source_spell_level = evidence["source_spell_level"]
+    if source_spell_level == 0 and source_spell_id in set(
+        acquisition["cantrip_spell_ids"]
+    ):
+        expected_disposition = "SELECTED_KNOWN_CANTRIP"
+    elif source_spell_level == 1 and source_spell_id in set(
+        acquisition["level1_spell_ids"]
+    ):
+        expected_disposition = "SELECTED_PREPARED_LEVEL1"
+    elif source_spell_level > 1:
+        expected_disposition = "PROHIBITED"
+    elif (
+        source_spell_level == 0 and source_spell_id in legal_cantrip_spell_ids
+    ) or (
+        source_spell_level == 1 and source_spell_id in legal_prepared_spell_ids
+    ):
+        expected_disposition = "UNAVAILABLE"
+    else:
+        expected_disposition = "NOT_EVALUATED"
+    if evidence["source_disposition"] != expected_disposition:
+        raise ActivityContractError(
+            "source availability differs from exact Sorcerer1 slot and source level"
+        )
+    return result
 
 
 def validate_geometry_membership(

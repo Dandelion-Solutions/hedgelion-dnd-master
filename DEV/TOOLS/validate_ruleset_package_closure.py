@@ -74,6 +74,14 @@ ENGINE_CONTRACT_SOURCE_GROUPS = {
             "runtime_continuation_state_schema",
             "DEV/SCHEMAS/runtime-continuation-state.schema.json",
         ),
+        (
+            "spell_native_profile_values_schema",
+            "DEV/SCHEMAS/spell-native-profile-values.schema.json",
+        ),
+        (
+            "activity_compiler_declaration_schema",
+            "DEV/SCHEMAS/activity-compiler-declaration.schema.json",
+        ),
     ),
 }
 

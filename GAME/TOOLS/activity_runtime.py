@@ -34,8 +34,8 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
 _AC_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
@@ -380,6 +380,9 @@ def _definition_envelope(
 def _definition_graph(
     dependency_ids: set[str],
     source_records: Mapping[str, Mapping[str, object]],
+    *,
+    registered_value_ids: frozenset[str] = frozenset(),
+    source_activity_edges: frozenset[tuple[str, str]] = frozenset(),
 ) -> dict[str, tuple[str, ...]]:
     graph: dict[str, tuple[str, ...]] = {}
     for identity in dependency_ids:
@@ -393,12 +396,23 @@ def _definition_graph(
             raise ActivityRuntimeError(
                 f"{identity} has duplicate definition references"
             )
-        missing = set(references) - dependency_ids
+        missing = (
+            set(references)
+            - dependency_ids
+            - set(registered_value_ids)
+            - {
+                target_id
+                for parent_id, target_id in source_activity_edges
+                if parent_id == identity
+            }
+        )
         if missing:
             raise ActivityRuntimeError(
                 f"{identity} has unavailable transitive dependencies: {sorted(missing)}"
             )
-        graph[identity] = references
+        graph[identity] = tuple(
+            reference for reference in references if reference in dependency_ids
+        )
 
     visited: set[str] = set()
     for identity in sorted(graph):
@@ -426,6 +440,79 @@ def _definition_graph(
                 if dependency_id not in visited:
                     stack.append((dependency_id, False))
     return graph
+
+
+def _source_activity_reference_edges(
+    source_definition_ids: frozenset[str],
+    source_package_definitions: Mapping[str, Mapping[str, object]],
+) -> frozenset[tuple[str, str]]:
+    """Return Activity edges internal to one exact source-definition set."""
+    activity_ids = {
+        identity
+        for identity in source_definition_ids
+        if (
+            identity in source_package_definitions
+            and source_package_definitions[identity].get("kind")
+            == "definition.activity"
+        )
+    }
+    edges: set[tuple[str, str]] = set()
+    for identity in source_definition_ids:
+        source_record = source_package_definitions.get(identity)
+        if not isinstance(source_record, Mapping):
+            continue
+        for raw_reference in _sequence(
+            source_record.get("references", ()),
+            f"{identity}.source references",
+        ):
+            reference = _require_id(raw_reference, f"{identity} source reference")
+            if reference in activity_ids:
+                edges.add((identity, reference))
+    return frozenset(edges)
+
+
+def _frozen_package_source_maps(
+    frozen_members: Mapping[tuple[str, str], bytes],
+) -> tuple[dict[str, Mapping[str, object]], frozenset[str]]:
+    """Index exact package definitions and source value registrations from frozen bytes."""
+    definitions: dict[str, Mapping[str, object]] = {}
+    value_registration_ids: set[str] = set()
+    for (_package_id, member_path), raw in sorted(frozen_members.items()):
+        if not member_path.endswith(".json") or member_path == "ruleset-package-manifest.json":
+            continue
+        try:
+            payload = load_json_bytes(raw)
+        except RulesetContractError as exc:
+            raise ActivityRuntimeError(
+                f"package source member is not valid JSON: {member_path}"
+            ) from exc
+        if not isinstance(payload, Mapping):
+            continue
+        raw_value_ids = payload.get("value_registrations", ())
+        if isinstance(raw_value_ids, (list, tuple)):
+            value_registration_ids.update(
+                _require_id(item, "package value registration")
+                for item in raw_value_ids
+            )
+        for raw_rows in payload.values():
+            if not isinstance(raw_rows, (list, tuple)):
+                continue
+            for record in raw_rows:
+                if (
+                    not isinstance(record, Mapping)
+                    or not isinstance(record.get("id"), str)
+                    or not isinstance(record.get("kind"), str)
+                    or not str(record["kind"]).startswith("definition.")
+                    or not isinstance(record.get("data"), Mapping)
+                ):
+                    continue
+                identity = str(record["id"])
+                if identity in definitions:
+                    raise ActivityRuntimeError(
+                        f"package source has duplicate definition IDs: {identity}"
+                    )
+                definitions[identity] = record
+    return definitions, frozenset(value_registration_ids)
 
 
 def _contains_id(values: object, identity: str) -> bool:
@@ -486,6 +573,8 @@ def _package_member_bytes(
 def _package_definition_records(
     frozen_members: Mapping[tuple[str, str], bytes],
     context: BoundCatalogContext,
+    *,
+    registered_value_ids: set[str] | None = None,
 ) -> dict[str, _PackageDefinition]:
     selected_ids = {
         str(row["definition_id"])
@@ -507,6 +596,13 @@ def _package_definition_records(
             ) from exc
         if not isinstance(payload, Mapping):
             continue
+        if registered_value_ids is not None:
+            raw_value_ids = payload.get("value_registrations", ())
+            if isinstance(raw_value_ids, (list, tuple)):
+                registered_value_ids.update(
+                    _require_id(value_id, "package value registration")
+                    for value_id in raw_value_ids
+                )
         for raw_records in payload.values():
             if not isinstance(raw_records, (list, tuple)):
                 continue
@@ -647,15 +743,37 @@ def _compiler_declarations_for_activity(
     return tuple(declarations)
 
 
+def _activity_has_source_binding_declarations(
+    primitive_rows: Mapping[str, Mapping[str, object]], activity_id: str
+) -> bool:
+    return any(
+        _sequence(declaration.get(member, ()), f"compiler {member}")
+        for declaration in _compiler_declarations_for_activity(
+            primitive_rows, activity_id
+        )
+        for member in ("capability_sources", "cast_sources")
+    )
+
+
 def _profile_rows_for_activity(
     primitive_rows: Mapping[str, Mapping[str, object]], activity_id: str
 ) -> tuple[Mapping[str, object], ...]:
     rows: list[Mapping[str, object]] = []
     for declaration in _compiler_declarations_for_activity(primitive_rows, activity_id):
-        for member in ("profiles", "cast_profiles", "calculation_policies"):
+        for member in (
+            "profiles",
+            "cast_profiles",
+            "calculation_policies",
+            "capability_sources",
+            "cast_sources",
+        ):
             for raw in _sequence(declaration.get(member, ()), f"compiler {member}"):
                 row = _mapping(raw, f"compiler {member} binding")
-                if member == "calculation_policies":
+                if member in {
+                    "calculation_policies",
+                    "capability_sources",
+                    "cast_sources",
+                }:
                     row = {
                         "consumer_id": row["consumer_id"],
                         "profile_id": row["profile_id"],
@@ -1263,6 +1381,933 @@ def _compile_cast_profile_bindings(
             for consumer_id, profile_id, generation in sorted(actual)
         )
     return tuple(declared)
+
+
+def _validate_sorcerer_source_choice_slot(
+    slot: Mapping[str, object],
+    *,
+    slot_id: str,
+    expected_level: int,
+    prepared: bool,
+    source_definitions: Mapping[str, Mapping[str, object]],
+) -> set[str]:
+    """Validate the selected finite Sorcerer source slot without activating it."""
+    _validate_shape("build-choice-slot", slot)
+    option_spell_ids: set[str] = set()
+    for raw_option in _sequence(slot.get("options"), f"{slot_id} source options"):
+        option = _mapping(raw_option, f"{slot_id} source option")
+        if "starting_assets" in option:
+            raise ActivityNotSelectable(
+                "Sorcerer spell choice cannot carry independent starting assets"
+            )
+        if set(option) - {
+            "option_id",
+            "grant_definition_ids",
+            "spell_bindings",
+            "name",
+        }:
+            raise ActivityNotSelectable(
+                "Sorcerer spell option contains a non-source acquisition payload"
+            )
+        grants = _sequence(
+            option.get("grant_definition_ids"), f"{slot_id} option grants"
+        )
+        if len(grants) != 1:
+            raise ActivityNotSelectable(
+                "Sorcerer option must grant exactly one spell"
+            )
+        spell_id = _require_id(grants[0], f"{slot_id} spell grant")
+        if (
+            not spell_id.startswith("spell.")
+            or option.get("option_id") != f"option.{spell_id}"
+        ):
+            raise ActivityNotSelectable(
+                "Sorcerer option identity does not match its one-spell grant"
+            )
+        spell_record = source_definitions.get(spell_id)
+        if (
+            not isinstance(spell_record, Mapping)
+            or spell_record.get("kind") != "definition.spell"
+        ):
+            raise ActivityNotSelectable(
+                f"Sorcerer choice spell definition is unavailable: {spell_id}"
+            )
+        spell_data = _mapping(spell_record.get("data"), f"{spell_id} source data")
+        if (
+            type(spell_data.get("level")) is not int
+            or spell_data.get("level") != expected_level
+        ):
+            raise ActivityNotSelectable(
+                "Sorcerer slot contains a spell at the wrong source level"
+            )
+        spell_bindings = _mapping(
+            option.get("spell_bindings"), f"{slot_id} option spell bindings"
+        )
+        expected_binding_keys = (
+            {"known_spell_ids", "prepared_spell_ids"}
+            if prepared
+            else {"known_spell_ids"}
+        )
+        if set(spell_bindings) != expected_binding_keys:
+            raise ActivityNotSelectable(
+                "Sorcerer option spell bindings differ from the owning slot"
+            )
+        known_ids = _sequence(
+            spell_bindings.get("known_spell_ids"),
+            f"{slot_id} known spell binding",
+        )
+        if tuple(known_ids) != (spell_id,):
+            raise ActivityNotSelectable(
+                "Sorcerer known binding differs from its one-spell grant"
+            )
+        if prepared and tuple(
+            _sequence(
+                spell_bindings.get("prepared_spell_ids"),
+                f"{slot_id} prepared spell binding",
+            )
+        ) != (spell_id,):
+            raise ActivityNotSelectable(
+                "Sorcerer prepared binding differs from its one-spell grant"
+            )
+        option_spell_ids.add(spell_id)
+    if not option_spell_ids:
+        raise ActivityNotSelectable("Sorcerer spell choice slot has no source options")
+    return option_spell_ids
+
+
+def _compile_source_bindings(
+    raw_capability_bindings: Sequence[object],
+    raw_cast_bindings: Sequence[object],
+    *,
+    profile_bindings: tuple[contracts.ProfileBinding, ...],
+    occurrence_ids: tuple[str, ...],
+    activity_id: str,
+    source_definitions: Mapping[str, Mapping[str, object]],
+    source_support_definitions: Mapping[str, Mapping[str, object]],
+    source_value_registration_ids: frozenset[str],
+    mechanical: Mapping[str, object],
+    core: Mapping[str, object],
+    ledger_rows: Mapping[tuple[str, str], Mapping[str, object]],
+    primitive_rows: Mapping[str, Mapping[str, object]],
+    matrices: Mapping[str, object],
+    value_contracts: Mapping[str, object],
+    role_contracts: Mapping[str, object],
+) -> tuple[
+    tuple[contracts.CompiledSourceBinding, ...],
+    tuple[contracts.CompiledSourceBinding, ...],
+]:
+    """Compile exact source descriptors as metadata-only nodes in the Activity DAG.
+
+    This retains source provenance and dependencies. It does not dispatch selectors,
+    apply selector operations, evaluate accessors, or create a calculation result.
+    """
+    if not raw_capability_bindings and not raw_cast_bindings:
+        return (), ()
+    surface_schema = "https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json"
+    selectors = _mapping(mechanical.get("selectors"), "selectors")
+    accessors = _mapping(mechanical.get("accessors"), "accessors")
+    derived_nodes = _mapping(mechanical.get("derived_nodes"), "derived nodes")
+    exact_source_definitions: dict[str, Mapping[str, object]] = dict(
+        source_support_definitions
+    )
+    for identity, record in source_definitions.items():
+        current = exact_source_definitions.get(identity)
+        if current is not None and current != record:
+            raise ActivityNotSelectable(
+                f"source definition differs from its frozen package record: {identity}"
+            )
+        exact_source_definitions.setdefault(identity, record)
+    source_profile_edges = {
+        (binding.consumer_id, binding.profile_id, binding.profile_generation)
+        for binding in profile_bindings
+    }
+    occurrences = set(occurrence_ids)
+
+    def typed_source_definition_links(
+        identity: str, record: Mapping[str, object]
+    ) -> tuple[tuple[str, str], ...]:
+        kind = record.get("kind")
+        data = _mapping(record.get("data"), f"{identity}.data")
+        links: list[tuple[str, str]] = []
+
+        def add_sequence(member: str, description: str) -> None:
+            for raw_id in _sequence(data.get(member, ()), f"{identity}.{member}"):
+                links.append(
+                    (description, _require_id(raw_id, f"{identity}.{member} reference"))
+                )
+
+        if kind == "definition.class":
+            advancement_id = data.get("advancement_id")
+            if advancement_id is not None:
+                links.append(
+                    (
+                        "class advancement",
+                        _require_id(advancement_id, f"{identity}.advancement_id"),
+                    )
+                )
+        elif kind == "definition.advancement":
+            for raw_level in _sequence(data.get("levels", ()), f"{identity}.levels"):
+                level = _mapping(raw_level, f"{identity} level")
+                for raw_id in _sequence(
+                    level.get("automatic_grant_definition_ids", ()),
+                    f"{identity} automatic grants",
+                ):
+                    links.append(
+                        (
+                            "automatic grant",
+                            _require_id(raw_id, f"{identity} automatic grant"),
+                        )
+                    )
+            for raw_slot in _sequence(
+                record.get("choice_slots", ()), f"{identity} choice slots"
+            ):
+                slot = _mapping(raw_slot, f"{identity} choice slot")
+                for raw_option in _sequence(
+                    slot.get("options", ()), f"{identity} choice options"
+                ):
+                    option = _mapping(raw_option, f"{identity} choice option")
+                    for raw_id in _sequence(
+                        option.get("grant_definition_ids", ()),
+                        f"{identity} option grants",
+                    ):
+                        links.append(
+                            (
+                                "choice option grant",
+                                _require_id(raw_id, f"{identity} option grant"),
+                            )
+                        )
+                    for raw_asset in _sequence(
+                        option.get("starting_assets", ()),
+                        f"{identity} option starting assets",
+                    ):
+                        asset = _mapping(raw_asset, f"{identity} starting asset")
+                        links.append(
+                            (
+                                "choice option starting asset",
+                                _require_id(
+                                    asset.get("definition_id"),
+                                    f"{identity} starting asset definition",
+                                ),
+                            )
+                        )
+        elif kind == "definition.feature":
+            add_sequence("activity_ids", "feature Activity")
+            add_sequence("resource_ids", "feature resource")
+            add_sequence("effect_ids", "feature Effect")
+        elif kind == "definition.spell":
+            add_sequence("activity_ids", "spell data Activity")
+        return tuple(links)
+
+    def compile_group(
+        raw_rows: Sequence[object],
+        *,
+        contract_name: str,
+        binding_type: type[
+            contracts.CapabilitySourceBinding | contracts.CastSourceBinding
+        ],
+        expected_profile_id: str,
+    ) -> tuple[contracts.CompiledSourceBinding, ...]:
+        compiled_rows: list[contracts.CompiledSourceBinding] = []
+        seen_consumers: set[str] = set()
+        for raw in raw_rows:
+            _validate_shape(contract_name, raw)
+            value = _mapping(raw, f"{contract_name} declaration")
+            source_definition_refs = tuple(
+                contracts.SourceDefinitionRef(
+                    row["definition_id"], row["kind"]
+                )
+                for row in (
+                    _mapping(item, f"{contract_name} source definition ref")
+                    for item in _sequence(
+                        value["source_definition_refs"],
+                        f"{contract_name} source definition refs",
+                    )
+                )
+            )
+            choice_slots = tuple(
+                contracts.SourceChoiceSlotBinding(
+                    row["slot_id"], row["minimum"], row["maximum"]
+                )
+                for row in (
+                    _mapping(item, f"{contract_name} choice slot")
+                    for item in _sequence(
+                        value["choice_slots"], f"{contract_name} choice slots"
+                    )
+                )
+            )
+            native_role_bindings = tuple(
+                contracts.NativeRoleBinding(
+                    row["read_ref"], tuple(row["role_names"])
+                )
+                for row in (
+                    _mapping(item, f"{contract_name} native role")
+                    for item in _sequence(
+                        value["native_role_bindings"],
+                        f"{contract_name} native roles",
+                    )
+                )
+            )
+            try:
+                binding = binding_type(
+                    consumer_id=value["consumer_id"],
+                    profile_id=value["profile_id"],
+                    profile_generation=value["profile_generation"],
+                    source_variant=value["source_variant"],
+                    source_definition_refs=source_definition_refs,
+                    source_spell_id=value["source_spell_id"],
+                    choice_slots=choice_slots,
+                    source_ability_id=value["source_ability_id"],
+                    native_role_bindings=native_role_bindings,
+                    dependency_refs=tuple(value["dependency_refs"]),
+                    context_fact_ids=tuple(value["context_fact_ids"]),
+                    evaluated_facets=tuple(value["evaluated_facets"]),
+                )
+            except (contracts.ActivityContractError, KeyError, TypeError) as exc:
+                raise ActivityRuntimeError(
+                    f"{contract_name} has an invalid closed binding: {exc}"
+                ) from exc
+
+            consumer_id = str(binding.consumer_id)
+            if consumer_id not in occurrences:
+                raise ActivityNotSelectable(
+                    "source binding references a foreign instruction occurrence"
+                )
+            if binding.profile_id != expected_profile_id:
+                raise ActivityNotSelectable(
+                    "source binding profile differs from its allocated source branch"
+                )
+            if (
+                consumer_id,
+                binding.profile_id,
+                binding.profile_generation,
+            ) not in source_profile_edges:
+                raise ActivityNotSelectable(
+                    "source binding has no exact profile binding"
+                )
+            if consumer_id in seen_consumers:
+                raise ActivityNotSelectable(
+                    "duplicate source binding for one profile occurrence"
+                )
+            seen_consumers.add(consumer_id)
+            if binding.context_fact_ids:
+                raise ActivityNotSelectable(
+                    "Sorcerer source binding cannot carry invocation facts"
+                )
+
+            reference_kinds: dict[str, str] = {}
+            for reference in binding.source_definition_refs:
+                identity = str(reference.definition_id)
+                if identity in reference_kinds:
+                    raise ActivityNotSelectable(
+                        "source definition references repeat one identity"
+                    )
+                source_record = exact_source_definitions.get(identity)
+                if not isinstance(source_record, Mapping):
+                    raise ActivityNotSelectable(
+                        f"unavailable source definition dependency: {identity}"
+                    )
+                if source_record.get("kind") != reference.kind:
+                    raise ActivityNotSelectable(
+                        f"source definition reference kind differs: {identity}"
+                    )
+                reference_kinds[identity] = str(reference.kind)
+
+            class_record = exact_source_definitions.get("class.sorcerer")
+            advancement_record = exact_source_definitions.get(
+                "advancement.sorcerer.mvp_1"
+            )
+            spellcasting_record = exact_source_definitions.get(
+                "feature.sorcerer.spellcasting"
+            )
+            innate_feature_record = exact_source_definitions.get(
+                "feature.sorcerer.innate_sorcery"
+            )
+            innate_effect_record = exact_source_definitions.get("effect.innate_sorcery")
+            spell_record = exact_source_definitions.get(str(binding.source_spell_id))
+            if not all(
+                isinstance(record, Mapping)
+                for record in (
+                    class_record,
+                    advancement_record,
+                    spellcasting_record,
+                    innate_feature_record,
+                    innate_effect_record,
+                    spell_record,
+                )
+            ):
+                raise ActivityNotSelectable(
+                    "Sorcerer source chain is not present in the bound definition set"
+                )
+            class_data = _mapping(class_record["data"], "Sorcerer class data")
+            primary_abilities = _sequence(
+                class_data.get("primary_ability_ids"),
+                "Sorcerer primary abilities",
+            )
+            if (
+                class_data.get("advancement_id") != "advancement.sorcerer.mvp_1"
+                or "ability.charisma" not in primary_abilities
+            ):
+                raise ActivityNotSelectable(
+                    "Sorcerer class source does not bind Charisma and its exact advancement"
+                )
+            advancement_data = _mapping(
+                advancement_record["data"], "Sorcerer advancement data"
+            )
+            level_rows = _sequence(
+                advancement_data.get("levels"), "Sorcerer advancement levels"
+            )
+            level_one_rows = [
+                row
+                for row in level_rows
+                if isinstance(row, Mapping)
+                and type(row.get("level")) is int
+                and row.get("level") == 1
+            ]
+            if len(level_one_rows) != 1:
+                raise ActivityNotSelectable(
+                    "Sorcerer source must bind exactly one level-1 advancement"
+                )
+            grants = _sequence(
+                _mapping(level_one_rows[0], "Sorcerer level-1 entry").get(
+                    "automatic_grant_definition_ids", ()
+                ),
+                "Sorcerer level-1 automatic grants",
+            )
+            if not {
+                "feature.sorcerer.spellcasting",
+                "feature.sorcerer.innate_sorcery",
+            } <= set(grants):
+                raise ActivityNotSelectable(
+                    "Sorcerer level-1 source does not grant its selected spell features"
+                )
+            innate_data = _mapping(
+                innate_feature_record["data"], "Innate Sorcery feature data"
+            )
+            if "effect.innate_sorcery" not in _sequence(
+                innate_data.get("effect_ids", ()), "Innate Sorcery effect refs"
+            ):
+                raise ActivityNotSelectable(
+                    "Innate Sorcery feature lost its exact modifier-source definition"
+                )
+
+            raw_slots = _sequence(
+                advancement_record.get("choice_slots"),
+                "Sorcerer advancement choice slots",
+            )
+            slot_map: dict[str, Mapping[str, object]] = {}
+            for raw_slot in raw_slots:
+                slot = _mapping(raw_slot, "Sorcerer source choice slot")
+                slot_id = _require_id(slot.get("choice_id"), "Sorcerer choice slot ID")
+                if slot_id in slot_map:
+                    raise ActivityNotSelectable(
+                        "Sorcerer advancement repeats an owning choice slot"
+                    )
+                slot_map[slot_id] = slot
+            if set(slot_map) & {
+                "advancement.sorcerer.level_1.cantrips",
+                "advancement.sorcerer.level_1.prepared_spells",
+            } != {
+                "advancement.sorcerer.level_1.cantrips",
+                "advancement.sorcerer.level_1.prepared_spells",
+            }:
+                raise ActivityNotSelectable(
+                    "Sorcerer advancement omits an exact source choice slot"
+                )
+            for slot_binding in binding.choice_slots:
+                slot = slot_map.get(str(slot_binding.slot_id))
+                if (
+                    slot is None
+                    or type(slot.get("minimum")) is not int
+                    or type(slot.get("maximum")) is not int
+                    or slot["minimum"] != slot_binding.minimum
+                    or slot["maximum"] != slot_binding.maximum
+                ):
+                    raise ActivityNotSelectable(
+                        "Sorcerer choice slot cardinality differs from its source binding"
+                    )
+
+            cantrip_option_spell_ids = _validate_sorcerer_source_choice_slot(
+                slot_map["advancement.sorcerer.level_1.cantrips"],
+                slot_id="advancement.sorcerer.level_1.cantrips",
+                expected_level=0,
+                prepared=False,
+                source_definitions=exact_source_definitions,
+            )
+            prepared_option_spell_ids = _validate_sorcerer_source_choice_slot(
+                slot_map["advancement.sorcerer.level_1.prepared_spells"],
+                slot_id="advancement.sorcerer.level_1.prepared_spells",
+                expected_level=1,
+                prepared=True,
+                source_definitions=exact_source_definitions,
+            )
+            if cantrip_option_spell_ids & prepared_option_spell_ids:
+                raise ActivityNotSelectable(
+                    "Sorcerer cantrip and prepared option pools must be disjoint"
+                )
+
+            dependency_refs = tuple(str(item) for item in binding.dependency_refs)
+            if (
+                len(dependency_refs) != len(set(dependency_refs))
+                or "bound_definition:class.sorcerer" not in dependency_refs
+                or f"bound_definition:{binding.source_spell_id}" not in dependency_refs
+            ):
+                raise ActivityNotSelectable(
+                    "source binding does not name its exact class and spell DAG roots"
+                )
+            role_binding_by_root: dict[str, tuple[str, ...]] = {}
+            retained_roles: dict[str, Mapping[str, object]] = {}
+            for role_binding in binding.native_role_bindings:
+                root_ref = str(role_binding.read_ref)
+                if root_ref in role_binding_by_root:
+                    raise ActivityNotSelectable(
+                        "source binding repeats a native role root"
+                    )
+                if root_ref not in dependency_refs:
+                    raise ActivityNotSelectable(
+                        "source native role has no explicit dependency root"
+                    )
+                role_names = tuple(str(item) for item in role_binding.role_names)
+                role_binding_by_root[root_ref] = role_names
+                for role_name in role_names:
+                    role = role_contracts.get(role_name)
+                    if not isinstance(role, Mapping):
+                        raise ActivityNotSelectable(
+                            f"source binding native role is not declared: {role_name}"
+                        )
+                    if role.get("family_key") != "world.actor":
+                        raise ActivityNotSelectable(
+                            "Sorcerer source native role must bind an Actor"
+                        )
+                    retained_roles[role_name] = role
+            if role_binding_by_root.get("bound_definition:class.sorcerer") != (
+                "actor",
+            ):
+                raise ActivityNotSelectable(
+                    "Sorcerer source requires its exact native Actor role"
+                )
+            if any(
+                role_names != ("actor",)
+                for role_names in role_binding_by_root.values()
+            ):
+                raise ActivityNotSelectable(
+                    "Sorcerer source profile cannot bind a foreign native role"
+                )
+
+            definition_contracts: dict[str, object] = {}
+            selector_contracts: dict[str, object] = {}
+            accessor_contracts: dict[str, object] = {}
+            derived_contracts: dict[str, object] = {}
+            dependency_nodes: set[str] = set()
+            dependency_edges: set[tuple[str, str]] = set()
+            visiting: set[str] = set()
+            visited: set[str] = set()
+
+            mechanical_roots = {
+                reference
+                for reference in dependency_refs
+                if reference.startswith(("selector:", "accessor:"))
+            }
+            expected_role_roots = mechanical_roots | {
+                "bound_definition:class.sorcerer"
+            }
+            if set(role_binding_by_root) != expected_role_roots:
+                raise ActivityNotSelectable(
+                    "source native roles differ from exact definition/mechanical roots"
+                )
+            for root_ref in reversed(dependency_refs):
+                role_names = role_binding_by_root.get(root_ref, ("actor",))
+                root_role_families: set[str] = set()
+                for role_name in role_names:
+                    role = role_contracts.get(role_name)
+                    if not isinstance(role, Mapping):
+                        raise ActivityNotSelectable(
+                            f"source binding native role is not declared: {role_name}"
+                        )
+                    root_role_families.add(str(role["family_key"]))
+
+                visiting: set[str] = set()
+                visited: set[str] = set()
+
+                def visit(
+                    node_ref: str,
+                    parent_ref: str,
+                    *,
+                    root_role_families: set[str] = root_role_families,
+                    visiting: set[str] = visiting,
+                    visited: set[str] = visited,
+                    dependency_nodes: set[str] = dependency_nodes,
+                    selector_contracts: dict[str, object] = selector_contracts,
+                    accessor_contracts: dict[str, object] = accessor_contracts,
+                    derived_contracts: dict[str, object] = derived_contracts,
+                    definition_contracts: dict[str, object] = definition_contracts,
+                    dependency_edges: set[tuple[str, str]] = dependency_edges,
+                ) -> None:
+                    kind, separator, node_id = node_ref.partition(":")
+                    if not separator or kind not in {
+                        "bound_definition",
+                        "selector",
+                        "accessor",
+                        "derived",
+                    }:
+                        raise ActivityNotSelectable(
+                            f"unavailable source mechanical dependency: {node_ref}"
+                        )
+                    if kind == "selector":
+                        _validate_selector_read(
+                            node_id,
+                            activity_id,
+                            mechanical=mechanical,
+                            core=core,
+                            ledger_rows=ledger_rows,
+                        )
+                    elif kind == "accessor":
+                        _validate_accessor_read(
+                            node_id,
+                            activity_id,
+                            mechanical,
+                            ledger_rows,
+                            consumer_ref=parent_ref,
+                        )
+                    elif kind == "derived":
+                        raw_derived = derived_nodes.get(node_id)
+                        if (
+                            not isinstance(raw_derived, Mapping)
+                            or raw_derived.get("disposition") != "ACTIVE_INTERNAL"
+                            or parent_ref
+                            not in _sequence(
+                                raw_derived.get("permitted_consumer_ids"),
+                                "source derived consumers",
+                            )
+                        ):
+                            raise ActivityNotSelectable(
+                                f"unauthorized or dormant derived edge: {parent_ref} -> {node_ref}"
+                            )
+                    if node_ref in visiting:
+                        raise ActivityNotSelectable(
+                            f"source dependency cycle at {node_ref}"
+                        )
+                    if node_ref in visited:
+                        return
+                    visiting.add(node_ref)
+                    dependency_nodes.add(node_ref)
+                    if kind in {"selector", "accessor", "derived"}:
+                        metadata_map = {
+                            "selector": selectors,
+                            "accessor": accessors,
+                            "derived": derived_nodes,
+                        }[kind]
+                        metadata = metadata_map.get(node_id)
+                        if not isinstance(metadata, Mapping):
+                            raise ActivityNotSelectable(
+                                f"unavailable source mechanical dependency: {node_ref}"
+                            )
+                        if kind == "selector":
+                            _validate_shape(
+                                surface_schema + "#/$defs/selectorMetadata", metadata
+                            )
+                            selector_contracts[node_id] = metadata
+                            allowed = set(
+                                _sequence(
+                                    metadata.get("allowed_dependency_kinds"),
+                                    "source selector dependency kinds",
+                                )
+                            )
+                            children = _sequence(
+                                metadata.get("static_dependencies", ()),
+                                "source selector dependencies",
+                            )
+                        elif kind == "accessor":
+                            _validate_shape(
+                                surface_schema + "#/$defs/accessorMetadata", metadata
+                            )
+                            accessor_contracts[node_id] = metadata
+                            allowed = {"selector", "accessor", "derived"}
+                            children = _sequence(
+                                metadata.get("dependencies", ()),
+                                "source accessor dependencies",
+                            )
+                        else:
+                            _validate_shape(
+                                surface_schema + "#/$defs/derivedNodeMetadata", metadata
+                            )
+                            derived_contracts[node_id] = metadata
+                            allowed = set(
+                                _sequence(
+                                    metadata.get("allowed_dependency_kinds"),
+                                    "source derived dependency kinds",
+                                )
+                            )
+                            children = _sequence(
+                                metadata.get("dependencies", ()),
+                                "source derived dependencies",
+                            )
+                        subject_binding_kinds = (
+                            set(
+                                _sequence(
+                                    metadata.get("binding_kinds"),
+                                    "source selector binding kinds",
+                                )
+                            )
+                            if kind == "selector"
+                            else set(
+                                _sequence(
+                                    metadata.get("argument_kinds"),
+                                    "source accessor argument kinds",
+                                )
+                            )
+                            if kind == "accessor"
+                            else set()
+                        )
+                        subject_kinds = set(
+                            _sequence(
+                                metadata.get("subject_kinds", ()),
+                                "source subject kinds",
+                            )
+                        )
+                        if kind in {"selector", "accessor"} and (
+                            not root_role_families <= subject_kinds
+                            or "subject" not in subject_binding_kinds
+                            or subject_binding_kinds - {"subject"}
+                        ):
+                            raise ActivityNotSelectable(
+                                f"incompatible subject/binding roles at {node_ref}"
+                            )
+                        input_classes = (
+                            set(
+                                _sequence(
+                                    metadata.get("allowed_input_classes"),
+                                    "source input classes",
+                                )
+                            )
+                            if kind in {"selector", "derived"}
+                            else {str(metadata.get("input_class"))}
+                        )
+                        permitted_facts = set(
+                            _sequence(
+                                metadata.get("permitted_context_fact_ids", ()),
+                                "source fact permissions",
+                            )
+                        ) if kind in {"selector", "derived"} else set()
+                        if input_classes != {"ENGINE_STATE"} or permitted_facts:
+                            raise ActivityNotSelectable(
+                                f"source input class exceeds its root permission at {node_ref}"
+                            )
+                    elif kind == "bound_definition":
+                        record = exact_source_definitions.get(node_id)
+                        if not isinstance(record, Mapping):
+                            raise ActivityNotSelectable(
+                                f"unavailable source definition dependency: {node_id}"
+                            )
+                        references = tuple(
+                            _require_id(item, f"{node_id} reference")
+                            for item in _sequence(
+                                record.get("references", ()),
+                                f"{node_id}.references",
+                            )
+                        )
+                        if len(references) != len(set(references)):
+                            raise ActivityNotSelectable(
+                                f"source definition repeats a direct reference: {node_id}"
+                            )
+                        declared_references = set(references)
+                        for dependency_description, dependency_id in (
+                            typed_source_definition_links(node_id, record)
+                        ):
+                            if dependency_id not in declared_references:
+                                raise ActivityNotSelectable(
+                                    "source definition references omit "
+                                    f"{dependency_description}: {dependency_id}"
+                                )
+                        children: list[str] = []
+                        for reference in references:
+                            if reference in exact_source_definitions:
+                                children.append(f"bound_definition:{reference}")
+                            elif reference in source_value_registration_ids:
+                                continue
+                            else:
+                                raise ActivityNotSelectable(
+                                    f"unavailable source definition dependency: {reference}"
+                                )
+                        source_kind = record.get("kind")
+                        if not isinstance(source_kind, str):
+                            raise ActivityNotSelectable(
+                                f"source definition kind is unavailable: {node_id}"
+                            )
+                        definition_contracts[node_id] = _definition_envelope(
+                            node_id, source_kind, record
+                        )
+                        allowed = {"bound_definition"}
+                    else:
+                        raise AssertionError("unreachable source node kind")
+                    for raw_child in children:
+                        child_ref = _require_id(
+                            raw_child, "source mechanical dependency"
+                        )
+                        child_kind = child_ref.partition(":")[0]
+                        if child_kind not in allowed:
+                            raise ActivityNotSelectable(
+                                f"illegal source mechanical dependency from {node_ref}: {child_ref}"
+                            )
+                        dependency_edges.add((node_ref, child_ref))
+                        visit(child_ref, node_ref)
+                    visiting.remove(node_ref)
+                    visited.add(node_ref)
+
+                visit(root_ref, f"activity:{activity_id}")
+
+            actual_definition_kinds = {
+                identity: str(contract["kind"])
+                for identity, contract in definition_contracts.items()
+            }
+            expected_definition_kinds = {
+                str(reference.definition_id): str(reference.kind)
+                for reference in binding.source_definition_refs
+            }
+            if actual_definition_kinds != expected_definition_kinds:
+                raise ActivityNotSelectable(
+                    "source definition references differ from transitive closure"
+                )
+            required_option_spell_ids = (
+                cantrip_option_spell_ids | prepared_option_spell_ids
+            )
+            if not required_option_spell_ids <= set(actual_definition_kinds):
+                raise ActivityNotSelectable(
+                    "source definition closure omits a Sorcerer choice option"
+                )
+            source_activity_primitive_ids: dict[str, tuple[str, ...]] = {}
+
+            def collect_activity_primitives(value: object, result: set[str]) -> None:
+                if isinstance(value, Mapping):
+                    raw_primitive_id = value.get("op")
+                    if raw_primitive_id is not None:
+                        result.add(
+                            _require_id(
+                                raw_primitive_id, "source Activity primitive ID"
+                            )
+                        )
+                    for child in value.values():
+                        if isinstance(child, (Mapping, list, tuple)):
+                            collect_activity_primitives(child, result)
+                elif isinstance(value, (list, tuple)):
+                    for child in value:
+                        collect_activity_primitives(child, result)
+
+            for source_activity_id in sorted(definition_contracts):
+                source_activity = exact_source_definitions[source_activity_id]
+                if source_activity.get("kind") != "definition.activity":
+                    continue
+                activity_data = _mapping(
+                    source_activity.get("data"),
+                    f"{source_activity_id}.data",
+                )
+                _validate_shape("activity-definition-data", activity_data)
+                activity_primitive_ids: set[str] = set()
+                collect_activity_primitives(
+                    _sequence(
+                        activity_data.get("steps"),
+                        f"{source_activity_id}.steps",
+                    ),
+                    activity_primitive_ids,
+                )
+                for primitive_id in activity_primitive_ids:
+                    _validate_active_primitive(
+                        primitive_id,
+                        source_activity_id,
+                        primitive_rows=primitive_rows,
+                        matrices=matrices,
+                        value_contracts=value_contracts,
+                        core=core,
+                        ledger_rows=ledger_rows,
+                    )
+                source_activity_primitive_ids[source_activity_id] = tuple(
+                    sorted(activity_primitive_ids)
+                )
+
+            for definition_id in sorted(definition_contracts):
+                source_record = exact_source_definitions[definition_id]
+                record_data = _mapping(
+                    source_record.get("data"), f"{definition_id}.data"
+                )
+                activity_ids = _sequence(
+                    record_data.get("activity_ids", ()),
+                    f"{definition_id}.activity_ids",
+                )
+                if not activity_ids and "primitive_dependencies" not in source_record:
+                    continue
+                actual_primitive_ids: set[str] = set()
+                for raw_activity_id in activity_ids:
+                    source_activity_id = _require_id(
+                        raw_activity_id, "source Activity ID"
+                    )
+                    source_activity_dependencies = source_activity_primitive_ids.get(
+                        source_activity_id
+                    )
+                    if source_activity_dependencies is None:
+                        raise ActivityNotSelectable(
+                            "source primitive dependency has no exact Activity closure"
+                        )
+                    actual_primitive_ids.update(source_activity_dependencies)
+                if "primitive_dependencies" in source_record:
+                    raw_primitive_ids = source_record["primitive_dependencies"]
+                    declared_primitive_ids = tuple(
+                        sorted(
+                            _require_id(item, "source primitive dependency ID")
+                            for item in _sequence(
+                                raw_primitive_ids,
+                                f"{definition_id}.primitive_dependencies",
+                            )
+                        )
+                    )
+                    if len(declared_primitive_ids) != len(set(declared_primitive_ids)):
+                        raise ActivityNotSelectable(
+                            f"source primitive dependencies repeat an ID: {definition_id}"
+                        )
+                    if set(declared_primitive_ids) != actual_primitive_ids:
+                        raise ActivityNotSelectable(
+                            "source primitive dependencies differ from Activity closure: "
+                            f"{definition_id}"
+                        )
+            try:
+                compiled = contracts.CompiledSourceBinding(
+                    binding=binding,
+                    definition_contracts=definition_contracts,
+                    choice_slot_contracts={
+                        str(slot_binding.slot_id): slot_map[
+                            str(slot_binding.slot_id)
+                        ]
+                        for slot_binding in binding.choice_slots
+                    },
+                    selector_contracts=selector_contracts,
+                    accessor_contracts=accessor_contracts,
+                    derived_node_contracts=derived_contracts,
+                    source_activity_primitive_ids=source_activity_primitive_ids,
+                    role_contracts=retained_roles,
+                    dependency_read_refs=tuple(sorted(dependency_nodes)),
+                    dependency_edges=tuple(
+                        contracts.SourceDependencyEdge(source, dependency)
+                        for source, dependency in sorted(dependency_edges)
+                    ),
+                )
+            except contracts.ActivityContractError as exc:
+                raise ActivityRuntimeError(
+                    f"compiled source binding is invalid: {exc}"
+                ) from exc
+            compiled_rows.append(compiled)
+        return tuple(compiled_rows)
+
+    compiled_capabilities = compile_group(
+        raw_capability_bindings,
+        contract_name="capability_source_binding",
+        binding_type=contracts.CapabilitySourceBinding,
+        expected_profile_id="calculation.capability_projection_srd521",
+    )
+    compiled_casts = compile_group(
+        raw_cast_bindings,
+        contract_name="cast_source_binding",
+        binding_type=contracts.CastSourceBinding,
+        expected_profile_id="execution.spell_cast.srd521",
+    )
+    return compiled_capabilities, compiled_casts
 
 
 def _validate_damage_input_symbol(
@@ -2554,6 +3599,8 @@ def _compile_activity_definition(
     source_definitions: Mapping[str, Mapping[str, object]],
     compiler_generation: int,
     mode_policy_profile_id: str,
+    _source_definition_records: Mapping[str, Mapping[str, object]] | None = None,
+    _source_value_registration_ids: frozenset[str] = frozenset(),
     _occurrence_prefix: str | None = None,
     _inherited_exports: Mapping[str, Mapping[str, object]] | None = None,
     _scopes: Mapping[str, object] | None = None,
@@ -2736,9 +3783,11 @@ def _compile_activity_definition(
                 lowered = _compile_activity_definition(activity_id, child_record, child_record,
                     catalog_context=catalog_context, source=source, source_definitions=source_definitions,
                     compiler_generation=compiler_generation, mode_policy_profile_id=mode_policy_profile_id,
-                    _occurrence_prefix=f"{occurrence_id}.{argument_name}", _inherited_exports=exports, _scopes=child_scopes,
-                    _inherited_export_guards=export_guards,
-                    _inherited_profile_bindings=bindings, _enclosing_guards=active_guards)
+                 _occurrence_prefix=f"{occurrence_id}.{argument_name}", _inherited_exports=exports, _scopes=child_scopes,
+                 _inherited_export_guards=export_guards,
+                 _inherited_profile_bindings=bindings, _enclosing_guards=active_guards,
+                 _source_definition_records=_source_definition_records,
+                 _source_value_registration_ids=_source_value_registration_ids)
                 children.extend(lowered.instructions)
                 compiled_args[argument_name] = tuple(child.consumer_id for child in lowered.instructions)
                 read_plan.extend(lowered.reads)
@@ -3028,7 +4077,12 @@ def _compile_activity_definition(
         pending.extend(instruction.children)
         declaration = primitive_rows[instruction.primitive_id].get("compiler_declarations", {}).get(activity_id)
         if declaration is not None:
-            for member in ("profiles", "cast_profiles"):
+            for member in (
+                "profiles",
+                "cast_profiles",
+                "capability_sources",
+                "cast_sources",
+            ):
                 for raw_profile in _sequence(declaration.get(member, ()), f"compiler {member}"):
                     profile = _mapping(raw_profile, f"compiler {member} binding")
                     if profile["consumer_id"] == instruction.consumer_id:
@@ -3102,6 +4156,47 @@ def _compile_activity_definition(
         profile_bindings=bindings,
         occurrence_ids=tuple(occurrences),
     )
+    source_graph = _definition_dependency_graph or {}
+    capability_source_bindings, cast_source_bindings = _compile_source_bindings(
+        tuple(
+            raw
+            for declaration in source_declarations
+            for raw in _sequence(
+                declaration.get("capability_sources", ()),
+                "capability source declarations",
+            )
+        ),
+        tuple(
+            raw
+            for declaration in source_declarations
+            for raw in _sequence(
+                declaration.get("cast_sources", ()), "cast source declarations"
+            )
+        ),
+        profile_bindings=bindings,
+        occurrence_ids=tuple(occurrences),
+        activity_id=activity_id,
+        source_definitions=source_definitions,
+        source_support_definitions=(
+            _source_definition_records or source_definitions
+        ),
+        source_value_registration_ids=_source_value_registration_ids,
+        mechanical=mechanical,
+        core=core,
+        ledger_rows=ledger_rows,
+        primitive_rows=primitive_rows,
+        matrices=matrices,
+        value_contracts=values,
+        role_contracts=role_contracts,
+    )
+    for source_binding in (
+        *capability_source_bindings,
+        *cast_source_bindings,
+    ):
+        dependency_ids.update(
+            reference.partition(":")[2]
+            for reference in source_binding.dependency_read_refs
+        )
     damage_input_bindings = _compile_damage_input_bindings(
         primitive_rows,
         activity_id=activity_id,
@@ -3164,7 +4259,6 @@ def _compile_activity_definition(
         )
         dependency_ids.update(reference.split(":", 1)[1] for reference in read_plan
             if reference.startswith(("selector:", "accessor:", "fact:")))
-    source_graph = _definition_dependency_graph or {}
     pending_dependencies = [activity_id, *(identity for identity in dependency_ids if identity in source_graph)]
     visited_dependencies: set[str] = set()
     while pending_dependencies:
@@ -3217,6 +4311,8 @@ def _compile_activity_definition(
             calculation_policy_bindings=tuple(calculation_policy_bindings),
             cast_profile_bindings=cast_profile_bindings,
             damage_input_bindings=damage_input_bindings,
+            capability_source_bindings=capability_source_bindings,
+            cast_source_bindings=cast_source_bindings,
             _issue_seal=contracts._CONTRACT_SEAL,
         )
     except contracts.ActivityContractError as exc:
@@ -3432,9 +4528,16 @@ def admit_activity_catalog(
     compiler_source = context._compiler_contract_source
     if compiler_source is None:
         raise ActivityRuntimeError("bound catalog has no compiler source carrier")
+    primitive_rows = _runtime_contract_maps(compiler_source)[6]
 
     frozen_members = _package_member_bytes(context, package_snapshots)
-    package_records = _package_definition_records(frozen_members, context)
+    source_value_registration_ids: set[str] = set()
+    package_records = _package_definition_records(
+        frozen_members,
+        context,
+        registered_value_ids=source_value_registration_ids,
+    )
+    source_package_definitions: dict[str, Mapping[str, object]] | None = None
     records: dict[str, Mapping[str, object]] = {
         identity: source.record for identity, source in package_records.items()
     }
@@ -3451,7 +4554,79 @@ def admit_activity_catalog(
         raise ActivityRuntimeError(
             f"bound definitions are absent from frozen source bytes: {sorted(missing_records)}"
         )
-    graph = _definition_graph(dependency_ids, records)
+    declared_source_activity_ids: set[str] = set()
+    source_binding_definition_ids: list[frozenset[str]] = []
+    for identity in sorted(dependency_ids):
+        record = records[identity]
+        if (
+            record.get("kind") != "definition.activity"
+            or not _activity_has_source_binding_declarations(primitive_rows, identity)
+        ):
+            continue
+        for declaration in _compiler_declarations_for_activity(
+            primitive_rows, identity
+        ):
+            _validate_shape("activity-compiler-declaration", declaration)
+            for member in ("capability_sources", "cast_sources"):
+                binding_schema = (
+                    "capability_source_binding"
+                    if member == "capability_sources"
+                    else "cast_source_binding"
+                )
+                for raw_binding in _sequence(
+                    declaration.get(member, ()), f"compiler {member}"
+                ):
+                    _validate_shape(binding_schema, raw_binding)
+                    binding = _mapping(raw_binding, f"compiler {member} binding")
+                    binding_definition_ids: set[str] = set()
+                    for raw_reference in _sequence(
+                        binding.get("source_definition_refs"),
+                        f"{member} source definition refs",
+                    ):
+                        _validate_shape("source_definition_ref", raw_reference)
+                        reference = _mapping(raw_reference, "source definition ref")
+                        source_definition_id = _require_id(
+                            reference["definition_id"],
+                            "source definition ID",
+                        )
+                        binding_definition_ids.add(source_definition_id)
+                        if reference["kind"] == "definition.activity":
+                            declared_source_activity_ids.add(
+                                source_definition_id
+                            )
+                    source_binding_definition_ids.append(
+                        frozenset(binding_definition_ids)
+                    )
+    if source_binding_definition_ids:
+        source_package_definitions, _unused_value_ids = (
+            _frozen_package_source_maps(frozen_members)
+        )
+        for source_activity_id in declared_source_activity_ids:
+            source_activity = source_package_definitions.get(source_activity_id)
+            if (
+                not isinstance(source_activity, Mapping)
+                or source_activity.get("kind") != "definition.activity"
+            ):
+                raise ActivityNotSelectable(
+                    "source-bound Activity is unavailable in frozen package source: "
+                    f"{source_activity_id}"
+                )
+    # Candidate edges are private compile inputs only. The issued catalog graph
+    # below is rebuilt from successfully compiled source bindings.
+    provisional_source_activity_edges: set[tuple[str, str]] = set()
+    for binding_definition_ids in source_binding_definition_ids:
+        provisional_source_activity_edges.update(
+            _source_activity_reference_edges(
+                binding_definition_ids,
+                source_package_definitions or {},
+            )
+        )
+    provisional_graph = _definition_graph(
+        dependency_ids,
+        records,
+        registered_value_ids=source_value_registration_ids,
+        source_activity_edges=frozenset(provisional_source_activity_edges),
+    )
 
     frozen_definitions: dict[str, object] = {}
     source_records: dict[str, Mapping[str, object]] = {}
@@ -3481,9 +4656,13 @@ def admit_activity_catalog(
                 catalog_context=context,
                 source=compiler_source,
                 source_definitions=source_records,
+                _source_definition_records=source_package_definitions or {},
+                _source_value_registration_ids=frozenset(
+                    source_value_registration_ids
+                ),
                 compiler_generation=compiler_generation,
                 mode_policy_profile_id=mode_policy_profile_id,
-                _definition_dependency_graph=graph,
+                _definition_dependency_graph=provisional_graph,
             )
             contracts._register_compiler_value(
                 compiled_activity,
@@ -3500,6 +4679,38 @@ def admit_activity_catalog(
             raise ActivityRuntimeError(
                 f"Activity {identity} is not compilable: {exc}"
             ) from exc
+    admitted_source_activity_edges: set[tuple[str, str]] = set()
+    for compiled_activity in compiled.values():
+        for source_binding in (
+            *compiled_activity.capability_source_bindings,
+            *compiled_activity.cast_source_bindings,
+        ):
+            admitted_source_activity_edges.update(
+                _source_activity_reference_edges(
+                    frozenset(
+                        str(reference.definition_id)
+                        for reference in source_binding.binding.source_definition_refs
+                    ),
+                    source_package_definitions or {},
+                )
+            )
+    try:
+        graph = _definition_graph(
+            dependency_ids,
+            records,
+            registered_value_ids=source_value_registration_ids,
+            source_activity_edges=frozenset(admitted_source_activity_edges),
+        )
+    except ActivityRuntimeError as exc:
+        if not unavailable_activity_reasons:
+            raise
+        unavailable_sources = "; ".join(
+            f"{identity}: {reason}"
+            for identity, reason in sorted(unavailable_activity_reasons.items())
+        )
+        raise ActivityRuntimeError(
+            f"{exc}; unavailable source Activity root(s): {unavailable_sources}"
+        ) from exc
     cards, capability_index, alias_index = _build_cards(
         {
             identity: _mapping(definition, "frozen definition")
@@ -3643,20 +4854,69 @@ def compile_activity(
     if _compiled_identity_matches(catalog, activity_id, cached):
         return cached
     record = _mapping(definition, "frozen Activity definition")
+    compiler_source = catalog.catalog_context._compiler_contract_source
+    source_package_definitions: Mapping[str, Mapping[str, object]] = {}
+    source_value_registration_ids = frozenset()
+    source_definitions = {
+        identity: _mapping(frozen_definition, "frozen source definition")
+        for identity, frozen_definition in catalog.frozen_definitions.items()
+    }
+    if _activity_has_source_binding_declarations(
+        _runtime_contract_maps(compiler_source)[6], activity_id
+    ):
+        source_package_definitions, source_value_registration_ids = (
+            _frozen_package_source_maps(catalog.frozen_semantic_members)
+        )
+        package_dependency_records = _package_definition_records(
+            catalog.frozen_semantic_members, catalog.catalog_context
+        )
+        for raw_dependency in catalog.catalog_context.definition_dependencies:
+            dependency = _mapping(raw_dependency, "frozen catalog dependency")
+            dependency_id = _require_id(
+                dependency.get("definition_id"), "frozen dependency ID"
+            )
+            source_type = dependency.get("source_type")
+            if source_type == "ruleset_package":
+                package_record = package_dependency_records.get(dependency_id)
+                if (
+                    package_record is None
+                    or package_record.package_id != dependency.get("package_id")
+                    or package_record.record.get("id") != dependency_id
+                    or package_record.record.get("kind") != dependency.get("kind")
+                ):
+                    raise ActivityRuntimeError(
+                        "frozen package source differs from its admitted dependency: "
+                        f"{dependency_id}"
+                    )
+                source_definitions[dependency_id] = package_record.record
+            elif source_type == "natural_owner":
+                frozen_definition = source_definitions.get(dependency_id)
+                if (
+                    not isinstance(frozen_definition, Mapping)
+                    or frozen_definition.get("id") != dependency_id
+                    or frozen_definition.get("kind") != dependency.get("kind")
+                ):
+                    raise ActivityRuntimeError(
+                        "frozen natural-owner definition differs from its admitted dependency: "
+                        f"{dependency_id}"
+                    )
+            else:
+                raise ActivityRuntimeError(
+                    "frozen catalog dependency source type is not admitted"
+                )
     rebuilt = _compile_activity_definition(
         activity_id,
         record,
         record,
         catalog_context=catalog.catalog_context,
-        source=catalog.catalog_context._compiler_contract_source,
+        source=compiler_source,
         _definition_dependency_graph=catalog.definition_dependency_graph,
-            compiler_generation=catalog.compiler_generation,
-            mode_policy_profile_id=catalog.mode_policy_profile_id,
-            source_definitions={
-                identity: _mapping(definition, "frozen source definition")
-                for identity, definition in catalog.frozen_definitions.items()
-            },
-        )
+        _source_definition_records=source_package_definitions,
+        _source_value_registration_ids=source_value_registration_ids,
+        compiler_generation=catalog.compiler_generation,
+        mode_policy_profile_id=catalog.mode_policy_profile_id,
+        source_definitions=source_definitions,
+    )
     contracts._register_compiler_value(
         rebuilt,
         kind="compiled",
