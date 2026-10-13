@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
 CURRENT_TASK: complete SP03 allocated finite policy/membership/evaluator/preflight realization after published read/cache preparation; independent SP00 source/default obligations and P2 non-HOT preparation retain exact holds. No full339 support claim.
 LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
-LAST_SAFE_SHA: `afca759c38480f0e4a5629236b08c9d401ecd10d` — latest independently reviewed, clean-verified and published bounded named-route implementation; complete SP03 remains open. Complete-plan GO remains applicable to unchanged authorized scope.
+LAST_SAFE_SHA: `39ab1b4a1c7a844f4df2e7886c4b2ac17e401243` — last read-back before the clean-verified seventh source/design retention candidate7684f10a; final documentary synchronization publication/read-back follows. Complete SP03 remains open; unchanged plan GO applies outside affected design/owner-decision gates.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -3661,3 +3661,98 @@ counts/readiness. Full SP03/SP00/P2 outputs still NOT_PRODUCED; P2 joins SP04.
 UNPUBLISHED_WORK: documentary allocation/cursor synchronization only; production
 afca759c published/read back. External source6 evidence/review retained for next
 bounded task. No additional human permission at ordinary checkpoint boundaries.
+
+## Complete original-source review census and bounded design gates — 2026-10-14
+
+VERIFIED_CANDIDATE_SHA: `7684f10adebef882f3a06f0dca3e04644ba52d80`.
+TREE: `cfeb4c17f655f61d77d434a48a3fd34e9dc34995`.
+Parent source7: `36b2736f97ec18014bca6f9363457373440c7e2c`; isolated research
+retention input `7069cf27bd4a1b8349142efc91cbcffeb12d94d6`, four blobs unchanged.
+Last remote-read-back before this candidate:39ab1b4a/tree9056a502. Normal final
+publication/read-back follows documentary synchronization; not claimed in advance.
+
+SOURCE6: published39ab1b4a adds nine closed keys/ten subclosures, three holds.
+Resistance caster/beneficiary error independently found, source-bound repaired
+RED/GREEN, task re-review PASS at six-path aggregate
+`02d7666b7e971928d8b4429f2d7f5556312a2c4fd8f08f926071f9c9d246bdac`.
+Negative fixture synchronization explicitly authorized after review verified all
+18 original rejection intents remain. Clean39ab focused source/version/package/
+runtime-identity66 passed, audit/build PASS. Main targeted run timed out with no
+completion result, not PASS; exact clean snapshot supplied evidence. No unrelated
+workspace carriers were inspected/removed to make tests pass.
+
+SOURCE7: exact remaining original source keys6,30,31,32,80,81, not assumed terminal
+indexes. Source inventory/subtraction/source review PASS; five subclosures across
+four keys, Familiar census and Warding copied damage held. All77 original source
+keys now reviewed:81 evidence records/60 fully closed keys/64 closed source
+subobligations/17 held keys/subobligations/17 active entries. Original82/77/5 and
+all33 future-proof records retained. Thunderclap conditional default repair, Word
+of Recall, reconstruction/mapping/summary/native obligations remain open.
+Independent review found missing Life Bond actual-regain/amount, Fell Glare WIS/
+steed visibility-range and signed-cell qualifier. Source-faithful R2 repaired;
+Fell Glare is60ft despite erroneous10ft coordinator repair prompt. Task review
+`ses_ec8bdf0baffeFBdKg7Y567wrZQ` SPEC/QUALITY PASS,53 owning tests; source/type/
+mount/cube/ritual qualifiers retained. Four duplicate negative IDs remain a
+nonblocking census observation; all rows execute, do not claim unique IDs.
+Worker dirty full discovery was not PASS; final clean proof below closes it.
+
+FINAL_CLEAN_PROOF7684f10a: isolated real-Git clean snapshot same SHA/tree;
+canonical audit PASS; fullpytest2027 passed/91 skipped; canonicalunittest1724
+OK/skipped91; actual installed context24/membership17 OK; full version census
+unclassified/legacy sets empty; release build PASS. All chained exit0 with declared
+venv/PYTHONDONTWRITEBYTECODE=1. No hostedCI/performance/all339 gameplay claim.
+Source6/7 and research retention VERSION_IMPACT NONE under actual DEV-only draft
+schema1/evidence scope; GAME/contracts/projections unchanged from acceptedafca759c.
+No namespace bump/projection synchronization pending for these deltas.
+
+AUTH_TURN_SYSTEM_IMPACT: Senior `ses_ec97befd4ffeCwmiiZnavkhK4O` confirmed two
+affected architecture-review edges: original-input authenticated basis/current
+operation authority and common definition/Procedure-issued occurrence/progress/
+accepted slot cause. No guessed publisher/round-index/absence-as-false proof.
+Read-only concrete Procedure/budget and native command/Interaction/plan/Player
+linkage remain independently eligible; access/history/temporal/persistent schemas
+inspect-only for those facets. Root host/contracts/read footprint, expanded sealed
+membership and serialized native-read shape must synchronize, no subset weakening
+or selector/write permission via infrastructure reads. Positive author/common-slot
+permission remains held; actual establishment/fencing/recovery joins later native
+owners, not a reversed SP03->SP04 dependency.
+
+DESIGN_PROGRESS: source-backed two Task Briefs/manifest/framing critic and
+independent Senior Stop1 GO retained in
+`2026-10-13-sp03-auth-turn-bridges-task-brief.md`; self-performed critic not relabeled
+independent. Stage2 research/draft/source and case ledgers mechanically retained
+as four design-provenance files, independent retention review
+`ses_ec8f44520ffeNgZHxNHx3QiIyB` SPEC/QUALITY PASS.48 case mappings (24 perbridge)
+are disposition coverage, not executed tests. Source-owned recoverable provenance
+may use existing Interaction/message; no new standalone history record mandated.
+Transient handles disposable, sufficient protected accepted basis retained;
+current authority differs from original provenance. Turn draft prefers exact-
+subject lazy native normalization, but read-only does not initialize/reset/spend.
+Actual connected issuer/invocation/retry proof unavailable; official capability
+page HTTP403 is not platform impossibility. Actual GAME atomic turn/reset/spend
+and bridge recovery proof NOT_ESTABLISHED. Auth/turn drafts establish no human
+decision yet, no Stage4/Step8/Stop2/implementation acceptance.
+NEXT_DESIGN_UNIT: separate Step3 Decision Briefs and recorded Step4 YES/NO;
+independent Step6 critic, Step7 propagation, Step8/canonical owner synchronization/
+verification/publication/read-back and Senior Stop2, then implementation-envelope/
+plan review remain. Required recovery/no-Player identity/protection-race/operation-
+class/deployment/derived-turn primary-source checks retained in the Task Brief.
+
+NEEDS_PO_SOURCE: independent exact21-key/22-subobligation reconciliation
+`ses_ec8f443b7ffef24dPnfqcrBQhT` identified six genuinely outcome-sensitive choices:
+Aid current-HP contribution; Magic Missile draw AND instance/Concentration axes;
+Pass without Trace selection boundary; final Speed floor; Resistance occurrence
+AND mixed-type allocation; Warding copied type/ordinary defenses vs final loss.
+Pre-acceptance Decision Brief retained separately; recommendations NOT_SELECTED.
+Other source holds need agent-owned census/evidence/consumer/framing work, not
+human proofreading. Locate Plants false finite-census requirement and Unseen
+Servant already-selected sparse Actor need exact applicability reconciliation;
+Wish remains accepted. No source-ready/native-ready gate produced by this review.
+
+NEXT_EXACT_TASK: obtain bounded A–F owner interpretations for affected recipes;
+continue other source/census and independently eligible native read/component/form/
+target/privacy work; proceed auth/turn Step3/4 technical design under Stop1 GO.
+FullSP03/SP00/P2 outputs NOT_PRODUCED; actualSP04 and later joins retain inputs.
+UNPUBLISHED_WORK: this verified source/design candidate and documentary briefs/
+cursor synchronization pending normal publication/read-back. No unfinished runtime
+code or hidden accepted bridge design. No further human checkpoint GO is required.
