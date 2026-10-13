@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
 CURRENT_TASK: complete SP03 allocated finite policy/membership/evaluator/preflight realization after published read/cache preparation; independent SP00 source/default obligations and P2 non-HOT preparation retain exact holds. No full339 support claim.
 LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
-LAST_SAFE_SHA: `d0c97f623bfb5fd24a44403dc163b16793186673` — latest verified published compiler/foundation/preparation implementation; this cursor synchronization follows. Complete-plan GO remains applicable to unchanged authorized scope.
+LAST_SAFE_SHA: `dabaa2962e03c1bd2305411c2836b541e99834b8` — latest independently reviewed, clean-verified and published bounded source-basis implementation; complete SP03 remains open. Complete-plan GO remains applicable to unchanged authorized scope.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -3406,3 +3406,92 @@ Full SP03/SP00/P2 outputs NOT_PRODUCED; actual SP04 releases fullP2.
 NEEDS_PO: NONE. Main production tree clean; three bounded technical ruling files
 and this status synchronization are documentary checkpoint work. Isolated source
 descriptor/cache and third-source candidates are frozen separately for integration.
+
+## Descriptor/source integration and ordinary native basis — 2026-10-13
+
+LAST_PUBLISHED_SHA: `dabaa2962e03c1bd2305411c2836b541e99834b8`.
+TREE: `3281f6c77c6a1158f545baa0329df3e1b344d7d3`.
+Fresh pruned fetch and normal non-force publication/read-back matched both
+commit and tree. Main production tree was clean before this documentary update.
+
+COMPLETED_SLICES:
+- `06336024052dfe273077ceedc9852997537049bb`: exact closed capability/cast
+  source descriptors and raw frozen-package cache reconstruction. Independent
+  SPEC/QUALITY and qualified Senior affected reviews passed. Failed source roots
+  cannot lend missing-Activity exemptions to foreign definition edges. Modes
+  remain NOT_EVALUATED; structural source bindings grant no cast permission.
+- `4cb45d068927476b375b444b9560eae1f571855b`: third source set, eleven additional
+  source-only closures and Gentle Repose HOLD. Published totals are36 qualified
+  keys/31 closed keys/32 closed source subobligations/five source holds/46 active
+  source keys. Original82/77/5 records and prior reviewed evidence remain intact.
+  Private lexical helpers do not prove arbitrary prose semantics; public APIs
+  retain immutable reviewed-registry binding. No machine/native readiness granted.
+- `dabaa2962e03c1bd2305411c2836b541e99834b8`: ordinary Sorcerer1 source/acquisition/
+  ability basis from genuine issued root plus separately sealed expanded P0
+  membership. Native owning slots prove disjoint C4/P2, known=C union P and
+  prepared=P. Native Charisma/proficiency prove base-only13/5. Full Effect/Asset
+  coverage guards relevant form/control/identity/conversion/subject relations;
+  missing/stale/add/remove evidence holds. Result and retained bundle are UNISSUED.
+
+REPAIR/REVIEW: foreign Effect control and original-body references were repaired
+before acceptance. Independent Senior then found wrong_subject_binding could
+skip a caster-owned Asset relation before checking Asset relevance. Installed
+RED reproduced missing hold; R4 evaluates both Actor and Asset references before
+exclusion and proves unrelated-Asset control. Independent task review
+`ses_ecb4d29e9ffezPUIvSL8DstNVv`: SPEC/QUALITY PASS. Independent Senior
+`ses_ecb61d0dcffe3g1QoObNFdXff9`: affected R4 PASS followed by final integrated
+identity PASS at exact dabaa296 parent4cb45d06/tree above. Senior independently
+checked Git identity/delta/authority; execution proof below is coordinator-run,
+not a claimed Senior test rerun. The four-path SHA-256 aggregate independently
+recomputed by the task reviewer is
+`fbf6e0a7f9b771a4dc7ca3711885fed0b7342678f689b2e25ea11cd91d23e8eb`.
+
+NONBLOCKING_Q1: the durable owner-revision regression is schema-valid but its
+direct caster original_body_actor_id short-circuits before the owner-reference
+helper. Earlier independent foreign-body/caster-owner-ref probe verifies that
+helper. Retain test-isolation follow-up; do not describe Q1 as closed. Conversion
+Asset inventory assertions now check each profile inside the loop.
+
+CURRENT_VERIFICATION_STATE: clean committed source4cb45d06: fullpytest1967 passed/
+42 skipped; canonicalunittest1649 OK/skipped42; audit/build/census PASS. Clean
+committed finaldabaa296 (same exact HEAD/tree as integrated main): required
+six-module source/native/version set106 passed/81 skipped; fullpytest1974 passed/
+82 skipped; canonicalunittest1689 OK/skipped82; actual installed context24 and
+membership17 OK; maintenance audit/release build PASS; unclassified/legacy census
+empty. Commands used declared venv and PYTHONDONTWRITEBYTECODE=1. Full commands:
+`python -m pytest DEV/TESTS -n auto`,
+`python -m unittest discover -s DEV/TESTS -p 'test_*.py' -q`,
+`python DEV/TOOLS/run_maintenance_audit.py`,
+`python DEV/TOOLS/run_release_build.py --output <task-owned scratch>`.
+The six-module command lists test_sp03_native_source_basis,
+test_sp03_cast_source_contracts, test_sp03_native_membership,
+test_local_spell_context_cast, test_versioning_namespace_policy and
+test_implementation_package_version_cutovers. Installed-only outer skips are
+not counted as passes; passing wrappers execute inner installed suites. Full
+proof includes unchanged policy/DAG/roll/damage/AC consumers. HostedCI, all339
+gameplay and target latency are not claimed.
+
+VERSION_IMPACT: descriptors activity_contracts1.0.10->1.0.11 and
+activity_runtime1.0.7->1.0.8; native basis mechanical_context1.0.5->1.0.6 and new
+spell_cast1.0.1. Repair iterations within each unpublished logical slice add no
+extra bump. Source evidence and this execution/control documentation NONE.
+Schema/profile/catalog/package/engine/campaign/storage/persistent/digest
+namespaces remain unchanged under their owning rules. SYSTEM_IMPACT: NONE
+CROSSED; NEEDS_PO: NONE.
+
+PO_SOURCE_LOOKUP_UPDATE: on2026-10-13 the owner supersedes the earlier blanket
+PDF prohibition: a small PDF is allowed when its complete content can be loaded
+and processed in one pass, without additional reading iterations. Large sources
+retain bounded relevant-section lookup; do not retry full large-document parsing
+or download equally large language variants. No numeric page threshold invented.
+Existing SRD lookup starts with DEV/docs/SRD_CC_v5.2.1_ToC.md and relevant bounded
+Markdown sections; no PDF was needed for this checkpoint.
+
+NEXT_EXACT_TASK: source-mode and existing source-native controller/Procedure/turn
+joins, then applicable component/form/anatomy/voice/Zone/focus/material/slot/armor/
+target/privacy contracts and final modifier closure. Continue independent SP00
+source/default work. Source-prohibited/unavailable/not-evaluated stay distinct.
+Full SP03/SP00/P2 outputs NOT_PRODUCED; actual SP04 releases fullP2. No additional
+human approval or repeated Senior stop applies to unchanged accepted bytes.
+UNPUBLISHED_WORK: this documentary synchronization only; production dabaa296 is
+published/read back. Remaining joins are task work, not hidden accepted changes.
