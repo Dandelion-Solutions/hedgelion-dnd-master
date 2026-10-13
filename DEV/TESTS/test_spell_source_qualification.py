@@ -9,6 +9,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 from types import ModuleType
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOL_PATH = ROOT / "DEV/TOOLS/validate_spell_source_qualification.py"
@@ -61,6 +62,15 @@ def evidence_by_key_for(manifest: dict[str, object], key: str) -> dict[str, obje
     records = manifest.get("source_unknown_resolution_evidence")
     if not isinstance(records, list):
         raise TypeError("source residual resolution evidence must be a list")
+    return next(row for row in records if row["unresolved_key"] == key)
+
+
+def fourth_evidence_by_key_for(
+    manifest: dict[str, object], key: str
+) -> dict[str, object]:
+    records = manifest.get("source_fourth_resolution_evidence")
+    if not isinstance(records, list):
+        raise TypeError("fourth source resolution evidence must be a list")
     return next(row for row in records if row["unresolved_key"] == key)
 
 
@@ -564,8 +574,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 46)
-        self.assertEqual(unresolved_blocker["entry_count"], 42)
+        self.assertEqual(unresolved_blocker["count"], 38)
+        self.assertEqual(unresolved_blocker["entry_count"], 35)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -853,7 +863,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 46)
+        self.assertEqual(classification["source_blocking_key_count"], 38)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -903,10 +913,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 46)
+        self.assertEqual(classification["source_blocking_key_count"], 38)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
-        self.assertEqual(classification["source_held_subobligation_count"], 5)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
+        self.assertEqual(classification["source_held_subobligation_count"], 8)
         self.assertEqual(
             manifest["source_unknown_resolution_contract"][
                 "source_closed_subobligation_count"
@@ -1035,27 +1045,29 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 46)
+        self.assertEqual(classification["source_blocking_key_count"], 38)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
-        self.assertEqual(classification["source_held_subobligation_count"], 5)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
+        self.assertEqual(classification["source_held_subobligation_count"], 8)
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
         self.assertEqual(
             resolved_keys,
             FIRST12_SOURCE_CLOSED_KEYS
             | NEXT12_SOURCE_CLOSED_KEYS
-            | TOOL.THIRD12_SOURCE_CLOSED_KEYS,
+            | TOOL.THIRD12_SOURCE_CLOSED_KEYS
+            | TOOL.FOURTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             held_keys,
             FIRST12_SOURCE_HELD_KEYS
             | NEXT12_SOURCE_HELD_KEYS
-            | TOOL.THIRD12_SOURCE_HELD_KEYS,
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS,
         )
-        self.assertEqual(len(classification["source_resolved_keys"]), 31)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 31)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 37)
+        self.assertEqual(len(classification["source_resolved_keys"]), 39)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 39)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
         self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
         self.assertIn(
             "source.spell.augury.unresolved.four_omen_members",
@@ -1152,29 +1164,176 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
-        self.assertEqual(classification["source_blocking_key_count"], 46)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 32)
-        self.assertEqual(classification["source_held_subobligation_count"], 5)
-        self.assertEqual(len(classification["source_resolved_keys"]), 31)
-        self.assertEqual(len(classification["source_held_keys"]), 5)
-        self.assertEqual(classification["source_reviewed_key_count"], 36)
+        self.assertEqual(classification["source_blocking_key_count"], 38)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
+        self.assertEqual(classification["source_held_subobligation_count"], 8)
+        self.assertEqual(len(classification["source_resolved_keys"]), 39)
+        self.assertEqual(len(classification["source_held_keys"]), 8)
+        self.assertEqual(classification["source_reviewed_key_count"], 47)
         self.assertEqual(
             set(classification["source_resolved_keys"]),
             TOOL.SOURCE_RESOLVED_KEYS
             | TOOL.NEXT12_SOURCE_CLOSED_KEYS
-            | TOOL.THIRD12_SOURCE_CLOSED_KEYS,
+            | TOOL.THIRD12_SOURCE_CLOSED_KEYS
+            | TOOL.FOURTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             set(classification["source_held_keys"]),
             TOOL.SOURCE_HELD_KEYS
             | TOOL.NEXT12_SOURCE_HELD_KEYS
-            | TOOL.THIRD12_SOURCE_HELD_KEYS,
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS,
         )
         self.assertIn(
             "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
             classification["source_held_keys"],
         )
-        self.assertEqual(len(classification["source_resolution_evidence"]), 37)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
+
+    def test_fourth_source_batch_adds_only_reviewed_closures_and_holds(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+
+        self.assertEqual(classification["source_reviewed_key_count"], 47)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
+        self.assertEqual(classification["source_held_subobligation_count"], 8)
+        self.assertEqual(classification["source_blocking_key_count"], 38)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
+        self.assertEqual(
+            set(classification["source_held_keys"]),
+            FIRST12_SOURCE_HELD_KEYS
+            | NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS,
+        )
+        self.assertNotIn(
+            "source.spell.lesser_restoration.unresolved.multisource_condition_removal",
+            {
+                row["unresolved_key"]
+                for row in manifest["source_fourth_resolution_evidence"]
+            },
+        )
+
+    def test_fourth_source_resolution_rejects_cold_markdown_span_drift(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        read_pinned = TOOL._read_pinned_local_evidence
+
+        def drift_markdown(
+            relative_path: str, expected_sha256: str, evidence_name: str
+        ) -> bytes:
+            data = read_pinned(relative_path, expected_sha256, evidence_name)
+            if relative_path == TOOL.SOURCE_MARKDOWN_RELATIVE_PATH:
+                return data.replace(
+                    b"audible up to 300 feet away", b"audible up to 301 feet away", 1
+                )
+            return data
+
+        with (
+            patch.object(
+                TOOL, "_read_pinned_local_evidence", side_effect=drift_markdown
+            ),
+            self.assertRaises(TOOL.SourceQualificationError) as caught,
+        ):
+            TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(caught.exception.code, "source_fourth_markdown_span_hash")
+
+    def test_fourth_source_resolution_rejects_a_missing_source_qualifier(self) -> None:
+        assert TOOL is not None
+        candidate = load_json(MANIFEST_PATH)
+        knock = fourth_evidence_by_key_for(
+            candidate, "source.spell.knock.unresolved.knock_sound_range"
+        )
+        knock["source_interpretation"] = "A sound emanates from the target."
+
+        with self.assertRaises(TOOL.SourceQualificationError) as caught:
+            TOOL._validate_source_unknown_classifications(candidate)
+        self.assertEqual(caught.exception.code, "source_fourth_qualifier")
+
+    def test_fourth_source_resolution_rejects_a_foreign_source_pointer(self) -> None:
+        assert TOOL is not None
+        candidate = load_json(MANIFEST_PATH)
+        row = fourth_evidence_by_key_for(
+            candidate, "source.spell.knock.unresolved.knock_sound_range"
+        )
+        row["source_record_ref"]["json_pointer"] = (
+            "/rows/79/required_modes_or_exceptions"
+        )
+
+        with self.assertRaises(TOOL.SourceQualificationError) as caught:
+            TOOL._validate_source_unknown_classifications(candidate)
+        self.assertEqual(caught.exception.code, "source_fourth_provenance")
+
+    def test_fourth_source_resolution_rejects_promotion_of_a_held_obligation(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        candidate = load_json(MANIFEST_PATH)
+        magic_missile = fourth_evidence_by_key_for(
+            candidate, "source.spell.magic_missile.unresolved.rng_damage_grouping"
+        )
+        magic_missile["disposition"] = "SOURCE_CLOSED"
+
+        with self.assertRaises(TOOL.SourceQualificationError) as caught:
+            TOOL._validate_source_unknown_classifications(candidate)
+        self.assertEqual(caught.exception.code, "source_fourth_disposition")
+
+    def test_fourth_common_summary_preserves_correct_trigger_and_class_list_rules(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        qualifiers = manifest["source_fourth_resolution_contract"]["common_qualifiers"]
+        self.assertTrue(
+            any(
+                "A Reaction spell is cast in response to the trigger defined in its Casting Time entry."
+                in qualifier
+                and "Some Bonus Action spells" in qualifier
+                for qualifier in qualifiers
+            )
+        )
+        self.assertTrue(
+            any(
+                "Some features add a spell to a character’s spell list even if the character isn’t a member of a class in the parentheses."
+                in qualifier
+                for qualifier in qualifiers
+            )
+        )
+
+        candidate = copy.deepcopy(manifest)
+        candidate["source_fourth_resolution_contract"]["common_qualifiers"] = [
+            qualifier
+            for qualifier in candidate["source_fourth_resolution_contract"][
+                "common_qualifiers"
+            ]
+            if "A Reaction spell is cast in response" not in qualifier
+        ]
+        with self.assertRaises(TOOL.SourceQualificationError) as caught:
+            TOOL._validate_source_unknown_classifications(candidate)
+        self.assertEqual(caught.exception.code, "source_fourth_contract")
+
+    def test_fourth_source_evidence_never_promotes_native_or_full_roster_readiness(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        contract = manifest["source_fourth_resolution_contract"]
+        self.assertEqual(contract["future_native_proof_status"], "NOT_ESTABLISHED")
+        self.assertEqual(
+            contract["full_339_source_qualification_status"], "NOT_ESTABLISHED"
+        )
+        self.assertEqual(contract["production_claim"], "NONE")
+        self.assertTrue(
+            all(
+                not row["actual_native_proof_refs"]
+                for row in manifest["source_fourth_resolution_evidence"]
+            )
+        )
+        roster = TOOL.derive_source_requirement_roster(manifest)
+        receipt = TOOL._source_qualification_receipt(manifest, roster)
+        self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
+        self.assertFalse(receipt["source_ready_gate"]["ready"])
 
     def test_third12_rejects_binding_provenance_enum_bound_actor_and_hash_drift(
         self,

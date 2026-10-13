@@ -27,6 +27,9 @@
     "source_third12_review",
     "source_third12_resolution_contract",
     "source_third12_resolution_evidence",
+    "source_fourth_review",
+    "source_fourth_resolution_contract",
+    "source_fourth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -112,6 +115,16 @@
       "minItems": 12,
       "maxItems": 12,
       "items": {"$ref": "#/$defs/sourceThird12ResolutionEvidence"}
+    },
+    "source_fourth_review": {"$ref": "#/$defs/sourceFourthReview"},
+    "source_fourth_resolution_contract": {
+      "$ref": "#/$defs/sourceFourthResolutionContract"
+    },
+    "source_fourth_resolution_evidence": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {"$ref": "#/$defs/sourceFourthResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -901,6 +914,179 @@
           }
         },
         "material_qualifiers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "retained_source_residual": {"type": "string", "minLength": 1},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
+      }
+    },
+    "sourceFourthReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "candidate_source_base_sha",
+        "candidate_path", "candidate_sha256", "accepted_review_path",
+        "accepted_review_sha256", "task_evidence_path", "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_FOURTH_SOURCE_REVIEW_20261013"},
+        "integration_base_sha": {"const": "7ba417d6c8eda10efb30f1cef0459e70d1b56dfc"},
+        "candidate_source_base_sha": {"const": "7ba417d6c8eda10efb30f1cef0459e70d1b56dfc"},
+        "candidate_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-fourth-source-extraction-20261013.md"},
+        "candidate_sha256": {"const": "22f1a64da0054a2680ed3cdae07ab2e144e881f48d0463b9caea0569dcf692ab"},
+        "accepted_review_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-fourth-source-review-20261013.md"},
+        "accepted_review_sha256": {"const": "859b26ecbf27ab0234c45277c6deea76474bc6134ed1675ed496ba0a8678780a"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-13-sp00-fourth-markdown-source-qualification.md"},
+        "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceFourthMarkdownLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "line_start", "line_end", "span_sha256"],
+      "properties": {
+        "heading": {"type": "string", "minLength": 1},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1},
+        "span_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceFourthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "selected_spell_count",
+        "resolution_record_count", "selected_source_closed_key_count",
+        "selected_source_closed_subobligation_count", "selected_source_held_key_count",
+        "selected_source_held_subobligation_count", "prior_reviewed_key_count",
+        "prior_source_closed_key_count", "prior_source_closed_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "cumulative_reviewed_key_count",
+        "cumulative_resolution_record_count", "cumulative_source_closed_key_count",
+        "cumulative_source_closed_subobligation_count", "cumulative_source_held_key_count",
+        "cumulative_source_held_subobligation_count", "original_record_count",
+        "original_source_blocking_key_count", "downstream_only_key_count",
+        "active_source_blocker_count", "active_source_blocker_entry_count",
+        "future_native_proof_status",
+        "full_339_source_qualification_status", "production_claim",
+        "selected_original_classification_indexes", "common_markdown_locators",
+        "common_qualifiers"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_FOURTH_REVIEWED_SET_SOURCE_ONLY"},
+        "selected_key_count": {"const": 11},
+        "selected_spell_count": {"const": 10},
+        "resolution_record_count": {"const": 11},
+        "selected_source_closed_key_count": {"const": 8},
+        "selected_source_closed_subobligation_count": {"const": 8},
+        "selected_source_held_key_count": {"const": 3},
+        "selected_source_held_subobligation_count": {"const": 3},
+        "prior_reviewed_key_count": {"const": 36},
+        "prior_source_closed_key_count": {"const": 31},
+        "prior_source_closed_subobligation_count": {"const": 32},
+        "prior_source_held_key_count": {"const": 5},
+        "prior_source_held_subobligation_count": {"const": 5},
+        "prior_active_source_blocker_count": {"const": 46},
+        "cumulative_reviewed_key_count": {"const": 47},
+        "cumulative_resolution_record_count": {"const": 48},
+        "cumulative_source_closed_key_count": {"const": 39},
+        "cumulative_source_closed_subobligation_count": {"const": 40},
+        "cumulative_source_held_key_count": {"const": 8},
+        "cumulative_source_held_subobligation_count": {"const": 8},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 38},
+        "active_source_blocker_entry_count": {"const": 35},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {
+          "type": "array",
+          "minItems": 11,
+          "maxItems": 11,
+          "uniqueItems": true,
+          "items": {"enum": [44, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55]}
+        },
+        "common_markdown_locators": {
+          "type": "array",
+          "minItems": 10,
+          "maxItems": 10,
+          "items": {"$ref": "#/$defs/sourceFourthMarkdownLocator"}
+        },
+        "common_qualifiers": {
+          "type": "array",
+          "minItems": 24,
+          "maxItems": 24,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "sourceFourthRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "json_pointer", "source_exact_name", "printed_page",
+        "source_header_line", "raw_body_sha256", "raw_hash_basis",
+        "body_witness_ref", "qualification_ref"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/required_modes_or_exceptions$"},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_hash_basis": {"const": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"},
+        "body_witness_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        },
+        "qualification_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/qualifications$"}
+          }
+        }
+      }
+    },
+    "sourceFourthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_record_ref",
+        "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "source_markdown_locators", "source_interpretation",
+        "material_qualifiers", "retained_source_residual",
+        "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {"enum": ["FOURTH-01", "FOURTH-02", "FOURTH-03", "FOURTH-04", "FOURTH-05", "FOURTH-06", "FOURTH-07", "FOURTH-08", "FOURTH-09", "FOURTH-10", "FOURTH-11"]},
+        "unresolved_key": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "source_category": {"enum": ["source_parameter", "source_semantics", "source_mapping_review"]},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["SOURCE_CLOSED", "SOURCE_HELD"]},
+        "source_record_ref": {"$ref": "#/$defs/sourceFourthRecordRef"},
+        "source_classification_pointer": {"type": "string", "pattern": "^/source_unknown_classifications/[0-9]+$"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/[0-9]+$"},
+        "current_map_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/entries/[0-9]+$"},
+        "source_markdown_locators": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/sourceFourthMarkdownLocator"}
+        },
+        "source_interpretation": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "material_qualifiers": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
         "retained_source_residual": {"type": "string", "minLength": 1},
         "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
         "actual_native_proof_refs": {"type": "array", "maxItems": 0}

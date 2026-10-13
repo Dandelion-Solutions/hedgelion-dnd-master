@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "e43d3da19c27a38f1cf0c21303f08d5547f01aafc3dc8bf5e9af08653737b1f6"
+    "a3c15eae554425ca50a63725b791a7747b25dd37a869da79bcfe170237266f2f"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -4284,6 +4284,634 @@ THIRD12_REQUIRED_EVIDENCE_TOKENS = (
     *THIRD12_SELECTED_KEYS,
 )
 
+FOURTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_FOURTH_SOURCE_REVIEW_20261013",
+    "integration_base_sha": "7ba417d6c8eda10efb30f1cef0459e70d1b56dfc",
+    "candidate_source_base_sha": "7ba417d6c8eda10efb30f1cef0459e70d1b56dfc",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-fourth-source-extraction-20261013.md",
+    "candidate_sha256": "22f1a64da0054a2680ed3cdae07ab2e144e881f48d0463b9caea0569dcf692ab",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-fourth-source-review-20261013.md",
+    "accepted_review_sha256": "859b26ecbf27ab0234c45277c6deea76474bc6134ed1675ed496ba0a8678780a",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-13-sp00-fourth-markdown-source-qualification.md",
+    "task_evidence_sha256": "fdf603e6e3ba3a53f787441f660f4e6b5d358fb070c2160b30cf741f34bacb5d",
+}
+FOURTH_SELECTED_CLASSIFICATION_INDEXES = (44, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55)
+FOURTH_EVIDENCE_ORDER = (
+    (
+        "FOURTH-01",
+        "source.spell.knock.unresolved.knock_sound_range",
+        "source_parameter",
+    ),
+    (
+        "FOURTH-02",
+        "source.spell.levitate.unresolved.altitude_mass_bounds",
+        "source_parameter",
+    ),
+    (
+        "FOURTH-03",
+        "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+        "source_mapping_review",
+    ),
+    (
+        "FOURTH-04",
+        "source.spell.locate_object.unresolved.current_query_consumer",
+        "source_semantics",
+    ),
+    (
+        "FOURTH-05",
+        "source.spell.longstrider.unresolved.speed_composition",
+        "source_semantics",
+    ),
+    (
+        "FOURTH-06",
+        "source.spell.mage_armor.unresolved.ac_base_formula",
+        "source_parameter",
+    ),
+    (
+        "FOURTH-07",
+        "source.spell.mage_hand.unresolved.hand_bounds_and_eligibility",
+        "source_parameter",
+    ),
+    (
+        "FOURTH-08",
+        "source.spell.magic_missile.unresolved.rng_damage_grouping",
+        "source_semantics",
+    ),
+    (
+        "FOURTH-09",
+        "source.spell.magic_mouth.unresolved.trigger_episode_frequency",
+        "source_semantics",
+    ),
+    (
+        "FOURTH-10",
+        "source.spell.magic_mouth.unresolved.message_word_bound",
+        "source_parameter",
+    ),
+    (
+        "FOURTH-11",
+        "source.spell.magic_weapon.unresolved.bonus_band_numbers",
+        "source_parameter",
+    ),
+)
+FOURTH_SELECTED_KEYS = tuple(key for _, key, _ in FOURTH_EVIDENCE_ORDER)
+FOURTH_COMMON_MARKDOWN_LOCATORS: tuple[dict[str, object], ...] = (
+    {
+        "heading": "Casting Spells",
+        "line_start": 9068,
+        "line_end": 9257,
+        "span_sha256": "48ccc959d306e2f349b56e2dea465f9b119c47d414105011fc44104384aa0702",
+    },
+    {
+        "heading": "Class Spell Lists",
+        "line_start": 9133,
+        "line_end": 9137,
+        "span_sha256": "53cf80604eb60606f14e297d71f48bd0b5ccce68f333f5343f9fb34876873eba",
+    },
+    {
+        "heading": "Reaction and Bonus Action Triggers",
+        "line_start": 9151,
+        "line_end": 9155,
+        "span_sha256": "47c13792c1488cfeb403525e6a145fb5dc9cb844bf2a981c7443884b2dc2fb13",
+    },
+    {
+        "heading": "Damage Rolls",
+        "line_start": 1396,
+        "line_end": 1400,
+        "span_sha256": "3bab0640f9638faa8e732906e9ad79fb1941a7cbcfd1bba78b1e8bf69124ac15",
+    },
+    {
+        "heading": "Climbing",
+        "line_start": 16282,
+        "line_end": 16304,
+        "span_sha256": "e0f43114f314cad41d4a9c97e2524c4fed62af077df7852feb5d2f1a963f1a76",
+    },
+    {
+        "heading": "Speed",
+        "line_start": 17163,
+        "line_end": 17169,
+        "span_sha256": "033e5886f45fe2767f324130b4d4cbcc6f4a27e8f7368fb8bb4e30bf4c9b3f15",
+    },
+    {
+        "heading": "Armor Class",
+        "line_start": 16099,
+        "line_end": 16103,
+        "span_sha256": "9ee7bf2f3b3029d8c9408c0143e643762ced1360721a772cfe0292eeff171b49",
+    },
+    {
+        "heading": "Creature Type",
+        "line_start": 16344,
+        "line_end": 16350,
+        "span_sha256": "d2b33fa78917f0ba98ee90a1e114737589ce71c6c365e4a7279c19a19b6ab6fe",
+    },
+    {
+        "heading": "Magic [Action]",
+        "line_start": 16887,
+        "line_end": 16891,
+        "span_sha256": "c058c7161a70af3ac580fd1ce30766347d64288b2a58f0c430a1c31852056565",
+    },
+    {
+        "heading": "Shield",
+        "line_start": 14703,
+        "line_end": 14715,
+        "span_sha256": "156ada53007c0b34b674048e9d977b157a7dd1794c56871586e84702951ad965",
+    },
+)
+FOURTH_COMMON_QUALIFIERS = (
+    "Clear path to a targeted subject is required; Total Cover prevents targeting (9223-9227). Absent repeated visibility never grants through-cover targeting. Area membership/cover realization is not proved.",
+    "Range limits origin as the description specifies; movable effects are not generally range-leashed absent an explicit spell restriction (9165-9175).",
+    "Effects beyond source statements remain GM purview (9217-9219); no numeric, actor-kind, choice, turn or damage default fills missing semantic proof.",
+    "Concentration is a maximum, not guaranteed persistence: creator may end it without action; another concentration effect, Incapacitated/dead creator, or failed damage save ends it (16296-16304).",
+    "Time-span spells can be dismissed without action by a non-Incapacitated caster (9205-9213).",
+    "Same-spell effects do not combine; most potent applies, then most recent if equal, while durations overlap (9255-9257). Different-spell coexistence does not prove downstream ordering.",
+    "No source choice name in this candidate is an admitted recipe/machine/native identifier. Every whole-map, support, admission, execution, recovery, disclosure and performance proof remains NOT_ESTABLISHED.",
+    "Armor training is caster legality for casting in armor; it is distinct from Mage Armor target eligibility.",
+    "Spell levels are 0–9; schools describe spells but confer no rules themselves unless another rule refers to them.",
+    "Some features add a spell to a character’s spell list even if the character isn’t a member of a class in the parentheses. Profile class membership alone is not an exhaustive capability prohibition or proof of an installed casting capability.",
+    "A level 1+ spell uses a slot of its level or higher; a higher slot makes that casting the higher level, with only body-specified enhancements. Cantrips require no slot.",
+    "Special abilities and magic items can provide distinct limited no-slot paths; profile listing alone neither proves nor denies a particular casting capability.",
+    "On a turn, only one spell slot can be expended to cast a spell; this is not a universal one-spell-per-turn prohibition.",
+    "A Reaction spell is cast in response to the trigger defined in its Casting Time entry. Some Bonus Action spells also specify a trigger in the spell; Bonus Action casting does not universally require a trigger.",
+    "Casting for 1 minute or longer, including Ritual casting, requires a Magic action each turn and Concentration during casting; interruption fails without expending a slot and requires starting over. This is not ongoing Concentration for a resulting nonconcentration effect.",
+    "A spell’s range limits where its effect can originate as its description specifies; movable effects are not range-restricted unless the description says otherwise. Preserve explicit Levitate control and Mage Hand separation limits.",
+    "All specified components must be supplied. Verbal components require a normal speaking voice; Somatic requires a hand; Material needs a free hand, which can also perform Somatic components.",
+    "A pouch/focus can replace Material only when the component is neither consumed nor priced; focus use also requires an authorizing feature and held focus. Magic Mouth’s 10+ GP dust is consumed and excluded from substitution.",
+    "Time-span dismissal without action applies only while the caster is not Incapacitated; preserve exact Concentration, Until-dispelled and body-specific early-ending rules.",
+    "Target bodies define target kinds; clear path excludes Total Cover. Self-selection applies to a creature of choice unless Hostile/other-than-self is required. Do not add an all-purpose visibility constraint to distant queries.",
+    "Unperceived targeting is not known unless perceptible. A valid cast at an invalid target preserves slot cost and prescribed no-effect/apparent-save presentation; unsupported binding is a separate failure and not a free hidden-type probe.",
+    "Use only source-specified saves and attack rolls and formulas; do not invent a save for willing Levitate targets/objects or an attack roll for Magic Missile.",
+    "Different-spell effects add while durations overlap; repeated same-spell effects do not combine, most potent then most recent applies, and suppressed durations persist. Preserve explicit Mage Hand/Magic Weapon recast endings.",
+    "Climbing movement costs and its optional DC 15 check retain their conditions; Climb Speed removes the extra cost when used to climb. Concentration ends on another concentration effect, failed damage save, Incapacitated or death; these are source laws, not execution proof.",
+)
+FOURTH_COMMON_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
+    "Casting Spells": (
+        "Some features add a spell to a character’s spell list",
+        "A spell that has a casting time of a Reaction is cast in response to a trigger",
+        "Some spells that have a casting time of a Bonus Action",
+        "you can expend only one spell slot",
+        "movable effects, they aren’t restricted by its range",
+    ),
+    "Class Spell Lists": (
+        "Some features add a spell to a character’s spell list even if the character isn’t a member of a class in the parentheses.",
+    ),
+    "Reaction and Bonus Action Triggers": (
+        "A spell that has a casting time of a Reaction is cast in response to a trigger",
+        "Some spells that have a casting time of a Bonus Action are also cast in response to a trigger",
+    ),
+    "Damage Rolls": (
+        "You roll the damage dice",
+        "A spell tells you which dice to roll for damage",
+    ),
+    "Climbing": (
+        "each foot of movement costs 1 extra foot",
+        "successful DC 15 Strength (Athletics) check",
+        "another effect that requires Concentration",
+        "Incapacitated or Dead",
+    ),
+    "Speed": ("any special speed you have increases or decreases by an equal amount",),
+    "Armor Class": (
+        "you choose which calculation to use; you can’t use more than one",
+    ),
+    "Creature Type": ("Beast Fey Ooze Celestial Fiend Plant Construct",),
+    "Magic [Action]": ("casting time of 1 minute or longer", "maintain Concentration"),
+    "Shield": (
+        "targeted by the *Magic Missile* spell",
+        "take no damage from *Magic Missile*",
+    ),
+}
+FOURTH_REQUIRED_EVIDENCE_TOKENS = (
+    FOURTH_REVIEW["candidate_sha256"],
+    FOURTH_REVIEW["accepted_review_sha256"],
+    "Original indexes 44–55 contain 11 active source subobligations.",
+    "A Reaction spell is cast in response to the trigger defined in its Casting Time entry.",
+    "feature-authorized casting",
+    "47 reviewed keys",
+    "38 active source-blocking keys",
+    "W05_SPELL_SOURCE_QUALIFICATION_READY",
+)
+
+FOURTH_SOURCE_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.knock.unresolved.knock_sound_range": {
+        "source_exact_name": "Knock",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 44,
+        "map_entry_index": 76,
+        "source_pass_row": 78,
+        "body_witness_row": 184,
+        "printed_page": 143,
+        "source_header_line": 12546,
+        "raw_body_sha256": "4da42a5511abfaa432d0fb4d673bd236d1d762f848370cd85513794245ab2245",
+        "locators": [
+            {
+                "heading": "Knock",
+                "line_start": 13001,
+                "line_end": 13015,
+                "span_sha256": "f99c908136fdf9389ae79b0f8fd17830b64181189c588a3a6d4bb07614886e5d",
+            }
+        ],
+        "source_phrases": (
+            (0, "audible up to 300 feet away"),
+            (0, "emanates from the target"),
+            (0, "only one of them is unlocked"),
+            (0, "suppressed for 10 minutes"),
+        ),
+        "required_qualifiers": (
+            "audible up to 300 feet away",
+            "60-foot casting range",
+            "only one lock",
+            "suppressed for 10 minutes",
+            "not dispelled",
+            "not a universal guarantee",
+        ),
+    },
+    "source.spell.levitate.unresolved.altitude_mass_bounds": {
+        "source_exact_name": "Levitate",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 46,
+        "map_entry_index": 78,
+        "source_pass_row": 80,
+        "body_witness_row": 187,
+        "printed_page": 144,
+        "source_header_line": 12589,
+        "raw_body_sha256": "20365e640e51818fa0cda79a81a675fc48355f702bfcf2db952051b134bb5190",
+        "locators": [
+            {
+                "heading": "Levitate",
+                "line_start": 13053,
+                "line_end": 13067,
+                "span_sha256": "10f815a8ae653de247bb7b29c36f7f32b2c3ac19310c87793df5891e4f828d56",
+            }
+        ],
+        "source_phrases": (
+            (0, "loose object"),
+            (0, "up to 500 pounds"),
+            (0, "up to 20 feet in either direction on your turn"),
+            (0, "which must remain within the spell’s range"),
+            (0, "floats gently to the ground"),
+        ),
+        "required_qualifiers": (
+            "one visible creature or loose object",
+            "500-pound limit is stated for objects",
+            "up to 20 feet",
+            "on the caster’s turn",
+            "in either direction",
+            "Magic action",
+            "within spell range",
+            "fixed object or surface",
+            "floats gently",
+            "not free horizontal flight",
+        ),
+    },
+    "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain": {
+        "source_exact_name": "Locate Animals or Plants",
+        "category": "source_mapping_review",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 47,
+        "map_entry_index": 80,
+        "source_pass_row": 82,
+        "body_witness_row": 190,
+        "printed_page": 144,
+        "source_header_line": 12635,
+        "raw_body_sha256": "6d80aaa14cac0094cf4f3f5ccb31386a263528fe63da0f3882ab71d59e3e29b8",
+        "locators": [
+            {
+                "heading": "Locate Animals or Plants",
+                "line_start": 13107,
+                "line_end": 13119,
+                "span_sha256": "b63c752076f267ac95c197582ad1c377b80139802f7fbcdefa8b3de1bd14b7bf",
+            }
+        ],
+        "source_phrases": (
+            (0, "specific kind of Beast, Plant creature, or nonmagical plant"),
+            (0, "within 5 miles"),
+            (0, "direction and distance"),
+            (0, "if any are present"),
+        ),
+        "required_qualifiers": (
+            "Beast",
+            "Plant creature",
+            "nonmagical plant",
+            "kind",
+            "closest",
+            "within 5 miles",
+            "direction and distance",
+            "if any are present",
+            "individually named complete creature/plant-kind member census",
+        ),
+    },
+    "source.spell.locate_object.unresolved.current_query_consumer": {
+        "source_exact_name": "Locate Object",
+        "category": "source_semantics",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 48,
+        "map_entry_index": 81,
+        "source_pass_row": 83,
+        "body_witness_row": 192,
+        "printed_page": 145,
+        "source_header_line": 12666,
+        "raw_body_sha256": "976c5efbfb68ce41ef1ad75f91d27f7378a5e2b452f7b96f166a4de38f84da39",
+        "locators": [
+            {
+                "heading": "Locate Object",
+                "line_start": 13141,
+                "line_end": 13155,
+                "span_sha256": "ffdf344ad5c004120951a03582c62dddf4d2c021b9b28d9d63e88acd85dd36d5",
+            }
+        ],
+        "source_phrases": (
+            (0, "object that is familiar to you"),
+            (0, "within 30 feet"),
+            (0, "nearest object of a particular kind"),
+            (0, "direction of its movement"),
+            (0, "any thickness of lead"),
+        ),
+        "required_qualifiers": (
+            "familiar description/name",
+            "specific object known",
+            "seen up close within 30 feet",
+            "alternative nearest-kind query",
+            "within 1,000 feet",
+            "direction",
+            "not distance",
+            "any thickness of lead",
+            "not an extra visibility requirement",
+        ),
+    },
+    "source.spell.longstrider.unresolved.speed_composition": {
+        "source_exact_name": "Longstrider",
+        "category": "source_semantics",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 49,
+        "map_entry_index": 82,
+        "source_pass_row": 84,
+        "body_witness_row": 193,
+        "printed_page": 145,
+        "source_header_line": 12685,
+        "raw_body_sha256": "1c8b4f15108865068b21aa07b40eeb20b174b6af434ce9e4151eba89f3e66d80",
+        "locators": [
+            {
+                "heading": "Longstrider",
+                "line_start": 13159,
+                "line_end": 13173,
+                "span_sha256": "773849548bc7a17fe67217c537b02fc3460ee427b1bf89b1ec9e4374b09ef7fe",
+            }
+        ],
+        "source_phrases": (
+            (0, "Speed increases by 10 feet"),
+            (0, "one additional creature for each spell slot level above 1"),
+        ),
+        "required_qualifiers": (
+            "one +10-foot Speed increase",
+            "one hour",
+            "one additional creature",
+            "equal temporary Speed increase",
+            "same duration",
+            "each existing special speed",
+            "not independent per-mode bonuses",
+            "no new movement mode",
+        ),
+    },
+    "source.spell.mage_armor.unresolved.ac_base_formula": {
+        "source_exact_name": "Mage Armor",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 50,
+        "map_entry_index": 83,
+        "source_pass_row": 85,
+        "body_witness_row": 194,
+        "printed_page": 145,
+        "source_header_line": 12696,
+        "raw_body_sha256": "8fa168e51979a0c83e202912ebe0a3dee540fe6e15a9fe0a57d071f47cdada23",
+        "locators": [
+            {
+                "heading": "Mage Armor",
+                "line_start": 13177,
+                "line_end": 13189,
+                "span_sha256": "e7ecbb88b000f22b1d5341210214c7e7b87b7d52f5b8b70f6f017b01ec642c7e",
+            }
+        ],
+        "source_phrases": (
+            (0, "willing creature who isn’t wearing armor"),
+            (0, "base AC becomes 13 plus its Dexterity modifier"),
+            (0, "ends early if the target dons armor"),
+        ),
+        "required_qualifiers": (
+            "13 plus its Dexterity modifier",
+            "base calculation",
+            "not an additive +13 bonus",
+            "willing creature",
+            "not wearing armor",
+            "8 hours",
+            "dons armor",
+            "only one base calculation",
+            "no claim that Shield use ends",
+        ),
+    },
+    "source.spell.mage_hand.unresolved.hand_bounds_and_eligibility": {
+        "source_exact_name": "Mage Hand",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 51,
+        "map_entry_index": 84,
+        "source_pass_row": 86,
+        "body_witness_row": 195,
+        "printed_page": 145,
+        "source_header_line": 12705,
+        "raw_body_sha256": "20f9d0951f32eeee8ba362a3db21121753361970c861d76ee134bd5260f7ae15",
+        "locators": [
+            {
+                "heading": "Mage Hand",
+                "line_start": 13193,
+                "line_end": 13207,
+                "span_sha256": "78fbb06b382d9319772137a4d9054f361ae301d423990eaed2eb3403a958eaeb",
+            }
+        ],
+        "source_phrases": (
+            (0, "more than 30 feet away from you"),
+            (0, "As a Magic action on your later turns"),
+            (0, "up to 30 feet"),
+            (0, "can’t attack, activate magic items, or carry more than 10 pounds"),
+        ),
+        "required_qualifiers": (
+            "within 30 feet",
+            "ever more than 30 feet",
+            "during casting without an extra action",
+            "later control is a Magic action",
+            "up to 30 feet of movement",
+            "unlocked",
+            "open container",
+            "pouring is limited to vial contents",
+            "cannot attack",
+            "activate magic items",
+            "more than 10 pounds",
+            "source permission to manipulate objects is not removed",
+        ),
+    },
+    "source.spell.magic_missile.unresolved.rng_damage_grouping": {
+        "source_exact_name": "Magic Missile",
+        "category": "source_semantics",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 52,
+        "map_entry_index": 85,
+        "source_pass_row": 87,
+        "body_witness_row": 198,
+        "printed_page": 146,
+        "source_header_line": 12789,
+        "raw_body_sha256": "0f691800c3e9c5664ebd220ade84cb02ffff15989cecfa111fb365835724019c",
+        "locators": [
+            {
+                "heading": "Magic Missile",
+                "line_start": 13259,
+                "line_end": 13273,
+                "span_sha256": "e772f726833c5dcb9d05591eeb8537634ea860acf3412da63fb95599182b2a0d",
+            }
+        ],
+        "source_phrases": (
+            (0, "three glowing darts"),
+            (0, "creature of your choice that you can see within range"),
+            (0, "1d4 + 1 Force damage"),
+            (0, "all strike simultaneously"),
+            (0, "one more dart for each spell slot level above 1"),
+        ),
+        "required_qualifiers": (
+            "three darts",
+            "visible creature within 120 feet",
+            "deals 1d4 + 1 Force damage",
+            "simultaneously",
+            "one creature or several",
+            "one dart per level above 1",
+            "body specifies no attack roll or saving throw",
+            "prevents Magic Missile damage",
+            "shared-versus-separate dart dice",
+            "occurrence partition",
+            "do not infer grouping from simultaneity",
+        ),
+    },
+    "source.spell.magic_mouth.unresolved.trigger_episode_frequency": {
+        "source_exact_name": "Magic Mouth",
+        "category": "source_semantics",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 53,
+        "map_entry_index": 86,
+        "source_pass_row": 88,
+        "body_witness_row": 199,
+        "printed_page": 146,
+        "source_header_line": 12802,
+        "raw_body_sha256": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0",
+        "locators": [
+            {
+                "heading": "Magic Mouth",
+                "line_start": 13277,
+                "line_end": 13291,
+                "span_sha256": "f4bae8f5abed8471d713c43cfff53669fb68e253e2157bd42c048f1c04ebc704",
+            }
+        ],
+        "source_phrases": (
+            (0, "repeat its message whenever the trigger occurs"),
+            (0, "visual or audible conditions that occur within 30 feet of the object"),
+        ),
+        "required_qualifiers": (
+            "whenever the trigger occurs",
+            "visual or audible",
+            "within 30 feet of the object",
+            "examples",
+            "does not specify a rearm edge",
+            "frequency while a condition remains continuously true",
+            "automatic cooldown",
+            "do not infer every-tick repetition",
+            "word/radius source obligation at index 54 is separate",
+        ),
+    },
+    "source.spell.magic_mouth.unresolved.message_word_bound": {
+        "source_exact_name": "Magic Mouth",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 54,
+        "map_entry_index": 86,
+        "source_pass_row": 88,
+        "body_witness_row": 199,
+        "printed_page": 146,
+        "source_header_line": 12802,
+        "raw_body_sha256": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0",
+        "locators": [
+            {
+                "heading": "Magic Mouth",
+                "line_start": 13277,
+                "line_end": 13291,
+                "span_sha256": "f4bae8f5abed8471d713c43cfff53669fb68e253e2157bd42c048f1c04ebc704",
+            }
+        ],
+        "source_phrases": (
+            (0, "25 words or fewer"),
+            (0, "as long as 10 minutes"),
+            (0, "within 30 feet of the object"),
+            (0, "isn’t being worn or carried by another creature"),
+        ),
+        "required_qualifiers": (
+            "at most 25 words",
+            "as long as 10 minutes",
+            "within 30 feet of the enchanted object",
+            "object-centered",
+            "chosen object cannot be worn or carried by another creature",
+            "10+ GP jade dust",
+            "consumed",
+            "pouch/focus substitution is excluded",
+            "does not create ongoing Concentration",
+            "Trigger episode frequency at index 53",
+        ),
+    },
+    "source.spell.magic_weapon.unresolved.bonus_band_numbers": {
+        "source_exact_name": "Magic Weapon",
+        "category": "source_parameter",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 55,
+        "map_entry_index": 87,
+        "source_pass_row": 89,
+        "body_witness_row": 200,
+        "printed_page": 146,
+        "source_header_line": 12830,
+        "raw_body_sha256": "26e63b0335e54fa9f5872629b2b252eff2cc9d7bc69d91ceb44a35b294dcd27b",
+        "locators": [
+            {
+                "heading": "Magic Weapon",
+                "line_start": 13295,
+                "line_end": 13309,
+                "span_sha256": "7a2766808ccfdfb60b65362ee75ab5b64d44b807baaa96ce0339ac8a28b17d96",
+            }
+        ],
+        "source_phrases": (
+            (0, "nonmagical weapon"),
+            (0, "+1 bonus to attack rolls and damage rolls"),
+            (0, "level 3–5 spell slot"),
+            (0, "level 6+ spell slot"),
+        ),
+        "required_qualifiers": (
+            "level-2 slot grants +1",
+            "level-3–5 grants +2",
+            "level-6+ grants +3",
+            "attack and damage rolls",
+            "nonmagical weapon",
+            "one hour",
+            "nonconcentration",
+            "Bonus Action",
+            "ordinary Bonus Action does not acquire a trigger",
+            "legacy bands/concentration",
+            "do not add another point per slot",
+        ),
+    },
+}
+FOURTH_SOURCE_CLOSED_KEYS = frozenset(
+    key
+    for key, item in FOURTH_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_CLOSED"
+)
+FOURTH_SOURCE_HELD_KEYS = frozenset(
+    key
+    for key, item in FOURTH_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_HELD"
+)
+
 
 def _read_pinned_local_evidence(
     relative_path: str, expected_sha256: str, evidence_name: str
@@ -5543,6 +6171,526 @@ def _validate_source_third12_resolution_evidence(
     }
 
 
+def _validate_source_fourth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind the reviewed fourth source-only set to exact old and Markdown witnesses."""
+    review = _object(manifest.get("source_fourth_review"), "source_fourth_review")
+    if review != FOURTH_REVIEW:
+        _fail(
+            "source_fourth_review",
+            "fourth extraction, independent review or task-evidence identity differs",
+        )
+    task_evidence_bytes = _read_pinned_local_evidence(
+        str(FOURTH_REVIEW["task_evidence_path"]),
+        str(FOURTH_REVIEW["task_evidence_sha256"]),
+        "source_fourth_review",
+    )
+    try:
+        task_evidence = task_evidence_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_fourth_review", "task evidence is not UTF-8")
+    if any(token not in task_evidence for token in FOURTH_REQUIRED_EVIDENCE_TOKENS):
+        _fail(
+            "source_fourth_review",
+            "task evidence omits frozen identities, the corrected shared law or limits",
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_fourth_markdown",
+    )
+    try:
+        markdown_bytes_lines = markdown_bytes.splitlines(keepends=True)
+        markdown_lines = [line.decode("utf-8") for line in markdown_bytes_lines]
+    except UnicodeDecodeError:
+        _fail("source_fourth_markdown", "source Markdown is not UTF-8")
+
+    contract = _object(
+        manifest.get("source_fourth_resolution_contract"),
+        "source_fourth_resolution_contract",
+    )
+    expected_contract = {
+        "status": "PARTIAL_FOURTH_REVIEWED_SET_SOURCE_ONLY",
+        "selected_key_count": 11,
+        "selected_spell_count": 10,
+        "resolution_record_count": 11,
+        "selected_source_closed_key_count": 8,
+        "selected_source_closed_subobligation_count": 8,
+        "selected_source_held_key_count": 3,
+        "selected_source_held_subobligation_count": 3,
+        "prior_reviewed_key_count": 36,
+        "prior_source_closed_key_count": 31,
+        "prior_source_closed_subobligation_count": 32,
+        "prior_source_held_key_count": 5,
+        "prior_source_held_subobligation_count": 5,
+        "prior_active_source_blocker_count": 46,
+        "cumulative_reviewed_key_count": 47,
+        "cumulative_resolution_record_count": 48,
+        "cumulative_source_closed_key_count": 39,
+        "cumulative_source_closed_subobligation_count": 40,
+        "cumulative_source_held_key_count": 8,
+        "cumulative_source_held_subobligation_count": 8,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 38,
+        "active_source_blocker_entry_count": 35,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": list(
+            FOURTH_SELECTED_CLASSIFICATION_INDEXES
+        ),
+        "common_markdown_locators": list(FOURTH_COMMON_MARKDOWN_LOCATORS),
+        "common_qualifiers": list(FOURTH_COMMON_QUALIFIERS),
+    }
+    if contract != expected_contract:
+        _fail(
+            "source_fourth_contract",
+            "fourth source-only counts, preserved totals or shared qualifiers differ",
+        )
+
+    for locator_index, locator in enumerate(FOURTH_COMMON_MARKDOWN_LOCATORS):
+        start = int(locator["line_start"])
+        end = int(locator["line_end"])
+        if start < 1 or end < start or end > len(markdown_bytes_lines):
+            _fail("source_fourth_common_locator", "common source span is invalid")
+        span_bytes = b"".join(markdown_bytes_lines[start - 1 : end])
+        if hashlib.sha256(span_bytes).hexdigest() != locator["span_sha256"]:
+            _fail(
+                "source_fourth_markdown_span_hash",
+                f"common Markdown span {locator['heading']} changed",
+            )
+        section = "".join(markdown_lines[start - 1 : end])
+        heading_line = next(
+            (
+                line.strip()
+                for line in markdown_lines[start - 1 : end]
+                if line.lstrip().startswith("#")
+            ),
+            "",
+        )
+        heading = str(locator["heading"])
+        if not heading_line.startswith("#") or heading not in heading_line:
+            _fail(
+                "source_fourth_common_locator",
+                f"common locator {heading} has a mismatched heading",
+            )
+        if any(
+            phrase not in section for phrase in FOURTH_COMMON_REQUIRED_PHRASES[heading]
+        ):
+            _fail(
+                "source_fourth_common_source_text",
+                f"common source span {heading} omits a reviewed clause",
+            )
+
+    rows = [
+        _object(value, f"source_fourth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_fourth_resolution_evidence"),
+                "source_fourth_resolution_evidence",
+            )
+        )
+    ]
+    actual_order = [
+        (
+            str(row.get("review_item_id")),
+            str(row.get("unresolved_key")),
+            str(row.get("source_category")),
+        )
+        for row in rows
+    ]
+    expected_order = tuple(FOURTH_EVIDENCE_ORDER)
+    if (
+        len(rows) != len(expected_order)
+        or tuple(actual_order) != expected_order
+        or len({row.get("unresolved_key") for row in rows}) != len(expected_order)
+    ):
+        _fail(
+            "source_fourth_census",
+            "the selected fourth source key/category/order census differs",
+        )
+
+    previous_keys = (
+        set(SOURCE_RESOLUTION_KEYS)
+        | set(NEXT12_SELECTED_KEYS)
+        | set(THIRD12_SELECTED_KEYS)
+    )
+    if previous_keys & set(FOURTH_SELECTED_KEYS):
+        _fail("source_fourth_census", "fourth evidence replaces a prior accepted key")
+    if list(FOURTH_SELECTED_CLASSIFICATION_INDEXES) != [
+        int(FOURTH_SOURCE_ITEMS[key]["classification_index"])
+        for key in FOURTH_SELECTED_KEYS
+    ]:
+        _fail("source_fourth_census", "selected original index roster differs")
+
+    skipped = classified_by_key.get(
+        "source.spell.lesser_restoration.unresolved.multisource_condition_removal"
+    )
+    skipped_subobligations = (
+        [
+            _object(value, "index45.subobligations")
+            for value in _array(skipped.get("subobligations"), "index45.subobligations")
+        ]
+        if skipped is not None
+        else []
+    )
+    if (
+        skipped is None
+        or skipped.get("source_ready_blocking") is not False
+        or skipped.get("classification_status") != "DOWNSTREAM_PROOF_ONLY"
+        or len(skipped_subobligations) != 1
+        or skipped_subobligations[0].get("category")
+        != "downstream_domain_consumer_admission_native_proof"
+        or skipped_subobligations[0].get("gate_phase") != "FUTURE_PROOF"
+        or skipped_subobligations[0].get("status") != "NOT_ESTABLISHED"
+    ):
+        _fail(
+            "source_fourth_census",
+            "original index 45 is not preserved as downstream-only evidence",
+        )
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_witnesses = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    witness_rows = _rows(body_witnesses, "rows", "source-body-witnesses")
+    closed_keys: list[str] = []
+    held_keys: list[str] = []
+    closed_subobligation_ids: list[str] = []
+    held_subobligation_ids: list[str] = []
+
+    for (item_id, key, category), row in zip(FOURTH_EVIDENCE_ORDER, rows, strict=True):
+        spec = FOURTH_SOURCE_ITEMS[key]
+        classification_index = int(spec["classification_index"])
+        map_entry_index = int(spec["map_entry_index"])
+        source_pass_row = int(spec["source_pass_row"])
+        body_witness_row = int(spec["body_witness_row"])
+        source_name = str(spec["source_exact_name"])
+        disposition = str(spec["disposition"])
+        subobligation_id = f"{key}::{category}"
+        classification_pointer = (
+            f"/source_unknown_classifications/{classification_index}"
+        )
+        history_pointer = (
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+            f"{classification_index}"
+        )
+        map_pointer = (
+            f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+        )
+        source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+        body_pointer = f"/rows/{body_witness_row}"
+        classification = classified_by_key.get(key)
+        if classification is None or key in previous_keys:
+            _fail("source_fourth_key", f"{key} is absent or replaces prior evidence")
+
+        original_classification = _object(
+            _resolve_json_pointer(
+                manifest, classification_pointer, "fourth classification pointer"
+            ),
+            f"{key}.classification",
+        )
+        original_history = _object(
+            _resolve_json_pointer(manifest, history_pointer, "fourth history pointer"),
+            f"{key}.original_history",
+        )
+        map_entry = _object(
+            _resolve_json_pointer(manifest, map_pointer, "fourth current-map pointer"),
+            f"{key}.current_map",
+        )
+        unresolved_rows = [
+            _object(value, f"{key}.map.unresolved_keys[{index}]")
+            for index, value in enumerate(
+                _array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys")
+            )
+        ]
+        evidence_ref = _object(
+            classification.get("evidence_ref"), f"{key}.evidence_ref"
+        )
+        history_matches = (
+            original_history.get("unresolved_key") == key
+            and original_history.get("source_exact_name") == source_name
+            and original_history.get("reason") == classification.get("original_reason")
+            and original_history.get("evidence_ref") == evidence_ref
+            and original_history.get("status") == classification.get("original_status")
+            and original_history.get("disposition")
+            == classification.get("original_disposition")
+        )
+        map_matches = map_entry.get("source_exact_name") == source_name and any(
+            value.get("unresolved_key") == key for value in unresolved_rows
+        )
+        source_subobligations = [
+            _object(value, f"{key}.source_subobligations[{index}]")
+            for index, value in enumerate(
+                _array(classification.get("subobligations"), f"{key}.subobligations")
+            )
+            if isinstance(value, dict)
+            and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        exact_subobligation = any(
+            value.get("subobligation_id") == subobligation_id
+            and value.get("category") == category
+            and value.get("status") == "NOT_ESTABLISHED"
+            and value.get("gate_phase") == "SP00_SOURCE"
+            for value in source_subobligations
+        )
+        if row.get("disposition") != disposition:
+            _fail(
+                "source_fourth_disposition",
+                f"{key} source-only disposition differs from the reviewed ruling",
+            )
+        if (
+            row.get("review_item_id") != item_id
+            or row.get("unresolved_key") != key
+            or row.get("source_exact_name") != source_name
+            or row.get("source_category") != category
+            or row.get("subobligation_id") != subobligation_id
+            or row.get("source_classification_pointer") != classification_pointer
+            or row.get("source_unresolved_record_pointer") != history_pointer
+            or row.get("current_map_pointer") != map_pointer
+            or classification != original_classification
+            or original_classification.get("unresolved_key") != key
+            or original_classification.get("source_exact_name") != source_name
+            or original_classification.get("source_unresolved_record_pointer")
+            != history_pointer
+            or original_classification.get("source_ready_blocking") is not True
+            or original_classification.get("original_status") != "NOT_ESTABLISHED"
+            or not history_matches
+            or not map_matches
+            or not exact_subobligation
+        ):
+            _fail(
+                "source_fourth_binding",
+                f"{key} differs from its original category, history, map or source subobligation",
+            )
+
+        source_record = source_rows[source_pass_row]
+        body_witness = witness_rows[body_witness_row]
+        expected_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": source_name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": source_record.get("hash_basis"),
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+        }
+        expected_evidence_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "exact_record_name": source_name,
+            "record_index": source_pass_row,
+            "source_asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "source_heading": source_name,
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+            "evidence_boundary": "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF",
+        }
+        if (
+            source_record.get("name") != source_name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or source_record.get("hash_basis")
+            != "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"
+            or not isinstance(source_record.get("qualifications"), list)
+            or body_witness.get("name") != source_name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+            or row.get("source_record_ref") != expected_ref
+            or evidence_ref != expected_evidence_ref
+        ):
+            _fail(
+                "source_fourth_provenance",
+                f"{key} borrows or misstates a source-pass, qualification or body-witness record",
+            )
+
+        locators = [
+            _object(value, f"{key}.source_markdown_locators[{index}]")
+            for index, value in enumerate(
+                _array(
+                    row.get("source_markdown_locators"),
+                    f"{key}.source_markdown_locators",
+                )
+            )
+        ]
+        if locators != spec["locators"]:
+            _fail("source_fourth_locator", f"{key} Markdown locators differ")
+        locator_texts: list[str] = []
+        for locator_index, locator in enumerate(locators):
+            start = locator.get("line_start")
+            end = locator.get("line_end")
+            if (
+                type(start) is not int
+                or type(end) is not int
+                or start < 1
+                or end < start
+                or end > len(markdown_bytes_lines)
+            ):
+                _fail("source_fourth_locator", f"{key} has an invalid Markdown span")
+            span_bytes = b"".join(markdown_bytes_lines[start - 1 : end])
+            if hashlib.sha256(span_bytes).hexdigest() != locator["span_sha256"]:
+                _fail(
+                    "source_fourth_markdown_span_hash",
+                    f"{key} Markdown span changed",
+                )
+            section = "".join(markdown_lines[start - 1 : end])
+            locator_texts.append(section)
+            first_line = markdown_lines[start - 1].strip()
+            if locator_index == 0 and first_line != f"##### {source_name}":
+                _fail(
+                    "source_fourth_locator",
+                    f"{key} primary span does not start at its exact heading",
+                )
+            if first_line.startswith("#") and str(locator["heading"]) not in first_line:
+                _fail(
+                    "source_fourth_locator",
+                    f"{key} locator heading does not match its source span",
+                )
+        for locator_index, phrase in spec["source_phrases"]:
+            if phrase not in locator_texts[int(locator_index)]:
+                _fail(
+                    "source_fourth_source_text",
+                    f"{key} source span omits {phrase!r}",
+                )
+
+        interpretation = row.get("source_interpretation")
+        qualifiers = row.get("material_qualifiers")
+        retained_residual = row.get("retained_source_residual")
+        if (
+            not isinstance(interpretation, str)
+            or not interpretation.strip()
+            or not isinstance(qualifiers, list)
+            or not qualifiers
+            or not all(isinstance(value, str) and value.strip() for value in qualifiers)
+            or not isinstance(retained_residual, str)
+            or not retained_residual.strip()
+            or row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail(
+                "source_fourth_formulation",
+                f"{key} lacks bounded source formulation or proof limits",
+            )
+        combined_formulation = (
+            f"{interpretation}\n" + "\n".join(qualifiers) + f"\n{retained_residual}"
+        )
+        for phrase in spec["required_qualifiers"]:
+            if str(phrase).casefold() not in combined_formulation.casefold():
+                _fail(
+                    "source_fourth_qualifier",
+                    f"{key} omits required qualifier {phrase!r}",
+                )
+
+        downstream_subobligations = [
+            value
+            for value in _array(
+                classification.get("subobligations"), f"{key}.subobligations"
+            )
+            if isinstance(value, dict)
+            and value.get("category")
+            == "downstream_domain_consumer_admission_native_proof"
+        ]
+        if any(
+            value.get("status") != "NOT_ESTABLISHED"
+            or value.get("gate_phase") != "FUTURE_PROOF"
+            for value in downstream_subobligations
+        ):
+            _fail(
+                "source_fourth_downstream",
+                f"{key} promotes a downstream consumer/native proof",
+            )
+
+        if disposition == "SOURCE_CLOSED":
+            if not retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+            ):
+                _fail(
+                    "source_fourth_closure",
+                    f"{key} closure exceeds its selected source subobligation",
+                )
+            closed_keys.append(key)
+            closed_subobligation_ids.append(subobligation_id)
+        else:
+            if retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+            ):
+                _fail("source_fourth_hold", f"{key} source HOLD was removed")
+            closed_residual = retained_residual.startswith("HOLD_SOURCE_SUBOBLIGATION;")
+            if not closed_residual:
+                _fail("source_fourth_hold", f"{key} lacks an explicit retained HOLD")
+            held_keys.append(key)
+            held_subobligation_ids.append(subobligation_id)
+
+    prior_contract = _object(
+        manifest.get("source_third12_resolution_contract"),
+        "source_third12_resolution_contract",
+    )
+    if (
+        prior_contract.get("cumulative_reviewed_key_count") != 36
+        or prior_contract.get("cumulative_source_closed_key_count") != 31
+        or prior_contract.get("cumulative_source_closed_subobligation_count") != 32
+        or prior_contract.get("cumulative_source_held_key_count") != 5
+        or prior_contract.get("active_source_blocker_count") != 46
+    ):
+        _fail(
+            "source_fourth_prior_contract",
+            "fourth integration replaced or rewrote the prior cumulative evidence",
+        )
+    if (
+        set(closed_keys) != FOURTH_SOURCE_CLOSED_KEYS
+        or set(held_keys) != FOURTH_SOURCE_HELD_KEYS
+        or len(closed_keys) != 8
+        or len(set(closed_subobligation_ids)) != 8
+        or len(held_subobligation_ids) != 3
+        or len(set(held_subobligation_ids)) != 3
+        or len(
+            {str(spec["source_exact_name"]) for spec in FOURTH_SOURCE_ITEMS.values()}
+        )
+        != 10
+    ):
+        _fail(
+            "source_fourth_contract",
+            "fourth source closure/HOLD or spell counts differ",
+        )
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": closed_keys,
+        "source_held_keys": held_keys,
+        "source_closed_subobligation_ids": closed_subobligation_ids,
+        "source_held_subobligation_ids": held_subobligation_ids,
+        "source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "source_held_subobligation_count": len(held_subobligation_ids),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -5739,6 +6887,9 @@ def _validate_source_unknown_classifications(
     third12_resolution = _validate_source_third12_resolution_evidence(
         manifest, classified_by_key
     )
+    fourth_resolution = _validate_source_fourth_resolution_evidence(
+        manifest, classified_by_key
+    )
     closed_subobligation_ids = set(
         first12_resolution["source_closed_subobligation_ids"]
     )
@@ -5747,6 +6898,9 @@ def _validate_source_unknown_classifications(
     )
     closed_subobligation_ids.update(
         third12_resolution["source_closed_subobligation_ids"]
+    )
+    closed_subobligation_ids.update(
+        fourth_resolution["source_closed_subobligation_ids"]
     )
     source_blocking_keys = [
         key
@@ -5758,12 +6912,19 @@ def _validate_source_unknown_classifications(
         )
     ]
     resolution_contract = _object(
-        manifest.get("source_third12_resolution_contract"),
-        "source_third12_resolution_contract",
+        manifest.get("source_fourth_resolution_contract"),
+        "source_fourth_resolution_contract",
     )
-    if len(source_blocking_keys) != 46 or resolution_contract.get(
-        "active_source_blocker_count"
-    ) != len(source_blocking_keys):
+    active_source_blocker_entry_count = len(
+        {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
+    )
+    if (
+        len(source_blocking_keys) != 38
+        or resolution_contract.get("active_source_blocker_count")
+        != len(source_blocking_keys)
+        or resolution_contract.get("active_source_blocker_entry_count")
+        != active_source_blocker_entry_count
+    ):
         _fail(
             "source_unknown_resolution_blocker_count",
             "active source blockers do not equal the preserved open subobligations",
@@ -5779,21 +6940,25 @@ def _validate_source_unknown_classifications(
             *first12_resolution["source_resolved_keys"],
             *next12_resolution["source_resolved_keys"],
             *third12_resolution["source_resolved_keys"],
+            *fourth_resolution["source_resolved_keys"],
         ],
         "source_held_subobligation_count": (
             first12_resolution["source_held_subobligation_count"]
             + next12_resolution["source_held_subobligation_count"]
             + third12_resolution["source_held_subobligation_count"]
+            + fourth_resolution["source_held_subobligation_count"]
         ),
         "source_held_keys": [
             *first12_resolution["source_held_keys"],
             *next12_resolution["source_held_keys"],
             *third12_resolution["source_held_keys"],
+            *fourth_resolution["source_held_keys"],
         ],
         "source_resolution_evidence": [
             *first12_resolution["source_resolution_records"],
             *next12_resolution["source_resolution_records"],
             *third12_resolution["source_resolution_records"],
+            *fourth_resolution["source_resolution_records"],
         ],
         "source_reviewed_key_count": len(
             set(first12_resolution["source_resolved_keys"])
@@ -5802,6 +6967,8 @@ def _validate_source_unknown_classifications(
             | set(next12_resolution["source_held_keys"])
             | set(third12_resolution["source_resolved_keys"])
             | set(third12_resolution["source_held_keys"])
+            | set(fourth_resolution["source_resolved_keys"])
+            | set(fourth_resolution["source_held_keys"])
         ),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[
