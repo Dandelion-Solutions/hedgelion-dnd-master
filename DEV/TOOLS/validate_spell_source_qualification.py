@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "a3c15eae554425ca50a63725b791a7747b25dd37a869da79bcfe170237266f2f"
+    "288f85ec2b637268c0ba7e35281950ee13d50c7bf53b23dafb3dae0eab03ecd7"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -4912,6 +4912,709 @@ FOURTH_SOURCE_HELD_KEYS = frozenset(
     if item["disposition"] == "SOURCE_HELD"
 )
 
+FIFTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_FIFTH_SOURCE_REVIEW_20261013",
+    "integration_base_sha": "884257cba9556812973397949e249904a8268052",
+    "candidate_source_base_sha": "68134a799ce976d20ebbcc67abb80f5565978b9d",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-fifth-source-extraction-20261013.md",
+    "candidate_sha256": "43fbfd3f41caa580fe5a0ac090cc4178fc1703016152d68a83535f2543f83f1e",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-fifth-source-review-20261013.md",
+    "accepted_review_sha256": "dad684e0fd159dcb4f65d1200e1db093e7737824cef82562919ce53d03e473bb",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-13-sp00-fifth-markdown-source-qualification.md",
+    "task_evidence_sha256": "b68c387a11ba8a45800871cda12b508fa91fa841916bc9d49ed378ce0ab362a4",
+}
+FIFTH_SELECTED_CLASSIFICATION_INDEXES = tuple(range(56, 68))
+FIFTH_EVIDENCE_ORDER = (
+    (
+        "FIFTH-01",
+        "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-02",
+        "source.spell.message.unresolved.barrier_thresholds",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-03",
+        "source.spell.mirror_image.unresolved.qualifying_face_threshold",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-04",
+        "source.spell.moonbeam.unresolved.form_source_cleanup",
+        "source_semantics",
+    ),
+    (
+        "FIFTH-05",
+        "source.spell.pass_without_trace.unresolved.selection_timing",
+        "source_semantics",
+    ),
+    (
+        "FIFTH-06A",
+        "source.spell.phantasmal_force.unresolved.dangerous_form_bounds",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-06B",
+        "source.spell.phantasmal_force.unresolved.dangerous_form_bounds",
+        "source_semantics",
+    ),
+    (
+        "FIFTH-07",
+        "source.spell.prayer_of_healing.unresolved.responder_census",
+        "source_mapping_review",
+    ),
+    (
+        "FIFTH-08",
+        "source.spell.prestidigitation.unresolved.object_material_bounds",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-09",
+        "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members",
+        "source_mapping_review",
+    ),
+    (
+        "FIFTH-10",
+        "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy",
+        "source_semantics",
+    ),
+    (
+        "FIFTH-11",
+        "source.spell.ray_of_frost.unresolved.movement_composition",
+        "source_parameter",
+    ),
+    (
+        "FIFTH-12",
+        "source.spell.resistance.unresolved.eleven_type_members",
+        "source_mapping_review",
+    ),
+)
+FIFTH_SELECTED_KEYS = tuple(key for _, key, _ in FIFTH_EVIDENCE_ORDER)
+FIFTH_COMMON_MARKDOWN_LOCATORS: tuple[dict[str, object], ...] = (
+    {
+        "heading": "Casting Spells",
+        "line_start": 9068,
+        "line_end": 9257,
+        "span_sha256": "48ccc959d306e2f349b56e2dea465f9b119c47d414105011fc44104384aa0702",
+    },
+    {
+        "heading": "Class Spell Lists",
+        "line_start": 9133,
+        "line_end": 9137,
+        "span_sha256": "53cf80604eb60606f14e297d71f48bd0b5ccce68f333f5343f9fb34876873eba",
+    },
+    {
+        "heading": "Reaction and Bonus Action Triggers",
+        "line_start": 9151,
+        "line_end": 9155,
+        "span_sha256": "47c13792c1488cfeb403525e6a145fb5dc9cb844bf2a981c7443884b2dc2fb13",
+    },
+    {
+        "heading": "Damage Rolls",
+        "line_start": 1396,
+        "line_end": 1400,
+        "span_sha256": "3bab0640f9638faa8e732906e9ad79fb1941a7cbcfd1bba78b1e8bf69124ac15",
+    },
+    {
+        "heading": "Concentration",
+        "line_start": 16296,
+        "line_end": 16304,
+        "span_sha256": "04c55227b54b4481f715a64b6a517f63f5733171d475640db0f6f43d355cc1be",
+    },
+    {
+        "heading": "Round Down",
+        "line_start": 17084,
+        "line_end": 17086,
+        "span_sha256": "eed2effef1332d8e649b1f4ea715bd44fb15bcfb5d6562515d18719da2cbbdf7",
+    },
+    {
+        "heading": "Shape-Shifting",
+        "line_start": 17119,
+        "line_end": 17121,
+        "span_sha256": "a3c9b217f1280c7e66632ac38b5ce9c9fbdc3ef638bee2f85a3fc2d27e7e13e6",
+    },
+    {
+        "heading": "Short Rest",
+        "line_start": 17125,
+        "line_end": 17141,
+        "span_sha256": "f4170d17b36d6fa230f60ea55c49cf5b3d43139530af71fdde1e47833af687cb",
+    },
+    {
+        "heading": "Speed",
+        "line_start": 17163,
+        "line_end": 17169,
+        "span_sha256": "033e5886f45fe2767f324130b4d4cbcc6f4a27e8f7368fb8bb4e30bf4c9b3f15",
+    },
+)
+FIFTH_COMMON_QUALIFIERS = (
+    "Armor training is casting legality for the caster wearing armor, not a target limitation (9074–9076).",
+    "Class parentheses indicate spell-list membership; some features add spells to a character's list outside those classes, but do not prove a particular casting capability (9133–9137).",
+    "Level-1+ spells normally use a slot of their level or higher; cantrips do not; higher-slot benefits apply only where stated. None of these twelve profiles has a Ritual tag (9086–9110).",
+    "Only one spell slot may be expended per turn. A Reaction spell responds to its defined trigger; only some Bonus Action spells specify a trigger (9145–9155).",
+    "A minute-or-longer casting requires a Magic action each turn and Concentration while casting; interruption fails without slot expenditure and requires a restart (9159–9161).",
+    "Range constrains effect origin as the description states; movable effects are not range-restricted unless the spell expressly says otherwise (9165–9175).",
+    "Every specified component is required. Verbal needs normal voice, Somatic a hand, and Material a free hand; pouch/focus substitution excludes priced or consumed materials (9179–9201).",
+    "An instantaneous duration describes momentary magic but does not erase a separately stated timed rider. Time-span dismissal without action requires the caster not be Incapacitated (9205–9213).",
+    "Spell effects are exactly those stated; other outcomes remain GM purview. Body target kinds and clear-path/Total-Cover rules remain applicable, except where the spell states a specific exception (9217–9235).",
+    "Use only source-specified saves and attack rolls and their stated branches; do not invent missing saves, attack rolls or outcomes (9239–9251).",
+    "Different spells add while durations overlap; repeated same-spell effects do not combine, with the most potent or equally potent most recent effect applying (9255–9257).",
+    "Damage penalties can reduce rolled damage to 0 but not below 0; a fixed amount is not a damage roll (1398–1400).",
+    "Round down only when division or multiplication yields a fraction, unless a rule says otherwise; fixed subtraction does not acquire a rounding rule (17084–17086).",
+    "Shape-Shifting behavior is specified by each transforming effect; ongoing effects generally carry between forms unless that effect says otherwise. This does not establish Moonbeam's underlying-source lifecycle (17119–17121).",
+    "An ordinary Short Rest is one hour of downtime and requires at least 1 HP to start. Hit Point Dice and feature recharge follow their own text; Initiative, a noncantrip spell or damage interrupts an ordinary rest (17125–17141).",
+    "A temporary Speed change applies equally to each existing special speed for the same duration. Remaining-movement switching rules do not set a Speed-stat floor (17163–17169).",
+)
+FIFTH_COMMON_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
+    "Casting Spells": (
+        "You must have training with any armor",
+        "Every spell has a level from 0 to 9",
+        "Some features add a spell to a character’s spell list",
+        "you can expend only one spell slot",
+        "A spell’s range indicates how far",
+        "a clear path to it, so it can’t be behind Total Cover",
+        "the effects of the same spell cast multiple times",
+    ),
+    "Class Spell Lists": (
+        "Some features add a spell to a character’s spell list even if the character isn’t a member of a class in the parentheses.",
+    ),
+    "Reaction and Bonus Action Triggers": (
+        "A spell that has a casting time of a Reaction is cast in response to a trigger",
+        "Some spells that have a casting time of a Bonus Action are also cast in response to a trigger",
+    ),
+    "Damage Rolls": ("0 damage but not negative damage",),
+    "Concentration": (
+        "the moment you start casting a spell that requires Concentration",
+        "up to a maximum DC of 30",
+    ),
+    "Round Down": ("Whenever you divide or multiply a number in the game",),
+    "Shape-Shifting": (
+        "its description specifies what happens to you",
+        "ongoing effects on you—conditions, spells, curses, and the like—carry over",
+    ),
+    "Short Rest": (
+        "To start a Short Rest, you must have at least 1 Hit Point",
+        "it recharges in the way specified in its description",
+        "An interrupted Short Rest confers no benefits",
+    ),
+    "Speed": (
+        "subtract the distance already moved from the new speed",
+        "any special speed you have increases or decreases by an equal amount for the same duration",
+    ),
+}
+FIFTH_REQUIRED_EVIDENCE_TOKENS = (
+    FIFTH_REVIEW["candidate_sha256"],
+    FIFTH_REVIEW["accepted_review_sha256"],
+    "indexes 56–67 inclusive",
+    "13 source subobligations",
+    "9 closed subobligations across 8 keys",
+    "4 held subobligations across 4 keys",
+    "underlying transformation source",
+    "underlying transformation source terminates",
+    "no automatic reassertion",
+    "30 keys across 28 entries",
+    "W05_SPELL_SOURCE_QUALIFICATION_READY",
+)
+FIFTH_FUTURE_PROOF_KEYS = frozenset(
+    {
+        "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+        "source.spell.moonbeam.unresolved.form_source_cleanup",
+        "source.spell.prayer_of_healing.unresolved.responder_census",
+        "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members",
+        "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy",
+        "source.spell.ray_of_frost.unresolved.movement_composition",
+    }
+)
+FIFTH_SOURCE_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.mending.unresolved.repair_dimension_and_missing_matter": {
+        "source_exact_name": "Mending",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 56,
+        "map_entry_index": 88,
+        "source_pass_row": 90,
+        "body_witness_row": 209,
+        "printed_page": 148,
+        "source_header_line": 13005,
+        "raw_body_sha256": "ef7396f774552d6d76c86bba757b4c685912d33f37fe8a35ed30e9dfa1ba524b",
+        "locators": (
+            {
+                "heading": "Mending",
+                "line_start": 13461,
+                "line_end": 13475,
+                "span_sha256": "49b027486fa211fad47212b375d1ab66586cb5d0bf78e7fdfdeb43b189d32046",
+            },
+        ),
+        "source_phrases": (
+            (0, "single break or tear"),
+            (0, "no larger than 1 foot in any dimension"),
+            (0, "can’t restore magic"),
+        ),
+        "interpretations": {
+            "source_parameter": "Mending repairs a single break or tear in a touched object only when it is no larger than 1 foot in any dimension, leaving no trace; it can physically repair a magic item without restoring its magic."
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "1 foot in any dimension",
+                "missing-material quantity",
+                "no matter creation",
+            )
+        },
+    },
+    "source.spell.message.unresolved.barrier_thresholds": {
+        "source_exact_name": "Message",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 57,
+        "map_entry_index": 89,
+        "source_pass_row": 91,
+        "body_witness_row": 210,
+        "printed_page": 148,
+        "source_header_line": 13020,
+        "raw_body_sha256": "94a57586472ac8d8443f996146d2c143844404426d654ee487fb9049b27de533",
+        "locators": (
+            {
+                "heading": "Message",
+                "line_start": 13479,
+                "line_end": 13493,
+                "span_sha256": "6824f0e35d352e6deb13aa66784eea0ee3495fc06583e7aeebcda954b889f244",
+            },
+        ),
+        "source_phrases": (
+            (0, "120 feet"),
+            (0, "only the target"),
+            (0, "1 foot of stone, metal, or wood"),
+            (0, "a thin sheet of lead"),
+        ),
+        "interpretations": {
+            "source_parameter": "Message has 120-foot range; the target alone hears the whispered message and can optionally reply in a whisper only the caster hears. Through-solid casting requires familiarity with the target and knowledge that it is beyond the barrier."
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "1 foot of stone, metal or wood",
+                "thin sheet of lead",
+                "no numeric lead thickness",
+                "no legacy 1-inch metal",
+            )
+        },
+    },
+    "source.spell.mirror_image.unresolved.qualifying_face_threshold": {
+        "source_exact_name": "Mirror Image",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 58,
+        "map_entry_index": 92,
+        "source_pass_row": 94,
+        "body_witness_row": 216,
+        "printed_page": 150,
+        "source_header_line": 13136,
+        "raw_body_sha256": "5e31a0533fd9a07384ace82e3f4eae5821add82c9e3a4bcc6e33b16fccca9648",
+        "locators": (
+            {
+                "heading": "Mirror Image",
+                "line_start": 13591,
+                "line_end": 13605,
+                "span_sha256": "4dd612ad90591938c9447dde539acb18e1b00d17f93ac157a62d30e40fd91c61",
+            },
+        ),
+        "source_phrases": (
+            (0, "a d6 for each of your remaining duplicates"),
+            (0, "a 3 or higher"),
+            (0, "Blindsight, or Truesight"),
+        ),
+        "interpretations": {
+            "source_parameter": "When an attack roll hits the caster, roll one d6 per remaining duplicate; any 3 or higher redirects the hit to one duplicate, which is destroyed. Other damage/effects are ignored by duplicates, and the spell ends when all three are destroyed."
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "only one duplicate",
+                "Blinded",
+                "Blindsight",
+                "Truesight",
+                "legacy d20",
+                "duplicate AC",
+            )
+        },
+    },
+    "source.spell.moonbeam.unresolved.form_source_cleanup": {
+        "source_exact_name": "Moonbeam",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 59,
+        "map_entry_index": 94,
+        "source_pass_row": 96,
+        "body_witness_row": 220,
+        "printed_page": 150,
+        "source_header_line": 13220,
+        "raw_body_sha256": "3e8d49e0f7177a8672169646f5c0f88426b149b29232214e4eb9e2adba1f0067",
+        "locators": (
+            {
+                "heading": "Moonbeam",
+                "line_start": 13663,
+                "line_end": 13679,
+                "span_sha256": "aaf21d6a3c3d5a7c704f1f5559c372e6785dee2f3af5fe11734e50b4fa91fb39",
+            },
+        ),
+        "source_phrases": (
+            (0, "5-foot-radius, 40-foot-high Cylinder"),
+            (0, "reverts to its true form"),
+            (0, "until it leaves the Cylinder"),
+            (0, "only once per turn"),
+        ),
+        "interpretations": {
+            "source_semantics": "Moonbeam's failed-save form rider reverts a shape-shifted creature to true form and bars shape-shifting until the creature leaves the Cylinder. This application-specific reversion is distinct from ending the underlying transformation source."
+        },
+        "required_qualifiers": {
+            "source_semantics": (
+                "underlying transformation source",
+                "does not establish that the underlying transformation source terminates",
+                "no generic source deletion",
+                "no automatic reassertion",
+                "blanket survival",
+            )
+        },
+    },
+    "source.spell.pass_without_trace.unresolved.selection_timing": {
+        "source_exact_name": "Pass without Trace",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 60,
+        "map_entry_index": 95,
+        "source_pass_row": 97,
+        "body_witness_row": 224,
+        "printed_page": 151,
+        "source_header_line": 13298,
+        "raw_body_sha256": "68b06279a1f031bb6976a24099a1972bce808c44b3c27a6f9f61b7c67d228407",
+        "locators": (
+            {
+                "heading": "Pass without Trace",
+                "line_start": 13735,
+                "line_end": 13747,
+                "span_sha256": "5286728517f232fad21e7a35ba72d36862ab98170e3a06ca57889586678a2132",
+            },
+        ),
+        "source_phrases": (
+            (0, "30-foot Emanation"),
+            (0, "each creature you choose"),
+            (0, "+10 bonus to Dexterity (Stealth)"),
+            (0, "leave no tracks"),
+        ),
+        "interpretations": {
+            "source_semantics": "While within the caster's 30-foot concealing Emanation, the caster and each creature the caster chooses gain +10 Dexterity (Stealth) and leave no tracks."
+        },
+        "required_qualifiers": {
+            "source_semantics": (
+                "selection occurs at casting",
+                "fixed or dynamic membership",
+                "free reassignment",
+                "outside the aura",
+                "magical-tracking immunity",
+            )
+        },
+    },
+    "source.spell.phantasmal_force.unresolved.dangerous_form_bounds": {
+        "source_exact_name": "Phantasmal Force",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 61,
+        "map_entry_index": 96,
+        "source_pass_row": 98,
+        "body_witness_row": 225,
+        "printed_page": 151,
+        "source_header_line": 13306,
+        "raw_body_sha256": "185c36a4db855231a3b09b9be9a0654cbbc63d1d43a5e2e0b9292465f2f37180",
+        "locators": (
+            {
+                "heading": "Phantasmal Force",
+                "line_start": 13751,
+                "line_end": 13767,
+                "span_sha256": "1746c7ef849e32f2cdee5afe7f59bb8f9f083034df4c6c96f1084177ef29f3d5",
+            },
+        ),
+        "source_phrases": (
+            (0, "no larger than a 10-foot Cube"),
+            (0, "Study action"),
+            (0, "2d8 Psychic damage"),
+            (0, "On each of your turns"),
+            (0, "within 5 feet"),
+        ),
+        "interpretations": {
+            "source_parameter": "A visible target within 60 feet makes an Intelligence save. On failure, it perceives a target-only phenomenon no larger than a 10-foot Cube and can use Study/Intelligence (Investigation) against spell save DC to end the spell on success. A dangerous phantasm can deal 2d8 Psychic on each caster turn when the target is in its area or within 5 feet.",
+            "source_semantics": "Damage eligibility requires the phantasm to represent a dangerous creature or hazard; an arbitrary phenomenon is not enough. The target perceives a type appropriate to the illusion, while actual damage remains Psychic and the illusion does not change objective world truth.",
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "each caster turn",
+                "in its area or within 5 feet",
+                "no higher-slot",
+                "no unbounded proximity",
+            ),
+            "source_semantics": (
+                "dangerous creature or hazard",
+                "arbitrary phenomenon is not enough",
+                "actual damage remains Psychic",
+                "objective world truth",
+                "exhaustive dangerous-form catalog",
+            ),
+        },
+    },
+    "source.spell.prayer_of_healing.unresolved.responder_census": {
+        "source_exact_name": "Prayer of Healing",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 62,
+        "map_entry_index": 98,
+        "source_pass_row": 100,
+        "body_witness_row": 237,
+        "printed_page": 154,
+        "source_header_line": 13554,
+        "raw_body_sha256": "fd0df00cfdaf3ed9b6a03304107390c6dbf574f9bef34c924a1642fea74e5e2d",
+        "locators": (
+            {
+                "heading": "Prayer of Healing",
+                "line_start": 13973,
+                "line_end": 13987,
+                "span_sha256": "0d6377b2a1aaa3cbc91b68dbedda8f90b19ac5bb31f40d79108cf50a5ae7c3a4",
+            },
+        ),
+        "source_phrases": (
+            (0, "Up to five creatures"),
+            (0, "entire casting"),
+            (0, "benefits of a Short Rest"),
+            (0, "2d8 Hit Points"),
+            (0, "finishes a Long Rest"),
+            (0, "increases by 1d8"),
+        ),
+        "interpretations": {
+            "source_mapping_review": "At completion of 10-minute casting, up to five chosen creatures remaining within 30 feet for the entire casting gain Short Rest benefits and regain 2d8 HP; each creature cannot be affected again until it finishes a Long Rest. Higher slots add 1d8 healing per slot level above 2."
+        },
+        "required_qualifiers": {
+            "source_mapping_review": (
+                "one-hour elapsed rest",
+                "global shortened-rest rule",
+                "automatic Hit Point Die spending",
+                "feature's own description",
+                "no complete applicable responder census",
+            )
+        },
+    },
+    "source.spell.prestidigitation.unresolved.object_material_bounds": {
+        "source_exact_name": "Prestidigitation",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 63,
+        "map_entry_index": 99,
+        "source_pass_row": 101,
+        "body_witness_row": 238,
+        "printed_page": 154,
+        "source_header_line": 13566,
+        "raw_body_sha256": "5534f4c69a03d731a4c6a9bc8fd28428902400cff12734201983417fd33d77af",
+        "locators": (
+            {
+                "heading": "Prestidigitation",
+                "line_start": 13991,
+                "line_end": 14015,
+                "span_sha256": "0c145111e222a38335048c1d92ad0d6a98697865bb076e75db47d52f1489d326",
+            },
+        ),
+        "source_phrases": (
+            (0, "instantaneous, harmless sensory effect"),
+            (0, "a small campfire"),
+            (0, "no larger than 1 cubic foot"),
+            (0, "nonliving material for 1 hour"),
+            (0, "a small mark"),
+            (0, "nonmagical trinket"),
+            (0, "has no monetary worth"),
+        ),
+        "interpretations": {
+            "source_parameter": "The six options are harmless instantaneous sensory effect; light/snuff candle, torch or small campfire; clean/soil an object up to 1 cubic foot; chill/warm/flavor up to 1 cubic foot of nonliving material for one hour; create a color, small mark or symbol on an object/surface for one hour; or create a nonmagical trinket or illusory image fitting in hand until the end of the caster's next turn."
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "six options",
+                "trinket deals no damage",
+                "no monetary worth",
+                "three non-instantaneous effects",
+                "small",
+                "does not make an illusory image objective material",
+            )
+        },
+    },
+    "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members": {
+        "source_exact_name": "Protection from Evil and Good",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 64,
+        "map_entry_index": 101,
+        "source_pass_row": 103,
+        "body_witness_row": 246,
+        "printed_page": 157,
+        "source_header_line": 13810,
+        "raw_body_sha256": "b888ba72de84761569222ad7813068f7ddcbd5ce7b5c6e16756c3b7e74cefa4c",
+        "locators": (
+            {
+                "heading": "Protection from Evil and Good",
+                "line_start": 14188,
+                "line_end": 14200,
+                "span_sha256": "1a5fb548c39c0189eba7ff9593e70b4fc9d2242736cda1d5e4093cfee70fed0c",
+            },
+        ),
+        "source_phrases": (
+            (0, "Aberrations, Celestials, Elementals, Fey, Fiends, or Undead"),
+            (0, "Advantage on any new saving throw"),
+            (0, "worth 25+ GP, which the spell consumes"),
+        ),
+        "interpretations": {
+            "source_mapping_review": "A willing touched creature is protected against exactly the source-listed Aberrations, Celestials, Elementals, Fey, Fiends and Undead, with the described attack Disadvantage, possession/condition prevention and Advantage on a new save against relevant existing control."
+        },
+        "required_qualifiers": {
+            "source_mapping_review": (
+                "Advantage on a new relevant save",
+                "does not grant a new save",
+                "end the effect automatically",
+                "Consumed 25+ GP Holy Water",
+                "no blanket charm/fear immunity",
+            )
+        },
+        "members": (
+            "Aberrations",
+            "Celestials",
+            "Elementals",
+            "Fey",
+            "Fiends",
+            "Undead",
+        ),
+    },
+    "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy": {
+        "source_exact_name": "Ray of Enfeeblement",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 65,
+        "map_entry_index": 104,
+        "source_pass_row": 106,
+        "body_witness_row": 250,
+        "printed_page": 157,
+        "source_header_line": 13861,
+        "raw_body_sha256": "d05feb22a3b228153949caf4f7688d4b777e3da76ace1785aea087f882bac609",
+        "locators": (
+            {
+                "heading": "Ray of Enfeeblement",
+                "line_start": 14254,
+                "line_end": 14268,
+                "span_sha256": "ee7717b3a5f2eb5cc87f26f2517e3d5685d6a03f2c28b3c231c8f0d4f11548db",
+            },
+        ),
+        "source_phrases": (
+            (0, "Disadvantage on Strength-based D20 Tests"),
+            (0, "subtracts 1d8 from all its damage rolls"),
+            (0, "at the end of each of its turns"),
+        ),
+        "interpretations": {
+            "source_semantics": "A successful Constitution save imposes Disadvantage on the target's next attack roll until the caster's next turn starts. Failure imposes Disadvantage on Strength-based D20 Tests and subtracts 1d8 from all damage rolls for the duration; an end-of-turn repeated save ends the spell on success. Damage under the penalty can reach 0 but not become negative."
+        },
+        "required_qualifiers": {
+            "source_semantics": (
+                "0 but not become negative",
+                "not fixed damage amounts",
+                "not a minimum of 1",
+                "negative healing",
+                "legacy half-Strength weapon damage",
+            )
+        },
+    },
+    "source.spell.ray_of_frost.unresolved.movement_composition": {
+        "source_exact_name": "Ray of Frost",
+        "disposition": "SOURCE_HELD",
+        "classification_index": 66,
+        "map_entry_index": 105,
+        "source_pass_row": 107,
+        "body_witness_row": 251,
+        "printed_page": 157,
+        "source_header_line": 13876,
+        "raw_body_sha256": "acbf5544ece9d8b267804f550f65e342733ad0d02eb95f8ee6c0e11d30f3cb35",
+        "locators": (
+            {
+                "heading": "Ray of Frost",
+                "line_start": 14272,
+                "line_end": 14286,
+                "span_sha256": "dae3f77c2b494c1afd20ba279f16583438d1df80127bf260e3a243c491b77ea0",
+            },
+        ),
+        "source_phrases": (
+            (0, "ranged spell attack"),
+            (0, "1d8 Cold damage"),
+            (0, "reduced by 10 feet"),
+            (0, "levels 5 (2d8), 11 (3d8), and 17 (4d8)"),
+        ),
+        "interpretations": {
+            "source_parameter": "On a ranged spell attack hit, Ray of Frost deals 1d8 Cold and reduces Speed by 10 feet until the start of the caster's next turn. Character-level damage upgrades at 5/11/17 to 2d8/3d8/4d8; the fixed Speed reduction does not scale."
+        },
+        "required_qualifiers": {
+            "source_parameter": (
+                "existing special speeds",
+                "no explicit minimum Speed floor",
+                "not a stat floor",
+                "fixed subtraction needs no rounding",
+                "no zero clamp",
+                "negative-Speed policy",
+            )
+        },
+    },
+    "source.spell.resistance.unresolved.eleven_type_members": {
+        "source_exact_name": "Resistance",
+        "disposition": "SOURCE_CLOSED",
+        "classification_index": 67,
+        "map_entry_index": 107,
+        "source_pass_row": 109,
+        "body_witness_row": 257,
+        "printed_page": 158,
+        "source_header_line": 13968,
+        "raw_body_sha256": "f13455e2f9b58c45a738c097b310d12495a006028c9720b8047d941dd52e885b",
+        "locators": (
+            {
+                "heading": "Resistance",
+                "line_start": 14389,
+                "line_end": 14401,
+                "span_sha256": "c8eb5178fade2834aa5ad5c504723c2499bcbfaeeb821d120b5dbc729ab3432c",
+            },
+        ),
+        "source_phrases": (
+            (
+                0,
+                "Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder",
+            ),
+            (0, "reduces the total damage taken by 1d4"),
+            (0, "only once per turn"),
+        ),
+        "interpretations": {
+            "source_mapping_review": "A willing touched creature selects exactly one of the eleven listed damage types. Before the spell ends, damage of the chosen type reduces total damage taken by 1d4, only once per turn."
+        },
+        "required_qualifiers": {
+            "source_mapping_review": (
+                "Force and Psychic are not listed",
+                "spell name does not establish damage halving",
+                "only once per turn",
+                "event grouping",
+                "defense ordering",
+            )
+        },
+        "members": (
+            "Acid",
+            "Bludgeoning",
+            "Cold",
+            "Fire",
+            "Lightning",
+            "Necrotic",
+            "Piercing",
+            "Poison",
+            "Radiant",
+            "Slashing",
+            "Thunder",
+        ),
+    },
+}
+FIFTH_SOURCE_CLOSED_KEYS = frozenset(
+    key
+    for key, item in FIFTH_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_CLOSED"
+)
+FIFTH_SOURCE_HELD_KEYS = frozenset(
+    key
+    for key, item in FIFTH_SOURCE_ITEMS.items()
+    if item["disposition"] == "SOURCE_HELD"
+)
+
 
 def _read_pinned_local_evidence(
     relative_path: str, expected_sha256: str, evidence_name: str
@@ -6691,6 +7394,514 @@ def _validate_source_fourth_resolution_evidence(
     }
 
 
+def _validate_source_fifth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind the fifth reviewed source-only set to its exact evidence witnesses."""
+    review = _object(manifest.get("source_fifth_review"), "source_fifth_review")
+    if review != FIFTH_REVIEW:
+        _fail(
+            "source_fifth_review",
+            "fifth extraction, independent review or task-evidence identity differs",
+        )
+    task_evidence_bytes = _read_pinned_local_evidence(
+        FIFTH_REVIEW["task_evidence_path"],
+        FIFTH_REVIEW["task_evidence_sha256"],
+        "source_fifth_review",
+    )
+    try:
+        task_evidence = task_evidence_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_fifth_review", "task evidence is not UTF-8")
+    if any(token not in task_evidence for token in FIFTH_REQUIRED_EVIDENCE_TOKENS):
+        _fail(
+            "source_fifth_review",
+            "task evidence omits frozen identities, source limits or bounded counts",
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_fifth_markdown",
+    )
+    try:
+        markdown_bytes_lines = markdown_bytes.splitlines(keepends=True)
+        markdown_lines = [line.decode("utf-8") for line in markdown_bytes_lines]
+    except UnicodeDecodeError:
+        _fail("source_fifth_markdown", "source Markdown is not UTF-8")
+
+    contract = _object(
+        manifest.get("source_fifth_resolution_contract"),
+        "source_fifth_resolution_contract",
+    )
+    expected_contract = {
+        "status": "PARTIAL_FIFTH_REVIEWED_SET_SOURCE_ONLY",
+        "selected_key_count": 12,
+        "selected_spell_count": 12,
+        "resolution_record_count": 13,
+        "selected_source_closed_key_count": 8,
+        "selected_source_closed_subobligation_count": 9,
+        "selected_source_held_key_count": 4,
+        "selected_source_held_subobligation_count": 4,
+        "prior_reviewed_key_count": 47,
+        "prior_source_closed_key_count": 39,
+        "prior_source_closed_subobligation_count": 40,
+        "prior_source_held_key_count": 8,
+        "prior_source_held_subobligation_count": 8,
+        "prior_active_source_blocker_count": 38,
+        "cumulative_reviewed_key_count": 59,
+        "cumulative_resolution_record_count": 61,
+        "cumulative_source_closed_key_count": 47,
+        "cumulative_source_closed_subobligation_count": 49,
+        "cumulative_source_held_key_count": 12,
+        "cumulative_source_held_subobligation_count": 12,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 30,
+        "active_source_blocker_entry_count": 28,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": list(
+            FIFTH_SELECTED_CLASSIFICATION_INDEXES
+        ),
+        "common_markdown_locators": list(FIFTH_COMMON_MARKDOWN_LOCATORS),
+        "common_qualifiers": list(FIFTH_COMMON_QUALIFIERS),
+    }
+    if contract != expected_contract:
+        _fail(
+            "source_fifth_contract",
+            "fifth source-only counts, preserved totals or shared qualifiers differ",
+        )
+
+    for locator in FIFTH_COMMON_MARKDOWN_LOCATORS:
+        start = int(locator["line_start"])
+        end = int(locator["line_end"])
+        heading = str(locator["heading"])
+        if start < 1 or end < start or end > len(markdown_bytes_lines):
+            _fail("source_fifth_common_locator", "common source span is invalid")
+        span_bytes = b"".join(markdown_bytes_lines[start - 1 : end])
+        if hashlib.sha256(span_bytes).hexdigest() != locator["span_sha256"]:
+            _fail(
+                "source_fifth_markdown_span_hash",
+                f"common Markdown span {heading} changed",
+            )
+        section = "".join(markdown_lines[start - 1 : end])
+        heading_line = next(
+            (
+                line.strip()
+                for line in markdown_lines[start - 1 : end]
+                if line.lstrip().startswith("#")
+            ),
+            "",
+        )
+        if not heading_line.startswith("#") or heading not in heading_line:
+            _fail(
+                "source_fifth_common_locator",
+                f"common locator {heading} has a mismatched heading",
+            )
+        if any(
+            phrase not in section for phrase in FIFTH_COMMON_REQUIRED_PHRASES[heading]
+        ):
+            _fail(
+                "source_fifth_common_source_text",
+                f"common source span {heading} omits a reviewed clause",
+            )
+
+    rows = [
+        _object(value, f"source_fifth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_fifth_resolution_evidence"),
+                "source_fifth_resolution_evidence",
+            )
+        )
+    ]
+    actual_order = [
+        (
+            str(row.get("review_item_id")),
+            str(row.get("unresolved_key")),
+            str(row.get("source_category")),
+        )
+        for row in rows
+    ]
+    if (
+        len(rows) != len(FIFTH_EVIDENCE_ORDER)
+        or tuple(actual_order) != FIFTH_EVIDENCE_ORDER
+        or len({row.get("unresolved_key") for row in rows}) != 12
+        or len(
+            {(row.get("unresolved_key"), row.get("source_category")) for row in rows}
+        )
+        != len(FIFTH_EVIDENCE_ORDER)
+    ):
+        _fail(
+            "source_fifth_census",
+            "the selected fifth source key/category/order census differs",
+        )
+
+    previous_keys = (
+        set(SOURCE_RESOLUTION_KEYS)
+        | set(NEXT12_SELECTED_KEYS)
+        | set(THIRD12_SELECTED_KEYS)
+        | set(FOURTH_SELECTED_KEYS)
+    )
+    selected_keys = set(FIFTH_SOURCE_ITEMS)
+    if previous_keys & selected_keys:
+        _fail("source_fifth_census", "fifth evidence replaces a prior accepted key")
+    if (
+        tuple(
+            int(FIFTH_SOURCE_ITEMS[key]["classification_index"])
+            for key in dict.fromkeys(FIFTH_SELECTED_KEYS)
+        )
+        != FIFTH_SELECTED_CLASSIFICATION_INDEXES
+    ):
+        _fail("source_fifth_census", "selected original index roster differs")
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_witnesses = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    witness_rows = _rows(body_witnesses, "rows", "source-body-witnesses")
+    closed_keys: list[str] = []
+    held_keys: list[str] = []
+    closed_subobligation_ids: list[str] = []
+    held_subobligation_ids: list[str] = []
+    selected_future_proof_keys: set[str] = set()
+
+    for (item_id, key, category), row in zip(FIFTH_EVIDENCE_ORDER, rows, strict=True):
+        spec = FIFTH_SOURCE_ITEMS[key]
+        classification_index = int(spec["classification_index"])
+        map_entry_index = int(spec["map_entry_index"])
+        source_pass_row = int(spec["source_pass_row"])
+        body_witness_row = int(spec["body_witness_row"])
+        source_name = str(spec["source_exact_name"])
+        disposition = str(spec["disposition"])
+        subobligation_id = f"{key}::{category}"
+        classification_pointer = (
+            f"/source_unknown_classifications/{classification_index}"
+        )
+        history_pointer = (
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+            f"{classification_index}"
+        )
+        map_pointer = (
+            f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+        )
+        source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+        body_pointer = f"/rows/{body_witness_row}"
+        classification = classified_by_key.get(key)
+        if classification is None or key in previous_keys:
+            _fail("source_fifth_key", f"{key} is absent or replaces prior evidence")
+
+        original_classification = _object(
+            _resolve_json_pointer(
+                manifest, classification_pointer, "fifth classification pointer"
+            ),
+            f"{key}.classification",
+        )
+        original_history = _object(
+            _resolve_json_pointer(manifest, history_pointer, "fifth history pointer"),
+            f"{key}.original_history",
+        )
+        map_entry = _object(
+            _resolve_json_pointer(manifest, map_pointer, "fifth current-map pointer"),
+            f"{key}.current_map",
+        )
+        unresolved_rows = [
+            _object(value, f"{key}.map.unresolved_keys[{index}]")
+            for index, value in enumerate(
+                _array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys")
+            )
+        ]
+        evidence_ref = _object(
+            classification.get("evidence_ref"), f"{key}.evidence_ref"
+        )
+        history_matches = (
+            original_history.get("unresolved_key") == key
+            and original_history.get("source_exact_name") == source_name
+            and original_history.get("reason") == classification.get("original_reason")
+            and original_history.get("evidence_ref") == evidence_ref
+            and original_history.get("status") == classification.get("original_status")
+            and original_history.get("disposition")
+            == classification.get("original_disposition")
+        )
+        map_matches = map_entry.get("source_exact_name") == source_name and any(
+            value.get("unresolved_key") == key for value in unresolved_rows
+        )
+        source_subobligations = [
+            _object(value, f"{key}.source_subobligations[{index}]")
+            for index, value in enumerate(
+                _array(classification.get("subobligations"), f"{key}.subobligations")
+            )
+            if isinstance(value, dict)
+            and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        exact_subobligation = any(
+            value.get("subobligation_id") == subobligation_id
+            and value.get("category") == category
+            and value.get("status") == "NOT_ESTABLISHED"
+            and value.get("gate_phase") == "SP00_SOURCE"
+            for value in source_subobligations
+        )
+        if row.get("disposition") != disposition:
+            _fail(
+                "source_fifth_disposition",
+                f"{key} source-only disposition differs from the reviewed ruling",
+            )
+        if (
+            row.get("review_item_id") != item_id
+            or row.get("unresolved_key") != key
+            or row.get("source_exact_name") != source_name
+            or row.get("source_category") != category
+            or row.get("subobligation_id") != subobligation_id
+            or row.get("source_classification_pointer") != classification_pointer
+            or row.get("source_unresolved_record_pointer") != history_pointer
+            or row.get("current_map_pointer") != map_pointer
+            or classification != original_classification
+            or original_classification.get("unresolved_key") != key
+            or original_classification.get("source_exact_name") != source_name
+            or original_classification.get("source_unresolved_record_pointer")
+            != history_pointer
+            or original_classification.get("source_ready_blocking") is not True
+            or original_classification.get("original_status") != "NOT_ESTABLISHED"
+            or not history_matches
+            or not map_matches
+            or not exact_subobligation
+        ):
+            _fail(
+                "source_fifth_binding",
+                f"{key} differs from its original category, history, map or subobligation",
+            )
+
+        source_record = source_rows[source_pass_row]
+        body_witness = witness_rows[body_witness_row]
+        expected_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": source_name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": source_record.get("hash_basis"),
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+        }
+        expected_evidence_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "exact_record_name": source_name,
+            "record_index": source_pass_row,
+            "source_asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "source_heading": source_name,
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+            "evidence_boundary": "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF",
+        }
+        if (
+            source_record.get("name") != source_name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or source_record.get("hash_basis")
+            != "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"
+            or not isinstance(source_record.get("qualifications"), list)
+            or body_witness.get("name") != source_name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+            or row.get("source_record_ref") != expected_ref
+            or evidence_ref != expected_evidence_ref
+        ):
+            _fail(
+                "source_fifth_provenance",
+                f"{key} borrows or misstates a source-pass, qualification or body witness",
+            )
+
+        locators = [
+            _object(value, f"{key}.source_markdown_locators[{index}]")
+            for index, value in enumerate(
+                _array(
+                    row.get("source_markdown_locators"),
+                    f"{key}.source_markdown_locators",
+                )
+            )
+        ]
+        if locators != list(spec["locators"]):
+            _fail("source_fifth_locator", f"{key} Markdown locators differ")
+        locator_texts: list[str] = []
+        for locator_index, locator in enumerate(locators):
+            start = locator.get("line_start")
+            end = locator.get("line_end")
+            if (
+                type(start) is not int
+                or type(end) is not int
+                or start < 1
+                or end < start
+                or end > len(markdown_bytes_lines)
+            ):
+                _fail("source_fifth_locator", f"{key} has an invalid Markdown span")
+            span_bytes = b"".join(markdown_bytes_lines[start - 1 : end])
+            if hashlib.sha256(span_bytes).hexdigest() != locator["span_sha256"]:
+                _fail(
+                    "source_fifth_markdown_span_hash",
+                    f"{key} Markdown span changed",
+                )
+            section = "".join(markdown_lines[start - 1 : end])
+            locator_texts.append(section)
+            first_line = markdown_lines[start - 1].strip()
+            if locator_index == 0 and first_line != f"##### {source_name}":
+                _fail(
+                    "source_fifth_locator",
+                    f"{key} primary span does not start at its exact heading",
+                )
+            if first_line.startswith("#") and str(locator["heading"]) not in first_line:
+                _fail(
+                    "source_fifth_locator",
+                    f"{key} locator heading does not match its source span",
+                )
+        for locator_index, phrase in spec["source_phrases"]:
+            if phrase not in locator_texts[int(locator_index)]:
+                _fail(
+                    "source_fifth_source_text",
+                    f"{key} source span omits {phrase!r}",
+                )
+
+        interpretation = spec["interpretations"][category]
+        qualifiers = row.get("material_qualifiers")
+        retained_residual = row.get("retained_source_residual")
+        if (
+            row.get("source_interpretation") != interpretation
+            or not isinstance(qualifiers, list)
+            or not qualifiers
+            or not all(isinstance(value, str) and value.strip() for value in qualifiers)
+            or not isinstance(retained_residual, str)
+            or not retained_residual.strip()
+            or row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail(
+                "source_fifth_formulation",
+                f"{key} lacks the bounded accepted source formulation or proof limits",
+            )
+        combined_formulation = (
+            f"{interpretation}\n" + "\n".join(qualifiers) + f"\n{retained_residual}"
+        )
+        for phrase in spec["required_qualifiers"][category]:
+            if str(phrase).casefold() not in combined_formulation.casefold():
+                _fail(
+                    "source_fifth_qualifier",
+                    f"{key} omits required qualifier {phrase!r}",
+                )
+        expected_members = spec.get("members")
+        if (expected_members is None and "members" in row) or (
+            expected_members is not None
+            and row.get("members") != list(expected_members)
+        ):
+            _fail("source_fifth_enum", f"{key} exact ordered member roster differs")
+
+        downstream_subobligations = [
+            value
+            for value in _array(
+                classification.get("subobligations"), f"{key}.subobligations"
+            )
+            if isinstance(value, dict)
+            and value.get("category")
+            == "downstream_domain_consumer_admission_native_proof"
+        ]
+        if downstream_subobligations:
+            selected_future_proof_keys.add(key)
+        if any(
+            value.get("status") != "NOT_ESTABLISHED"
+            or value.get("gate_phase") != "FUTURE_PROOF"
+            for value in downstream_subobligations
+        ):
+            _fail(
+                "source_fifth_downstream",
+                f"{key} promotes a downstream consumer/native proof",
+            )
+
+        if disposition == "SOURCE_CLOSED":
+            if not retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+            ):
+                _fail(
+                    "source_fifth_closure",
+                    f"{key} closure exceeds its selected source subobligation",
+                )
+            closed_keys.append(key)
+            closed_subobligation_ids.append(subobligation_id)
+        else:
+            if retained_residual.startswith(
+                "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+            ) or not retained_residual.startswith("HOLD_SOURCE_SUBOBLIGATION;"):
+                _fail("source_fifth_hold", f"{key} source HOLD was removed")
+            held_keys.append(key)
+            held_subobligation_ids.append(subobligation_id)
+
+    prior_contract = _object(
+        manifest.get("source_fourth_resolution_contract"),
+        "source_fourth_resolution_contract",
+    )
+    if (
+        prior_contract.get("cumulative_reviewed_key_count") != 47
+        or prior_contract.get("cumulative_source_closed_key_count") != 39
+        or prior_contract.get("cumulative_source_closed_subobligation_count") != 40
+        or prior_contract.get("cumulative_source_held_key_count") != 8
+        or prior_contract.get("cumulative_source_held_subobligation_count") != 8
+        or prior_contract.get("active_source_blocker_count") != 38
+        or set(selected_future_proof_keys) != FIFTH_FUTURE_PROOF_KEYS
+    ):
+        _fail(
+            "source_fifth_prior_contract",
+            "fifth integration replaced prior cumulative evidence or future-proof IDs",
+        )
+    if (
+        set(closed_keys) != FIFTH_SOURCE_CLOSED_KEYS
+        or set(held_keys) != FIFTH_SOURCE_HELD_KEYS
+        or len(closed_keys) != 9
+        or len(set(closed_subobligation_ids)) != 9
+        or len(held_keys) != 4
+        or len(set(held_subobligation_ids)) != 4
+        or len(selected_keys) != 12
+        or len({str(spec["source_exact_name"]) for spec in FIFTH_SOURCE_ITEMS.values()})
+        != 12
+    ):
+        _fail(
+            "source_fifth_contract",
+            "fifth source closure/HOLD or spell counts differ",
+        )
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": closed_keys,
+        "source_held_keys": held_keys,
+        "source_closed_subobligation_ids": closed_subobligation_ids,
+        "source_held_subobligation_ids": held_subobligation_ids,
+        "source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "source_held_subobligation_count": len(held_subobligation_ids),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -6890,6 +8101,9 @@ def _validate_source_unknown_classifications(
     fourth_resolution = _validate_source_fourth_resolution_evidence(
         manifest, classified_by_key
     )
+    fifth_resolution = _validate_source_fifth_resolution_evidence(
+        manifest, classified_by_key
+    )
     closed_subobligation_ids = set(
         first12_resolution["source_closed_subobligation_ids"]
     )
@@ -6902,6 +8116,7 @@ def _validate_source_unknown_classifications(
     closed_subobligation_ids.update(
         fourth_resolution["source_closed_subobligation_ids"]
     )
+    closed_subobligation_ids.update(fifth_resolution["source_closed_subobligation_ids"])
     source_blocking_keys = [
         key
         for key in historical_source_blocking_keys
@@ -6912,14 +8127,14 @@ def _validate_source_unknown_classifications(
         )
     ]
     resolution_contract = _object(
-        manifest.get("source_fourth_resolution_contract"),
-        "source_fourth_resolution_contract",
+        manifest.get("source_fifth_resolution_contract"),
+        "source_fifth_resolution_contract",
     )
     active_source_blocker_entry_count = len(
         {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
     )
     if (
-        len(source_blocking_keys) != 38
+        len(source_blocking_keys) != 30
         or resolution_contract.get("active_source_blocker_count")
         != len(source_blocking_keys)
         or resolution_contract.get("active_source_blocker_entry_count")
@@ -6941,24 +8156,28 @@ def _validate_source_unknown_classifications(
             *next12_resolution["source_resolved_keys"],
             *third12_resolution["source_resolved_keys"],
             *fourth_resolution["source_resolved_keys"],
+            *fifth_resolution["source_resolved_keys"],
         ],
         "source_held_subobligation_count": (
             first12_resolution["source_held_subobligation_count"]
             + next12_resolution["source_held_subobligation_count"]
             + third12_resolution["source_held_subobligation_count"]
             + fourth_resolution["source_held_subobligation_count"]
+            + fifth_resolution["source_held_subobligation_count"]
         ),
         "source_held_keys": [
             *first12_resolution["source_held_keys"],
             *next12_resolution["source_held_keys"],
             *third12_resolution["source_held_keys"],
             *fourth_resolution["source_held_keys"],
+            *fifth_resolution["source_held_keys"],
         ],
         "source_resolution_evidence": [
             *first12_resolution["source_resolution_records"],
             *next12_resolution["source_resolution_records"],
             *third12_resolution["source_resolution_records"],
             *fourth_resolution["source_resolution_records"],
+            *fifth_resolution["source_resolution_records"],
         ],
         "source_reviewed_key_count": len(
             set(first12_resolution["source_resolved_keys"])
@@ -6969,6 +8188,8 @@ def _validate_source_unknown_classifications(
             | set(third12_resolution["source_held_keys"])
             | set(fourth_resolution["source_resolved_keys"])
             | set(fourth_resolution["source_held_keys"])
+            | set(fifth_resolution["source_resolved_keys"])
+            | set(fifth_resolution["source_held_keys"])
         ),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[

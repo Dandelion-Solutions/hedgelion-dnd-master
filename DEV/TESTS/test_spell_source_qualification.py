@@ -574,8 +574,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 38)
-        self.assertEqual(unresolved_blocker["entry_count"], 35)
+        self.assertEqual(unresolved_blocker["count"], 30)
+        self.assertEqual(unresolved_blocker["entry_count"], 28)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -863,7 +863,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 38)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -888,9 +888,13 @@ class TestSpellSourceQualification(unittest.TestCase):
             )
         )
         self.assertTrue(ray["source_ready_blocking"])
-        self.assertIn(
+        self.assertNotIn(
             "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy",
             classification["source_blocking_keys"],
+        )
+        self.assertIn(
+            "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy",
+            classification["source_resolved_keys"],
         )
 
         tampered = copy.deepcopy(manifest)
@@ -913,10 +917,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 38)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
-        self.assertEqual(classification["source_held_subobligation_count"], 8)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 49)
+        self.assertEqual(classification["source_held_subobligation_count"], 12)
         self.assertEqual(
             manifest["source_unknown_resolution_contract"][
                 "source_closed_subobligation_count"
@@ -1045,10 +1049,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 38)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
-        self.assertEqual(classification["source_held_subobligation_count"], 8)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 49)
+        self.assertEqual(classification["source_held_subobligation_count"], 12)
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
         self.assertEqual(
@@ -1056,18 +1060,20 @@ class TestSpellSourceQualification(unittest.TestCase):
             FIRST12_SOURCE_CLOSED_KEYS
             | NEXT12_SOURCE_CLOSED_KEYS
             | TOOL.THIRD12_SOURCE_CLOSED_KEYS
-            | TOOL.FOURTH_SOURCE_CLOSED_KEYS,
+            | TOOL.FOURTH_SOURCE_CLOSED_KEYS
+            | TOOL.FIFTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             held_keys,
             FIRST12_SOURCE_HELD_KEYS
             | NEXT12_SOURCE_HELD_KEYS
             | TOOL.THIRD12_SOURCE_HELD_KEYS
-            | TOOL.FOURTH_SOURCE_HELD_KEYS,
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+            | TOOL.FIFTH_SOURCE_HELD_KEYS,
         )
-        self.assertEqual(len(classification["source_resolved_keys"]), 39)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 39)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
+        self.assertEqual(len(classification["source_resolved_keys"]), 48)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 47)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 61)
         self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
         self.assertIn(
             "source.spell.augury.unresolved.four_omen_members",
@@ -1164,48 +1170,51 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
-        self.assertEqual(classification["source_blocking_key_count"], 38)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
-        self.assertEqual(classification["source_held_subobligation_count"], 8)
-        self.assertEqual(len(classification["source_resolved_keys"]), 39)
-        self.assertEqual(len(classification["source_held_keys"]), 8)
-        self.assertEqual(classification["source_reviewed_key_count"], 47)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 49)
+        self.assertEqual(classification["source_held_subobligation_count"], 12)
+        self.assertEqual(len(classification["source_resolved_keys"]), 48)
+        self.assertEqual(len(classification["source_held_keys"]), 12)
+        self.assertEqual(classification["source_reviewed_key_count"], 59)
         self.assertEqual(
             set(classification["source_resolved_keys"]),
             TOOL.SOURCE_RESOLVED_KEYS
             | TOOL.NEXT12_SOURCE_CLOSED_KEYS
             | TOOL.THIRD12_SOURCE_CLOSED_KEYS
-            | TOOL.FOURTH_SOURCE_CLOSED_KEYS,
+            | TOOL.FOURTH_SOURCE_CLOSED_KEYS
+            | TOOL.FIFTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             set(classification["source_held_keys"]),
             TOOL.SOURCE_HELD_KEYS
             | TOOL.NEXT12_SOURCE_HELD_KEYS
             | TOOL.THIRD12_SOURCE_HELD_KEYS
-            | TOOL.FOURTH_SOURCE_HELD_KEYS,
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+            | TOOL.FIFTH_SOURCE_HELD_KEYS,
         )
         self.assertIn(
             "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
             classification["source_held_keys"],
         )
-        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 61)
 
     def test_fourth_source_batch_adds_only_reviewed_closures_and_holds(self) -> None:
         assert TOOL is not None
         manifest = load_json(MANIFEST_PATH)
         classification = TOOL._validate_source_unknown_classifications(manifest)
 
-        self.assertEqual(classification["source_reviewed_key_count"], 47)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 40)
-        self.assertEqual(classification["source_held_subobligation_count"], 8)
-        self.assertEqual(classification["source_blocking_key_count"], 38)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 48)
+        self.assertEqual(classification["source_reviewed_key_count"], 59)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 49)
+        self.assertEqual(classification["source_held_subobligation_count"], 12)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 61)
         self.assertEqual(
             set(classification["source_held_keys"]),
             FIRST12_SOURCE_HELD_KEYS
             | NEXT12_SOURCE_HELD_KEYS
             | TOOL.THIRD12_SOURCE_HELD_KEYS
-            | TOOL.FOURTH_SOURCE_HELD_KEYS,
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+            | TOOL.FIFTH_SOURCE_HELD_KEYS,
         )
         self.assertNotIn(
             "source.spell.lesser_restoration.unresolved.multisource_condition_removal",
@@ -1334,6 +1343,402 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
         self.assertFalse(receipt["source_ready_gate"]["ready"])
+
+    def test_fifth_source_batch_is_exact_and_remains_source_only(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        self.assertIn("source_fifth_resolution_evidence", manifest)
+        evidence = manifest["source_fifth_resolution_evidence"]
+        self.assertEqual(
+            [
+                (
+                    row["review_item_id"],
+                    row["unresolved_key"],
+                    row["source_category"],
+                    row["disposition"],
+                )
+                for row in evidence
+            ],
+            [
+                (
+                    "FIFTH-01",
+                    "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+                    "source_parameter",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "FIFTH-02",
+                    "source.spell.message.unresolved.barrier_thresholds",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-03",
+                    "source.spell.mirror_image.unresolved.qualifying_face_threshold",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-04",
+                    "source.spell.moonbeam.unresolved.form_source_cleanup",
+                    "source_semantics",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-05",
+                    "source.spell.pass_without_trace.unresolved.selection_timing",
+                    "source_semantics",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "FIFTH-06A",
+                    "source.spell.phantasmal_force.unresolved.dangerous_form_bounds",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-06B",
+                    "source.spell.phantasmal_force.unresolved.dangerous_form_bounds",
+                    "source_semantics",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-07",
+                    "source.spell.prayer_of_healing.unresolved.responder_census",
+                    "source_mapping_review",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "FIFTH-08",
+                    "source.spell.prestidigitation.unresolved.object_material_bounds",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-09",
+                    "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-10",
+                    "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy",
+                    "source_semantics",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "FIFTH-11",
+                    "source.spell.ray_of_frost.unresolved.movement_composition",
+                    "source_parameter",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "FIFTH-12",
+                    "source.spell.resistance.unresolved.eleven_type_members",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+            ],
+        )
+        contract = manifest["source_fifth_resolution_contract"]
+        self.assertEqual(
+            contract["selected_original_classification_indexes"], list(range(56, 68))
+        )
+        self.assertEqual(contract["selected_source_closed_key_count"], 8)
+        self.assertEqual(contract["selected_source_closed_subobligation_count"], 9)
+        self.assertEqual(contract["selected_source_held_key_count"], 4)
+        self.assertEqual(contract["selected_source_held_subobligation_count"], 4)
+        self.assertEqual(contract["cumulative_source_closed_key_count"], 47)
+        self.assertEqual(contract["cumulative_source_closed_subobligation_count"], 49)
+        self.assertEqual(contract["cumulative_source_held_key_count"], 12)
+        self.assertEqual(contract["cumulative_source_held_subobligation_count"], 12)
+        self.assertEqual(contract["active_source_blocker_count"], 30)
+        self.assertEqual(contract["active_source_blocker_entry_count"], 28)
+
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(classification["source_reviewed_key_count"], 59)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 49)
+        self.assertEqual(classification["source_held_subobligation_count"], 12)
+        self.assertEqual(classification["source_blocking_key_count"], 30)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 61)
+        self.assertEqual(len(classification["source_held_keys"]), 12)
+        self.assertEqual(
+            set(classification["source_held_keys"]),
+            FIRST12_SOURCE_HELD_KEYS
+            | NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+            | TOOL.FIFTH_SOURCE_HELD_KEYS,
+        )
+        self.assertEqual(
+            classification["source_held_keys"][-4:],
+            [
+                "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+                "source.spell.pass_without_trace.unresolved.selection_timing",
+                "source.spell.prayer_of_healing.unresolved.responder_census",
+                "source.spell.ray_of_frost.unresolved.movement_composition",
+            ],
+        )
+        phantasmal_force = [
+            row
+            for row in evidence
+            if row["unresolved_key"]
+            == "source.spell.phantasmal_force.unresolved.dangerous_form_bounds"
+        ]
+        self.assertEqual(len(phantasmal_force), 2)
+        self.assertEqual(
+            {row["subobligation_id"].rsplit("::", 1)[-1] for row in phantasmal_force},
+            {"source_parameter", "source_semantics"},
+        )
+        self.assertTrue(
+            all(
+                row["future_native_proof_status"] == "NOT_ESTABLISHED"
+                and row["actual_native_proof_refs"] == []
+                for row in evidence
+            )
+        )
+        roster = TOOL.derive_source_requirement_roster(manifest)
+        receipt = TOOL._source_qualification_receipt(manifest, roster)
+        self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
+        self.assertFalse(receipt["source_ready_gate"]["ready"])
+        self.assertNotEqual(receipt["status"], "W05_SPELL_SOURCE_QUALIFICATION_READY")
+
+    def test_fifth_moonbeam_closure_does_not_claim_underlying_source_termination(
+        self,
+    ) -> None:
+        manifest = load_json(MANIFEST_PATH)
+        self.assertIn("source_fifth_resolution_evidence", manifest)
+        moonbeam = next(
+            row
+            for row in manifest["source_fifth_resolution_evidence"]
+            if row["unresolved_key"]
+            == "source.spell.moonbeam.unresolved.form_source_cleanup"
+        )
+        formulation = "\n".join(
+            [
+                moonbeam["source_interpretation"],
+                *moonbeam["material_qualifiers"],
+                moonbeam["retained_source_residual"],
+            ]
+        ).casefold()
+        self.assertIn("reverts a shape-shifted creature to true form", formulation)
+        self.assertIn("underlying transformation source", formulation)
+        self.assertIn(
+            "does not establish that the underlying transformation source terminates",
+            formulation,
+        )
+        self.assertIn("no automatic reassertion", formulation)
+
+    def test_fifth_source_batch_rejects_item_bound_cold_mutations(self) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+
+        def fifth_evidence_for(
+            candidate: dict[str, object], key: str, category: str | None = None
+        ) -> dict[str, object]:
+            rows = candidate["source_fifth_resolution_evidence"]
+            return next(
+                row
+                for row in rows
+                if row["unresolved_key"] == key
+                and (category is None or row["source_category"] == category)
+            )
+
+        cases = (
+            (
+                "wrong-original-index-roster",
+                lambda candidate: candidate["source_fifth_resolution_contract"].update(
+                    {"selected_original_classification_indexes": list(range(55, 67))}
+                ),
+                "source_fifth_contract",
+            ),
+            (
+                "substituted-index-68-key",
+                lambda candidate: fifth_evidence_for(
+                    candidate, "source.spell.resistance.unresolved.eleven_type_members"
+                ).update({"unresolved_key": "source.spell.borrowed.unresolved.key"}),
+                "source_fifth_census",
+            ),
+            (
+                "wrong-subobligation-category",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.mirror_image.unresolved.qualifying_face_threshold",
+                ).update({"source_category": "source_semantics"}),
+                "source_fifth_census",
+            ),
+            (
+                "borrowed-current-map-pointer",
+                lambda candidate: fifth_evidence_for(
+                    candidate, "source.spell.message.unresolved.barrier_thresholds"
+                ).update(
+                    {
+                        "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/90"
+                    }
+                ),
+                "source_fifth_binding",
+            ),
+            (
+                "foreign-body-witness-hash",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+                )["source_record_ref"].update({"raw_body_sha256": "0" * 64}),
+                "source_fifth_provenance",
+            ),
+            (
+                "markdown-span-hash-drift",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.mirror_image.unresolved.qualifying_face_threshold",
+                )["source_markdown_locators"][0].update({"span_sha256": "0" * 64}),
+                "source_fifth_locator",
+            ),
+            (
+                "enumerated-supernatural-type-omitted",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members",
+                )["members"].remove("Undead"),
+                "source_fifth_enum",
+            ),
+            (
+                "invented-resistance-type",
+                lambda candidate: fifth_evidence_for(
+                    candidate, "source.spell.resistance.unresolved.eleven_type_members"
+                )["members"].append("Force"),
+                "source_fifth_enum",
+            ),
+            (
+                "promote-mending-hold",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+                ).update({"disposition": "SOURCE_CLOSED"}),
+                "source_fifth_disposition",
+            ),
+            (
+                "promote-ray-frost-hold",
+                lambda candidate: fifth_evidence_for(
+                    candidate,
+                    "source.spell.ray_of_frost.unresolved.movement_composition",
+                ).update({"disposition": "SOURCE_CLOSED"}),
+                "source_fifth_disposition",
+            ),
+            (
+                "drop-future-proof-residual",
+                lambda candidate: fifth_evidence_for(
+                    candidate, "source.spell.moonbeam.unresolved.form_source_cleanup"
+                ).update(
+                    {
+                        "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"
+                    }
+                ),
+                "source_fifth_qualifier",
+            ),
+            (
+                "close-underlying-moonbeam-source",
+                lambda candidate: fifth_evidence_for(
+                    candidate, "source.spell.moonbeam.unresolved.form_source_cleanup"
+                ).update(
+                    {
+                        "source_interpretation": "Moonbeam terminates the underlying transformation source."
+                    }
+                ),
+                "source_fifth_formulation",
+            ),
+        )
+        for case, mutate, expected_code in cases:
+            candidate = copy.deepcopy(baseline)
+            with self.subTest(case=case):
+                mutate(candidate)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(caught.exception.code, expected_code)
+
+    def test_fifth_source_resolution_rejects_cold_markdown_span_drift(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        read_pinned = TOOL._read_pinned_local_evidence
+
+        def drift_markdown(
+            relative_path: str, expected_sha256: str, evidence_name: str
+        ) -> bytes:
+            data = read_pinned(relative_path, expected_sha256, evidence_name)
+            if relative_path == TOOL.SOURCE_MARKDOWN_RELATIVE_PATH:
+                return data.replace(
+                    b"5-foot-radius, 40-foot-high Cylinder",
+                    b"6-foot-radius, 40-foot-high Cylinder",
+                    1,
+                )
+            return data
+
+        with (
+            patch.object(
+                TOOL, "_read_pinned_local_evidence", side_effect=drift_markdown
+            ),
+            self.assertRaises(TOOL.SourceQualificationError) as caught,
+        ):
+            TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(caught.exception.code, "source_fifth_markdown_span_hash")
+
+    def test_fifth_source_resolution_rejects_frozen_provenance_hash_drift(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+        for field in (
+            "candidate_sha256",
+            "accepted_review_sha256",
+            "task_evidence_sha256",
+        ):
+            with self.subTest(field=field):
+                candidate = copy.deepcopy(baseline)
+                candidate["source_fifth_review"][field] = "0" * 64
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(caught.exception.code, "source_fifth_review")
+
+    def test_fifth_source_evidence_preserves_preexisting_holds_and_future_proof(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+        expected_prior_holds = (
+            FIRST12_SOURCE_HELD_KEYS
+            | NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+        )
+        self.assertTrue(
+            expected_prior_holds.issubset(set(classification["source_held_keys"]))
+        )
+        future = [
+            subobligation
+            for row in manifest["source_unknown_classifications"]
+            for subobligation in row["subobligations"]
+            if subobligation["category"]
+            == "downstream_domain_consumer_admission_native_proof"
+        ]
+        self.assertEqual(len(future), 33)
+        self.assertTrue(
+            all(
+                subobligation["gate_phase"] == "FUTURE_PROOF"
+                and subobligation["status"] == "NOT_ESTABLISHED"
+                for subobligation in future
+            )
+        )
+        self.assertEqual(
+            manifest["source_fifth_resolution_contract"]["future_native_proof_status"],
+            "NOT_ESTABLISHED",
+        )
+        self.assertEqual(
+            manifest["source_fifth_resolution_contract"][
+                "full_339_source_qualification_status"
+            ],
+            "NOT_ESTABLISHED",
+        )
 
     def test_third12_rejects_binding_provenance_enum_bound_actor_and_hash_drift(
         self,

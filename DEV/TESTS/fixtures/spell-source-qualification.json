@@ -115600,5 +115600,197 @@
       "future_native_proof_status": "NOT_ESTABLISHED",
       "actual_native_proof_refs": []
     }
+  ],
+  "source_fifth_review": {
+    "review_id": "SP00_FIFTH_SOURCE_REVIEW_20261013",
+    "integration_base_sha": "884257cba9556812973397949e249904a8268052",
+    "candidate_source_base_sha": "68134a799ce976d20ebbcc67abb80f5565978b9d",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-fifth-source-extraction-20261013.md",
+    "candidate_sha256": "43fbfd3f41caa580fe5a0ac090cc4178fc1703016152d68a83535f2543f83f1e",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-fifth-source-review-20261013.md",
+    "accepted_review_sha256": "dad684e0fd159dcb4f65d1200e1db093e7737824cef82562919ce53d03e473bb",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-13-sp00-fifth-markdown-source-qualification.md",
+    "task_evidence_sha256": "b68c387a11ba8a45800871cda12b508fa91fa841916bc9d49ed378ce0ab362a4"
+  },
+  "source_fifth_resolution_contract": {
+    "status": "PARTIAL_FIFTH_REVIEWED_SET_SOURCE_ONLY",
+    "selected_key_count": 12,
+    "selected_spell_count": 12,
+    "resolution_record_count": 13,
+    "selected_source_closed_key_count": 8,
+    "selected_source_closed_subobligation_count": 9,
+    "selected_source_held_key_count": 4,
+    "selected_source_held_subobligation_count": 4,
+    "prior_reviewed_key_count": 47,
+    "prior_source_closed_key_count": 39,
+    "prior_source_closed_subobligation_count": 40,
+    "prior_source_held_key_count": 8,
+    "prior_source_held_subobligation_count": 8,
+    "prior_active_source_blocker_count": 38,
+    "cumulative_reviewed_key_count": 59,
+    "cumulative_resolution_record_count": 61,
+    "cumulative_source_closed_key_count": 47,
+    "cumulative_source_closed_subobligation_count": 49,
+    "cumulative_source_held_key_count": 12,
+    "cumulative_source_held_subobligation_count": 12,
+    "original_record_count": 82,
+    "original_source_blocking_key_count": 77,
+    "downstream_only_key_count": 5,
+    "active_source_blocker_count": 30,
+    "active_source_blocker_entry_count": 28,
+    "future_native_proof_status": "NOT_ESTABLISHED",
+    "full_339_source_qualification_status": "NOT_ESTABLISHED",
+    "production_claim": "NONE",
+    "selected_original_classification_indexes": [56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67],
+    "common_markdown_locators": [
+      {"heading": "Casting Spells", "line_start": 9068, "line_end": 9257, "span_sha256": "48ccc959d306e2f349b56e2dea465f9b119c47d414105011fc44104384aa0702"},
+      {"heading": "Class Spell Lists", "line_start": 9133, "line_end": 9137, "span_sha256": "53cf80604eb60606f14e297d71f48bd0b5ccce68f333f5343f9fb34876873eba"},
+      {"heading": "Reaction and Bonus Action Triggers", "line_start": 9151, "line_end": 9155, "span_sha256": "47c13792c1488cfeb403525e6a145fb5dc9cb844bf2a981c7443884b2dc2fb13"},
+      {"heading": "Damage Rolls", "line_start": 1396, "line_end": 1400, "span_sha256": "3bab0640f9638faa8e732906e9ad79fb1941a7cbcfd1bba78b1e8bf69124ac15"},
+      {"heading": "Concentration", "line_start": 16296, "line_end": 16304, "span_sha256": "04c55227b54b4481f715a64b6a517f63f5733171d475640db0f6f43d355cc1be"},
+      {"heading": "Round Down", "line_start": 17084, "line_end": 17086, "span_sha256": "eed2effef1332d8e649b1f4ea715bd44fb15bcfb5d6562515d18719da2cbbdf7"},
+      {"heading": "Shape-Shifting", "line_start": 17119, "line_end": 17121, "span_sha256": "a3c9b217f1280c7e66632ac38b5ce9c9fbdc3ef638bee2f85a3fc2d27e7e13e6"},
+      {"heading": "Short Rest", "line_start": 17125, "line_end": 17141, "span_sha256": "f4170d17b36d6fa230f60ea55c49cf5b3d43139530af71fdde1e47833af687cb"},
+      {"heading": "Speed", "line_start": 17163, "line_end": 17169, "span_sha256": "033e5886f45fe2767f324130b4d4cbcc6f4a27e8f7368fb8bb4e30bf4c9b3f15"}
+    ],
+    "common_qualifiers": [
+      "Armor training is casting legality for the caster wearing armor, not a target limitation (9074–9076).",
+      "Class parentheses indicate spell-list membership; some features add spells to a character's list outside those classes, but do not prove a particular casting capability (9133–9137).",
+      "Level-1+ spells normally use a slot of their level or higher; cantrips do not; higher-slot benefits apply only where stated. None of these twelve profiles has a Ritual tag (9086–9110).",
+      "Only one spell slot may be expended per turn. A Reaction spell responds to its defined trigger; only some Bonus Action spells specify a trigger (9145–9155).",
+      "A minute-or-longer casting requires a Magic action each turn and Concentration while casting; interruption fails without slot expenditure and requires a restart (9159–9161).",
+      "Range constrains effect origin as the description states; movable effects are not range-restricted unless the spell expressly says otherwise (9165–9175).",
+      "Every specified component is required. Verbal needs normal voice, Somatic a hand, and Material a free hand; pouch/focus substitution excludes priced or consumed materials (9179–9201).",
+      "An instantaneous duration describes momentary magic but does not erase a separately stated timed rider. Time-span dismissal without action requires the caster not be Incapacitated (9205–9213).",
+      "Spell effects are exactly those stated; other outcomes remain GM purview. Body target kinds and clear-path/Total-Cover rules remain applicable, except where the spell states a specific exception (9217–9235).",
+      "Use only source-specified saves and attack rolls and their stated branches; do not invent missing saves, attack rolls or outcomes (9239–9251).",
+      "Different spells add while durations overlap; repeated same-spell effects do not combine, with the most potent or equally potent most recent effect applying (9255–9257).",
+      "Damage penalties can reduce rolled damage to 0 but not below 0; a fixed amount is not a damage roll (1398–1400).",
+      "Round down only when division or multiplication yields a fraction, unless a rule says otherwise; fixed subtraction does not acquire a rounding rule (17084–17086).",
+      "Shape-Shifting behavior is specified by each transforming effect; ongoing effects generally carry between forms unless that effect says otherwise. This does not establish Moonbeam's underlying-source lifecycle (17119–17121).",
+      "An ordinary Short Rest is one hour of downtime and requires at least 1 HP to start. Hit Point Dice and feature recharge follow their own text; Initiative, a noncantrip spell or damage interrupts an ordinary rest (17125–17141).",
+      "A temporary Speed change applies equally to each existing special speed for the same duration. Remaining-movement switching rules do not set a Speed-stat floor (17163–17169)."
+    ]
+  },
+  "source_fifth_resolution_evidence": [
+    {
+      "review_item_id": "FIFTH-01", "unresolved_key": "source.spell.mending.unresolved.repair_dimension_and_missing_matter", "source_exact_name": "Mending", "source_category": "source_parameter", "subobligation_id": "source.spell.mending.unresolved.repair_dimension_and_missing_matter::source_parameter", "disposition": "SOURCE_HELD",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/90/required_modes_or_exceptions", "source_exact_name": "Mending", "printed_page": 148, "source_header_line": 13005, "raw_body_sha256": "ef7396f774552d6d76c86bba757b4c685912d33f37fe8a35ed30e9dfa1ba524b", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/209"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/90/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/56", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/56", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/88",
+      "source_markdown_locators": [{"heading": "Mending", "line_start": 13461, "line_end": 13475, "span_sha256": "49b027486fa211fad47212b375d1ab66586cb5d0bf78e7fdfdeb43b189d32046"}],
+      "source_interpretation": "Mending repairs a single break or tear in a touched object only when it is no larger than 1 foot in any dimension, leaving no trace; it can physically repair a magic item without restoring its magic.",
+      "material_qualifiers": ["The 1-foot dimension is stated; the source does not give a missing-material quantity, substitute-matter rule or reconstruction bound.", "No matter creation or generic object-HP healing is established by 'leaving no trace'; the entire assigned source_parameter ID stays held."],
+      "retained_source_residual": "HOLD_SOURCE_SUBOBLIGATION; exact legal-break/missing-material bounds remain unresolved. Durable object-integrity application remains FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-02", "unresolved_key": "source.spell.message.unresolved.barrier_thresholds", "source_exact_name": "Message", "source_category": "source_parameter", "subobligation_id": "source.spell.message.unresolved.barrier_thresholds::source_parameter", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/91/required_modes_or_exceptions", "source_exact_name": "Message", "printed_page": 148, "source_header_line": 13020, "raw_body_sha256": "94a57586472ac8d8443f996146d2c143844404426d654ee487fb9049b27de533", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/210"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/91/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/57", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/57", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/89",
+      "source_markdown_locators": [{"heading": "Message", "line_start": 13479, "line_end": 13493, "span_sha256": "6824f0e35d352e6deb13aa66784eea0ee3495fc06583e7aeebcda954b889f244"}],
+      "source_interpretation": "Message has 120-foot range; the target alone hears the whispered message and can optionally reply in a whisper only the caster hears. Through-solid casting requires familiarity with the target and knowledge that it is beyond the barrier.",
+      "material_qualifiers": ["Blocks are magical silence, 1 foot of stone, metal or wood, or a thin sheet of lead; no numeric lead thickness or additive multilayer rule is stated.", "No legacy 1-inch metal threshold, broadcast, translation, universal visibility condition or automatic reply is inferred."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; barrier thresholds and through-solid prerequisites are source-closed. Communication/perception consumers remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-03", "unresolved_key": "source.spell.mirror_image.unresolved.qualifying_face_threshold", "source_exact_name": "Mirror Image", "source_category": "source_parameter", "subobligation_id": "source.spell.mirror_image.unresolved.qualifying_face_threshold::source_parameter", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/94/required_modes_or_exceptions", "source_exact_name": "Mirror Image", "printed_page": 150, "source_header_line": 13136, "raw_body_sha256": "5e31a0533fd9a07384ace82e3f4eae5821add82c9e3a4bcc6e33b16fccca9648", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/216"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/94/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/58", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/58", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/92",
+      "source_markdown_locators": [{"heading": "Mirror Image", "line_start": 13591, "line_end": 13605, "span_sha256": "4dd612ad90591938c9447dde539acb18e1b00d17f93ac157a62d30e40fd91c61"}],
+      "source_interpretation": "When an attack roll hits the caster, roll one d6 per remaining duplicate; any 3 or higher redirects the hit to one duplicate, which is destroyed. Other damage/effects are ignored by duplicates, and the spell ends when all three are destroyed.",
+      "material_qualifiers": ["An attacker with Blinded, Blindsight or Truesight is unaffected by the spell.", "A qualifying multi-die result still destroys only one duplicate; do not import legacy d20 target selection or duplicate AC."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the face threshold is source-closed. Native attack-hit frontier and duplicate transition proof remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-04", "unresolved_key": "source.spell.moonbeam.unresolved.form_source_cleanup", "source_exact_name": "Moonbeam", "source_category": "source_semantics", "subobligation_id": "source.spell.moonbeam.unresolved.form_source_cleanup::source_semantics", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/96/required_modes_or_exceptions", "source_exact_name": "Moonbeam", "printed_page": 150, "source_header_line": 13220, "raw_body_sha256": "3e8d49e0f7177a8672169646f5c0f88426b149b29232214e4eb9e2adba1f0067", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/220"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/96/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/59", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/59", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/94",
+      "source_markdown_locators": [{"heading": "Moonbeam", "line_start": 13663, "line_end": 13679, "span_sha256": "aaf21d6a3c3d5a7c704f1f5559c372e6785dee2f3af5fe11734e50b4fa91fb39"}],
+      "source_interpretation": "Moonbeam's failed-save form rider reverts a shape-shifted creature to true form and bars shape-shifting until the creature leaves the Cylinder. This application-specific reversion is distinct from ending the underlying transformation source.",
+      "material_qualifiers": ["The source gives no underlying transformation-source termination, suppression, survival or automatic-reassertion rule; Shape-Shifting delegates behavior to each effect.", "No generic source deletion, universal application ending, blanket survival or automatic re-forming after exit is inferred."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source form reversion and application ending are distinguished. The source does not establish that the underlying transformation source terminates or survives; no automatic reassertion is established. Form/health/teardown remains FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-05", "unresolved_key": "source.spell.pass_without_trace.unresolved.selection_timing", "source_exact_name": "Pass without Trace", "source_category": "source_semantics", "subobligation_id": "source.spell.pass_without_trace.unresolved.selection_timing::source_semantics", "disposition": "SOURCE_HELD",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/97/required_modes_or_exceptions", "source_exact_name": "Pass without Trace", "printed_page": 151, "source_header_line": 13298, "raw_body_sha256": "68b06279a1f031bb6976a24099a1972bce808c44b3c27a6f9f61b7c67d228407", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/224"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/97/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/60", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/60", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/95",
+      "source_markdown_locators": [{"heading": "Pass without Trace", "line_start": 13735, "line_end": 13747, "span_sha256": "5286728517f232fad21e7a35ba72d36862ab98170e3a06ca57889586678a2132"}],
+      "source_interpretation": "While within the caster's 30-foot concealing Emanation, the caster and each creature the caster chooses gain +10 Dexterity (Stealth) and leave no tracks.",
+      "material_qualifiers": ["The source does not state whether creature selection occurs at casting, may change later, or can be withdrawn/reassigned.", "Do not infer fixed or dynamic membership, free reassignment, benefit outside the aura or magical-tracking immunity."],
+      "retained_source_residual": "HOLD_SOURCE_SUBOBLIGATION; exact selection timing and membership changes remain unresolved. Spatial and eligibility consumers remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-06A", "unresolved_key": "source.spell.phantasmal_force.unresolved.dangerous_form_bounds", "source_exact_name": "Phantasmal Force", "source_category": "source_parameter", "subobligation_id": "source.spell.phantasmal_force.unresolved.dangerous_form_bounds::source_parameter", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/98/required_modes_or_exceptions", "source_exact_name": "Phantasmal Force", "printed_page": 151, "source_header_line": 13306, "raw_body_sha256": "185c36a4db855231a3b09b9be9a0654cbbc63d1d43a5e2e0b9292465f2f37180", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/225"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/98/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/61", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/61", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/96",
+      "source_markdown_locators": [{"heading": "Phantasmal Force", "line_start": 13751, "line_end": 13767, "span_sha256": "1746c7ef849e32f2cdee5afe7f59bb8f9f083034df4c6c96f1084177ef29f3d5"}],
+      "source_interpretation": "A visible target within 60 feet makes an Intelligence save. On failure, it perceives a target-only phenomenon no larger than a 10-foot Cube and can use Study/Intelligence (Investigation) against spell save DC to end the spell on success. A dangerous phantasm can deal 2d8 Psychic on each caster turn when the target is in its area or within 5 feet.",
+      "material_qualifiers": ["Damage is per caster turn, not target turn, and only when the target is in the phantasm area or within 5 feet.", "No higher-slot or character-level scaling clause is stated; no unbounded proximity is added."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; cited numeric, proximity and repeat-damage parameters are source-closed. Native damage timing/admission remains NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-06B", "unresolved_key": "source.spell.phantasmal_force.unresolved.dangerous_form_bounds", "source_exact_name": "Phantasmal Force", "source_category": "source_semantics", "subobligation_id": "source.spell.phantasmal_force.unresolved.dangerous_form_bounds::source_semantics", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/98/required_modes_or_exceptions", "source_exact_name": "Phantasmal Force", "printed_page": 151, "source_header_line": 13306, "raw_body_sha256": "185c36a4db855231a3b09b9be9a0654cbbc63d1d43a5e2e0b9292465f2f37180", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/225"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/98/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/61", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/61", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/96",
+      "source_markdown_locators": [{"heading": "Phantasmal Force", "line_start": 13751, "line_end": 13767, "span_sha256": "1746c7ef849e32f2cdee5afe7f59bb8f9f083034df4c6c96f1084177ef29f3d5"}],
+      "source_interpretation": "Damage eligibility requires the phantasm to represent a dangerous creature or hazard; an arbitrary phenomenon is not enough. The target perceives a type appropriate to the illusion, while actual damage remains Psychic and the illusion does not change objective world truth.",
+      "material_qualifiers": ["The source examples do not form an exhaustive dangerous-form catalog; adjudication remains bounded to the source predicate.", "No objective bridge or Actor, arbitrary damage permission, or legacy Construct/Undead immunity is inferred."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; dangerous-form source semantics are closed. Observer belief, damage admission and native consumers remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-07", "unresolved_key": "source.spell.prayer_of_healing.unresolved.responder_census", "source_exact_name": "Prayer of Healing", "source_category": "source_mapping_review", "subobligation_id": "source.spell.prayer_of_healing.unresolved.responder_census::source_mapping_review", "disposition": "SOURCE_HELD",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/100/required_modes_or_exceptions", "source_exact_name": "Prayer of Healing", "printed_page": 154, "source_header_line": 13554, "raw_body_sha256": "fd0df00cfdaf3ed9b6a03304107390c6dbf574f9bef34c924a1642fea74e5e2d", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/237"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/100/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/62", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/62", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/98",
+      "source_markdown_locators": [{"heading": "Prayer of Healing", "line_start": 13973, "line_end": 13987, "span_sha256": "0d6377b2a1aaa3cbc91b68dbedda8f90b19ac5bb31f40d79108cf50a5ae7c3a4"}],
+      "source_interpretation": "At completion of 10-minute casting, up to five chosen creatures remaining within 30 feet for the entire casting gain Short Rest benefits and regain 2d8 HP; each creature cannot be affected again until it finishes a Long Rest. Higher slots add 1d8 healing per slot level above 2.",
+      "material_qualifiers": ["Short Rest benefits do not state one-hour elapsed rest, a global shortened-rest rule, automatic Hit Point Die spending or unconditional resource refill.", "Feature recharges follow each feature's own description; no complete applicable responder census or zero-HP/ordinary-rest predicate resolution is supplied."],
+      "retained_source_residual": "HOLD_SOURCE_SUBOBLIGATION; exact qualifying rest-responder membership and applicable owner census remain unresolved. Resource/health edges and simultaneous application remain FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-08", "unresolved_key": "source.spell.prestidigitation.unresolved.object_material_bounds", "source_exact_name": "Prestidigitation", "source_category": "source_parameter", "subobligation_id": "source.spell.prestidigitation.unresolved.object_material_bounds::source_parameter", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/101/required_modes_or_exceptions", "source_exact_name": "Prestidigitation", "printed_page": 154, "source_header_line": 13566, "raw_body_sha256": "5534f4c69a03d731a4c6a9bc8fd28428902400cff12734201983417fd33d77af", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/238"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/101/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/63", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/63", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/99",
+      "source_markdown_locators": [{"heading": "Prestidigitation", "line_start": 13991, "line_end": 14015, "span_sha256": "0c145111e222a38335048c1d92ad0d6a98697865bb076e75db47d52f1489d326"}],
+      "source_interpretation": "The six options are harmless instantaneous sensory effect; light/snuff candle, torch or small campfire; clean/soil an object up to 1 cubic foot; chill/warm/flavor up to 1 cubic foot of nonliving material for one hour; create a color, small mark or symbol on an object/surface for one hour; or create a nonmagical trinket or illusory image fitting in hand until the end of the caster's next turn.",
+      "material_qualifiers": ["A trinket deals no damage and has no monetary worth; that trinket qualifier does not make an illusory image objective material.", "At most three non-instantaneous effects may be active across recasts. Preserve qualitative 'small' and hand-size bounds without inventing numbers."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; eligible fire/material/object wording is source-closed. Mode admission and world/concurrency consumers remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-09", "unresolved_key": "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members", "source_exact_name": "Protection from Evil and Good", "source_category": "source_mapping_review", "subobligation_id": "source.spell.protection_from_evil_and_good.unresolved.supernatural_source_members::source_mapping_review", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/103/required_modes_or_exceptions", "source_exact_name": "Protection from Evil and Good", "printed_page": 157, "source_header_line": 13810, "raw_body_sha256": "b888ba72de84761569222ad7813068f7ddcbd5ce7b5c6e16756c3b7e74cefa4c", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/246"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/103/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/64", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/64", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/101",
+      "source_markdown_locators": [{"heading": "Protection from Evil and Good", "line_start": 14188, "line_end": 14200, "span_sha256": "1a5fb548c39c0189eba7ff9593e70b4fc9d2242736cda1d5e4093cfee70fed0c"}],
+      "members": ["Aberrations", "Celestials", "Elementals", "Fey", "Fiends", "Undead"],
+      "source_interpretation": "A willing touched creature is protected against exactly the source-listed Aberrations, Celestials, Elementals, Fey, Fiends and Undead, with the described attack Disadvantage, possession/condition prevention and Advantage on a new save against relevant existing control.",
+      "material_qualifiers": ["Existing possession, Charmed or Frightened effect grants Advantage on a new relevant save; it does not grant a new save or end the effect automatically.", "Type and effect provenance matter. Consumed 25+ GP Holy Water cannot be replaced by a pouch/focus; no blanket charm/fear immunity or exorcism is inferred."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the six source-listed types are enumerated. Provenance and native consumers remain FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-10", "unresolved_key": "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy", "source_exact_name": "Ray of Enfeeblement", "source_category": "source_semantics", "subobligation_id": "source.spell.ray_of_enfeeblement.unresolved.damage_floor_policy::source_semantics", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/106/required_modes_or_exceptions", "source_exact_name": "Ray of Enfeeblement", "printed_page": 157, "source_header_line": 13861, "raw_body_sha256": "d05feb22a3b228153949caf4f7688d4b777e3da76ace1785aea087f882bac609", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/250"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/106/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/65", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/65", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/104",
+      "source_markdown_locators": [{"heading": "Ray of Enfeeblement", "line_start": 14254, "line_end": 14268, "span_sha256": "ee7717b3a5f2eb5cc87f26f2517e3d5685d6a03f2c28b3c231c8f0d4f11548db"}],
+      "source_interpretation": "A successful Constitution save imposes Disadvantage on the target's next attack roll until the caster's next turn starts. Failure imposes Disadvantage on Strength-based D20 Tests and subtracts 1d8 from all damage rolls for the duration; an end-of-turn repeated save ends the spell on success. Damage under the penalty can reach 0 but not become negative.",
+      "material_qualifiers": ["The source says all damage rolls, not fixed damage amounts; the zero floor is not a minimum of 1 or negative healing.", "Do not import legacy half-Strength weapon damage, shared dice across rolls or defense/mitigation ordering."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source-specific subtraction contribution and damage floor are closed. Damage components and defense order remain FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-11", "unresolved_key": "source.spell.ray_of_frost.unresolved.movement_composition", "source_exact_name": "Ray of Frost", "source_category": "source_parameter", "subobligation_id": "source.spell.ray_of_frost.unresolved.movement_composition::source_parameter", "disposition": "SOURCE_HELD",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/107/required_modes_or_exceptions", "source_exact_name": "Ray of Frost", "printed_page": 157, "source_header_line": 13876, "raw_body_sha256": "acbf5544ece9d8b267804f550f65e342733ad0d02eb95f8ee6c0e11d30f3cb35", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/251"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/107/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/66", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/66", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/105",
+      "source_markdown_locators": [{"heading": "Ray of Frost", "line_start": 14272, "line_end": 14286, "span_sha256": "dae3f77c2b494c1afd20ba279f16583438d1df80127bf260e3a243c491b77ea0"}],
+      "source_interpretation": "On a ranged spell attack hit, Ray of Frost deals 1d8 Cold and reduces Speed by 10 feet until the start of the caster's next turn. Character-level damage upgrades at 5/11/17 to 2d8/3d8/4d8; the fixed Speed reduction does not scale.",
+      "material_qualifiers": ["The Speed glossary applies temporary increases/decreases equally to existing special speeds for the same duration, but states no explicit minimum Speed floor.", "Switching speeds uses remaining movement and a 0-or-less remainder blocks that speed for this move; this is not a stat floor. Fixed subtraction needs no rounding, and no zero clamp/negative-Speed policy is inferred."],
+      "retained_source_residual": "HOLD_SOURCE_SUBOBLIGATION; the source supplies no exact Speed-reduction floor. Movement-mode/budget composition remains FUTURE_PROOF / NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "FIFTH-12", "unresolved_key": "source.spell.resistance.unresolved.eleven_type_members", "source_exact_name": "Resistance", "source_category": "source_mapping_review", "subobligation_id": "source.spell.resistance.unresolved.eleven_type_members::source_mapping_review", "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/109/required_modes_or_exceptions", "source_exact_name": "Resistance", "printed_page": 158, "source_header_line": 13968, "raw_body_sha256": "f13455e2f9b58c45a738c097b310d12495a006028c9720b8047d941dd52e885b", "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization", "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/257"}, "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/109/qualifications"}},
+      "source_classification_pointer": "/source_unknown_classifications/67", "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/67", "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/107",
+      "source_markdown_locators": [{"heading": "Resistance", "line_start": 14389, "line_end": 14401, "span_sha256": "c8eb5178fade2834aa5ad5c504723c2499bcbfaeeb821d120b5dbc729ab3432c"}],
+      "members": ["Acid", "Bludgeoning", "Cold", "Fire", "Lightning", "Necrotic", "Piercing", "Poison", "Radiant", "Slashing", "Thunder"],
+      "source_interpretation": "A willing touched creature selects exactly one of the eleven listed damage types. Before the spell ends, damage of the chosen type reduces total damage taken by 1d4, only once per turn.",
+      "material_qualifiers": ["The exact source order is preserved; Force and Psychic are not listed.", "The spell name does not establish damage halving. Event grouping, roll choice/trigger admission and defense ordering remain unproved."],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; all eleven selectable source names are enumerated. Event grouping and native damage consumers remain NOT_ESTABLISHED.", "future_native_proof_status": "NOT_ESTABLISHED", "actual_native_proof_refs": []
+    }
   ]
 }
