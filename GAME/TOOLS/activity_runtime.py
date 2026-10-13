@@ -34,8 +34,8 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
 _AC_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
@@ -1475,6 +1475,63 @@ def _validate_sorcerer_source_choice_slot(
     return option_spell_ids
 
 
+def _validate_source_mode_declarations(
+    definition_contracts: Mapping[str, object],
+    dependency_edges: set[tuple[str, str]],
+) -> None:
+    """Validate optional mode rows against this retained definition closure."""
+    for spell_id, raw_definition in definition_contracts.items():
+        if (
+            not isinstance(raw_definition, Mapping)
+            or raw_definition.get("kind") != "definition.spell"
+        ):
+            continue
+        data = raw_definition.get("data")
+        if not isinstance(data, Mapping) or "source_modes" not in data:
+            continue
+        raw_modes = _sequence(data["source_modes"], f"{spell_id}.source_modes")
+        activity_ids = tuple(
+            _require_id(value, f"{spell_id}.activity_ids")
+            for value in _sequence(
+                data.get("activity_ids"), f"{spell_id}.activity_ids"
+            )
+        )
+        seen_mode_ids: set[str] = set()
+        for raw_mode in raw_modes:
+            mode_record = _mapping(raw_mode, f"{spell_id} source mode")
+            try:
+                mode = contracts.SourceMode(**dict(mode_record))
+            except (contracts.ActivityContractError, TypeError) as error:
+                raise ActivityNotSelectable(
+                    f"{spell_id} has an invalid closed source mode"
+                ) from error
+            if mode.mode_id in seen_mode_ids:
+                raise ActivityNotSelectable(
+                    "source spell repeats a source mode key"
+                )
+            seen_mode_ids.add(mode.mode_id)
+            if mode.activity_id not in activity_ids:
+                raise ActivityNotSelectable(
+                    "source mode Activity is not linked by its spell"
+                )
+            activity_definition = definition_contracts.get(mode.activity_id)
+            if (
+                not isinstance(activity_definition, Mapping)
+                or activity_definition.get("id") != mode.activity_id
+                or activity_definition.get("kind") != "definition.activity"
+            ):
+                raise ActivityNotSelectable(
+                    "source mode Activity definition is unavailable or has the wrong kind"
+                )
+            if (
+                f"bound_definition:{spell_id}",
+                f"bound_definition:{mode.activity_id}",
+            ) not in dependency_edges:
+                raise ActivityNotSelectable(
+                    "source mode Activity edge is missing from the retained source closure"
+                )
+
+
 def _compile_source_bindings(
     raw_capability_bindings: Sequence[object],
     raw_cast_bindings: Sequence[object],
@@ -2267,6 +2324,9 @@ def _compile_source_bindings(
                             "source primitive dependencies differ from Activity closure: "
                             f"{definition_id}"
                         )
+            _validate_source_mode_declarations(
+                definition_contracts, dependency_edges
+            )
             try:
                 compiled = contracts.CompiledSourceBinding(
                     binding=binding,

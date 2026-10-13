@@ -28,6 +28,10 @@ def _run_installed_source_basis_case(
     route_activity_in_package: bool = False,
     expected_route: bool = True,
     expected_disposition: str | None = None,
+    expected_mode_id: str | None = None,
+    expected_source_spell_id: str | None = None,
+    source_mode_case: str | None = None,
+    tamper_package_path: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     scratch.mkdir()
     installed_root = scratch / "GAME"
@@ -41,6 +45,10 @@ def _run_installed_source_basis_case(
                 "route_activity_in_package": route_activity_in_package,
                 "expected_route": expected_route,
                 "expected_disposition": expected_disposition,
+                "expected_mode_id": expected_mode_id,
+                "expected_source_spell_id": expected_source_spell_id,
+                "source_mode_case": source_mode_case,
+                "tamper_package_path": tamper_package_path,
             },
             sort_keys=True,
         ),
@@ -99,6 +107,9 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             engine_version=manifest["engine_requirement"]["engine_version"],
             catalog_generation=manifest["catalog_generation"],
         )
+        if case.get("tamper_package_path") is True:
+            seed_path = package_root / "character-mvp-seed.json"
+            seed_path.write_bytes(seed_path.read_bytes() + b"\n")
         recipe = cls.recipe
         frontier = {
             "frontier_id": "campaign.definitions",
@@ -1234,6 +1245,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
 
         if self.case.get("route_activity_in_package") is not True:
             self.skipTest("actual installed spell Activity route fixture only")
+        warm_source = self.cast_source
         object.__setattr__(self.catalog, "compiled_activities", MappingProxyType({}))
         self.compiled = activity_runtime.compile_activity(
             self.catalog, str(self.recipe["id"])
@@ -1243,6 +1255,10 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             for row in self.compiled.cast_source_bindings
             if row.binding.consumer_id.endswith(".step.0")
         )
+        self.assertEqual(
+            self.cast_source.definition_contracts,
+            warm_source.definition_contracts,
+        )
         context, repository, store, _host, accepted = self._prepare()
         if self.case.get("expected_route") is False:
             with self.assertRaises(activity_contracts.NativePreparationHold):
@@ -1250,6 +1266,12 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             return
 
         expected_context_identity = mechanical_context.context_cache_identity(context)
+        self.assertEqual(
+            expected_context_identity[12],
+            mechanical_context._source_binding_identity(
+                context.compiled, context.consumer_id
+            ),
+        )
         actor_before = deepcopy(repository.actor)
         repository_revision_before = repository._git("rev-parse", "HEAD").stdout
         hot_changes_before = store._connection.total_changes
@@ -1327,6 +1349,209 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         self.assertEqual(store._connection.total_changes, hot_changes_before)
         self.assertEqual(context.resolution["segments"], ())
         self.assertEqual(context.resolution["fixed_rng_results"], ())
+
+    def test_selected_source_mode_proof(self) -> None:
+        import copy
+        from dataclasses import replace
+        from types import MappingProxyType
+
+        from GAME.TOOLS import (
+            activity_contracts,
+            activity_runtime,
+            mechanical_context,
+            spell_cast,
+        )
+        from GAME.TOOLS.mechanical_context import MechanicalContextError
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        warm_source = self.cast_source
+        object.__setattr__(self.catalog, "compiled_activities", MappingProxyType({}))
+        self.compiled = activity_runtime.compile_activity(
+            self.catalog, str(self.recipe["id"])
+        )
+        self.cast_source = next(
+            row
+            for row in self.compiled.cast_source_bindings
+            if row.binding.consumer_id.endswith(".step.0")
+        )
+        self.assertEqual(
+            self.cast_source.definition_contracts,
+            warm_source.definition_contracts,
+        )
+        context, repository, store, _host, accepted = self._prepare()
+        actor_before = deepcopy(repository.actor)
+        repository_revision_before = repository._git("rev-parse", "HEAD").stdout
+        hot_changes_before = store._connection.total_changes
+        expected_context_identity = mechanical_context.context_cache_identity(context)
+
+        result = spell_cast._prove_named_source_mode(context)
+
+        self.assertIs(type(result), activity_contracts.NamedSourceRouteResult)
+        self.assertFalse(hasattr(result, "_issue_seal"))
+        expected_spell_id = (
+            self.case.get("expected_source_spell_id") or "spell.magic_missile"
+        )
+        expected_activity_id = str(self.recipe["id"])
+        expected_mode_id = (
+            self.case.get("expected_mode_id") or "mode.magic_missile.ordinary"
+        )
+        expected_disposition = (
+            self.case.get("expected_disposition") or "SELECTED_PREPARED_LEVEL1"
+        )
+        self.assertEqual(result.value["consumer_id"], f"{expected_activity_id}.step.0")
+        self.assertEqual(result.value["profile_id"], "execution.spell_cast.srd521")
+        self.assertEqual(result.value["source_spell_id"], expected_spell_id)
+        self.assertEqual(result.value["mode_id"], expected_mode_id)
+        self.assertEqual(result.value["activity_id"], expected_activity_id)
+        self.assertEqual(result.value["source_mode_status"], "NAMED_ROUTE_RESOLVED")
+        self.assertEqual(result.value["source_disposition"], expected_disposition)
+        self.assertEqual(
+            result.value["mode_declaration"],
+            {
+                "mode_id": expected_mode_id,
+                "activity_id": expected_activity_id,
+            },
+        )
+        self.assertEqual(
+            result.value["source_dependency_edge"],
+            {
+                "source_ref": f"bound_definition:{expected_spell_id}",
+                "dependency_ref": f"bound_definition:{expected_activity_id}",
+            },
+        )
+        self.assertEqual(
+            result.value["source_activity_ids"],
+            tuple(
+                self.cast_source.definition_contracts[expected_spell_id]["data"][
+                    "activity_ids"
+                ]
+            ),
+        )
+        self.assertEqual(result.value["context_identity"], expected_context_identity)
+        self.assertEqual(result.value["command_id"], context.execution_ref.command_id)
+        self.assertEqual(
+            result.value["root_resolution_id"],
+            context.execution_ref.resolution_id,
+        )
+        self.assertEqual(result.value["occurrence_id"], context.occurrence_id)
+        self.assertEqual(
+            result.value["selected_activity_definition"],
+            self.cast_source.definition_contracts[expected_activity_id],
+        )
+        self.assertEqual(
+            result.value["source_spell_definition"],
+            self.cast_source.definition_contracts[expected_spell_id],
+        )
+        self.assertEqual(
+            accepted["action_request"]["activity_id"], context.compiled.activity_id
+        )
+        detached_result = activity_contracts.NamedSourceRouteResult(result.value)
+        self.assertFalse(hasattr(detached_result, "_issue_seal"))
+        with self.assertRaises(TypeError):
+            spell_cast._prove_named_source_mode(context, mode_id=expected_mode_id)
+        with self.assertRaises(TypeError):
+            spell_cast._prove_named_source_mode(context, copy.copy(result))
+        with self.assertRaises(TypeError):
+            spell_cast._prove_named_source_mode(
+                context, source_modes=(expected_mode_id,)
+            )
+        with self.assertRaises(TypeError):
+            spell_cast._prove_named_source_mode(
+                context, capability_roster=(expected_spell_id,)
+            )
+        with self.assertRaises(TypeError):
+            spell_cast._prove_named_source_mode(context, detached_result)
+        with self.assertRaises(activity_contracts.ActivityContractError):
+            replace(context, compiled=copy.copy(context.compiled))
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_named_source_mode(copy.copy(context))
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_named_source_mode(replace(context))
+        self.assertEqual(repository.actor, actor_before)
+        self.assertEqual(
+            repository._git("rev-parse", "HEAD").stdout,
+            repository_revision_before,
+        )
+        self.assertEqual(store._connection.total_changes, hot_changes_before)
+        self.assertEqual(context.resolution["segments"], ())
+        self.assertEqual(context.resolution["fixed_rng_results"], ())
+
+    def test_source_mode_descriptor_participates_in_retained_context_identity(
+        self,
+    ) -> None:
+        from collections.abc import Mapping
+        from dataclasses import replace
+
+        from GAME.TOOLS import activity_contracts, mechanical_context
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("installed named-source mode fixture only")
+        source = self.cast_source
+        spell_definition = source.definition_contracts.get("spell.magic_missile")
+        spell_data = (
+            spell_definition.get("data")
+            if isinstance(spell_definition, Mapping)
+            else None
+        )
+        if not isinstance(spell_data, Mapping) or not spell_data.get("source_modes"):
+            self.skipTest("private spell fixture has no explicit source mode")
+        consumer_id = source.binding.consumer_id
+        before = mechanical_context._source_binding_identity(self.compiled, consumer_id)
+        changed_definitions = activity_contracts._thaw(source.definition_contracts)
+        changed_definitions["spell.magic_missile"]["data"]["source_modes"][0][
+            "mode_id"
+        ] = "mode.magic_missile.changed"
+        changed_source = replace(source, definition_contracts=changed_definitions)
+        original_sources = self.compiled.cast_source_bindings
+        try:
+            object.__setattr__(
+                self.compiled,
+                "cast_source_bindings",
+                tuple(
+                    changed_source if row is source else row for row in original_sources
+                ),
+            )
+            after = mechanical_context._source_binding_identity(
+                self.compiled, consumer_id
+            )
+        finally:
+            object.__setattr__(self.compiled, "cast_source_bindings", original_sources)
+
+        self.assertNotEqual(before, after)
+        self.assertIn(
+            "mode.magic_missile.ordinary",
+            repr(
+                mechanical_context._source_binding_identity(self.compiled, consumer_id)
+            ),
+        )
+
+    def test_selected_source_mode_holds_when_declaration_is_absent(self) -> None:
+        from GAME.TOOLS import activity_contracts, spell_cast
+
+        if self.case.get("source_mode_case") != "absent":
+            self.skipTest("explicit absent-mode fixture only")
+        basis_context, *_ = self._prepare()
+        source_basis = spell_cast._prepare_cast_source_basis(basis_context)
+        self.assertIsNone(source_basis.source_basis.value["mode_id"])
+        self.assertEqual(
+            source_basis.source_basis.value["facets"]["source_mode"],
+            "NOT_EVALUATED",
+        )
+        context, _repository, _store, _host, _accepted = self._prepare()
+        with self.assertRaises(activity_contracts.NativePreparationHold):
+            spell_cast._prove_named_source_mode(context)
+
+    def test_selected_source_mode_holds_when_activity_mapping_is_ambiguous(
+        self,
+    ) -> None:
+        from GAME.TOOLS import activity_contracts, spell_cast
+
+        if self.case.get("source_mode_case") != "ambiguous_activity":
+            self.skipTest("ambiguous source-mode fixture only")
+        context, _repository, _store, _host, _accepted = self._prepare()
+        with self.assertRaises(activity_contracts.NativePreparationHold):
+            spell_cast._prove_named_source_mode(context)
 
     def _valid_alternative_source_basis(
         self,
@@ -1484,10 +1709,14 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
 
         with self.assertRaises(MechanicalContextError):
             spell_cast._prove_selected_source_route(copy.copy(context))
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_named_source_mode(copy.copy(context))
 
         replaced_context = replace(context)
         with self.assertRaises(MechanicalContextError):
             spell_cast._prove_selected_source_route(replaced_context)
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_named_source_mode(replaced_context)
         replaced_consumer = replace(
             context, consumer_id=f"{context.compiled.activity_id}.step.1"
         )
@@ -1517,6 +1746,9 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         ).relative_path
         repository.write(actor_path, repository.actor)
         repository.commit("change Actor after selected-route source basis")
+        with self.assertRaises(activity_contracts.NativePreparationHold) as raised:
+            spell_cast._prove_named_source_mode(context)
+        self.assertEqual(raised.exception.operation_status, "REVALIDATION_REQUIRED")
         with self.assertRaises(activity_contracts.NativePreparationHold) as raised:
             spell_cast._prove_selected_source_route(context)
         self.assertEqual(raised.exception.operation_status, "REVALIDATION_REQUIRED")

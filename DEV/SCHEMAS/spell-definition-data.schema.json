@@ -9,6 +9,12 @@
     "level": {"type": "integer", "minimum": 0, "maximum": 9},
     "school_id": {"$ref": "#/$defs/id"},
     "activity_ids": {"$ref": "#/$defs/idSet"},
+    "source_modes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/sourceMode"}
+    },
     "components": {
       "type": "object",
       "additionalProperties": false,
@@ -24,7 +30,16 @@
   },
   "$defs": {
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
-    "idSet": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}}
+    "idSet": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "sourceMode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode_id", "activity_id"],
+      "properties": {
+        "mode_id": {"$ref": "#/$defs/id"},
+        "activity_id": {"type": "string", "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"}
+      }
+    }
   },
   "description": "Executable casting time, targeting, range, costs, saves/attacks and created Effect duration live in linked Activities/Effects. Spell metadata must not duplicate those mutable/executable contracts."
 }

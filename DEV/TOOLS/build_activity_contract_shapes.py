@@ -147,6 +147,8 @@ def build_projection(root=ROOT):
         "capability_source_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/capabilitySourceBinding"),
         "cast_source_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/castSourceBinding"),
         "source_basis_result": reference(BASE + "spell-native-profile-values.schema.json#/$defs/sourceBasisResult"),
+        "named_source_route_result": reference(BASE + "spell-native-profile-values.schema.json#/$defs/namedSourceRouteResult"),
+        "source_mode": reference(BASE + "spell-definition-data.schema.json#/$defs/sourceMode"),
         "source_definition_ref": reference(BASE + "spell-native-profile-values.schema.json#/$defs/sourceDefinitionRef"),
         "source_choice_slot_binding": reference(BASE + "spell-native-profile-values.schema.json#/$defs/sourceChoiceSlotBinding"),
         "source_dependency_edge": reference(BASE + "spell-native-profile-values.schema.json#/$defs/sourceDependencyEdge"),

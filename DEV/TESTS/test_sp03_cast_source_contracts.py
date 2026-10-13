@@ -439,6 +439,44 @@ def test_source_binding_schemas_are_finite_and_wired_into_compiler_declarations(
         )
 
 
+def test_spell_source_modes_are_optional_closed_exact_route_rows() -> None:
+    spell_schema = _schema(ROOT / "DEV/SCHEMAS/spell-definition-data.schema.json")
+    value = {
+        "level": 1,
+        "school_id": "school.evocation",
+        "activity_ids": ["activity.spell.magic_missile"],
+        "source_modes": [
+            {
+                "mode_id": "mode.magic_missile.ordinary",
+                "activity_id": "activity.spell.magic_missile",
+            }
+        ],
+    }
+
+    Draft202012Validator(spell_schema).validate(value)
+    Draft202012Validator(spell_schema).validate(
+        {key: item for key, item in value.items() if key != "source_modes"}
+    )
+
+    invalid = copy.deepcopy(value)
+    invalid["source_modes"][0]["fallback_activity_id"] = "activity.spell.fire_bolt"
+    with pytest.raises(ValidationError):
+        Draft202012Validator(spell_schema).validate(invalid)
+    with pytest.raises(ValidationError):
+        Draft202012Validator(spell_schema).validate({**value, "source_modes": []})
+
+    from DEV.TOOLS import build_activity_contract_shapes as shape_builder
+
+    projection = shape_builder.build_projection(ROOT)
+    source_schema_id = (
+        "https://hedgelion.invalid/schemas/spell-definition-data.schema.json"
+    )
+    assert source_schema_id in projection["schemas"]
+    assert projection["named"]["source_mode"] == {
+        "$ref": source_schema_id + "#/$defs/sourceMode"
+    }
+
+
 def test_source_basis_validator_accepts_only_sorcerer1_base_values_and_explicit_unknown_facets() -> (
     None
 ):
@@ -453,6 +491,44 @@ def test_source_basis_validator_accepts_only_sorcerer1_base_values_and_explicit_
     assert result.value["facets"]["movement"] == "NOT_EVALUATED"
     with pytest.raises(TypeError):
         result.value["ability_basis"]["modifier"] = 99
+
+
+def test_source_mode_value_is_closed_and_uses_exact_local_keys() -> None:
+    mode = contracts.SourceMode(
+        mode_id="mode.magic_missile.ordinary",
+        activity_id="activity.spell.magic_missile",
+    )
+
+    assert mode.mode_id == "mode.magic_missile.ordinary"
+    assert mode.activity_id == "activity.spell.magic_missile"
+
+    with pytest.raises(TypeError):
+        contracts.SourceMode(
+            mode_id="mode.magic_missile.ordinary",
+            activity_id="activity.spell.magic_missile",
+            description="not an admitted member",
+        )
+
+
+def test_named_source_route_result_has_a_closed_projection_contract() -> None:
+    profile_schema = _schema(PROFILE_SCHEMA)
+    result_schema = profile_schema["$defs"]["namedSourceRouteResult"]
+    assert result_schema["additionalProperties"] is False
+    assert "source_disposition" in result_schema["required"]
+    assert "mode_declaration" in result_schema["required"]
+    assert "source_spell_definition" in result_schema["required"]
+    assert "selected_activity_definition" in result_schema["required"]
+    assert "source_dependency_edge" in result_schema["required"]
+    assert "context_identity" in result_schema["required"]
+    assert "membership_identity" in result_schema["required"]
+    assert "cast_permission" not in result_schema["properties"]
+
+    from DEV.TOOLS import build_activity_contract_shapes as shape_builder
+
+    projection = shape_builder.build_projection(ROOT)
+    assert projection["named"]["named_source_route_result"] == {
+        "$ref": "https://hedgelion.invalid/schemas/spell-native-profile-values.schema.json#/$defs/namedSourceRouteResult"
+    }
 
 
 @pytest.mark.parametrize(
@@ -691,6 +767,9 @@ def test_compiler_inventory_binds_the_source_profile_and_declaration_schemas() -
     schema_contract = projection["families"]["schema_contract"]
     assert schema_contract.get("spell_native_profile_values_schema") == _schema(
         PROFILE_SCHEMA
+    )
+    assert schema_contract.get("spell_definition_data_schema") == _schema(
+        ROOT / "DEV/SCHEMAS/spell-definition-data.schema.json"
     )
     assert schema_contract.get("activity_compiler_declaration_schema") == _schema(
         COMPILER_SCHEMA
@@ -1195,6 +1274,7 @@ def _selected_source_route_compiler_fixture(
     *,
     route_case: str = "actual_magic_missile",
     symbol_case: str | None = None,
+    source_mode_case: str = "declared",
 ) -> tuple[Path, dict[str, object], dict[str, str]]:
     """Build a private installed-source route case through the real compiler."""
     from DEV.TESTS import test_local_spell_catalog as catalog_tests
@@ -1205,15 +1285,31 @@ def _selected_source_route_compiler_fixture(
         "cross_spell_union",
         "missing_selected_edge",
         "multi_activity_nonfirst",
+        "source_prohibited_spell",
     }:
         raise AssertionError(f"unknown selected-route fixture case: {route_case}")
+    if source_mode_case not in {
+        "declared",
+        "absent",
+        "duplicate_key",
+        "foreign_activity",
+        "ambiguous_activity",
+        "missing_definition",
+        "missing_edge",
+        "reordered",
+    }:
+        raise AssertionError(f"unknown private source-mode case: {source_mode_case}")
     if symbol_case not in {None, "missing", "wrong_type", "wrong_occurrence", "cycle"}:
         raise AssertionError(f"unknown selected-route symbol case: {symbol_case}")
     private_source = tmp_path / "selected-source-route-source"
     catalog_tests._stage_clean_source_tree(private_source)
     carrier_tests._prepare_sp03_source_tree(private_source)
     mutation = (
-        "unselected_legal_spell" if route_case == "multi_activity_nonfirst" else None
+        "unselected_legal_spell"
+        if route_case == "multi_activity_nonfirst"
+        else "source_prohibited_spell"
+        if route_case == "source_prohibited_spell"
+        else None
     )
     dependency_kinds = _prepare_private_sorcerer_package(
         private_source, mutation=mutation
@@ -1238,6 +1334,10 @@ def _selected_source_route_compiler_fixture(
         source_spell["data"]["activity_ids"].append(route_activity_id)
         source_spell["references"].append(route_activity_id)
         records[route_activity_id] = alternate
+    elif route_case == "source_prohibited_spell":
+        source_spell_id = "spell.fixture_level3"
+        route_activity_id = "activity.fixture_level3"
+        source_spell = records[source_spell_id]
     else:
         source_spell_id = (
             "spell.fire_bolt"
@@ -1281,6 +1381,71 @@ def _selected_source_route_compiler_fixture(
         records[alternate_id] = alternate
 
     route_activity = records[route_activity_id]
+    if route_case == "multi_activity_nonfirst":
+        source_modes = [
+            {
+                "mode_id": "mode.fixture_unselected.primary",
+                "activity_id": "activity.fixture_unselected",
+            },
+            {
+                "mode_id": "mode.fixture_unselected.alternate",
+                "activity_id": route_activity_id,
+            },
+        ]
+    elif route_case == "source_prohibited_spell":
+        source_modes = [
+            {
+                "mode_id": "mode.fixture_level3.ordinary",
+                "activity_id": route_activity_id,
+            }
+        ]
+    elif (
+        source_spell_id == "spell.magic_missile"
+        and route_case == "actual_magic_missile"
+    ):
+        # Reconciled to SRD CC v5.2.1 Magic Missile, Markdown13259-13273.
+        # This explicit private key identifies the staged route only; it does
+        # not establish damage, target success, simultaneous execution or upcast.
+        source_modes = [
+            {
+                "mode_id": "mode.magic_missile.ordinary",
+                "activity_id": "activity.spell.magic_missile",
+            }
+        ]
+    else:
+        source_modes = []
+
+    if source_mode_case == "absent":
+        source_spell["data"].pop("source_modes", None)
+    elif source_modes:
+        source_spell["data"]["source_modes"] = source_modes
+    if source_mode_case == "duplicate_key":
+        source_spell["data"]["source_modes"].append(
+            {
+                "mode_id": source_spell["data"]["source_modes"][0]["mode_id"],
+                "activity_id": "activity.spell.fire_bolt",
+            }
+        )
+    elif source_mode_case == "foreign_activity":
+        source_spell["data"]["source_modes"][0]["activity_id"] = (
+            "activity.spell.fire_bolt"
+        )
+    elif source_mode_case == "ambiguous_activity":
+        source_spell["data"]["source_modes"].append(
+            {
+                "mode_id": "mode.magic_missile.ambiguous",
+                "activity_id": "activity.spell.magic_missile",
+            }
+        )
+    elif source_mode_case == "reordered":
+        source_spell["data"]["source_modes"].reverse()
+    elif source_mode_case == "missing_definition":
+        missing_activity_id = "activity.spell.magic_missile.missing"
+        source_spell["data"]["activity_ids"].append(missing_activity_id)
+        source_spell["references"].append(missing_activity_id)
+        source_spell["data"]["source_modes"][0]["activity_id"] = missing_activity_id
+    elif source_mode_case == "missing_edge":
+        source_spell["references"].remove("activity.spell.magic_missile")
     consumer_id = f"{route_activity_id}.step.0"
     if route_activity_id == "activity.spell.magic_missile":
         # Preserve the actual fact dependency while deliberately not claiming
@@ -1342,6 +1507,9 @@ def _selected_source_route_compiler_fixture(
         }
         for identity in _reference_closure(records, ("class.sorcerer", source_spell_id))
     ]
+    for reference in binding["source_definition_refs"]:
+        if reference["kind"] != "definition.activity":
+            dependency_kinds[reference["definition_id"]] = reference["kind"]
 
     first_step = route_activity["data"]["steps"][0]
     primitive_id = first_step["op"]
@@ -2474,6 +2642,262 @@ def test_installed_source_route_requires_the_bound_spell_activity_edge(
         expected_disposition=expected_disposition,
     )
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    ("source_mode_case", "diagnostic"),
+    (
+        ("duplicate_key", "source spell repeats a source mode key"),
+        ("foreign_activity", "source mode Activity is not linked by its spell"),
+        ("missing_definition", None),
+        (
+            "missing_edge",
+            "source definition references omit spell data Activity",
+        ),
+    ),
+)
+def test_cold_source_compiler_rejects_conflicting_or_foreign_source_mode_rows(
+    conformance_runtime_root: Path,
+    tmp_path: Path,
+    source_mode_case: str,
+    diagnostic: str | None,
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        source_mode_case=source_mode_case,
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / f"source-mode-{source_mode_case}",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_route_proof",
+        route_activity_in_package=True,
+        expected_disposition="SELECTED_PREPARED_LEVEL1",
+    )
+
+    assert result.returncode != 0, result.stdout
+    if diagnostic is not None:
+        assert diagnostic in result.stdout + result.stderr
+
+
+def test_absent_optional_source_mode_keeps_the_selected_route_partial(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        source_mode_case="absent",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "absent-optional-source-mode",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_route_proof",
+        route_activity_in_package=True,
+        expected_route=True,
+        expected_disposition="SELECTED_PREPARED_LEVEL1",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_named_source_mode_absence_holds_without_upgrading_source_basis(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        source_mode_case="absent",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "named-mode-absent-holds",
+        test_name=(
+            "PinnedNativeSourceBasisTests."
+            "test_selected_source_mode_holds_when_declaration_is_absent"
+        ),
+        route_activity_in_package=True,
+        source_mode_case="absent",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_ambiguous_modes_for_the_selected_activity_hold(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        source_mode_case="ambiguous_activity",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "ambiguous-modes-hold",
+        test_name=(
+            "PinnedNativeSourceBasisTests."
+            "test_selected_source_mode_holds_when_activity_mapping_is_ambiguous"
+        ),
+        route_activity_in_package=True,
+        expected_disposition="SELECTED_PREPARED_LEVEL1",
+        source_mode_case="ambiguous_activity",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_magic_missile_named_source_mode_is_derived_from_private_declaration(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "installed-named-magic-missile-mode",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_mode_proof",
+        route_activity_in_package=True,
+        expected_disposition="SELECTED_PREPARED_LEVEL1",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_nonfirst_activity_uses_its_exact_reordered_mode_and_stays_unavailable(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        route_case="multi_activity_nonfirst",
+        source_mode_case="reordered",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "nonfirst-reordered-mode-unavailable",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_mode_proof",
+        route_activity_in_package=True,
+        expected_disposition="UNAVAILABLE",
+        expected_mode_id="mode.fixture_unselected.alternate",
+        expected_source_spell_id="spell.fixture_unselected",
+        source_mode_case="reordered",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_named_source_mode_does_not_upgrade_prohibited_spell(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        route_case="source_prohibited_spell",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "prohibited-spell-mode-remains-prohibited",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_mode_proof",
+        route_activity_in_package=True,
+        expected_disposition="PROHIBITED",
+        expected_mode_id="mode.fixture_level3.ordinary",
+        expected_source_spell_id="spell.fixture_level3",
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_source_mode_changes_existing_compiler_context_identity(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "source-mode-retained-identity",
+        test_name=(
+            "PinnedNativeSourceBasisTests."
+            "test_source_mode_descriptor_participates_in_retained_context_identity"
+        ),
+        route_activity_in_package=True,
+    )
+
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_named_source_mode_rejects_package_path_tampering(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "tampered-source-package-path",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_mode_proof",
+        route_activity_in_package=True,
+        tamper_package_path=True,
+    )
+
+    assert result.returncode != 0
+    assert "rebuilt admitted lock does not match ruleset_lock" in result.stderr
 
 
 @pytest.mark.parametrize(

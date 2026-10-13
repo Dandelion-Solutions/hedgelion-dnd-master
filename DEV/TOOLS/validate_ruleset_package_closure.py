@@ -79,6 +79,10 @@ ENGINE_CONTRACT_SOURCE_GROUPS = {
             "DEV/SCHEMAS/spell-native-profile-values.schema.json",
         ),
         (
+            "spell_definition_data_schema",
+            "DEV/SCHEMAS/spell-definition-data.schema.json",
+        ),
+        (
             "activity_compiler_declaration_schema",
             "DEV/SCHEMAS/activity-compiler-declaration.schema.json",
         ),

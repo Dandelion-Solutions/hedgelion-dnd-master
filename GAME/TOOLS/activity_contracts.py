@@ -41,8 +41,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.11
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
+# framework_module_version: 1.0.12
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -936,6 +936,13 @@ class SourceBasisResult(_NativeClosedValue):
         _validate_source_basis_result_semantics(self.value)
 
 
+@dataclass(frozen=True, slots=True)
+class NamedSourceRouteResult(_NativeClosedValue):
+    """Unissued exact source-mode route evidence, never casting permission."""
+
+    contract_fragment = "namedSourceRouteResult"
+
+
 class _SealedValue(ContractValue):
     __slots__ = ()
 
@@ -1056,6 +1063,21 @@ class SourceDefinitionRef(ContractValue):
         _wire_contract(
             "source_definition_ref",
             {"definition_id": self.definition_id, "kind": self.kind},
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class SourceMode(ContractValue):
+    """One closed definition-local spell mode to linked Activity row."""
+
+    mode_id: NativeId
+    activity_id: NativeId
+
+    def __post_init__(self) -> None:
+        ContractValue.__post_init__(self)
+        _wire_contract(
+            "source_mode",
+            {"mode_id": self.mode_id, "activity_id": self.activity_id},
         )
 
 
@@ -3578,6 +3600,170 @@ def validate_source_basis_result(
     if evidence["source_disposition"] != expected_disposition:
         raise ActivityContractError(
             "source availability differs from exact Sorcerer1 slot and source level"
+        )
+    return result
+
+
+def validate_named_source_route_result(
+    value: object, *, context: NativePreparationContext
+) -> NamedSourceRouteResult:
+    """Validate an unissued named-mode route against one authentic context."""
+    if (
+        type(context) is not NativePreparationContext
+        or not _preparation_context_is_issued(context)
+        or not _compiler_value_is_issued(context.compiled, kind="compiled")
+    ):
+        raise ActivityContractError(
+            "named source-route validation requires an authentic native context"
+        )
+    result = (
+        value
+        if isinstance(value, NamedSourceRouteResult)
+        else NamedSourceRouteResult(value)
+    )
+    evidence = result.value
+    compiled = context.compiled
+    if (
+        evidence["activity_id"] != compiled.activity_id
+        or evidence["consumer_id"] != context.consumer_id
+        or evidence["profile_id"] != "execution.spell_cast.srd521"
+        or evidence["profile_generation"] != 1
+        or evidence["compiler_generation"] != compiled.compiler_generation
+        or evidence["definition_semantic_hash_generation"]
+        != compiled.definition_semantic_hash_generation
+        or evidence["definition_semantic_hash"] != compiled.definition_semantic_hash
+        or evidence["ruleset_set_digest_generation"]
+        != compiled.ruleset_set_digest_generation
+        or evidence["ruleset_set_sha256"] != compiled.ruleset_set_sha256
+        or evidence["catalog_context_fingerprint_generation"]
+        != compiled.catalog_context_fingerprint_generation
+        or evidence["catalog_context_fingerprint"]
+        != compiled.catalog_context_fingerprint
+        or evidence["engine_contract_inventory_sha256"]
+        != compiled.engine_contract_inventory_sha256
+        or evidence["command_id"] != context.execution_ref.command_id
+        or evidence["root_resolution_id"] != context.execution_ref.resolution_id
+        or evidence["occurrence_id"] != context.occurrence_id
+        or evidence["catalog_context_fingerprint"]
+        != context.catalog.catalog_context.fingerprint
+    ):
+        raise ActivityContractError(
+            "named source-route identity differs from its authentic context"
+        )
+
+    candidates = tuple(
+        row
+        for row in compiled.cast_source_bindings
+        if row.binding.consumer_id == context.consumer_id
+        and row.binding.profile_id == evidence["profile_id"]
+        and row.binding.profile_generation == evidence["profile_generation"]
+    )
+    if len(candidates) != 1:
+        raise ActivityContractError(
+            "named source-route result has no unique exact compiled cast binding"
+        )
+    source = candidates[0]
+    binding = source.binding
+    if (
+        type(binding) is not CastSourceBinding
+        or evidence["source_spell_id"] != binding.source_spell_id
+        or tuple(evidence["source_read_refs"]) != source.dependency_read_refs
+    ):
+        raise ActivityContractError(
+            "named source-route result differs from its compiled cast binding"
+        )
+
+    spell_definition = source.definition_contracts.get(str(binding.source_spell_id))
+    if (
+        not isinstance(spell_definition, Mapping)
+        or spell_definition.get("id") != binding.source_spell_id
+        or spell_definition.get("kind") != "definition.spell"
+        or evidence["source_spell_definition"] != spell_definition
+    ):
+        raise ActivityContractError(
+            "named source-route spell definition differs from retained source bytes"
+        )
+    spell_data = spell_definition.get("data")
+    if not isinstance(spell_data, Mapping):
+        raise ActivityContractError("named source-route spell data is malformed")
+    raw_activity_ids = spell_data.get("activity_ids")
+    if (
+        not isinstance(raw_activity_ids, (tuple, list))
+        or not raw_activity_ids
+        or any(not isinstance(activity_id, str) for activity_id in raw_activity_ids)
+        or len(raw_activity_ids) != len(set(raw_activity_ids))
+        or tuple(evidence["source_activity_ids"]) != tuple(raw_activity_ids)
+        or evidence["activity_id"] not in raw_activity_ids
+    ):
+        raise ActivityContractError(
+            "named source-route Activity differs from its spell's exact activity list"
+        )
+
+    raw_modes = spell_data.get("source_modes")
+    if not isinstance(raw_modes, (tuple, list)) or not raw_modes:
+        raise ActivityContractError(
+            "named source-route spell has no explicit source mode declarations"
+        )
+    source_modes: list[SourceMode] = []
+    seen_mode_ids: set[str] = set()
+    for raw_mode in raw_modes:
+        if not isinstance(raw_mode, Mapping):
+            raise ActivityContractError("named source-route mode row is malformed")
+        try:
+            mode = SourceMode(**dict(raw_mode))
+        except (ActivityContractError, TypeError) as error:
+            raise ActivityContractError(
+                "named source-route mode row is not a closed SourceMode"
+            ) from error
+        if mode.mode_id in seen_mode_ids:
+            raise ActivityContractError("source spell repeats a source mode key")
+        seen_mode_ids.add(mode.mode_id)
+        source_modes.append(mode)
+
+    matching_modes = tuple(
+        mode for mode in source_modes if mode.activity_id == evidence["activity_id"]
+    )
+    if len(matching_modes) != 1:
+        raise ActivityContractError(
+            "selected Activity has no unique declared source mode"
+        )
+    mode = matching_modes[0]
+    expected_mode_declaration = {
+        "mode_id": mode.mode_id,
+        "activity_id": mode.activity_id,
+    }
+    if (
+        evidence["mode_id"] != mode.mode_id
+        or evidence["mode_declaration"] != expected_mode_declaration
+    ):
+        raise ActivityContractError(
+            "named source-route mode differs from its exact spell declaration"
+        )
+
+    activity_definition = source.definition_contracts.get(mode.activity_id)
+    if (
+        not isinstance(activity_definition, Mapping)
+        or activity_definition.get("id") != mode.activity_id
+        or activity_definition.get("kind") != "definition.activity"
+        or evidence["selected_activity_definition"] != activity_definition
+    ):
+        raise ActivityContractError(
+            "named source-route Activity differs from its retained definition"
+        )
+    expected_edge = {
+        "source_ref": f"bound_definition:{binding.source_spell_id}",
+        "dependency_ref": f"bound_definition:{mode.activity_id}",
+    }
+    retained_edges = {
+        (edge.source_ref, edge.dependency_ref) for edge in source.dependency_edges
+    }
+    if (
+        evidence["source_dependency_edge"] != expected_edge
+        or (expected_edge["source_ref"], expected_edge["dependency_ref"])
+        not in retained_edges
+    ):
+        raise ActivityContractError(
+            "named source-route edge is absent from the retained source closure"
         )
     return result
 

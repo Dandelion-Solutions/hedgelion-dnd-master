@@ -10,8 +10,8 @@ from . import activity_contracts as contracts
 from . import mechanical_context, mechanical_sources
 from .current_owner import CurrentOwnerStatus, NativeOwnerRef
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 _CLASS_ID: Final[str] = "class.sorcerer"
 _ADVANCEMENT_ID: Final[str] = "advancement.sorcerer.mvp_1"
@@ -1444,3 +1444,133 @@ def _prove_selected_source_route(
         membership_identity=membership_identity,
         read_fingerprint=membership.p0_observation.observation_fingerprint,
     )
+
+
+def _prove_named_source_mode(
+    context: contracts.NativePreparationContext,
+) -> contracts.NamedSourceRouteResult:
+    """Resolve one explicit source mode for the exact selected spell Activity.
+
+    The existing selected-route proof establishes the authentic context, current
+    native membership, bound spell, and exact Activity edge first. This result is
+    still structural evidence: source availability is copied unchanged and no
+    casting, execution, cost, or mutation authority is issued.
+    """
+    selected_route = _prove_selected_source_route(context)
+    rows = tuple(
+        row
+        for row in context.compiled.cast_source_bindings
+        if row.binding.consumer_id == context.consumer_id
+        and row.binding.profile_id == selected_route.profile_id
+        and row.binding.profile_generation == selected_route.profile_generation
+    )
+    if (
+        len(rows) != 1
+        or type(rows[0].binding) is not contracts.CastSourceBinding
+        or rows[0].binding.source_spell_id != selected_route.source_spell_id
+    ):
+        _hold(context)
+    source = rows[0]
+    spell_definition = source.definition_contracts.get(selected_route.source_spell_id)
+    if (
+        not isinstance(spell_definition, Mapping)
+        or spell_definition.get("id") != selected_route.source_spell_id
+        or spell_definition.get("kind") != "definition.spell"
+    ):
+        _hold(context)
+    spell_data = spell_definition.get("data")
+    if not isinstance(spell_data, Mapping):
+        _hold(context)
+    raw_modes = spell_data.get("source_modes")
+    if not isinstance(raw_modes, (tuple, list)) or not raw_modes:
+        _hold(context)
+
+    source_modes: list[contracts.SourceMode] = []
+    seen_mode_ids: set[str] = set()
+    for raw_mode in raw_modes:
+        if not isinstance(raw_mode, Mapping):
+            _hold(context)
+        try:
+            mode = contracts.SourceMode(**dict(raw_mode))
+        except (contracts.ActivityContractError, TypeError):
+            _hold(context)
+        if mode.mode_id in seen_mode_ids:
+            _hold(context)
+        seen_mode_ids.add(mode.mode_id)
+        source_modes.append(mode)
+
+    matching_modes = tuple(
+        mode for mode in source_modes if mode.activity_id == selected_route.activity_id
+    )
+    if len(matching_modes) != 1:
+        _hold(context)
+    mode = matching_modes[0]
+    activity_definition = source.definition_contracts.get(mode.activity_id)
+    source_activity_ids = selected_route.source_activity_ids
+    dependency_edge = {
+        "source_ref": f"bound_definition:{selected_route.source_spell_id}",
+        "dependency_ref": f"bound_definition:{mode.activity_id}",
+    }
+    definition_edges = {
+        (edge.source_ref, edge.dependency_ref) for edge in source.dependency_edges
+    }
+    if (
+        not isinstance(activity_definition, Mapping)
+        or activity_definition.get("id") != mode.activity_id
+        or activity_definition.get("kind") != "definition.activity"
+        or mode.activity_id not in source_activity_ids
+        or (dependency_edge["source_ref"], dependency_edge["dependency_ref"])
+        not in definition_edges
+    ):
+        _hold(context)
+
+    context_identity = selected_route.context_identity
+    result_value: dict[str, object] = {
+        "consumer_id": selected_route.consumer_id,
+        "profile_id": selected_route.profile_id,
+        "profile_generation": selected_route.profile_generation,
+        "source_spell_id": selected_route.source_spell_id,
+        "mode_id": mode.mode_id,
+        "activity_id": selected_route.activity_id,
+        "source_mode_status": "NAMED_ROUTE_RESOLVED",
+        "source_disposition": selected_route.source_disposition,
+        "source_activity_ids": selected_route.source_activity_ids,
+        "mode_declaration": {
+            "mode_id": mode.mode_id,
+            "activity_id": mode.activity_id,
+        },
+        "source_spell_definition": spell_definition,
+        "selected_activity_definition": activity_definition,
+        "source_dependency_edge": dependency_edge,
+        "source_read_refs": selected_route.source_read_refs,
+        "compiler_generation": context.compiled.compiler_generation,
+        "definition_semantic_hash_generation": context.compiled.definition_semantic_hash_generation,
+        "definition_semantic_hash": context.compiled.definition_semantic_hash,
+        "ruleset_set_digest_generation": context.compiled.ruleset_set_digest_generation,
+        "ruleset_set_sha256": context.compiled.ruleset_set_sha256,
+        "catalog_context_fingerprint_generation": context.compiled.catalog_context_fingerprint_generation,
+        "catalog_context_fingerprint": context.compiled.catalog_context_fingerprint,
+        "engine_contract_inventory_sha256": context.compiled.engine_contract_inventory_sha256,
+        "command_id": selected_route.command_id,
+        "root_resolution_id": selected_route.root_resolution_id,
+        "occurrence_id": context.occurrence_id,
+        "context_identity": context_identity,
+        "membership_identity": selected_route.membership_identity,
+        "native_read_fingerprint": selected_route.read_fingerprint,
+    }
+    try:
+        result = contracts.validate_named_source_route_result(
+            result_value, context=context
+        )
+    except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        ) from error
+    if (
+        result.value["source_disposition"] != selected_route.source_disposition
+        or result.value["context_identity"] != selected_route.context_identity
+        or result.value["membership_identity"] != selected_route.membership_identity
+        or result.value["native_read_fingerprint"] != selected_route.read_fingerprint
+    ):
+        _hold(context, "REVALIDATION_REQUIRED")
+    return result

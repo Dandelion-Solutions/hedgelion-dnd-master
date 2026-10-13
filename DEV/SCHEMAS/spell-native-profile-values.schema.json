@@ -208,6 +208,65 @@
         }
       ]
     },
+    "sourceIdentityValue": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "boolean"},
+        {"type": "integer"},
+        {"type": "number"},
+        {"type": "string"},
+        {"type": "array", "items": {"$ref": "#/$defs/sourceIdentityValue"}}
+      ]
+    },
+    "sourceIdentity": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/sourceIdentityValue"}
+    },
+    "namedSourceRouteResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consumer_id", "profile_id", "profile_generation", "source_spell_id",
+        "mode_id", "activity_id", "source_mode_status", "source_disposition",
+        "source_activity_ids", "mode_declaration", "source_spell_definition",
+        "selected_activity_definition", "source_dependency_edge", "source_read_refs",
+        "compiler_generation", "definition_semantic_hash_generation",
+        "definition_semantic_hash", "ruleset_set_digest_generation", "ruleset_set_sha256",
+        "catalog_context_fingerprint_generation", "catalog_context_fingerprint",
+        "engine_contract_inventory_sha256", "command_id", "root_resolution_id",
+        "occurrence_id", "context_identity", "membership_identity", "native_read_fingerprint"
+      ],
+      "properties": {
+        "consumer_id": {"$ref": "#/$defs/id"},
+        "profile_id": {"const": "execution.spell_cast.srd521"},
+        "profile_generation": {"const": 1},
+        "source_spell_id": {"type": "string", "pattern": "^spell\\.[A-Za-z][A-Za-z0-9_.:-]*$"},
+        "mode_id": {"$ref": "#/$defs/id"},
+        "activity_id": {"type": "string", "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"},
+        "source_mode_status": {"const": "NAMED_ROUTE_RESOLVED"},
+        "source_disposition": {"enum": ["SELECTED_KNOWN_CANTRIP", "SELECTED_PREPARED_LEVEL1", "UNAVAILABLE", "PROHIBITED", "NOT_EVALUATED"]},
+        "source_activity_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^activity\\.[A-Za-z][A-Za-z0-9_.:-]*$"}},
+        "mode_declaration": {"$ref": "https://hedgelion.invalid/schemas/spell-definition-data.schema.json#/$defs/sourceMode"},
+        "source_spell_definition": {"$ref": "https://hedgelion.invalid/schemas/catalog-definition.schema.json"},
+        "selected_activity_definition": {"$ref": "https://hedgelion.invalid/schemas/catalog-definition.schema.json"},
+        "source_dependency_edge": {"$ref": "#/$defs/sourceDependencyEdge"},
+        "source_read_refs": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/mechanicalNodeRef"}},
+        "compiler_generation": {"$ref": "#/$defs/generation"},
+        "definition_semantic_hash_generation": {"$ref": "#/$defs/generation"},
+        "definition_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "ruleset_set_digest_generation": {"const": 1},
+        "ruleset_set_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "catalog_context_fingerprint_generation": {"const": 1},
+        "catalog_context_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "engine_contract_inventory_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "command_id": {"$ref": "#/$defs/id"},
+        "root_resolution_id": {"$ref": "#/$defs/id"},
+        "occurrence_id": {"type": "string", "minLength": 1},
+        "context_identity": {"$ref": "#/$defs/sourceIdentity"},
+        "membership_identity": {"$ref": "#/$defs/sourceIdentity"},
+        "native_read_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+      }
+    },
     "compiledSourceBinding": {"type":"object","additionalProperties":false,"required":["binding","definition_contracts","choice_slot_contracts","selector_contracts","accessor_contracts","derived_node_contracts","source_activity_primitive_ids","role_contracts","dependency_read_refs","dependency_edges"],"properties":{"binding":{"oneOf":[{"$ref":"#/$defs/capabilitySourceBinding"},{"$ref":"#/$defs/castSourceBinding"}]} ,"definition_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/catalog-definition.schema.json"}},"choice_slot_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/build-choice-slot.schema.json"}},"selector_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/selectorMetadata"}},"accessor_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/accessorMetadata"}},"derived_node_contracts":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"$ref":"https://hedgelion.invalid/schemas/mechanical-surfaces.schema.json#/$defs/derivedNodeMetadata"}},"source_activity_primitive_ids":{"type":"object","propertyNames":{"$ref":"#/$defs/id"},"additionalProperties":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/id"}}},"role_contracts":{"$ref":"#/$defs/nativeRoleContracts"},"dependency_read_refs":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/mechanicalNodeRef"}},"dependency_edges":{"type":"array","uniqueItems":true,"items":{"$ref":"#/$defs/sourceDependencyEdge"}}}},
     "armorClassNativeBaseDescriptor": {
       "type": "object",
