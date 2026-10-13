@@ -1189,6 +1189,297 @@ def _cold_source_compiler_fixture(
     return runtime_root, recipe, dependency_kinds
 
 
+def _selected_source_route_compiler_fixture(
+    conformance_runtime_root: Path,
+    tmp_path: Path,
+    *,
+    route_case: str = "actual_magic_missile",
+    symbol_case: str | None = None,
+) -> tuple[Path, dict[str, object], dict[str, str]]:
+    """Build a private installed-source route case through the real compiler."""
+    from DEV.TESTS import test_local_spell_catalog as catalog_tests
+    from DEV.TESTS import test_sp03_policy_carriers as carrier_tests
+
+    if route_case not in {
+        "actual_magic_missile",
+        "cross_spell_union",
+        "missing_selected_edge",
+        "multi_activity_nonfirst",
+    }:
+        raise AssertionError(f"unknown selected-route fixture case: {route_case}")
+    if symbol_case not in {None, "missing", "wrong_type", "wrong_occurrence", "cycle"}:
+        raise AssertionError(f"unknown selected-route symbol case: {symbol_case}")
+    private_source = tmp_path / "selected-source-route-source"
+    catalog_tests._stage_clean_source_tree(private_source)
+    carrier_tests._prepare_sp03_source_tree(private_source)
+    mutation = (
+        "unselected_legal_spell" if route_case == "multi_activity_nonfirst" else None
+    )
+    dependency_kinds = _prepare_private_sorcerer_package(
+        private_source, mutation=mutation
+    )
+    package_relative = Path("GAME/RULES/packages/hdm.rules.dnd2024-srd52-core")
+    source_package = private_source / package_relative
+    seed_path = source_package / "character-mvp-seed.json"
+    seed = json.loads(seed_path.read_text(encoding="utf-8"))
+    records = _seed_source_records(seed)
+
+    if route_case == "multi_activity_nonfirst":
+        source_spell_id = "spell.fixture_unselected"
+        source_spell = records[source_spell_id]
+        first_activity_id = "activity.fixture_unselected"
+        route_activity_id = f"{first_activity_id}.alternate"
+        alternate = copy.deepcopy(records[first_activity_id])
+        alternate["id"] = route_activity_id
+        alternate["data"]["steps"][0]["args"]["request"]["roll_id"] = (
+            "roll.fixture_unselected.alternate"
+        )
+        seed["activity_definitions"].append(alternate)
+        source_spell["data"]["activity_ids"].append(route_activity_id)
+        source_spell["references"].append(route_activity_id)
+        records[route_activity_id] = alternate
+    else:
+        source_spell_id = (
+            "spell.fire_bolt"
+            if route_case == "cross_spell_union"
+            else "spell.magic_missile"
+        )
+        route_activity_id = "activity.spell.magic_missile"
+        source_spell = records[source_spell_id]
+
+    if route_case == "missing_selected_edge":
+        alternate_id = "activity.spell.magic_missile.route_conformance"
+        alternate = {
+            "id": alternate_id,
+            "kind": "definition.activity",
+            "data": {
+                "family_id": "activity.cast",
+                "steps": [
+                    {
+                        "op": "op.roll",
+                        "args": {
+                            "request": {
+                                "roll_id": "roll.magic_missile.route_conformance",
+                                "expression": "1d20",
+                                "purpose_id": "roll.check",
+                                "roller_role": "actor",
+                            }
+                        },
+                    }
+                ],
+            },
+        }
+        seed["activity_definitions"].append(alternate)
+        magic_missile = records["spell.magic_missile"]
+        magic_missile["data"]["activity_ids"] = [alternate_id]
+        magic_missile["references"] = [
+            reference
+            for reference in magic_missile["references"]
+            if reference != route_activity_id
+        ] + [alternate_id]
+        magic_missile["primitive_dependencies"] = ["op.roll"]
+        records[alternate_id] = alternate
+
+    route_activity = records[route_activity_id]
+    consumer_id = f"{route_activity_id}.step.0"
+    if route_activity_id == "activity.spell.magic_missile":
+        # Preserve the actual fact dependency while deliberately not claiming
+        # that this conformance root has a reachable target.
+        reachability_fact = {
+            "fact_id": "fiction.target_reachable",
+            "value": False,
+            "provenance_class": "INVOCATION_ADJUDICATED",
+            "provenance_ref": "sp03-route-fixture:target-reachability-not-established",
+            "consumer_id": route_activity_id,
+            "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64,
+            "policy_basis_refs": [],
+        }
+
+        def preserve_route_inputs(steps: object) -> None:
+            if not isinstance(steps, list):
+                return
+            for step in steps:
+                if not isinstance(step, dict):
+                    continue
+                arguments = step.get("args")
+                if not isinstance(arguments, dict):
+                    continue
+                if arguments.get("candidate_roles") == "invocation.candidate_roles":
+                    arguments["candidate_roles"] = ["target"]
+                if arguments.get("applicability_facts") == (
+                    "invocation.fiction.target_reachable"
+                ):
+                    arguments["applicability_facts"] = [reachability_fact]
+                preserve_route_inputs(arguments.get("steps"))
+
+        preserve_route_inputs(route_activity["data"].get("steps"))
+
+    route_activity["data"].setdefault("profile_bindings", []).append(
+        {
+            "consumer_id": consumer_id,
+            "profile_id": "execution.spell_cast.srd521",
+            "profile_generation": 1,
+        }
+    )
+    binding = _cast_binding()
+    binding["consumer_id"] = consumer_id
+    binding["source_spell_id"] = source_spell_id
+    binding["dependency_refs"] = [
+        "bound_definition:class.sorcerer",
+        f"bound_definition:{source_spell_id}",
+    ]
+    binding["source_definition_refs"] = [
+        {
+            "definition_id": identity,
+            "kind": str(
+                records[identity]["kind"]
+                if identity in records
+                else "definition.activity"
+                if identity.startswith("activity.")
+                else "definition.spell"
+            ),
+        }
+        for identity in _reference_closure(records, ("class.sorcerer", source_spell_id))
+    ]
+
+    first_step = route_activity["data"]["steps"][0]
+    primitive_id = first_step["op"]
+    primitive_path = (
+        private_source
+        / "DEV/CATALOG/activity-primitive-contracts/primitives"
+        / f"{primitive_id}.json"
+    )
+    primitive = json.loads(primitive_path.read_text(encoding="utf-8"))
+    declarations = primitive["contract"].setdefault("compiler_declarations", {})
+    roles = {"actor": "world.actor"}
+    if (
+        route_activity_id == "activity.spell.magic_missile"
+        or primitive_id == "op.select_targets"
+    ):
+        roles["target"] = "world.actor"
+    declaration = declarations.setdefault(
+        route_activity_id,
+        {"roles": roles, "symbols": {}, "profiles": []},
+    )
+    declaration.setdefault("roles", roles)
+    declaration.setdefault("symbols", {})
+    declaration.setdefault("profiles", [])
+    declaration["cast_sources"] = [binding]
+    if route_activity_id == "activity.spell.magic_missile":
+        damage_path = (
+            private_source
+            / "DEV/CATALOG/activity-primitive-contracts/primitives/op.apply_damage.json"
+        )
+        damage_primitive = json.loads(damage_path.read_text(encoding="utf-8"))
+        damage_declaration = (
+            damage_primitive["contract"]
+            .setdefault("compiler_declarations", {})
+            .setdefault(
+                route_activity_id,
+                {"roles": {}, "symbols": {}, "profiles": []},
+            )
+        )
+        damage_declaration.setdefault("roles", {})
+        damage_declaration.setdefault("symbols", {})
+        damage_declaration.setdefault("profiles", [])
+        # Fixed compiler conformance input only: never executed or asserted as
+        # Magic Missile damage or as a fixed RNG result.
+        damage_declaration["symbols"]["compiled.one_dart_force_damage"] = {
+            "value_kind": "damage_components",
+            "cardinality": "single",
+            "value": [{"amount": 1, "damage_type_ref": "damage.force"}],
+            "dependencies": [],
+            "reads": [],
+            "permitted_occurrence_ids": [
+                "activity.spell.magic_missile.step.2.steps.step.0"
+            ],
+        }
+        if symbol_case == "missing":
+            damage_declaration["symbols"].pop("compiled.one_dart_force_damage")
+        elif symbol_case == "wrong_type":
+            damage_declaration["symbols"]["compiled.one_dart_force_damage"][
+                "value_kind"
+            ] = "integer"
+            damage_declaration["symbols"]["compiled.one_dart_force_damage"]["value"] = 1
+        elif symbol_case == "wrong_occurrence":
+            damage_declaration["symbols"]["compiled.one_dart_force_damage"][
+                "permitted_occurrence_ids"
+            ] = ["activity.spell.magic_missile.step.0"]
+        elif symbol_case == "cycle":
+            damage_declaration["symbols"]["compiled.one_dart_force_damage"][
+                "dependencies"
+            ] = ["compiled.one_dart_force_damage"]
+        damage_path.write_text(json.dumps(damage_primitive), encoding="utf-8")
+    primitive_path.write_text(json.dumps(primitive), encoding="utf-8")
+
+    if route_case in {"missing_selected_edge", "multi_activity_nonfirst"}:
+        alternate_id = (
+            "activity.spell.magic_missile.route_conformance"
+            if route_case == "missing_selected_edge"
+            else route_activity_id
+        )
+        alternate_primitive_path = (
+            private_source
+            / "DEV/CATALOG/activity-primitive-contracts/primitives/op.roll.json"
+        )
+        alternate_primitive = json.loads(
+            alternate_primitive_path.read_text(encoding="utf-8")
+        )
+        alternate_declaration = (
+            alternate_primitive["contract"]
+            .setdefault("compiler_declarations", {})
+            .setdefault(
+                alternate_id,
+                {"roles": {"actor": "world.actor"}, "symbols": {}, "profiles": []},
+            )
+        )
+        alternate_declaration.setdefault("roles", {"actor": "world.actor"})
+        alternate_declaration.setdefault("symbols", {})
+        alternate_declaration.setdefault("profiles", [])
+        alternate_primitive_path.write_text(
+            json.dumps(alternate_primitive), encoding="utf-8"
+        )
+
+    seed_path.write_text(json.dumps(seed, ensure_ascii=False), encoding="utf-8")
+    runtime_root = carrier_tests._installed_source_compiler_fixture(
+        private_source,
+        conformance_runtime_root,
+        tmp_path / "selected-source-route-runtime",
+    )
+    installed_package = runtime_root / package_relative.relative_to("GAME")
+    shutil.copy2(seed_path, installed_package / "character-mvp-seed.json")
+
+    from GAME.TOOLS import ruleset_package
+
+    manifest = ruleset_package.load_json_bytes(
+        (source_package / "ruleset-package-manifest.json").read_bytes()
+    )
+    lock, _snapshots = ruleset_package.build_resolved_lock(
+        [source_package],
+        root_package_ids=[manifest["package_id"]],
+        engine_version=manifest["engine_requirement"]["engine_version"],
+        catalog_generation=manifest["catalog_generation"],
+    )
+    marker_path = runtime_root / "RUNTIME_PACKAGE.yaml"
+    marker = catalog_tests.yaml.safe_load(marker_path.read_text(encoding="utf-8"))
+    marker["ruleset_set_sha256"] = lock["ruleset_set_sha256"]
+    marker["resolved_ruleset_lock"] = lock
+    marker["ruleset_conformance_attestation"] = (
+        ruleset_package.compile_conformance_attestation(
+            marker["ruleset_engine_contract_inventory"],
+            marker["ruleset_conformance_attestation"]["validator_results"],
+            lock=lock,
+            engine_version=manifest["engine_requirement"]["engine_version"],
+        )
+    )
+    marker_path.write_text(
+        catalog_tests.yaml.safe_dump(marker, sort_keys=False), encoding="utf-8"
+    )
+    dependency_kinds[route_activity_id] = "definition.activity"
+    return runtime_root, copy.deepcopy(route_activity), dependency_kinds
+
+
 def test_cold_source_compiler_rejects_unowned_shield_mode_on_magic_missile(
     conformance_runtime_root: Path, tmp_path: Path
 ) -> None:
@@ -2131,3 +2422,163 @@ def test_cold_source_compiler_rejects_unclosed_source_binding_edges(
     )
     assert result.returncode != 0
     assert diagnostic in result.stderr
+
+
+@pytest.mark.parametrize(
+    ("route_case", "expected_route", "expected_disposition"),
+    [
+        (
+            "actual_magic_missile",
+            True,
+            "SELECTED_PREPARED_LEVEL1",
+        ),
+        (
+            "cross_spell_union",
+            False,
+            "SELECTED_KNOWN_CANTRIP",
+        ),
+        (
+            "missing_selected_edge",
+            False,
+            "SELECTED_PREPARED_LEVEL1",
+        ),
+        (
+            "multi_activity_nonfirst",
+            True,
+            "UNAVAILABLE",
+        ),
+    ],
+)
+def test_installed_source_route_requires_the_bound_spell_activity_edge(
+    conformance_runtime_root: Path,
+    tmp_path: Path,
+    route_case: str,
+    expected_route: bool,
+    expected_disposition: str,
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root, tmp_path, route_case=route_case
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / route_case,
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_route_proof",
+        route_activity_in_package=True,
+        expected_route=expected_route,
+        expected_disposition=expected_disposition,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+@pytest.mark.parametrize(
+    ("symbol_case", "diagnostic"),
+    [
+        (
+            "missing",
+            "compiled symbol has unavailable source producer contract: compiled.one_dart_force_damage",
+        ),
+        (
+            "wrong_type",
+            "compiled producer has wrong type/cardinality: compiled.one_dart_force_damage",
+        ),
+        (
+            "wrong_occurrence",
+            "compiled producer is unauthorized for activity.spell.magic_missile.step.2.steps.step.0",
+        ),
+        (
+            "cycle",
+            "compiled producer dependency cycle: compiled.one_dart_force_damage",
+        ),
+    ],
+)
+def test_installed_magic_missile_route_requires_its_occurrence_scoped_literal(
+    conformance_runtime_root: Path,
+    tmp_path: Path,
+    symbol_case: str,
+    diagnostic: str,
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        route_case="actual_magic_missile",
+        symbol_case=symbol_case,
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / f"literal-{symbol_case}",
+        test_name="PinnedNativeSourceBasisTests.test_selected_source_route_proof",
+        route_activity_in_package=True,
+    )
+    assert result.returncode != 0, result.stdout
+    assert diagnostic in result.stderr
+
+
+@pytest.mark.parametrize(
+    "installed_test_name",
+    (
+        "test_selected_route_does_not_trust_a_valid_alternative_native_basis",
+        "test_selected_route_rejects_a_caller_supplied_context_identity_prefix",
+        "test_selected_route_does_not_accept_foreign_actor_or_ability_basis_values",
+    ),
+)
+def test_installed_source_route_rejects_unissued_basis_mutations(
+    conformance_runtime_root: Path,
+    tmp_path: Path,
+    installed_test_name: str,
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        route_case="multi_activity_nonfirst",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / installed_test_name,
+        test_name=f"PinnedNativeSourceBasisTests.{installed_test_name}",
+        route_activity_in_package=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_installed_actual_source_route_revalidates_native_context_and_membership(
+    conformance_runtime_root: Path, tmp_path: Path
+) -> None:
+    from DEV.TESTS.test_sp03_native_source_basis import (
+        _run_installed_source_basis_case,
+    )
+
+    runtime_root, recipe, dependency_kinds = _selected_source_route_compiler_fixture(
+        conformance_runtime_root,
+        tmp_path,
+        route_case="actual_magic_missile",
+    )
+    result = _run_installed_source_basis_case(
+        runtime_root,
+        recipe,
+        dependency_kinds,
+        tmp_path / "actual-source-route-revalidation",
+        test_name=(
+            "PinnedNativeSourceBasisTests."
+            "test_selected_source_route_rejects_copied_foreign_and_stale_inputs"
+        ),
+        route_activity_in_package=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

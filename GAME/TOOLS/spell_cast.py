@@ -10,8 +10,8 @@ from . import activity_contracts as contracts
 from . import mechanical_context, mechanical_sources
 from .current_owner import CurrentOwnerStatus, NativeOwnerRef
 
-# framework_module_version: 1.0.1
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.1"
+# framework_module_version: 1.0.2
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
 
 _CLASS_ID: Final[str] = "class.sorcerer"
 _ADVANCEMENT_ID: Final[str] = "advancement.sorcerer.mvp_1"
@@ -120,6 +120,39 @@ class _CastSourceBasisEvidence:
     def value(self) -> Mapping[str, object]:
         """Expose the structural result without turning it into permission."""
         return self.source_basis.value
+
+
+@dataclass(frozen=True, slots=True)
+class _SelectedCastSourceRouteEvidence:
+    """Unissued structural proof of one exact source-spell Activity route.
+
+    This descriptor records an edge from a bound spell to the selected compiled
+    Activity. It is not spell availability, named-mode resolution, execution or
+    cast permission.
+    """
+
+    consumer_id: str
+    profile_id: str
+    profile_generation: int
+    source_spell_id: str
+    activity_id: str
+    source_activity_ids: tuple[str, ...]
+    source_read_refs: tuple[str, ...]
+    source_disposition: Literal[
+        "SELECTED_KNOWN_CANTRIP",
+        "SELECTED_PREPARED_LEVEL1",
+        "UNAVAILABLE",
+        "PROHIBITED",
+        "NOT_EVALUATED",
+    ]
+    mode_id: None
+    source_mode: Literal["NOT_EVALUATED"]
+    catalog_context_fingerprint: str
+    command_id: str
+    root_resolution_id: str
+    context_identity: tuple[object, ...]
+    membership_identity: tuple[object, ...]
+    read_fingerprint: str
 
 
 def _hold(
@@ -1235,4 +1268,179 @@ def _prepare_cast_source_basis(
         context=context,
         membership=membership,
         cache_identity=(initial_identity, membership_identity),
+    )
+
+
+def _prove_selected_source_route(
+    context: contracts.NativePreparationContext,
+) -> _SelectedCastSourceRouteEvidence:
+    """Derive native source evidence, then prove its selected Activity edge.
+
+    The basis is derived internally from the authentic context and current native
+    Actor, never accepted as caller-supplied structural truth. The result remains
+    unissued; source availability, named mode, target success and execution are
+    outside this proof.
+    """
+    if (
+        type(context) is not contracts.NativePreparationContext
+        or not contracts._preparation_context_is_issued(context)
+    ):
+        raise mechanical_context.MechanicalContextError(
+            "selected route requires an authentic source-bound preparation context"
+        )
+    context_identity = mechanical_context.context_cache_identity(context)
+    evidence = _prepare_cast_source_basis(context)
+    if (
+        type(evidence) is not _CastSourceBasisEvidence
+        or evidence.context is not context
+        or type(evidence.source_basis) is not contracts.SourceBasisResult
+        or type(evidence.membership) is not mechanical_sources.MembershipObservation
+    ):
+        _hold(context, "REVALIDATION_REQUIRED")
+
+    compiled = context.compiled
+    if (
+        not contracts._compiler_value_is_issued(compiled, kind="compiled")
+        or context.catalog.compiled_activities.get(compiled.activity_id) is not compiled
+    ):
+        _hold(context)
+
+    source_basis = evidence.source_basis
+    try:
+        validated_basis = contracts.validate_source_basis_result(
+            source_basis, compiled=compiled
+        )
+    except (contracts.ActivityContractError, KeyError, TypeError, ValueError) as error:
+        raise contracts.NativePreparationHold(
+            "AUTHORITY_UNAVAILABLE", context.execution_ref, ()
+        ) from error
+    basis_value = validated_basis.value
+    if (
+        basis_value["activity_id"] != compiled.activity_id
+        or basis_value["consumer_id"] != context.consumer_id
+        or basis_value["mode_id"] is not None
+        or basis_value["facets"]["source_mode"] != "NOT_EVALUATED"
+    ):
+        _hold(context)
+
+    membership = evidence.membership
+    cache_identity = evidence.cache_identity
+    if not isinstance(cache_identity, tuple) or len(cache_identity) != 2:
+        _hold(context, "REVALIDATION_REQUIRED")
+    initial_identity = cache_identity[0]
+    if (
+        not mechanical_sources.is_membership_issued(membership)
+        or membership._context is not context
+        or membership._owner_session is not context.owner_session
+        or membership._operation_token is not context.owner_session.operation_token
+        or membership.p0_observation.operation_token
+        is not context.owner_session.operation_token
+        or membership.activity_id != compiled.activity_id
+        or membership.consumer_id != context.consumer_id
+    ):
+        _hold(context, "REVALIDATION_REQUIRED")
+
+    membership_identity = mechanical_context._value_identity(
+        {
+            "activity_id": membership.activity_id,
+            "consumer_id": membership.consumer_id,
+            "subject_actor_ids": membership.subject_actor_ids,
+            "membership": mechanical_context._membership_wire(membership),
+            "p0_observation_fingerprint": membership.p0_observation.observation_fingerprint,
+        }
+    )
+    if cache_identity != (context_identity, membership_identity):
+        _hold(context, "REVALIDATION_REQUIRED")
+    actor_ref = context.role_bindings.get("actor")
+    if type(actor_ref) is not NativeOwnerRef or actor_ref.family_key != "world.actor":
+        _hold(context)
+    if not mechanical_sources.revalidate_membership(membership, context):
+        _hold(context, "REVALIDATION_REQUIRED")
+    _validate_membership_frame(context, membership, actor_ref)
+
+    accepted_command = context.accepted_command
+    request = accepted_command.get("action_request")
+    resolution = context.resolution
+    command_id = context.execution_ref.command_id
+    resolution_id = context.execution_ref.resolution_id
+    if (
+        accepted_command.get("command_kind") != "action"
+        or accepted_command.get("disposition") != "command.accepted"
+        or accepted_command.get("command_id") != command_id
+        or accepted_command.get("root_resolution_id") != resolution_id
+        or not isinstance(request, Mapping)
+        or request.get("activity_id") != compiled.activity_id
+        or resolution.get("root_command_id") != command_id
+        or resolution.get("initiating_command_id") != command_id
+        or resolution.get("activity_id") != compiled.activity_id
+    ):
+        _hold(context, "REVALIDATION_REQUIRED")
+
+    rows = tuple(
+        row
+        for row in compiled.cast_source_bindings
+        if row.binding.consumer_id == context.consumer_id
+    )
+    if (
+        len(rows) != 1
+        or type(rows[0].binding) is not contracts.CastSourceBinding
+        or rows[0].binding.profile_id != "execution.spell_cast.srd521"
+        or rows[0].binding.profile_generation != 1
+        or rows[0].binding.source_spell_id != basis_value["source_spell_id"]
+    ):
+        _hold(context)
+    source = rows[0]
+    source_spell_id = source.binding.source_spell_id
+    spell_definition = source.definition_contracts.get(source_spell_id)
+    if (
+        not isinstance(spell_definition, Mapping)
+        or spell_definition.get("id") != source_spell_id
+        or spell_definition.get("kind") != "definition.spell"
+        or not isinstance(spell_definition.get("data"), Mapping)
+    ):
+        _hold(context)
+    raw_activity_ids = spell_definition["data"].get("activity_ids")
+    if (
+        not isinstance(raw_activity_ids, (tuple, list))
+        or not raw_activity_ids
+        or any(not isinstance(activity_id, str) for activity_id in raw_activity_ids)
+        or len(raw_activity_ids) != len(set(raw_activity_ids))
+    ):
+        _hold(context)
+    source_activity_ids = tuple(raw_activity_ids)
+    activity_id = compiled.activity_id
+    activity_definition = source.definition_contracts.get(activity_id)
+    definition_edges = {
+        (edge.source_ref, edge.dependency_ref) for edge in source.dependency_edges
+    }
+    if (
+        activity_id not in source_activity_ids
+        or not isinstance(activity_definition, Mapping)
+        or activity_definition.get("id") != activity_id
+        or activity_definition.get("kind") != "definition.activity"
+        or (
+            f"bound_definition:{source_spell_id}",
+            f"bound_definition:{activity_id}",
+        )
+        not in definition_edges
+    ):
+        _hold(context)
+
+    return _SelectedCastSourceRouteEvidence(
+        consumer_id=context.consumer_id,
+        profile_id=source.binding.profile_id,
+        profile_generation=source.binding.profile_generation,
+        source_spell_id=source_spell_id,
+        activity_id=activity_id,
+        source_activity_ids=source_activity_ids,
+        source_read_refs=source.dependency_read_refs,
+        source_disposition=basis_value["source_disposition"],
+        mode_id=None,
+        source_mode="NOT_EVALUATED",
+        catalog_context_fingerprint=context.catalog.catalog_context.fingerprint,
+        command_id=command_id,
+        root_resolution_id=resolution_id,
+        context_identity=initial_identity,
+        membership_identity=membership_identity,
+        read_fingerprint=membership.p0_observation.observation_fingerprint,
     )

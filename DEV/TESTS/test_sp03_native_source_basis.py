@@ -25,6 +25,9 @@ def _run_installed_source_basis_case(
     scratch: Path,
     *,
     test_name: str = "PinnedNativeSourceBasisTests",
+    route_activity_in_package: bool = False,
+    expected_route: bool = True,
+    expected_disposition: str | None = None,
 ) -> subprocess.CompletedProcess[str]:
     scratch.mkdir()
     installed_root = scratch / "GAME"
@@ -32,7 +35,13 @@ def _run_installed_source_basis_case(
     case_path = scratch / "source-basis-case.json"
     case_path.write_text(
         json.dumps(
-            {"recipe": recipe, "dependency_kinds": dependency_kinds},
+            {
+                "recipe": recipe,
+                "dependency_kinds": dependency_kinds,
+                "route_activity_in_package": route_activity_in_package,
+                "expected_route": expected_route,
+                "expected_disposition": expected_disposition,
+            },
             sort_keys=True,
         ),
         encoding="utf-8",
@@ -75,6 +84,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         case = json.loads(
             Path(os.environ["HDM_SP03_SOURCE_BASIS_CASE"]).read_text(encoding="utf-8")
         )
+        cls.case = case
         cls.recipe = case["recipe"]
         dependency_kinds = case["dependency_kinds"]
         source = catalog_runtime.load_activity_compiler_contract_source()
@@ -93,7 +103,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         frontier = {
             "frontier_id": "campaign.definitions",
             "state_revision": 5,
-            "definition_ids": sorted([recipe["id"], *dependency_kinds]),
+            "definition_ids": sorted({recipe["id"], *dependency_kinds}),
         }
         raw = ruleset_package.canonical_json(recipe)
         evidence = {
@@ -106,31 +116,33 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             "content_sha256": ruleset_package.sha256(raw),
         }
         package_content_sha256 = lock["packages"][0]["content_sha256"]
-        request = {
-            "basis": {
-                "catalog_generation": manifest["catalog_generation"],
-                "engine_version": manifest["engine_requirement"]["engine_version"],
-                "engine_contract_inventory": catalog_runtime._thaw(
-                    source.engine_contract_inventory
-                ),
-                "engine_contract_inventory_sha256": source.engine_contract_inventory[
-                    "inventory_sha256"
-                ],
-                "ruleset_lock": lock,
-                "campaign_definition_frontier": frontier,
-                "natural_owner_evidence": [evidence],
-            },
-            "definition_dependencies": [
-                {
-                    "source_type": "ruleset_package",
-                    "definition_id": identity,
-                    "kind": kind,
-                    "package_id": package_id,
-                    "package_content_sha256": package_content_sha256,
+        route_activity_in_package = case.get("route_activity_in_package") is True
+        natural_owner_evidence: list[dict[str, object]] = (
+            [] if route_activity_in_package else [evidence]
+        )
+        natural_owner_sources: dict[str, object] = (
+            {}
+            if route_activity_in_package
+            else {
+                "campaign": {
+                    "selected_frontier": frontier,
+                    "members": [evidence],
+                    "immutable_member_bytes": {evidence["route"]: raw},
                 }
-                for identity, kind in dependency_kinds.items()
-            ]
-            + [
+            }
+        )
+        definition_dependencies = [
+            {
+                "source_type": "ruleset_package",
+                "definition_id": identity,
+                "kind": kind,
+                "package_id": package_id,
+                "package_content_sha256": package_content_sha256,
+            }
+            for identity, kind in dependency_kinds.items()
+        ]
+        if not route_activity_in_package:
+            definition_dependencies.append(
                 {
                     "source_type": "natural_owner",
                     **{
@@ -143,19 +155,28 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
                         + ruleset_package.canonical_json(evidence)
                     ),
                 }
-            ],
+            )
+        request = {
+            "basis": {
+                "catalog_generation": manifest["catalog_generation"],
+                "engine_version": manifest["engine_requirement"]["engine_version"],
+                "engine_contract_inventory": catalog_runtime._thaw(
+                    source.engine_contract_inventory
+                ),
+                "engine_contract_inventory_sha256": source.engine_contract_inventory[
+                    "inventory_sha256"
+                ],
+                "ruleset_lock": lock,
+                "campaign_definition_frontier": frontier,
+                "natural_owner_evidence": natural_owner_evidence,
+            },
+            "definition_dependencies": definition_dependencies,
         }
         cls.catalog = activity_runtime.admit_activity_catalog(
             request,
             package_snapshots=snapshots,
             engine_contract_inventory_source=source,
-            natural_owner_sources={
-                "campaign": {
-                    "selected_frontier": frontier,
-                    "members": [evidence],
-                    "immutable_member_bytes": {evidence["route"]: raw},
-                }
-            },
+            natural_owner_sources=natural_owner_sources,
             compiler_generation=1,
             mode_policy_profile_id="execution.spell_cast.srd521",
         )
@@ -163,7 +184,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         cls.cast_source = next(
             row
             for row in cls.compiled.cast_source_bindings
-            if row.binding.consumer_id.endswith(".steps.step.0")
+            if row.binding.consumer_id.endswith(".step.0")
         )
 
     def test_actor_reference_inventory_matches_current_closed_schemas(self) -> None:
@@ -962,6 +983,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         )
         from GAME.TOOLS.hot_store import NativeHotStore
         from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.policy_basis import AcceptedAdjudicationBasis
         from GAME.TOOLS.runtime_execution import accept_command
 
         state = self._actor_state() if actor_state is None else actor_state
@@ -992,12 +1014,48 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
 
         proposal = _proposal(str(self.recipe["id"]))
         proposal["action_request"]["actor_id"] = ACTOR_ID
-        proposal["action_request"]["target_ids"] = [ACTOR_ID]
+        proposal["action_request"]["target_ids"] = (
+            [ACTOR_ID] if "target" in self.compiled.role_contracts else []
+        )
+        invocation_facts: list[dict[str, object]] = []
+        pending = list(self.recipe["data"].get("steps", ()))
+        while pending:
+            step = pending.pop()
+            if not isinstance(step, dict):
+                continue
+            arguments = step.get("args")
+            if isinstance(arguments, dict):
+                raw_facts = arguments.get("applicability_facts", ())
+                if isinstance(raw_facts, (list, tuple)):
+                    invocation_facts.extend(
+                        fact
+                        for fact in raw_facts
+                        if isinstance(fact, dict)
+                        and fact.get("fact_id") == "fiction.target_reachable"
+                    )
+                child_steps = arguments.get("steps", ())
+                if isinstance(child_steps, (list, tuple)):
+                    pending.extend(child_steps)
+        adjudication_basis = (
+            AcceptedAdjudicationBasis(
+                parameter_bindings={},
+                invocation_facts=tuple(invocation_facts),
+                verified_policies=(),
+            )
+            if invocation_facts
+            else None
+        )
+        acceptance_arguments = (
+            {}
+            if adjudication_basis is None
+            else {"adjudication_basis": adjudication_basis}
+        )
         accepted = accept_command(
             _interpreter_result(),
             self.catalog.catalog_context,
             {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
             proposal,
+            **acceptance_arguments,
         )
 
         resolution = {
@@ -1047,6 +1105,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             self.compiled,
             command_id=accepted["command_id"],
             consumer_id=self.cast_source.binding.consumer_id,
+            adjudication_basis=adjudication_basis,
         )
         return context, repository, store, host, accepted
 
@@ -1162,6 +1221,305 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         self.assertEqual(accepted["disposition"], "command.accepted")
         with self.assertRaises(MechanicalContextError):
             spell_cast._prepare_cast_source_basis(copy.copy(result))
+
+    def test_selected_source_route_proof(self) -> None:
+        from types import MappingProxyType
+
+        from GAME.TOOLS import (
+            activity_contracts,
+            activity_runtime,
+            mechanical_context,
+            spell_cast,
+        )
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        object.__setattr__(self.catalog, "compiled_activities", MappingProxyType({}))
+        self.compiled = activity_runtime.compile_activity(
+            self.catalog, str(self.recipe["id"])
+        )
+        self.cast_source = next(
+            row
+            for row in self.compiled.cast_source_bindings
+            if row.binding.consumer_id.endswith(".step.0")
+        )
+        context, repository, store, _host, accepted = self._prepare()
+        if self.case.get("expected_route") is False:
+            with self.assertRaises(activity_contracts.NativePreparationHold):
+                spell_cast._prove_selected_source_route(context)
+            return
+
+        expected_context_identity = mechanical_context.context_cache_identity(context)
+        actor_before = deepcopy(repository.actor)
+        repository_revision_before = repository._git("rev-parse", "HEAD").stdout
+        hot_changes_before = store._connection.total_changes
+        route = spell_cast._prove_selected_source_route(context)
+        binding = self.cast_source.binding
+        source_spell = self.cast_source.definition_contracts[binding.source_spell_id]
+        expected_activity_ids = tuple(source_spell["data"]["activity_ids"])
+        self.assertIs(type(route), spell_cast._SelectedCastSourceRouteEvidence)
+        self.assertFalse(hasattr(route, "_issue_seal"))
+        self.assertTrue(activity_contracts._preparation_context_is_issued(context))
+        self.assertEqual(
+            accepted["action_request"]["activity_id"], context.compiled.activity_id
+        )
+        self.assertEqual(
+            context.resolution["activity_id"], context.compiled.activity_id
+        )
+        self.assertEqual(route.activity_id, context.compiled.activity_id)
+        self.assertEqual(route.consumer_id, context.consumer_id)
+        self.assertEqual(route.source_spell_id, binding.source_spell_id)
+        self.assertEqual(route.profile_id, binding.profile_id)
+        self.assertEqual(route.profile_generation, binding.profile_generation)
+        self.assertEqual(route.source_activity_ids, expected_activity_ids)
+        self.assertEqual(route.command_id, context.execution_ref.command_id)
+        self.assertEqual(route.root_resolution_id, context.execution_ref.resolution_id)
+        self.assertEqual(route.source_read_refs, self.cast_source.dependency_read_refs)
+        self.assertEqual(route.source_disposition, self.case["expected_disposition"])
+        self.assertEqual(route.source_mode, "NOT_EVALUATED")
+        self.assertIsNone(route.mode_id)
+        self.assertEqual(
+            route.catalog_context_fingerprint,
+            context.catalog.catalog_context.fingerprint,
+        )
+        self.assertEqual(route.context_identity, expected_context_identity)
+        self.assertIsInstance(route.membership_identity, tuple)
+        self.assertRegex(route.read_fingerprint, r"^[a-f0-9]{64}$")
+        self.assertIn(route.activity_id, route.source_activity_ids)
+
+        if context.compiled.activity_id == "activity.spell.magic_missile":
+            pending = list(context.compiled.instructions)
+            compiled_primitives: list[str] = []
+            selected_targets = None
+            while pending:
+                instruction = pending.pop(0)
+                compiled_primitives.append(instruction.primitive_id)
+                if instruction.primitive_id == "op.select_targets":
+                    selected_targets = instruction
+                pending.extend(instruction.children)
+            self.assertEqual(
+                compiled_primitives,
+                [
+                    "op.consume_resource",
+                    "op.select_targets",
+                    "op.for_each_target",
+                    "op.apply_damage",
+                ],
+            )
+            self.assertIsNotNone(selected_targets)
+            self.assertIn(
+                "fact:fiction.target_reachable", selected_targets.read_contract_refs
+            )
+            fact = selected_targets.arguments["applicability_facts"][0]
+            self.assertEqual(fact["fact_id"], "fiction.target_reachable")
+            self.assertFalse(fact["value"])
+            self.assertEqual(
+                tuple(context.accepted_command["invocation_facts"]), (fact,)
+            )
+
+        self.assertEqual(
+            repository.actor["state"]["abilities"]["ability.charisma"]["base"], 16
+        )
+        self.assertEqual(repository.actor, actor_before)
+        self.assertEqual(
+            repository._git("rev-parse", "HEAD").stdout, repository_revision_before
+        )
+        self.assertEqual(store._connection.total_changes, hot_changes_before)
+        self.assertEqual(context.resolution["segments"], ())
+        self.assertEqual(context.resolution["fixed_rng_results"], ())
+
+    def _valid_alternative_source_basis(
+        self,
+        context: object,
+        source_basis: object,
+    ) -> object:
+        from GAME.TOOLS import activity_contracts as contracts
+
+        basis_result = source_basis.source_basis
+        value = contracts._thaw(basis_result.value)
+        acquisition = value["acquisition"]
+        prepared_spell_ids = sorted(("spell.fixture_unselected", "spell.magic_missile"))
+        acquisition["level1_spell_ids"] = prepared_spell_ids
+        acquisition["prepared_spell_ids"] = prepared_spell_ids
+        acquisition["prepared_option_ids"] = [
+            f"option.{spell_id}" for spell_id in prepared_spell_ids
+        ]
+        known_spell_ids = sorted(
+            (*acquisition["cantrip_spell_ids"], *prepared_spell_ids)
+        )
+        acquisition["known_spell_ids"] = known_spell_ids
+        value["activity_closure_ids"] = sorted(
+            {
+                activity_id
+                for spell_id in known_spell_ids
+                for activity_id in self.cast_source.definition_contracts[spell_id][
+                    "data"
+                ]["activity_ids"]
+            }
+        )
+        value["source_disposition"] = "SELECTED_PREPARED_LEVEL1"
+        value["facets"]["source_spell"] = "RESOLVED"
+        return contracts.validate_source_basis_result(value, compiled=context.compiled)
+
+    def _valid_foreign_actor_ability_source_basis(
+        self,
+        context: object,
+        source_basis: object,
+    ) -> object:
+        from GAME.TOOLS import activity_contracts as contracts
+
+        value = contracts._thaw(source_basis.source_basis.value)
+        foreign_actor_ref = {
+            "family_key": "world.actor",
+            "identity": ["actor.foreign"],
+        }
+        value["source_actor_ref"] = foreign_actor_ref
+        ability = value["ability_basis"]
+        ability["base_source_ref"]["source_actor_ref"] = foreign_actor_ref
+        ability["base_score"] = 18
+        ability["score"] = 18
+        ability["modifier"] = 4
+        ability["base_spell_save_dc"] = 14
+        ability["base_spell_attack_bonus"] = 6
+        return contracts.validate_source_basis_result(value, compiled=context.compiled)
+
+    def test_selected_route_does_not_trust_a_valid_alternative_native_basis(
+        self,
+    ) -> None:
+        import copy
+        from dataclasses import replace
+
+        from GAME.TOOLS import spell_cast
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        counterfeit_context, _repository, _store, _host, _accepted = self._prepare()
+        source_basis = spell_cast._prepare_cast_source_basis(counterfeit_context)
+        self.assertEqual(
+            source_basis.source_basis.value["source_disposition"], "UNAVAILABLE"
+        )
+        alternative = self._valid_alternative_source_basis(
+            counterfeit_context, source_basis
+        )
+        self.assertEqual(
+            alternative.value["source_disposition"], "SELECTED_PREPARED_LEVEL1"
+        )
+        replacement = replace(copy.copy(source_basis), source_basis=alternative)
+
+        route_context, _repository, _store, _host, _accepted = self._prepare()
+        route = spell_cast._prove_selected_source_route(route_context)
+        self.assertEqual(route.source_disposition, "UNAVAILABLE")
+        with self.assertRaises(TypeError):
+            spell_cast._prove_selected_source_route(route_context, replacement)
+
+    def test_selected_route_rejects_a_caller_supplied_context_identity_prefix(
+        self,
+    ) -> None:
+        from dataclasses import replace
+
+        from GAME.TOOLS import mechanical_context, spell_cast
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        counterfeit_context, _repository, _store, _host, _accepted = self._prepare()
+        mechanical_context.context_cache_identity(counterfeit_context)
+        source_basis = spell_cast._prepare_cast_source_basis(counterfeit_context)
+        counterfeit = replace(
+            source_basis,
+            cache_identity=(
+                ("counterfeit-context-identity",),
+                source_basis.cache_identity[1],
+            ),
+        )
+
+        context, _repository, _store, _host, _accepted = self._prepare()
+        expected_identity = mechanical_context.context_cache_identity(context)
+        route = spell_cast._prove_selected_source_route(context)
+
+        self.assertEqual(route.context_identity, expected_identity)
+        with self.assertRaises(TypeError):
+            spell_cast._prove_selected_source_route(context, counterfeit)
+
+    def test_selected_route_does_not_accept_foreign_actor_or_ability_basis_values(
+        self,
+    ) -> None:
+        from dataclasses import replace
+
+        from GAME.TOOLS import spell_cast
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        basis_context, _repository, _store, _host, _accepted = self._prepare()
+        source_basis = spell_cast._prepare_cast_source_basis(basis_context)
+        self.assertEqual(
+            source_basis.source_basis.value["source_disposition"], "UNAVAILABLE"
+        )
+        foreign_source_basis = self._valid_foreign_actor_ability_source_basis(
+            basis_context, source_basis
+        )
+
+        route_context, _repository, _store, _host, _accepted = self._prepare()
+        route = spell_cast._prove_selected_source_route(route_context)
+
+        self.assertEqual(route.source_disposition, "UNAVAILABLE")
+        with self.assertRaises(TypeError):
+            spell_cast._prove_selected_source_route(
+                route_context,
+                replace(source_basis, source_basis=foreign_source_basis),
+            )
+
+    def test_selected_source_route_rejects_copied_foreign_and_stale_inputs(
+        self,
+    ) -> None:
+        import copy
+        from dataclasses import replace
+
+        from GAME.TOOLS import activity_contracts, spell_cast
+        from GAME.TOOLS.mechanical_context import MechanicalContextError
+        from GAME.TOOLS.native_storage import route_native_record
+
+        if self.case.get("route_activity_in_package") is not True:
+            self.skipTest("actual installed spell Activity route fixture only")
+        context, repository, _store, _host, _accepted = self._prepare()
+
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_selected_source_route(copy.copy(context))
+
+        replaced_context = replace(context)
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_selected_source_route(replaced_context)
+        replaced_consumer = replace(
+            context, consumer_id=f"{context.compiled.activity_id}.step.1"
+        )
+        with self.assertRaises(MechanicalContextError):
+            spell_cast._prove_selected_source_route(replaced_consumer)
+        with self.assertRaises(activity_contracts.ActivityContractError):
+            replace(context, compiled=copy.copy(context.compiled))
+        with self.assertRaises(activity_contracts.ActivityContractError):
+            replace(context, catalog=copy.copy(context.catalog))
+
+        mismatched_request = dict(context.accepted_command)
+        mismatched_request["action_request"] = dict(
+            context.accepted_command["action_request"],
+            activity_id="activity.spell.fire_bolt",
+        )
+        with self.assertRaises(activity_contracts.ActivityContractError):
+            replace(context, accepted_command=mismatched_request)
+        mismatched_resolution = dict(
+            context.resolution, activity_id="activity.spell.fire_bolt"
+        )
+        with self.assertRaises(activity_contracts.ActivityContractError):
+            replace(context, resolution=mismatched_resolution)
+
+        repository.actor["state"]["abilities"]["ability.charisma"]["base"] = 17
+        actor_path = route_native_record(
+            "world.actor", (repository.actor["id"],)
+        ).relative_path
+        repository.write(actor_path, repository.actor)
+        repository.commit("change Actor after selected-route source basis")
+        with self.assertRaises(activity_contracts.NativePreparationHold) as raised:
+            spell_cast._prove_selected_source_route(context)
+        self.assertEqual(raised.exception.operation_status, "REVALIDATION_REQUIRED")
 
     def test_only_an_authentic_native_context_is_accepted(self) -> None:
         import copy
