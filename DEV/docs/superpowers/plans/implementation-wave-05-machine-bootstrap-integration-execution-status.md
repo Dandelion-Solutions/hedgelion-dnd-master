@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
 CURRENT_TASK: complete SP03 allocated finite policy/membership/evaluator/preflight realization after published read/cache preparation; independent SP00 source/default obligations and P2 non-HOT preparation retain exact holds. No full339 support claim.
 LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
-LAST_SAFE_SHA: `c844307d7166067588fa360043c09edfc5e79c4c` — latest independently reviewed, clean-verified and published bounded selected-route implementation; complete SP03 remains open. Complete-plan GO remains applicable to unchanged authorized scope.
+LAST_SAFE_SHA: `afca759c38480f0e4a5629236b08c9d401ecd10d` — latest independently reviewed, clean-verified and published bounded named-route implementation; complete SP03 remains open. Complete-plan GO remains applicable to unchanged authorized scope.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -3581,3 +3581,83 @@ isolation follow-up remains nonblocking. No human approval at ordinary boundarie
 UNPUBLISHED_WORK: documentary ruling/cursor synchronization only; code/source
 checkpoints published/read back. Fifth extraction/review are task-owned external
 evidence, not accepted repository readiness. Continue from exact published source.
+
+## Fifth source set and source-owned named-route witness — 2026-10-13
+
+LAST_PUBLISHED_SHA: `afca759c38480f0e4a5629236b08c9d401ecd10d`.
+TREE: `0109efb3c2338a2512d0c27173c2fe7e56056bab`.
+Fresh pruned fetch and ordinary non-force publication/read-back matched both.
+
+COMPLETED_SLICES: fifth source evidence
+`c6d37201cab0a4dc2be1981762066f3d6d7b8be7`; named-route witness afca759c, reviewed
+input `49ebbb832d18493105962946b9950990b4b57455`, eleven blobs integrated unchanged.
+Senior allocation: `2026-10-13-sp03-named-route-source-allocation.md`;
+`ses_eca179f72ffeg7s9WgzEiGLBBb` allocation/fidelity GO and final integration PASS
+at exact afca759c/tree above. Implementation review
+`ses_ec99bfd03ffe7IddkJBBoCMBLw`: SPEC/QUALITY PASS, eleven hashes/projections and
+six cold relational adversaries verified. Reviewed patchSHA256
+`66feaf91d0a914ac6939aeca1064fdd851d86c972fbcf0d0c503ae0f7264a3a5`.
+
+NAMED_ROUTE: optional closed definition.spell.data.source_modes belongs to the
+existing content owner. Exact local mode keys map to its own complete Activity
+links/typed edges; duplicate/conflicting/foreign/missing evidence rejects.
+Distinct keys may share an Activity in cold content; ambiguous selection holds,
+never first-row/global reverse uniqueness. Compiler cold/rebuild path retains
+source bytes in existing DAG; spell-definition schema enters existing schema-
+contract inventory, generated projections match producers. Authentic-context-
+only consumer derives selected/native basis and separate unissued named result.
+Availability never upgrades. Original SourceBasisResult mode=null/source_mode
+NOT_EVALUATED unchanged. Private Magic Missile ordinary explicit descriptor uses
+the full route body, fixed conformance literal and false reachability; it proves
+no actual damage/RNG/grouping/simultaneity/upcast/target success or complete mode.
+No host/P0/Procedure/controller/production source package activation changed.
+
+SOURCE_FIFTH: original56–67, twelve keys/thirteen source subobligations. Nine
+closures across eight keys/four holds; cumulative59 reviewed/47 closed keys/
+49 closed source subobligations/12 holds/30 active keys across28 entries.
+Mending missing-material bounds, Pass without Trace selection timing, Prayer of
+Healing responder census and Ray of Frost Speed floor remain held. All38 prior
+fixture roots and previous schema definitions/properties unchanged. Eight prior
+holds and six selected future-proof obligations retained. Moonbeam closes only
+reversion/application-ending distinction; underlying source termination/survival/
+automatic reassertion unproved. Independent source review
+`ses_eca256d07ffeBaqrkm6q48NMPt` and final machine integration
+`ses_ec99bf72effeIbtCs1XNDOjP5N` PASS. Owning module40 passed; source readiness
+false, source-only partial status, no native/full339 promotion.
+
+FINAL_CLEAN_PROOF: clean real-Git afca759c/tree above; canonical maintenance
+entry prepared declared local venv sequentially, audit PASS; exact SP03 seven-
+module command116 passed/24 skipped; full unfilteredpytest2014 passed/91 skipped;
+canonicalunittest1711 OK/skipped91; installed context24/membership17 OK; full
+version census unclassified/legacy empty; release build PASS. All chained exit0,
+final clean source identity unchanged. Worker dirty-worktree provenance failure
+was not counted as PASS; full final clean run included clean-head provenance.
+Worker filtered package proof remains qualified, not substituted for final run.
+Senior verified Git/source scope independently; test execution was coordinator-
+run. Declared venv/PYTHONDONTWRITEBYTECODE=1, same full commands as earlier cursor.
+No hostedCI/latency/full339 gameplay claim.
+
+VERSION_IMPACT: activity_contracts1.0.11->1.0.12, activity_runtime1.0.8->1.0.9,
+spell_cast1.0.2->1.0.3. Mechanical_context unchanged: existing full-definition
+identity already covers descriptor. Optional source member/separate result leave
+partial contracts/projection formats/hash laws valid; exact inventory values
+change under unchanged namespaces. No automatic package compatibility inferred.
+Other schema/profile/compiler/catalog/engine/campaign/storage/digest generations
+unchanged; fifth DEV draft evidence and ruling/status NONE. SYSTEM_IMPACT: NONE
+CROSSED. NEEDS_PO: NONE.
+
+NEXT_EXACT_TASK: concrete Procedure/common-turn gate and original-command
+controller/Interaction/Player evidence; components/form/anatomy/equipment/voice/
+Zone/focus/material/slot/armor/target/privacy/final modifiers and complete-mode
+support joins. Absence of typed causal/authentication evidence holds affected
+edge; never reinterpret current publisher as original command author. Independent
+sixth extraction original68–79/twelve keys/thirteen subobligations and source
+review PASS await machine integration: nine CLOSE keys/ten subobligations and
+three HOLD keys. Apply exact Charmed attack/damaging-target prohibition and
+Concentration ending when another Concentration spell starts casting; no broad
+"prevents harm" or completion-only rule. Preserve12 prior holds,33 future-proof,
+default repair and Word of Recall. Source6 is external preparation, not current
+counts/readiness. Full SP03/SP00/P2 outputs still NOT_PRODUCED; P2 joins SP04.
+UNPUBLISHED_WORK: documentary allocation/cursor synchronization only; production
+afca759c published/read back. External source6 evidence/review retained for next
+bounded task. No additional human permission at ordinary checkpoint boundaries.
