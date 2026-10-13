@@ -33,6 +33,9 @@
     "source_fifth_review",
     "source_fifth_resolution_contract",
     "source_fifth_resolution_evidence",
+    "source_sixth_review",
+    "source_sixth_resolution_contract",
+    "source_sixth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -138,6 +141,16 @@
       "minItems": 13,
       "maxItems": 13,
       "items": {"$ref": "#/$defs/sourceFifthResolutionEvidence"}
+    },
+    "source_sixth_review": {"$ref": "#/$defs/sourceSixthReview"},
+    "source_sixth_resolution_contract": {
+      "$ref": "#/$defs/sourceSixthResolutionContract"
+    },
+    "source_sixth_resolution_evidence": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {"$ref": "#/$defs/sourceSixthResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -1912,6 +1925,137 @@
         "record_before_promotion": {"type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true, "items": {"enum": ["lawful source", "compatibility/migration evidence"]}},
         "product_owner_decision_required": {"const": false},
         "worker_seed_mutation": {"const": "NONE"}
+      }
+    },
+    "sourceSixthReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "candidate_source_base_sha",
+        "candidate_path", "candidate_sha256", "accepted_review_path",
+        "accepted_review_sha256", "source_fixture_basis_sha",
+        "task_evidence_path", "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_SIXTH_SOURCE_REVIEW_20261013"},
+        "integration_base_sha": {"const": "afca759c38480f0e4a5629236b08c9d401ecd10d"},
+        "candidate_source_base_sha": {"const": "afca759c38480f0e4a5629236b08c9d401ecd10d"},
+        "candidate_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-sixth-source-extraction-20261013.md"},
+        "candidate_sha256": {"const": "dc9600ae20c80c0f2a653dddb095246ea752b49c8a5493f3ad7411c6f44573a9"},
+        "accepted_review_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-sixth-source-review-20261013.md"},
+        "accepted_review_sha256": {"const": "862aa04b0a27fa977b099bd0b4c19b1d9151a1313aaafcb8364c23b622f63ca1"},
+        "source_fixture_basis_sha": {"const": "c6d37201cab0a4dc2be1981762066f3d6d7b8be7"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-13-sp00-sixth-markdown-source-qualification.md"},
+        "task_evidence_sha256": {"const": "0a8a9a8955c772bf4aea22fe479e407affebcfc860b1fff8fe9e1dd239e52aa5"}
+      }
+    },
+    "sourceSixthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "selected_spell_count",
+        "resolution_record_count", "selected_source_closed_key_count",
+        "selected_source_closed_subobligation_count", "selected_source_held_key_count",
+        "selected_source_held_subobligation_count", "prior_reviewed_key_count",
+        "prior_resolution_record_count", "prior_source_closed_key_count",
+        "prior_source_closed_subobligation_count", "prior_source_held_key_count",
+        "prior_source_held_subobligation_count", "prior_active_source_blocker_count",
+        "prior_active_source_blocker_entry_count", "cumulative_reviewed_key_count",
+        "cumulative_resolution_record_count", "cumulative_source_closed_key_count",
+        "cumulative_source_closed_subobligation_count", "cumulative_source_held_key_count",
+        "cumulative_source_held_subobligation_count", "original_record_count",
+        "original_source_blocking_key_count", "downstream_only_key_count",
+        "active_source_blocker_count", "active_source_blocker_entry_count",
+        "future_native_proof_status", "full_339_source_qualification_status",
+        "production_claim", "selected_original_classification_indexes",
+        "common_markdown_locators", "common_qualifiers"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_SIXTH_REVIEWED_SET_SOURCE_ONLY"},
+        "selected_key_count": {"const": 12},
+        "selected_spell_count": {"const": 11},
+        "resolution_record_count": {"const": 13},
+        "selected_source_closed_key_count": {"const": 9},
+        "selected_source_closed_subobligation_count": {"const": 10},
+        "selected_source_held_key_count": {"const": 3},
+        "selected_source_held_subobligation_count": {"const": 3},
+        "prior_reviewed_key_count": {"const": 59},
+        "prior_resolution_record_count": {"const": 61},
+        "prior_source_closed_key_count": {"const": 47},
+        "prior_source_closed_subobligation_count": {"const": 49},
+        "prior_source_held_key_count": {"const": 12},
+        "prior_source_held_subobligation_count": {"const": 12},
+        "prior_active_source_blocker_count": {"const": 30},
+        "prior_active_source_blocker_entry_count": {"const": 28},
+        "cumulative_reviewed_key_count": {"const": 71},
+        "cumulative_resolution_record_count": {"const": 74},
+        "cumulative_source_closed_key_count": {"const": 56},
+        "cumulative_source_closed_subobligation_count": {"const": 59},
+        "cumulative_source_held_key_count": {"const": 15},
+        "cumulative_source_held_subobligation_count": {"const": 15},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 21},
+        "active_source_blocker_entry_count": {"const": 20},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {
+          "type": "array", "minItems": 12, "maxItems": 12,
+          "uniqueItems": true,
+          "items": {"enum": [68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79]}
+        },
+        "common_markdown_locators": {
+          "type": "array", "minItems": 13, "maxItems": 13,
+          "items": {"$ref": "#/$defs/sourceFifthMarkdownLocator"}
+        },
+        "common_qualifiers": {
+          "type": "array", "minItems": 13, "maxItems": 13,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "sourceSixthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_record_ref",
+        "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "source_markdown_locators", "source_interpretation",
+        "material_qualifiers", "retained_source_residual",
+        "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {
+          "enum": ["SIXTH-01", "SIXTH-02", "SIXTH-03", "SIXTH-04", "SIXTH-05", "SIXTH-06", "SIXTH-07", "SIXTH-08", "SIXTH-09A", "SIXTH-09B", "SIXTH-10", "SIXTH-11A", "SIXTH-11B"]
+        },
+        "unresolved_key": {"type": "string", "minLength": 1},
+        "source_exact_name": {
+          "enum": ["Resistance", "Rope Trick", "Sanctuary", "Scorching Ray", "Sorcerous Burst", "Spare the Dying", "Speak with Animals", "Spike Growth", "Suggestion", "Thaumaturgy", "Unseen Servant"]
+        },
+        "source_category": {"enum": ["source_parameter", "source_semantics", "source_mapping_review"]},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"enum": ["SOURCE_CLOSED", "SOURCE_HELD"]},
+        "source_record_ref": {"$ref": "#/$defs/sourceFifthRecordRef"},
+        "source_classification_pointer": {"type": "string", "pattern": "^/source_unknown_classifications/[0-9]+$"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/[0-9]+$"},
+        "current_map_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/entries/[0-9]+$"},
+        "source_markdown_locators": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"$ref": "#/$defs/sourceFifthMarkdownLocator"}
+        },
+        "source_interpretation": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "members": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "material_qualifiers": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "retained_source_residual": {"type": "string", "minLength": 1},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }
     },
     "packageNoticeObservation": {

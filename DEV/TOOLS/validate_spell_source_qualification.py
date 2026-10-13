@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "288f85ec2b637268c0ba7e35281950ee13d50c7bf53b23dafb3dae0eab03ecd7"
+    "87ff9f41a73b346cad7038b5f126aec44c05a5f340fd310cf2fb67853fa9846b"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -5614,6 +5614,217 @@ FIFTH_SOURCE_HELD_KEYS = frozenset(
     for key, item in FIFTH_SOURCE_ITEMS.items()
     if item["disposition"] == "SOURCE_HELD"
 )
+SIXTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_SIXTH_SOURCE_REVIEW_20261013",
+    "integration_base_sha": "afca759c38480f0e4a5629236b08c9d401ecd10d",
+    "candidate_source_base_sha": "afca759c38480f0e4a5629236b08c9d401ecd10d",
+    "candidate_path": "/tmp/hdm-dev/spell-recovery/SP00-sixth-source-extraction-20261013.md",
+    "candidate_sha256": "dc9600ae20c80c0f2a653dddb095246ea752b49c8a5493f3ad7411c6f44573a9",
+    "accepted_review_path": "/tmp/hdm-dev/spell-recovery/SP00-sixth-source-review-20261013.md",
+    "accepted_review_sha256": "862aa04b0a27fa977b099bd0b4c19b1d9151a1313aaafcb8364c23b622f63ca1",
+    "source_fixture_basis_sha": "c6d37201cab0a4dc2be1981762066f3d6d7b8be7",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-13-sp00-sixth-markdown-source-qualification.md",
+    "task_evidence_sha256": "0a8a9a8955c772bf4aea22fe479e407affebcfc860b1fff8fe9e1dd239e52aa5",
+}
+SIXTH_SELECTED_CLASSIFICATION_INDEXES = tuple(range(68, 80))
+SIXTH_EVIDENCE_ORDER = (
+    ("SIXTH-01", "source.spell.resistance.unresolved.damage_grouping_order", "source_semantics"),
+    ("SIXTH-02", "source.spell.rope_trick.unresolved.boundary_location_profile", "source_semantics"),
+    ("SIXTH-03", "source.spell.sanctuary.unresolved.retarget_cost_chain", "source_semantics"),
+    ("SIXTH-04", "source.spell.scorching_ray.unresolved.target_kind_policy", "source_mapping_review"),
+    ("SIXTH-05", "source.spell.sorcerous_burst.unresolved.permitted_type_members", "source_mapping_review"),
+    ("SIXTH-06", "source.spell.spare_the_dying.unresolved.range_thresholds", "source_parameter"),
+    ("SIXTH-07", "source.spell.speak_with_animals.unresolved.influence_option_census", "source_mapping_review"),
+    ("SIXTH-08", "source.spell.spike_growth.unresolved.displacement_and_distance_policy", "source_parameter"),
+    ("SIXTH-09A", "source.spell.suggestion.unresolved.agency_and_word_limit", "source_parameter"),
+    ("SIXTH-09B", "source.spell.suggestion.unresolved.agency_and_word_limit", "source_semantics"),
+    ("SIXTH-10", "source.spell.thaumaturgy.unresolved.exact_mode_bounds", "source_mapping_review"),
+    ("SIXTH-11A", "source.spell.unseen_servant.unresolved.subject_health_classification", "source_semantics"),
+    ("SIXTH-11B", "source.spell.unseen_servant.unresolved.force_numeric_profile", "source_parameter"),
+)
+SIXTH_COMMON_MARKDOWN_LOCATORS: tuple[dict[str, object], ...] = (
+    {"heading": "Casting Spells", "line_start": 9068, "line_end": 9257, "span_sha256": "48ccc959d306e2f349b56e2dea465f9b119c47d414105011fc44104384aa0702"},
+    {"heading": "Making an Attack", "line_start": 1248, "line_end": 1264, "span_sha256": "35bea2d0812d4a44be7fa07300bf0a7cf90dd6d8c0ad1dba7717889da7908b5e"},
+    {"heading": "Ranged Attacks", "line_start": 1286, "line_end": 1302, "span_sha256": "e32e0f321ea5b06703118555d745cd620d585d782b7bb925011670f948331e7c"},
+    {"heading": "Damage Rolls", "line_start": 1396, "line_end": 1400, "span_sha256": "3bab0640f9638faa8e732906e9ad79fb1941a7cbcfd1bba78b1e8bf69124ac15"},
+    {"heading": "Resistance and Vulnerability", "line_start": 1434, "line_end": 1450, "span_sha256": "70acc27702623bfdce1f86419498e1b345cc5bc470cda3b6d183abdf1fc38378"},
+    {"heading": "Stabilizing a Character", "line_start": 1516, "line_end": 1520, "span_sha256": "e52fc17397fe17a22c9054a12d28e355584547809a85b42b7d82fb1aa55b9f5a"},
+    {"heading": "Movement and Difficult Terrain", "line_start": 1191, "line_end": 1203, "span_sha256": "1a15d99db21350e9d3cb9c53f846a225c3bf03fe6bc6f601bffdb735c3b8a127"},
+    {"heading": "Charmed", "line_start": 16272, "line_end": 16278, "span_sha256": "59b73e22432dc652c3dfda5cc7f578c8b1819da2054c8edc8246fbe9bfb064e3"},
+    {"heading": "Difficult Terrain", "line_start": 16493, "line_end": 16509, "span_sha256": "e9e0afb99ffc82ef3458a05377b6d59b5d7fe85332f5afe676e2b57a52946dd1"},
+    {"heading": "Influence", "line_start": 16777, "line_end": 16797, "span_sha256": "eb96f2b41eb6a99c11ec3ac0301626e4a6a1366f8252a1c044b9380935071319"},
+    {"heading": "Teleportation", "line_start": 17321, "line_end": 17325, "span_sha256": "d5d19757d0bf00d0bc58f4ddc10e59a48067004bae7c67f6b4758d15b62dee1c"},
+    {"heading": "Invisible", "line_start": 16809, "line_end": 16817, "span_sha256": "cbf3644671e39a3df5e040933a31a70300194f8cfadffe6b1ff4e68d9e91b73c"},
+    {"heading": "Concentration", "line_start": 16296, "line_end": 16304, "span_sha256": "04c55227b54b4481f715a64b6a517f63f5733171d475640db0f6f43d355cc1be"},
+)
+SIXTH_COMMON_QUALIFIERS = (
+    "Casting retains class-list versus individual capability distinction, one slot per turn, defined reaction/bonus-action triggers, exact components and material substitution limits, long-cast restart, range-of-origin, clear path, specified effects/saves and same-spell overlap rules (9068–9257; material hand 9199–9201).",
+    "Common attack rules admit a creature, object or location as an attack target; this does not make a location a damage-bearing entity (1248–1264).",
+    "Ranged-attack conditions remain applicable; no ray roll, target binding or hit result is inferred beyond the spell body (1286–1302).",
+    "Damage penalties may reduce a damage roll to 0 but not below 0; fixed damage is not a damage roll (1396–1400).",
+    "The general adjustment → Resistance → Vulnerability order is retained but does not resolve eligible-occurrence grouping, choice or a new defense-consumer policy (1434–1450).",
+    "A Stable creature at 0 Hit Points does not make Death Saving Throws, remains Unconscious, loses Stable on damage and gains 1 HP after 1d4 hours without healing (1516–1520).",
+    "Difficult Terrain costs one extra foot of movement per foot traveled, noncumulatively; movement expenditure is not distance traveled for Spike Growth damage (1191–1203).",
+    "Charmed prevents the charmed creature from attacking the charmer or targeting the charmer with damaging abilities or magical effects, and grants the charmer social-check Advantage; it does not ban every possible indirect or incidental harm (16272–16278).",
+    "Difficult Terrain movement cost is not multiplied into distance traveled for a travel-triggered spell effect (16493–16509).",
+    "Influence remains GM-determined: willing/unwilling/hesitant branches, exact five skill options, default DC max(15, Intelligence score), and repeat wait are not free action or automatic cooperation (16777–16797).",
+    "Teleportation traverses no intervening space; it does not settle every endpoint or zone-entry interaction (17321–17325).",
+    "Invisible retains its stated visibility exceptions; invisibility is not proof of nonexistence (16809–16817).",
+    "Concentration ends the moment the creator starts casting another spell requiring Concentration, or activates another effect requiring Concentration; completion is not the trigger. Damage uses DC max(10, half damage rounded down), capped at 30; Incapacitated/death ends it, and the creator may end Concentration without an action (16296–16304).",
+)
+SIXTH_COMMON_REQUIRED_PHRASES: dict[str, tuple[str, ...]] = {
+    "Casting Spells": ("You must have training with any armor", "you can expend only one spell slot", "A Material component is a particular material"),
+    "Making an Attack": ("a creature, an object, or a location",),
+    "Ranged Attacks": ("ranged attack roll",),
+    "Damage Rolls": ("0 damage but not negative damage",),
+    "Resistance and Vulnerability": ("Modifiers to damage are applied in the following order",),
+    "Stabilizing a Character": ("Stable",),
+    "Movement and Difficult Terrain": ("Difficult Terrain",),
+    "Charmed": ("You can’t attack the charmer or target the charmer with damaging abilities or magical effects.", "The charmer has Advantage on any ability check to interact with you socially."),
+    "Difficult Terrain": ("costs 1 extra foot",),
+    "Influence": ("Charisma (Deception)", "Wisdom (Animal Handling)"),
+    "Teleportation": ("without moving through the intervening space",),
+    "Invisible": ("While you have the Invisible condition",),
+    "Concentration": ("the moment you start casting a spell that requires Concentration", "up to a maximum DC of 30"),
+}
+SIXTH_FUTURE_PROOF_KEYS = frozenset({
+    "source.spell.resistance.unresolved.damage_grouping_order",
+    "source.spell.rope_trick.unresolved.boundary_location_profile",
+    "source.spell.sanctuary.unresolved.retarget_cost_chain",
+    "source.spell.speak_with_animals.unresolved.influence_option_census",
+    "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
+    "source.spell.unseen_servant.unresolved.subject_health_classification",
+    "source.spell.unseen_servant.unresolved.force_numeric_profile",
+})
+SIXTH_SOURCE_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.resistance.unresolved.damage_grouping_order": {
+        "source_exact_name": "Resistance", "disposition": "SOURCE_HELD", "classification_index": 68, "map_entry_index": 107, "source_pass_row": 109, "body_witness_row": 257, "printed_page": 158, "source_header_line": 13968,
+        "raw_body_sha256": "f13455e2f9b58c45a738c097b310d12495a006028c9720b8047d941dd52e885b",
+        "locators": ({"heading": "Resistance", "line_start": 14389, "line_end": 14401, "span_sha256": "c8eb5178fade2834aa5ad5c504723c2499bcbfaeeb821d120b5dbc729ab3432c"},),
+        "source_phrases": ((0, "You touch a willing creature and choose a damage type:"), (0, "choose a damage type: Acid, Bludgeoning, Cold"), (0, "reduces the total damage taken by 1d4"), (0, "only once per turn")),
+        "interpretations": {"source_semantics": "The caster touches a willing creature and chooses one of the exact eleven source-listed damage types. Before the spell ends, damage of the chosen type reduces the willing creature's total damage taken by 1d4, once per turn."},
+        "required_qualifiers": {"source_semantics": ("Force and Psychic are not listed", "no saving-throw bonus", "no automatic damage halving", "simultaneous or mixed-type damage grouping", "eligible-occurrence choice", "no first-hit automatic consumption", "no pooled or shared d4")},
+        "members": ("Acid", "Bludgeoning", "Cold", "Fire", "Lightning", "Necrotic", "Piercing", "Poison", "Radiant", "Slashing", "Thunder"),
+    },
+    "source.spell.rope_trick.unresolved.boundary_location_profile": {
+        "source_exact_name": "Rope Trick", "disposition": "SOURCE_CLOSED", "classification_index": 69, "map_entry_index": 108, "source_pass_row": 110, "body_witness_row": 261, "printed_page": 159, "source_header_line": 14031,
+        "raw_body_sha256": "0967df1adf8eb7b37fb6de2fab37f4bd0d65b5c296eb36d928a759a543fa3cf9",
+        "locators": ({"heading": "Rope Trick", "line_start": 14457, "line_end": 14471, "span_sha256": "0c387a71023cea2267db52607ba19c49db32d8ef43ff41ca02d2bb51ef958fa8"},),
+        "source_phrases": ((0, "perpendicular to the ground or the rope reaches a ceiling"), (0, "Invisible 3-foot-by-5-foot portal"), (0, "up to eight Medium or smaller creatures"), (0, "Anything inside the space drops out")),
+        "interpretations": {"source_semantics": "The rope rises perpendicular to the ground or to a ceiling. Its upper end opens an Invisible 3-foot-by-5-foot portal into an extradimensional space; entry is by climbing and the rope can be pulled in or dropped out. It holds up to eight Medium-or-smaller creatures, bars attacks/spells/other effects both ways while occupants see outward, and anything inside drops out when the spell ends."},
+        "required_qualifiers": {"source_semantics": ("no legacy 60-foot rope limit", "no inferred interior size or object capacity", "no universal object-transfer permission", "no bidirectional sight", "no safe landing or canonical location identity", "not portable storage")},
+    },
+    "source.spell.sanctuary.unresolved.retarget_cost_chain": {
+        "source_exact_name": "Sanctuary", "disposition": "SOURCE_CLOSED", "classification_index": 70, "map_entry_index": 110, "source_pass_row": 112, "body_witness_row": 263, "printed_page": 159, "source_header_line": 14061,
+        "raw_body_sha256": "172c6947953cab15ba8a03206ccbfaf563010621e778c33d1b6c4ec57f0b9943",
+        "locators": ({"heading": "Sanctuary", "line_start": 14493, "line_end": 14505, "span_sha256": "c262ace6d5dc07b1dbf518b054b3c5ffb9450d41159b8409cc59affb91a41dda"},),
+        "source_phrases": ((0, "attack roll or a damaging spell"), (0, "choose a new target or lose the attack or spell"), (0, "areas of effect"), (0, "casts a spell")),
+        "interpretations": {"source_semantics": "A creature targeting the warded creature with an attack roll or damaging spell must succeed on a Wisdom save or choose a new target or lose that attack/spell; areas of effect bypass the ward. The ward ends if its recipient makes an attack roll, casts any spell or deals damage."},
+        "required_qualifiers": {"source_semantics": ("failed ward save is not universally an invalid-target event", "no blanket refund", "no free attack or action entitlement", "no additional slot expenditure", "retargeted spell legality remains separate", "no universal cost algorithm")},
+    },
+    "source.spell.scorching_ray.unresolved.target_kind_policy": {
+        "source_exact_name": "Scorching Ray", "disposition": "SOURCE_CLOSED", "classification_index": 71, "map_entry_index": 111, "source_pass_row": 113, "body_witness_row": 264, "printed_page": 159, "source_header_line": 14074,
+        "raw_body_sha256": "18a95736eff0af43acf5cb85f55c9aa982f0e09e16766a596bf4d53d9f9e8ece",
+        "locators": ({"heading": "Scorching Ray", "line_start": 14509, "line_end": 14523, "span_sha256": "1a099cfc3c6ca8497b63350f4b7b3d0f1290533987e90a7748a242789d07356f"},),
+        "source_phrases": ((0, "three fiery rays"), (0, "Make a ranged spell attack for each ray"), (0, "2d6 Fire damage"), (0, "one additional ray for each spell slot level above 2")),
+        "interpretations": {"source_mapping_review": "Scorching Ray creates three rays aimed at one or several targets within range, with a separate ranged spell attack per ray and 2d6 Fire damage per hit; each slot level above 2 adds one ray. The body states no creature-only target restriction, so common attack rules supply creature, object or location aim kinds."},
+        "required_qualifiers": {"source_mapping_review": ("location aim is not a damage-bearing entity", "preserve clear path and Total Cover", "do not collapse rays into one roll or total", "no automatic location hits", "no invented object defenses", "no later-ray binding or native consumer proof")},
+        "members": ("creature", "object", "location"),
+    },
+    "source.spell.sorcerous_burst.unresolved.permitted_type_members": {
+        "source_exact_name": "Sorcerous Burst", "disposition": "SOURCE_CLOSED", "classification_index": 72, "map_entry_index": 123, "source_pass_row": 125, "body_witness_row": 285, "printed_page": 163, "source_header_line": 14448,
+        "raw_body_sha256": "a6861f5b314a1a32a8e9b32f14076c5b057c418ea5ed49294ea6c9d8ff3da902",
+        "locators": ({"heading": "Sorcerous Burst", "line_start": 14897, "line_end": 14913, "span_sha256": "6d590ba135423b140efa1ef1126985b28239d1d6ad2111e33c38dfe8d73e19fc"},),
+        "source_phrases": ((0, "one creature or object within range"), (0, "Acid, Cold, Fire, Lightning, Poison, Psychic, or Thunder"), (0, "roll another d8"), (0, "maximum number of these d8s"), (0, "levels 5 (2d8), 11 (3d8), and 17 (4d8)")),
+        "interpretations": {"source_mapping_review": "The exact source-ordered selectable types are Acid, Cold, Fire, Lightning, Poison, Psychic and Thunder. It is a ranged spell attack against one creature or object, starting at 1d8 and scaling to 2d8/3d8/4d8 at character levels 5/11/17. A rolled 8 permits another d8; the maximum added dice per cast equals the spellcasting ability modifier."},
+        "required_qualifiers": {"source_mapping_review": ("Force, Radiant, Necrotic and physical damage types are excluded", "an 8 permits but does not compel an extra die", "modifier caps added dice per cast", "no arbitrary recursion depth", "no minimum-one policy", "critical-hit and RNG sequencing remain unproved")},
+        "members": ("Acid", "Cold", "Fire", "Lightning", "Poison", "Psychic", "Thunder"),
+    },
+    "source.spell.spare_the_dying.unresolved.range_thresholds": {
+        "source_exact_name": "Spare the Dying", "disposition": "SOURCE_CLOSED", "classification_index": 73, "map_entry_index": 124, "source_pass_row": 126, "body_witness_row": 286, "printed_page": 163, "source_header_line": 14466,
+        "raw_body_sha256": "0c376f4f474c7fb891414aa31b4c2890d82d4f364255548ecc6dd16a80772c4c",
+        "locators": ({"heading": "Spare the Dying", "line_start": 14917, "line_end": 14931, "span_sha256": "d7166779d01e13af3f7f44a0f0bba46c3046c8f766fba5a9744dc718593d76ac"},),
+        "source_phrases": ((0, "Range:** 15 feet"), (0, "has 0 Hit Points and isn’t dead"), (0, "becomes Stable"), (0, "levels 5 (30 feet), 11 (60 feet), and 17 (120 feet)")),
+        "interpretations": {"source_parameter": "Spare the Dying has 15-foot range, doubled at character levels 5, 11 and 17 to 30, 60 and 120 feet. It targets a creature with 0 Hit Points that is not dead and makes it Stable."},
+        "required_qualifiers": {"source_parameter": ("not Touch", "no Construct or Undead exception", "Stable remains Unconscious and does not roll Death Saves", "damage breaks Stable", "1d4 hours without healing grants 1 HP", "no immediate healing or resurrection")},
+    },
+    "source.spell.speak_with_animals.unresolved.influence_option_census": {
+        "source_exact_name": "Speak with Animals", "disposition": "SOURCE_CLOSED", "classification_index": 74, "map_entry_index": 125, "source_pass_row": 127, "body_witness_row": 287, "printed_page": 164, "source_header_line": 14477,
+        "raw_body_sha256": "bb2656f63664b99cdc33b71a74071dd474465bc4e4410ef5cfb5fc195439e386",
+        "locators": (
+            {"heading": "Speak with Animals", "line_start": 14935, "line_end": 14949, "span_sha256": "06af8988a16d5c17090ee53692e53453a60171d9afb29c2495c482c29c1045a8"},
+            {"heading": "Influence", "line_start": 16777, "line_end": 16797, "span_sha256": "eb96f2b41eb6a99c11ec3ac0301626e4a6a1366f8252a1c044b9380935071319"},
+        ),
+        "source_phrases": ((0, "communicate with Beasts"), (0, "any of the Influence action’s skill options"), (0, "whatever it has perceived within the past day"), (1, "Charisma (Deception)"), (1, "Wisdom (Animal Handling)")),
+        "interpretations": {"source_mapping_review": "Speak with Animals allows comprehension and verbal communication with Beasts and any of Influence's five skill options. Information is limited by survival/companionship interests and at minimum includes nearby locations/monsters and what the Beast perceived within the past day."},
+        "required_qualifiers": {"source_mapping_review": ("Deception and Persuasion require understanding", "Animal Handling can coax a Beast or Monstrosity generally", "spell communication remains Beast-only", "willing, unwilling and hesitant outcomes remain GM-determined", "default DC max(15, Intelligence score)", "no automatic truth, cooperation, charm or command authority", "ritual preparation, extra 10 minutes and long-cast Concentration")},
+        "members": ("Charisma (Deception)", "Charisma (Intimidation)", "Charisma (Performance)", "Charisma (Persuasion)", "Wisdom (Animal Handling)"),
+    },
+    "source.spell.spike_growth.unresolved.displacement_and_distance_policy": {
+        "source_exact_name": "Spike Growth", "disposition": "SOURCE_HELD", "classification_index": 75, "map_entry_index": 127, "source_pass_row": 129, "body_witness_row": 291, "printed_page": 164, "source_header_line": 14546,
+        "raw_body_sha256": "184dd1f3a482f6d5e6f809144f810a55281d4a3c025d0cd73ce4be88b3b17db8",
+        "locators": ({"heading": "Spike Growth", "line_start": 15009, "line_end": 15023, "span_sha256": "c5fb06ec056006712ee2c9a8a995391eb7e3e35134d4ad077339f447a6025dd1"},),
+        "source_phrases": ((0, "150 feet"), (0, "20-foot-radius Sphere"), (0, "Difficult Terrain"), (0, "2d4 Piercing damage for every 5 feet it travels"), (0, "Wisdom (Perception or Survival) check")),
+        "interpretations": {"source_parameter": "Spike Growth has 150-foot range and creates a 20-foot-radius Sphere of Difficult Terrain. A creature moving into or within the area takes 2d4 Piercing for every 5 feet actually traveled; the source states no once-per-turn cap. The unseen-at-casting hazard requires Search and a successful Wisdom (Perception or Survival) check against spell save DC before entry."},
+        "required_qualifiers": {"source_parameter": ("movement cost is not distance traveled", "no once-per-turn cap", "exact qualifying forced displacement remains unresolved", "teleportation traverses no intervening space but does not settle all endpoints", "no voluntary-only or universal forced-motion rule", "no fractional-distance accumulation or reset", "no endpoint-only damage or terrain-cost multiplier")},
+    },
+    "source.spell.suggestion.unresolved.agency_and_word_limit": {
+        "source_exact_name": "Suggestion", "disposition": "SOURCE_CLOSED", "classification_index": 76, "map_entry_index": 130, "source_pass_row": 132, "body_witness_row": 299, "printed_page": 166, "source_header_line": 14677,
+        "raw_body_sha256": "9751dc59b3173880dd5ffae289b886db01f1ca817884606953947635460f6619",
+        "locators": ({"heading": "Suggestion", "line_start": 15161, "line_end": 15175, "span_sha256": "b379e6c0272739ada33bf0839c78f841942e0c1f5c3f73a509ab8038de698a15"},),
+        "source_phrases": ((0, "no more than 25 words"), (0, "must sound achievable"), (0, "deal damage to the target or its allies"), (0, "Charmed target pursues the suggestion")),
+        "interpretations": {
+            "source_parameter": "Suggestion's described course of activity contains no more than 25 words; no tokenizer, language or punctuation convention is stated.",
+            "source_semantics": "Suggestion targets one visible creature in range that can hear and understand. It must sound achievable and not obviously deal damage to target or allies. Wisdom failure gives Charmed and separately requires pursuit to best ability; completion, duration or caster/allies damaging the target ends the effect.",
+        },
+        "required_qualifiers": {
+            "source_parameter": ("no legacy sentence-count limit", "no invented language-specific tokenizer"),
+            "source_semantics": ("exactly 30 feet", "V and M honey with no Somatic component", "Concentration up to eight hours", "Charmed creature cannot attack the charmer or target the charmer with damaging abilities or magical effects", "Charmed alone is not general compelled obedience", "pursuit is separately specified by Suggestion", "damage to others is not automatically this spell’s break trigger", "no universal agency override or immunity bypass"),
+        },
+    },
+    "source.spell.thaumaturgy.unresolved.exact_mode_bounds": {
+        "source_exact_name": "Thaumaturgy", "disposition": "SOURCE_CLOSED", "classification_index": 77, "map_entry_index": 131, "source_pass_row": 133, "body_witness_row": 308, "printed_page": 169, "source_header_line": 14977,
+        "raw_body_sha256": "d2364dc16642aced4f66a1d8840a9b3edd638c1048bdc831ee4b86bfebc16581",
+        "locators": ({"heading": "Thaumaturgy", "line_start": 15411, "line_end": 15435, "span_sha256": "4bdca80fdecc504d47b7dfc9d447256d5d8477ea9da1503434043162ea8aff31"},),
+        "source_phrases": ((0, "up to three of its 1-minute effects"), (0, "up to three times as loud as normal"), (0, "Advantage on Charisma (Intimidation) checks"), (0, "unlocked door or window"), (0, "harmless tremors")),
+        "interpretations": {"source_mapping_review": "Thaumaturgy is V-only, 30 feet, up to one minute, with one selected effect per cast and at most three minute-long effects active across recasts. All six named modes are retained: Altered Eyes, Booming Voice, Fire Play, Invisible Hand, Phantom Sound and Tremors. Booming Voice grants Charisma (Intimidation) Advantage; unlocked door/window open or slam and chosen-origin sound are instantaneous."},
+        "required_qualifiers": {"source_mapping_review": ("instantaneous effects do not occupy the ongoing minute cap", "no flame ignition or extinguishing", "no damage or lock bypass", "no numeric lumen, decibel, tremor-size or force model", "Phantom Sound examples are not a closed catalog", "Advantage is mechanical, not flavor", "no native object/light/roll/concurrency proof")},
+        "members": ("Altered Eyes", "Booming Voice", "Fire Play", "Invisible Hand", "Phantom Sound", "Tremors"),
+    },
+    "source.spell.unseen_servant.unresolved.subject_health_classification": {
+        "source_exact_name": "Unseen Servant", "disposition": "SOURCE_HELD", "classification_index": 78, "map_entry_index": 134, "source_pass_row": 136, "body_witness_row": 320, "printed_page": 171, "source_header_line": 15220,
+        "raw_body_sha256": "f650682363b2b72639401347b5415a21fbc9d9e2fab4bd98bf4da8930e94c4b4",
+        "locators": ({"heading": "Unseen Servant", "line_start": 15641, "line_end": 15655, "span_sha256": "0f32649763cb95c6ce7d3fde0e844325df5af09d74932110ecec545a9a5265b6"},),
+        "source_phrases": ((0, "Invisible, mindless, shapeless, Medium force"), (0, "unoccupied space on the ground within range"), (0, "it can’t attack")),
+        "interpretations": {"source_semantics": "The body describes an Invisible, mindless, shapeless, Medium force created on unoccupied ground in range that cannot attack. These labels and the stat line do not establish creature/object classification or creature-target eligibility."},
+        "required_qualifiers": {"source_semantics": ("preserve the L02-C01 owner obligation", "no categorical noncreature legality without source/common targeting closure", "neither creature nor object admission is established", "native Actor/Asset/health identity remains future proof", "no private mind or autonomous model is inferred")},
+    },
+    "source.spell.unseen_servant.unresolved.force_numeric_profile": {
+        "source_exact_name": "Unseen Servant", "disposition": "SOURCE_CLOSED", "classification_index": 79, "map_entry_index": 134, "source_pass_row": 136, "body_witness_row": 320, "printed_page": 171, "source_header_line": 15220,
+        "raw_body_sha256": "f650682363b2b72639401347b5415a21fbc9d9e2fab4bd98bf4da8930e94c4b4",
+        "locators": ({"heading": "Unseen Servant", "line_start": 15641, "line_end": 15655, "span_sha256": "0f32649763cb95c6ce7d3fde0e844325df5af09d74932110ecec545a9a5265b6"},),
+        "source_phrases": ((0, "AC 10, 1 Hit Point, and a Strength of 2"), (0, "Once on each of your turns as a Bonus Action"), (0, "move up to 15 feet and interact with an object"), (0, "would move it more than 60 feet away")),
+        "interpretations": {"source_parameter": "Unseen Servant has AC 10, 1 HP and Strength 2, cannot attack and ends at 0 HP. Once on each caster turn, a Bonus Action can command up to 15 feet movement plus object interaction. It continues simple human-doable tasks to best ability until completion, then waits. A commanded task that would move it more than 60 feet from the caster ends the spell."},
+        "required_qualifiers": {"source_parameter": ("commanded-task termination predicate", "not an ambient caster-motion leash", "15 feet is not a Speed stat", "no own turn or free independent action budget", "no carrying capacity or universal repair/material-generation promise", "classification and native stat/action/health consumers remain NOT_ESTABLISHED")},
+    },
+}
+SIXTH_SOURCE_RESIDUALS: dict[tuple[str, str], str] = {
+    ("source.spell.resistance.unresolved.damage_grouping_order", "source_semantics"): "HOLD_SOURCE_SUBOBLIGATION; simultaneous/mixed-type damage occurrence grouping, eligible occurrence choice and exact defense-consumer ordering are not settled by the source spans. No reaction, first-hit rule, pooling or shared die is inferred.",
+    ("source.spell.rope_trick.unresolved.boundary_location_profile", "source_semantics"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; portal boundary, occupancy, entry/exit and duration facts are source-closed. Location, persistence, occupant/asset transfer and safe-fall proof remain NOT_ESTABLISHED.",
+    ("source.spell.sanctuary.unresolved.retarget_cost_chain", "source_semantics"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source save/retarget/loss distinctions are closed. Finite interrupts, recursive wards, commitment points and native cost accounting remain NOT_ESTABLISHED.",
+    ("source.spell.scorching_ray.unresolved.target_kind_policy", "source_mapping_review"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; common attack target-kind admission is source-grounded and the body adds no creature-only restriction. Exact native target kinds, object health, later-ray binding and roll/consumer proof remain NOT_ESTABLISHED.",
+    ("source.spell.sorcerous_burst.unresolved.permitted_type_members", "source_mapping_review"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the exact selectable type roster is source-closed. Exploding-die sequencing, critical accounting, negative modifier realization, RNG ownership and optional-choice recovery remain NOT_ESTABLISHED.",
+    ("source.spell.spare_the_dying.unresolved.range_thresholds", "source_parameter"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the exact base and cantrip-upgrade range thresholds and 0-HP/not-dead target condition are source-closed. No immediate healing, temporary HP, resurrection or native LifeState proof follows.",
+    ("source.spell.speak_with_animals.unresolved.influence_option_census", "source_mapping_review"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the five Influence skill options and source-level communication census are closed. Attitude/agency adjudication and native consumer realization remain NOT_ESTABLISHED.",
+    ("source.spell.spike_growth.unresolved.displacement_and_distance_policy", "source_parameter"): "HOLD_SOURCE_SUBOBLIGATION; exact qualifying forced displacement and any segment-event boundary rule remain unresolved. Movement cost is not distance traveled; no displacement category or fractional-distance policy is selected.",
+    ("source.spell.suggestion.unresolved.agency_and_word_limit", "source_parameter"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; the 25-word maximum is source-closed. Tokenization, language and punctuation semantics remain NOT_ESTABLISHED.",
+    ("source.spell.suggestion.unresolved.agency_and_word_limit", "source_semantics"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source eligibility, achievability, damage criterion, Charmed boundary and pursuit distinction are source-closed. No universal agency override, generated-world truth or native policy admission follows.",
+    ("source.spell.thaumaturgy.unresolved.exact_mode_bounds", "source_mapping_review"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; exact mode names, bounds and mechanical Advantage are source-closed. Native object/light/roll/concurrency consumers remain NOT_ESTABLISHED.",
+    ("source.spell.unseen_servant.unresolved.subject_health_classification", "source_semantics"): "HOLD_SOURCE_SUBOBLIGATION; source/common targeting semantics do not classify this subject or establish creature/object target eligibility. Retain L02-C01; native Actor/Asset/health proof remains NOT_ESTABLISHED.",
+    ("source.spell.unseen_servant.unresolved.force_numeric_profile", "source_parameter"): "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; exact stats, command timing, movement/object interaction and commanded-task distance termination are source-closed. This does not close index 78 classification or native stat/action/health consumers.",
+}
+SIXTH_SOURCE_CLOSED_KEYS = frozenset(key for key, item in SIXTH_SOURCE_ITEMS.items() if item["disposition"] == "SOURCE_CLOSED")
+SIXTH_SOURCE_HELD_KEYS = frozenset(key for key, item in SIXTH_SOURCE_ITEMS.items() if item["disposition"] == "SOURCE_HELD")
 
 
 def _read_pinned_local_evidence(
@@ -7902,6 +8113,356 @@ def _validate_source_fifth_resolution_evidence(
     }
 
 
+def _validate_source_sixth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind the sixth reviewed source-only set to its exact registry and spans."""
+    review = _object(manifest.get("source_sixth_review"), "source_sixth_review")
+    if review != SIXTH_REVIEW:
+        _fail("source_sixth_review", "sixth extraction/review identity differs")
+    task_bytes = _read_pinned_local_evidence(
+        SIXTH_REVIEW["task_evidence_path"],
+        SIXTH_REVIEW["task_evidence_sha256"],
+        "source_sixth_review",
+    )
+    try:
+        task_evidence = task_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_sixth_review", "task evidence is not UTF-8")
+    task_tokens = (
+        SIXTH_REVIEW["candidate_sha256"],
+        SIXTH_REVIEW["accepted_review_sha256"],
+        "the Charmed creature cannot attack the charmer or target the charmer",
+        "the moment its creator starts casting another spell that requires Concentration",
+        "All 33 original `FUTURE_PROOF` subobligations remain `NOT_ESTABLISHED`.",
+        "`/content_owner_default_repair` remains `REQUIRED_BEFORE_PACKAGE_PROMOTION`",
+        "Word of Recall sanctuary redesignation/replacement/survival",
+        "No claim is made for source readiness, recipe readiness, native support",
+    )
+    if any(token not in task_evidence for token in task_tokens):
+        _fail("source_sixth_review", "task evidence omits a correction or proof limit")
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH, SOURCE_MARKDOWN_SHA256, "source_sixth_markdown"
+    )
+    try:
+        byte_lines = markdown_bytes.splitlines(keepends=True)
+        text_lines = [line.decode("utf-8") for line in byte_lines]
+    except UnicodeDecodeError:
+        _fail("source_sixth_markdown", "source Markdown is not UTF-8")
+
+    contract = _object(
+        manifest.get("source_sixth_resolution_contract"),
+        "source_sixth_resolution_contract",
+    )
+    if contract.get("common_qualifiers") != list(SIXTH_COMMON_QUALIFIERS):
+        _fail("source_sixth_qualifier", "common-rule wording differs")
+    if contract.get("common_markdown_locators") != list(SIXTH_COMMON_MARKDOWN_LOCATORS):
+        _fail("source_sixth_common_locator", "common source registry differs")
+    expected_contract = {
+        "status": "PARTIAL_SIXTH_REVIEWED_SET_SOURCE_ONLY",
+        "selected_key_count": 12,
+        "selected_spell_count": 11,
+        "resolution_record_count": 13,
+        "selected_source_closed_key_count": 9,
+        "selected_source_closed_subobligation_count": 10,
+        "selected_source_held_key_count": 3,
+        "selected_source_held_subobligation_count": 3,
+        "prior_reviewed_key_count": 59,
+        "prior_resolution_record_count": 61,
+        "prior_source_closed_key_count": 47,
+        "prior_source_closed_subobligation_count": 49,
+        "prior_source_held_key_count": 12,
+        "prior_source_held_subobligation_count": 12,
+        "prior_active_source_blocker_count": 30,
+        "prior_active_source_blocker_entry_count": 28,
+        "cumulative_reviewed_key_count": 71,
+        "cumulative_resolution_record_count": 74,
+        "cumulative_source_closed_key_count": 56,
+        "cumulative_source_closed_subobligation_count": 59,
+        "cumulative_source_held_key_count": 15,
+        "cumulative_source_held_subobligation_count": 15,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 21,
+        "active_source_blocker_entry_count": 20,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": list(SIXTH_SELECTED_CLASSIFICATION_INDEXES),
+        "common_markdown_locators": list(SIXTH_COMMON_MARKDOWN_LOCATORS),
+        "common_qualifiers": list(SIXTH_COMMON_QUALIFIERS),
+    }
+    if contract != expected_contract:
+        _fail("source_sixth_contract", "sixth counts or proof limits differ")
+
+    prior = _object(manifest.get("source_fifth_resolution_contract"), "source_fifth_resolution_contract")
+    if any(
+        prior.get(field) != expected
+        for field, expected in {
+            "cumulative_reviewed_key_count": 59,
+            "cumulative_resolution_record_count": 61,
+            "cumulative_source_closed_key_count": 47,
+            "cumulative_source_closed_subobligation_count": 49,
+            "cumulative_source_held_key_count": 12,
+            "cumulative_source_held_subobligation_count": 12,
+            "active_source_blocker_count": 30,
+            "active_source_blocker_entry_count": 28,
+        }.items()
+    ):
+        _fail("source_sixth_prior_contract", "prior cumulative evidence changed")
+
+    for locator in SIXTH_COMMON_MARKDOWN_LOCATORS:
+        start, end = int(locator["line_start"]), int(locator["line_end"])
+        heading = str(locator["heading"])
+        if start < 1 or end < start or end > len(byte_lines):
+            _fail("source_sixth_common_locator", "common span bounds are invalid")
+        span = b"".join(byte_lines[start - 1 : end])
+        if hashlib.sha256(span).hexdigest() != locator["span_sha256"]:
+            _fail("source_sixth_markdown_span_hash", f"common span changed: {heading}")
+        section = "".join(text_lines[start - 1 : end])
+        if any(phrase not in section for phrase in SIXTH_COMMON_REQUIRED_PHRASES[heading]):
+            _fail("source_sixth_common_source_text", f"common span omits {heading} clause")
+
+    rows = [
+        _object(value, f"source_sixth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(manifest.get("source_sixth_resolution_evidence"), "source_sixth_resolution_evidence")
+        )
+    ]
+    actual_order = tuple(
+        (str(row.get("review_item_id")), str(row.get("unresolved_key")), str(row.get("source_category")))
+        for row in rows
+    )
+    if (
+        len(rows) != len(SIXTH_EVIDENCE_ORDER)
+        or actual_order != SIXTH_EVIDENCE_ORDER
+        or len({row.get("unresolved_key") for row in rows}) != 12
+        or len({(row.get("unresolved_key"), row.get("source_category")) for row in rows}) != 13
+    ):
+        _fail("source_sixth_census", "selected source key/category/order census differs")
+
+    previous_keys = (
+        set(SOURCE_RESOLUTION_KEYS)
+        | set(NEXT12_SELECTED_KEYS)
+        | set(THIRD12_SELECTED_KEYS)
+        | set(FOURTH_SELECTED_KEYS)
+        | set(FIFTH_SELECTED_KEYS)
+    )
+    selected_keys = set(SIXTH_SOURCE_ITEMS)
+    if previous_keys & selected_keys:
+        _fail("source_sixth_census", "sixth evidence replaces a prior key")
+    selected_indexes = tuple(
+        int(SIXTH_SOURCE_ITEMS[key]["classification_index"])
+        for key in dict.fromkeys(key for _, key, _ in SIXTH_EVIDENCE_ORDER)
+    )
+    if selected_indexes != SIXTH_SELECTED_CLASSIFICATION_INDEXES:
+        _fail("source_sixth_census", "selected original index roster differs")
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_carrier = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    body_rows = _rows(body_carrier, "rows", "source-body-witnesses")
+    closed_keys: list[str] = []
+    held_keys: list[str] = []
+    closed_ids: list[str] = []
+    held_ids: list[str] = []
+    selected_future: set[str] = set()
+
+    for (item_id, key, category), row in zip(SIXTH_EVIDENCE_ORDER, rows, strict=True):
+        spec = SIXTH_SOURCE_ITEMS[key]
+        index = int(spec["classification_index"])
+        entry_index = int(spec["map_entry_index"])
+        pass_index = int(spec["source_pass_row"])
+        witness_index = int(spec["body_witness_row"])
+        name = str(spec["source_exact_name"])
+        disposition = str(spec["disposition"])
+        subobligation_id = f"{key}::{category}"
+        classification_pointer = f"/source_unknown_classifications/{index}"
+        history_pointer = f"/source_mapping_lanes/0/mapping_payload/unresolved_key_index/{index}"
+        map_pointer = f"/source_mapping_lanes/0/mapping_payload/entries/{entry_index}"
+        source_pointer = f"/rows/{pass_index}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{pass_index}/qualifications"
+        body_pointer = f"/rows/{witness_index}"
+        classification = classified_by_key.get(key)
+        if classification is None or key in previous_keys:
+            _fail("source_sixth_key", f"{key} is absent or replaces prior evidence")
+
+        original = _object(_resolve_json_pointer(manifest, classification_pointer, "sixth classification pointer"), f"{key}.classification")
+        history = _object(_resolve_json_pointer(manifest, history_pointer, "sixth history pointer"), f"{key}.history")
+        map_entry = _object(_resolve_json_pointer(manifest, map_pointer, "sixth current-map pointer"), f"{key}.current_map")
+        unresolved_rows = [_object(value, f"{key}.map.unresolved_keys[{i}]") for i, value in enumerate(_array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys"))]
+        source_ref = _object(classification.get("evidence_ref"), f"{key}.evidence_ref")
+        history_matches = (
+            history.get("unresolved_key") == key
+            and history.get("source_exact_name") == name
+            and history.get("reason") == classification.get("original_reason")
+            and history.get("evidence_ref") == source_ref
+            and history.get("status") == classification.get("original_status")
+            and history.get("disposition") == classification.get("original_disposition")
+        )
+        map_matches = map_entry.get("source_exact_name") == name and any(item.get("unresolved_key") == key for item in unresolved_rows)
+        source_subobligations = [
+            _object(value, f"{key}.subobligations[{i}]")
+            for i, value in enumerate(_array(classification.get("subobligations"), f"{key}.subobligations"))
+            if isinstance(value, dict) and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        exact_subobligation = any(
+            value.get("subobligation_id") == subobligation_id
+            and value.get("category") == category
+            and value.get("status") == "NOT_ESTABLISHED"
+            and value.get("gate_phase") == "SP00_SOURCE"
+            for value in source_subobligations
+        )
+        if row.get("disposition") != disposition:
+            _fail("source_sixth_disposition", f"{key} disposition differs")
+        if (
+            row.get("review_item_id") != item_id
+            or row.get("unresolved_key") != key
+            or row.get("source_exact_name") != name
+            or row.get("source_category") != category
+            or row.get("subobligation_id") != subobligation_id
+            or row.get("source_classification_pointer") != classification_pointer
+            or row.get("source_unresolved_record_pointer") != history_pointer
+            or row.get("current_map_pointer") != map_pointer
+            or classification != original
+            or original.get("unresolved_key") != key
+            or original.get("source_exact_name") != name
+            or original.get("source_unresolved_record_pointer") != history_pointer
+            or original.get("source_ready_blocking") is not True
+            or original.get("original_status") != "NOT_ESTABLISHED"
+            or not history_matches
+            or not map_matches
+            or not exact_subobligation
+        ):
+            _fail("source_sixth_binding", f"{key} no longer binds to its original records")
+
+        source_record, body_witness = source_rows[pass_index], body_rows[witness_index]
+        expected_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": source_record.get("hash_basis"),
+            "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": body_pointer},
+            "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": qualification_pointer},
+        }
+        expected_evidence_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "exact_record_name": name,
+            "record_index": pass_index,
+            "source_asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "source_heading": name,
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+            "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": body_pointer},
+            "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": qualification_pointer},
+            "evidence_boundary": "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF",
+        }
+        if (
+            source_record.get("name") != name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or source_record.get("hash_basis") != "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"
+            or not isinstance(source_record.get("qualifications"), list)
+            or body_witness.get("name") != name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+            or row.get("source_record_ref") != expected_ref
+            or source_ref != expected_evidence_ref
+        ):
+            _fail("source_sixth_provenance", f"{key} borrows a source/body witness")
+
+        locators = [_object(value, f"{key}.source_markdown_locators[{i}]") for i, value in enumerate(_array(row.get("source_markdown_locators"), f"{key}.source_markdown_locators"))]
+        if locators != list(spec["locators"]):
+            _fail("source_sixth_locator", f"{key} locators differ")
+        locator_texts: list[str] = []
+        for locator_index, locator in enumerate(locators):
+            start, end = locator.get("line_start"), locator.get("line_end")
+            if type(start) is not int or type(end) is not int or start < 1 or end < start or end > len(byte_lines):
+                _fail("source_sixth_locator", f"{key} span bounds are invalid")
+            span = b"".join(byte_lines[start - 1 : end])
+            if hashlib.sha256(span).hexdigest() != locator["span_sha256"]:
+                _fail("source_sixth_markdown_span_hash", f"{key} span changed")
+            section = "".join(text_lines[start - 1 : end])
+            locator_texts.append(section)
+            first_line = text_lines[start - 1].strip()
+            if locator_index == 0 and first_line != f"##### {name}":
+                _fail("source_sixth_locator", f"{key} body heading differs")
+            if first_line.startswith("#") and str(locator["heading"]) not in first_line:
+                _fail("source_sixth_locator", f"{key} locator heading differs")
+        if any(phrase not in locator_texts[index] for index, phrase in spec["source_phrases"]):
+            _fail("source_sixth_source_text", f"{key} omits a source phrase")
+
+        interpretation = _object(spec["interpretations"], f"{key}.interpretations").get(category)
+        qualifiers = _object(spec["required_qualifiers"], f"{key}.required_qualifiers").get(category)
+        if (
+            row.get("source_interpretation") != interpretation
+            or row.get("material_qualifiers") != list(qualifiers)
+            or row.get("retained_source_residual") != SIXTH_SOURCE_RESIDUALS[(key, category)]
+            or row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail("source_sixth_qualifier", f"{key} formulation/proof limits differ")
+        members = spec.get("members")
+        if (members is None and "members" in row) or (members is not None and row.get("members") != list(members)):
+            _fail("source_sixth_enum", f"{key} member order differs")
+
+        downstream = [
+            value for value in _array(classification.get("subobligations"), f"{key}.subobligations")
+            if isinstance(value, dict) and value.get("category") == "downstream_domain_consumer_admission_native_proof"
+        ]
+        if downstream:
+            selected_future.add(key)
+        if any(value.get("status") != "NOT_ESTABLISHED" or value.get("gate_phase") != "FUTURE_PROOF" for value in downstream):
+            _fail("source_sixth_downstream", f"{key} promotes future proof")
+
+        if disposition == "SOURCE_CLOSED":
+            if not str(row.get("retained_source_residual", "")).startswith("NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY;"):
+                _fail("source_sixth_closure", f"{key} closure exceeds the selected subobligation")
+            closed_keys.append(key)
+            closed_ids.append(subobligation_id)
+        else:
+            if not str(row.get("retained_source_residual", "")).startswith("HOLD_SOURCE_SUBOBLIGATION;"):
+                _fail("source_sixth_hold", f"{key} HOLD was removed")
+            held_keys.append(key)
+            held_ids.append(subobligation_id)
+
+    if (
+        selected_future != SIXTH_FUTURE_PROOF_KEYS
+        or set(closed_keys) != SIXTH_SOURCE_CLOSED_KEYS
+        or set(held_keys) != SIXTH_SOURCE_HELD_KEYS
+        or len(set(closed_keys)) != 9
+        or len(set(closed_ids)) != 10
+        or len(set(held_keys)) != 3
+        or len(set(held_ids)) != 3
+        or len(selected_keys) != 12
+        or len({str(item["source_exact_name"]) for item in SIXTH_SOURCE_ITEMS.values()}) != 11
+    ):
+        _fail("source_sixth_contract", "sixth closure/HOLD/future proof counts differ")
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": closed_keys,
+        "source_held_keys": held_keys,
+        "source_closed_subobligation_ids": closed_ids,
+        "source_held_subobligation_ids": held_ids,
+        "source_resolved_subobligation_count": len(closed_ids),
+        "source_held_subobligation_count": len(held_ids),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -8104,6 +8665,9 @@ def _validate_source_unknown_classifications(
     fifth_resolution = _validate_source_fifth_resolution_evidence(
         manifest, classified_by_key
     )
+    sixth_resolution = _validate_source_sixth_resolution_evidence(
+        manifest, classified_by_key
+    )
     closed_subobligation_ids = set(
         first12_resolution["source_closed_subobligation_ids"]
     )
@@ -8117,6 +8681,7 @@ def _validate_source_unknown_classifications(
         fourth_resolution["source_closed_subobligation_ids"]
     )
     closed_subobligation_ids.update(fifth_resolution["source_closed_subobligation_ids"])
+    closed_subobligation_ids.update(sixth_resolution["source_closed_subobligation_ids"])
     source_blocking_keys = [
         key
         for key in historical_source_blocking_keys
@@ -8127,14 +8692,15 @@ def _validate_source_unknown_classifications(
         )
     ]
     resolution_contract = _object(
-        manifest.get("source_fifth_resolution_contract"),
-        "source_fifth_resolution_contract",
+        manifest.get("source_sixth_resolution_contract"),
+        "source_sixth_resolution_contract",
     )
     active_source_blocker_entry_count = len(
         {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
     )
     if (
-        len(source_blocking_keys) != 30
+        len(source_blocking_keys)
+        != resolution_contract.get("active_source_blocker_count")
         or resolution_contract.get("active_source_blocker_count")
         != len(source_blocking_keys)
         or resolution_contract.get("active_source_blocker_entry_count")
@@ -8157,6 +8723,7 @@ def _validate_source_unknown_classifications(
             *third12_resolution["source_resolved_keys"],
             *fourth_resolution["source_resolved_keys"],
             *fifth_resolution["source_resolved_keys"],
+            *sixth_resolution["source_resolved_keys"],
         ],
         "source_held_subobligation_count": (
             first12_resolution["source_held_subobligation_count"]
@@ -8164,6 +8731,7 @@ def _validate_source_unknown_classifications(
             + third12_resolution["source_held_subobligation_count"]
             + fourth_resolution["source_held_subobligation_count"]
             + fifth_resolution["source_held_subobligation_count"]
+            + sixth_resolution["source_held_subobligation_count"]
         ),
         "source_held_keys": [
             *first12_resolution["source_held_keys"],
@@ -8171,6 +8739,7 @@ def _validate_source_unknown_classifications(
             *third12_resolution["source_held_keys"],
             *fourth_resolution["source_held_keys"],
             *fifth_resolution["source_held_keys"],
+            *sixth_resolution["source_held_keys"],
         ],
         "source_resolution_evidence": [
             *first12_resolution["source_resolution_records"],
@@ -8178,6 +8747,7 @@ def _validate_source_unknown_classifications(
             *third12_resolution["source_resolution_records"],
             *fourth_resolution["source_resolution_records"],
             *fifth_resolution["source_resolution_records"],
+            *sixth_resolution["source_resolution_records"],
         ],
         "source_reviewed_key_count": len(
             set(first12_resolution["source_resolved_keys"])
@@ -8190,6 +8760,8 @@ def _validate_source_unknown_classifications(
             | set(fourth_resolution["source_held_keys"])
             | set(fifth_resolution["source_resolved_keys"])
             | set(fifth_resolution["source_held_keys"])
+            | set(sixth_resolution["source_resolved_keys"])
+            | set(sixth_resolution["source_held_keys"])
         ),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[

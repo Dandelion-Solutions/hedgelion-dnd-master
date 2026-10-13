@@ -128,5 +128,97 @@
       "mode_index": 2,
       "mode_name": "unreviewed_replacement"
     }
+  ],
+  "sixth_rejections": [
+    {
+      "case_id": "sixth-review-hash-substituted",
+      "expected_error_code": "source_sixth_review",
+      "mutation": "review_field",
+      "field": "accepted_review_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "sixth-borrowed-current-map-pointer",
+      "expected_error_code": "source_sixth_binding",
+      "mutation": "evidence_field",
+      "unresolved_key": "source.spell.rope_trick.unresolved.boundary_location_profile",
+      "source_category": "source_semantics",
+      "field": "current_map_pointer",
+      "value": "/source_mapping_lanes/0/mapping_payload/entries/90"
+    },
+    {
+      "case_id": "sixth-foreign-body-witness-hash",
+      "expected_error_code": "source_sixth_provenance",
+      "mutation": "source_record_field",
+      "unresolved_key": "source.spell.sanctuary.unresolved.retarget_cost_chain",
+      "source_category": "source_semantics",
+      "field": "raw_body_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "sixth-markdown-span-hash-drift",
+      "expected_error_code": "source_sixth_locator",
+      "mutation": "span_hash",
+      "unresolved_key": "source.spell.suggestion.unresolved.agency_and_word_limit",
+      "source_category": "source_semantics",
+      "locator_index": 0,
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "sixth-promote-resistance-hold",
+      "expected_error_code": "source_sixth_disposition",
+      "mutation": "disposition",
+      "unresolved_key": "source.spell.resistance.unresolved.damage_grouping_order",
+      "source_category": "source_semantics",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "sixth-promote-spike-growth-hold",
+      "expected_error_code": "source_sixth_disposition",
+      "mutation": "disposition",
+      "unresolved_key": "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
+      "source_category": "source_parameter",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "sixth-promote-unseen-servant-classification-hold",
+      "expected_error_code": "source_sixth_disposition",
+      "mutation": "disposition",
+      "unresolved_key": "source.spell.unseen_servant.unresolved.subject_health_classification",
+      "source_category": "source_semantics",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "sixth-promote-future-native-proof",
+      "expected_error_code": "source_unknown_subobligation",
+      "mutation": "subobligation_field",
+      "unresolved_key": "source.spell.rope_trick.unresolved.boundary_location_profile",
+      "category": "downstream_domain_consumer_admission_native_proof",
+      "field": "status",
+      "value": "ESTABLISHED"
+    },
+    {
+      "case_id": "sixth-widen-charmed-harm-prohibition",
+      "expected_error_code": "source_sixth_qualifier",
+      "mutation": "append_material_qualifier",
+      "unresolved_key": "source.spell.suggestion.unresolved.agency_and_word_limit",
+      "source_category": "source_semantics",
+      "value": "Charmed prevents every possible harm to the charmer."
+    },
+    {
+      "case_id": "sixth-move-concentration-trigger-to-completion",
+      "expected_error_code": "source_sixth_qualifier",
+      "mutation": "replace_common_qualifier",
+      "index": 12,
+      "value": "Concentration ends when another Concentration spell finishes casting."
+    },
+    {
+      "case_id": "sixth-beneficiary-must-not-choose-resistance-type",
+      "expected_error_code": "source_sixth_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.resistance.unresolved.damage_grouping_order",
+      "source_category": "source_semantics",
+      "value": "A willing touched creature selects one of the exact eleven source-listed types. Damage of that chosen type before the spell ends reduces total damage taken by 1d4, only once per turn."
+    }
   ]
 }
