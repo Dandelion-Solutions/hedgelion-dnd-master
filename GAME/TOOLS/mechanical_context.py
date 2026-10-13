@@ -30,8 +30,8 @@ from .policy_basis import (
 )
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 _DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
     {
         "rule.add_flat": "ADJUSTMENT",
@@ -167,6 +167,43 @@ def _value_identity(value: object) -> object:
     return (type(value).__name__, value)
 
 
+def _source_binding_identity(
+    compiled: contracts.CompiledActivity, consumer_id: str
+) -> tuple[object, ...]:
+    """Retain the exact compiler-bound source nodes used at this occurrence."""
+    rows = tuple(
+        sorted(
+            (
+                row
+                for row in (
+                    *compiled.capability_source_bindings,
+                    *compiled.cast_source_bindings,
+                )
+                if row.binding.consumer_id == consumer_id
+            ),
+            key=lambda row: (row.binding.profile_id, row.binding.profile_generation),
+        )
+    )
+    return tuple(
+        (
+            type(row.binding).__name__,
+            _value_identity(contracts._source_binding_wire(row.binding)),
+            _value_identity(row.definition_contracts),
+            _value_identity(row.choice_slot_contracts),
+            _value_identity(row.selector_contracts),
+            _value_identity(row.accessor_contracts),
+            _value_identity(row.derived_node_contracts),
+            _value_identity(row.source_activity_primitive_ids),
+            _value_identity(row.role_contracts),
+            row.dependency_read_refs,
+            tuple(
+                (edge.source_ref, edge.dependency_ref) for edge in row.dependency_edges
+            ),
+        )
+        for row in rows
+    )
+
+
 def context_cache_identity(context: contracts.NativePreparationContext) -> tuple[object, ...]:
     """Revalidate and derive the complete identity of this committed read view.
 
@@ -228,6 +265,7 @@ def context_cache_identity(context: contracts.NativePreparationContext) -> tuple
         compiled.definition_semantic_hash, compiled.compiler_generation,
         compiled.engine_contract_inventory_sha256, compiled.mode_policy_profile_id,
         context.consumer_id, context.occurrence_id,
+        _source_binding_identity(compiled, context.consumer_id),
         context.execution_ref.command_id, context.execution_ref.resolution_id,
         tuple((role, owner.family_key, owner.identity) for role, owner in sorted(context.role_bindings.items())),
         native_basis, _value_identity(context.accepted_command), _value_identity(context.resolution),

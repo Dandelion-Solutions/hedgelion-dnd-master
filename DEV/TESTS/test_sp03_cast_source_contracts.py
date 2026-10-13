@@ -712,6 +712,15 @@ def _prepare_private_sorcerer_package(
     spellcasting = copy.deepcopy(definitions["feature.sorcerer.spellcasting"])
     innate_feature = copy.deepcopy(definitions["feature.sorcerer.innate_sorcery"])
     innate_effect = copy.deepcopy(definitions["effect.innate_sorcery"])
+    if mutation == "actor_archetype_ability":
+        seed["support_definitions"].append(
+            {
+                "id": "actor_archetype.sorcerer",
+                "kind": "definition.actor_archetype",
+                "data": {"abilities": {"ability.charisma": 16}},
+                "references": [],
+            }
+        )
     spell_records = {
         spell_id: copy.deepcopy(definitions[spell_id]) for spell_id in KNOWN_IDS
     }
@@ -909,6 +918,8 @@ def _prepare_private_sorcerer_package(
     final_seed = json.loads(seed_path.read_text(encoding="utf-8"))
     final_records = _seed_source_records(final_seed)
     final_closure = _reference_closure(final_records, ("class.sorcerer",))
+    if mutation == "actor_archetype_ability":
+        final_closure = tuple(sorted((*final_closure, "actor_archetype.sorcerer")))
     return {
         identity: str(final_records[identity]["kind"])
         for identity in final_closure
@@ -922,6 +933,7 @@ def _cold_source_compiler_fixture(
     tmp_path: Path,
     *,
     mutation: str | None = None,
+    root_roles: dict[str, str] | None = None,
 ) -> tuple[Path, dict[str, object], dict[str, str]]:
     from DEV.TESTS import test_local_spell_catalog as catalog_tests
     from DEV.TESTS import test_sp03_policy_carriers as carrier_tests
@@ -929,6 +941,20 @@ def _cold_source_compiler_fixture(
     source_root = tmp_path / "source"
     catalog_tests._stage_clean_source_tree(source_root)
     carrier_tests._prepare_sp03_source_tree(source_root)
+    if root_roles is not None:
+        primitive_root = (
+            source_root / "DEV/CATALOG/activity-primitive-contracts/primitives"
+        )
+        for primitive_path in primitive_root.glob("*.json"):
+            primitive = json.loads(primitive_path.read_text(encoding="utf-8"))
+            declaration = (
+                primitive.get("contract", {})
+                .get("compiler_declarations", {})
+                .get("activity.conformance.compiler")
+            )
+            if isinstance(declaration, dict):
+                declaration["roles"] = copy.deepcopy(root_roles)
+                primitive_path.write_text(json.dumps(primitive), encoding="utf-8")
     dependency_kinds = _prepare_private_sorcerer_package(source_root, mutation=mutation)
     private_seed = json.loads(
         (
@@ -953,6 +979,8 @@ def _cold_source_compiler_fixture(
     cast_binding = _cast_binding()
     if mutation == "selected_cantrip":
         capability_binding["source_spell_id"] = "spell.fire_bolt"
+    elif mutation == "cast_selected_cantrip":
+        cast_binding["source_spell_id"] = "spell.fire_bolt"
     elif mutation == "unselected_legal_spell":
         cast_binding["source_spell_id"] = "spell.fixture_unselected"
     elif mutation == "source_prohibited_spell":
@@ -966,7 +994,12 @@ def _cold_source_compiler_fixture(
         f"bound_definition:{cast_binding['source_spell_id']}",
     ]
 
-    def source_refs(source_spell_id: str) -> list[dict[str, str]]:
+    def source_refs(
+        source_spell_id: str, *, include_actor_archetype: bool = False
+    ) -> list[dict[str, str]]:
+        roots = ["class.sorcerer", source_spell_id]
+        if include_actor_archetype:
+            roots.append("actor_archetype.sorcerer")
         return [
             {
                 "definition_id": identity,
@@ -978,9 +1011,7 @@ def _cold_source_compiler_fixture(
                     else "definition.spell"
                 ),
             }
-            for identity in _reference_closure(
-                private_records, ("class.sorcerer", source_spell_id)
-            )
+            for identity in _reference_closure(private_records, tuple(roots))
         ]
 
     capability_binding["source_definition_refs"] = source_refs(
@@ -997,8 +1028,13 @@ def _cold_source_compiler_fixture(
             key=lambda reference: reference["definition_id"]
         )
     cast_binding["source_definition_refs"] = source_refs(
-        str(cast_binding["source_spell_id"])
+        str(cast_binding["source_spell_id"]),
+        include_actor_archetype=mutation == "actor_archetype_ability",
     )
+    if mutation == "actor_archetype_ability":
+        cast_binding["dependency_refs"].append(
+            "bound_definition:actor_archetype.sorcerer"
+        )
     capability_binding["consumer_id"] = capability_consumer
     cast_binding["consumer_id"] = nested_consumer
     if mutation in {
