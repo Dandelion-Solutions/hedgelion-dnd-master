@@ -52,6 +52,16 @@ NEXT12_SOURCE_CLOSED_KEYS = {
 NEXT12_SOURCE_HELD_KEYS = {
     "source.spell.detect_magic.unresolved.aura_overlay_policy",
 }
+SEVENTH_SOURCE_CLOSED_KEYS = {
+    "source.spell.augury.unresolved.four_omen_members",
+    "source.spell.find_steed.unresolved.type_to_action_mapping",
+    "source.spell.find_steed.unresolved.steed_numeric_cells",
+    "source.spell.web.unresolved.web_numeric_geometry",
+}
+SEVENTH_SOURCE_HELD_KEYS = {
+    "source.spell.find_familiar.unresolved.eligible_form_census",
+    "source.spell.warding_bond.unresolved.copied_damage_policy",
+}
 
 
 def load_json(path: Path) -> dict[str, object]:
@@ -72,6 +82,19 @@ def fourth_evidence_by_key_for(
     if not isinstance(records, list):
         raise TypeError("fourth source resolution evidence must be a list")
     return next(row for row in records if row["unresolved_key"] == key)
+
+
+def seventh_evidence_by_key_category_for(
+    manifest: dict[str, object], key: str, category: str
+) -> dict[str, object]:
+    records = manifest.get("source_seventh_resolution_evidence")
+    if not isinstance(records, list):
+        raise TypeError("seventh source resolution evidence must be a list")
+    return next(
+        row
+        for row in records
+        if row["unresolved_key"] == key and row["source_category"] == category
+    )
 
 
 def load_tool() -> ModuleType | None:
@@ -574,8 +597,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 21)
-        self.assertEqual(unresolved_blocker["entry_count"], 20)
+        self.assertEqual(unresolved_blocker["count"], 17)
+        self.assertEqual(unresolved_blocker["entry_count"], 17)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -863,7 +886,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 21)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -917,10 +940,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 21)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 59)
-        self.assertEqual(classification["source_held_subobligation_count"], 15)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
         self.assertEqual(
             manifest["source_unknown_resolution_contract"][
                 "source_closed_subobligation_count"
@@ -942,7 +965,7 @@ class TestSpellSourceQualification(unittest.TestCase):
         source_blocking_keys = set(classification["source_blocking_keys"])
         self.assertTrue(FIRST12_SOURCE_CLOSED_KEYS.isdisjoint(source_blocking_keys))
         self.assertTrue(FIRST12_SOURCE_HELD_KEYS.issubset(source_blocking_keys))
-        self.assertIn(
+        self.assertNotIn(
             "source.spell.augury.unresolved.four_omen_members", source_blocking_keys
         )
 
@@ -1049,10 +1072,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 21)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 59)
-        self.assertEqual(classification["source_held_subobligation_count"], 15)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
         self.assertEqual(
@@ -1062,7 +1085,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_CLOSED_KEYS
             | TOOL.FOURTH_SOURCE_CLOSED_KEYS
             | TOOL.FIFTH_SOURCE_CLOSED_KEYS
-            | TOOL.SIXTH_SOURCE_CLOSED_KEYS,
+            | TOOL.SIXTH_SOURCE_CLOSED_KEYS
+            | SEVENTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             held_keys,
@@ -1071,13 +1095,14 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_HELD_KEYS
             | TOOL.FOURTH_SOURCE_HELD_KEYS
             | TOOL.FIFTH_SOURCE_HELD_KEYS
-            | TOOL.SIXTH_SOURCE_HELD_KEYS,
+            | TOOL.SIXTH_SOURCE_HELD_KEYS
+            | SEVENTH_SOURCE_HELD_KEYS,
         )
-        self.assertEqual(len(classification["source_resolved_keys"]), 58)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 56)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 74)
+        self.assertEqual(len(classification["source_resolved_keys"]), 63)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 60)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 81)
         self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
-        self.assertIn(
+        self.assertNotIn(
             "source.spell.augury.unresolved.four_omen_members",
             classification["source_blocking_keys"],
         )
@@ -1172,12 +1197,12 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
-        self.assertEqual(classification["source_blocking_key_count"], 21)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 59)
-        self.assertEqual(classification["source_held_subobligation_count"], 15)
-        self.assertEqual(len(classification["source_resolved_keys"]), 58)
-        self.assertEqual(len(classification["source_held_keys"]), 15)
-        self.assertEqual(classification["source_reviewed_key_count"], 71)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
+        self.assertEqual(len(classification["source_resolved_keys"]), 63)
+        self.assertEqual(len(classification["source_held_keys"]), 17)
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
         self.assertEqual(
             set(classification["source_resolved_keys"]),
             TOOL.SOURCE_RESOLVED_KEYS
@@ -1185,7 +1210,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_CLOSED_KEYS
             | TOOL.FOURTH_SOURCE_CLOSED_KEYS
             | TOOL.FIFTH_SOURCE_CLOSED_KEYS
-            | TOOL.SIXTH_SOURCE_CLOSED_KEYS,
+            | TOOL.SIXTH_SOURCE_CLOSED_KEYS
+            | SEVENTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             set(classification["source_held_keys"]),
@@ -1194,24 +1220,25 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_HELD_KEYS
             | TOOL.FOURTH_SOURCE_HELD_KEYS
             | TOOL.FIFTH_SOURCE_HELD_KEYS
-            | TOOL.SIXTH_SOURCE_HELD_KEYS,
+            | TOOL.SIXTH_SOURCE_HELD_KEYS
+            | SEVENTH_SOURCE_HELD_KEYS,
         )
         self.assertIn(
             "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
             classification["source_held_keys"],
         )
-        self.assertEqual(len(classification["source_resolution_evidence"]), 74)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 81)
 
     def test_fourth_source_batch_adds_only_reviewed_closures_and_holds(self) -> None:
         assert TOOL is not None
         manifest = load_json(MANIFEST_PATH)
         classification = TOOL._validate_source_unknown_classifications(manifest)
 
-        self.assertEqual(classification["source_reviewed_key_count"], 71)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 59)
-        self.assertEqual(classification["source_held_subobligation_count"], 15)
-        self.assertEqual(classification["source_blocking_key_count"], 21)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 74)
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 81)
         self.assertEqual(
             set(classification["source_held_keys"]),
             FIRST12_SOURCE_HELD_KEYS
@@ -1219,7 +1246,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_HELD_KEYS
             | TOOL.FOURTH_SOURCE_HELD_KEYS
             | TOOL.FIFTH_SOURCE_HELD_KEYS
-            | TOOL.SIXTH_SOURCE_HELD_KEYS,
+            | TOOL.SIXTH_SOURCE_HELD_KEYS
+            | SEVENTH_SOURCE_HELD_KEYS,
         )
         self.assertNotIn(
             "source.spell.lesser_restoration.unresolved.multisource_condition_removal",
@@ -1461,12 +1489,12 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertEqual(contract["active_source_blocker_entry_count"], 28)
 
         classification = TOOL._validate_source_unknown_classifications(manifest)
-        self.assertEqual(classification["source_reviewed_key_count"], 71)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 59)
-        self.assertEqual(classification["source_held_subobligation_count"], 15)
-        self.assertEqual(classification["source_blocking_key_count"], 21)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 74)
-        self.assertEqual(len(classification["source_held_keys"]), 15)
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 81)
+        self.assertEqual(len(classification["source_held_keys"]), 17)
         self.assertEqual(
             set(classification["source_held_keys"]),
             FIRST12_SOURCE_HELD_KEYS
@@ -1474,14 +1502,14 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.THIRD12_SOURCE_HELD_KEYS
             | TOOL.FOURTH_SOURCE_HELD_KEYS
             | TOOL.FIFTH_SOURCE_HELD_KEYS
-            | TOOL.SIXTH_SOURCE_HELD_KEYS,
+            | TOOL.SIXTH_SOURCE_HELD_KEYS
+            | SEVENTH_SOURCE_HELD_KEYS,
         )
         self.assertEqual(
-            classification["source_held_keys"][-3:],
+            classification["source_held_keys"][-2:],
             [
-                "source.spell.resistance.unresolved.damage_grouping_order",
-                "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
-                "source.spell.unseen_servant.unresolved.subject_health_classification",
+                "source.spell.find_familiar.unresolved.eligible_form_census",
+                "source.spell.warding_bond.unresolved.copied_damage_policy",
             ],
         )
         phantasmal_force = [
@@ -1745,6 +1773,14 @@ class TestSpellSourceQualification(unittest.TestCase):
             "NOT_ESTABLISHED",
         )
 
+    def test_seventh_source_batch_is_included_in_cumulative_accounting(self) -> None:
+        assert TOOL is not None
+        classification = TOOL._validate_source_unknown_classifications(
+            load_json(MANIFEST_PATH)
+        )
+
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
+
     def test_sixth_source_batch_is_exact_and_remains_source_only(self) -> None:
         assert TOOL is not None
         manifest = load_json(MANIFEST_PATH)
@@ -1849,11 +1885,11 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertEqual(contract["selected_source_closed_subobligation_count"], 10)
         self.assertEqual(contract["selected_source_held_key_count"], 3)
         self.assertEqual(contract["selected_source_held_subobligation_count"], 3)
-        self.assertEqual(result["source_reviewed_key_count"], 71)
-        self.assertEqual(len(result["source_resolution_evidence"]), 74)
-        self.assertEqual(result["source_resolved_subobligation_count"], 59)
-        self.assertEqual(result["source_held_subobligation_count"], 15)
-        self.assertEqual(result["source_blocking_key_count"], 21)
+        self.assertEqual(result["source_reviewed_key_count"], 77)
+        self.assertEqual(len(result["source_resolution_evidence"]), 81)
+        self.assertEqual(result["source_resolved_subobligation_count"], 64)
+        self.assertEqual(result["source_held_subobligation_count"], 17)
+        self.assertEqual(result["source_blocking_key_count"], 17)
         self.assertEqual(result["future_proof_subobligation_count"], 33)
         self.assertEqual(contract["future_native_proof_status"], "NOT_ESTABLISHED")
         self.assertEqual(
@@ -2040,6 +2076,451 @@ class TestSpellSourceQualification(unittest.TestCase):
                 self.assertEqual(
                     caught.exception.code, rejection["expected_error_code"]
                 )
+
+    def test_seventh_source_batch_is_exact_and_remains_source_only(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        TOOL._validate_manifest_schema(manifest)
+        evidence = manifest["source_seventh_resolution_evidence"]
+        self.assertEqual(
+            [
+                (
+                    row["review_item_id"],
+                    row["unresolved_key"],
+                    row["source_category"],
+                    row["disposition"],
+                )
+                for row in evidence
+            ],
+            [
+                (
+                    "SEVENTH-01",
+                    "source.spell.augury.unresolved.four_omen_members",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "SEVENTH-02",
+                    "source.spell.find_familiar.unresolved.eligible_form_census",
+                    "source_mapping_review",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "SEVENTH-03",
+                    "source.spell.find_steed.unresolved.type_to_action_mapping",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "SEVENTH-04A",
+                    "source.spell.find_steed.unresolved.steed_numeric_cells",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "SEVENTH-04B",
+                    "source.spell.find_steed.unresolved.steed_numeric_cells",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "SEVENTH-05",
+                    "source.spell.warding_bond.unresolved.copied_damage_policy",
+                    "source_semantics",
+                    "SOURCE_HELD",
+                ),
+                (
+                    "SEVENTH-06",
+                    "source.spell.web.unresolved.web_numeric_geometry",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+            ],
+        )
+
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+        contract = manifest["source_seventh_resolution_contract"]
+        self.assertEqual(
+            contract["selected_original_classification_indexes"],
+            [6, 30, 31, 32, 80, 81],
+        )
+        self.assertEqual(contract["selected_key_count"], 6)
+        self.assertEqual(contract["selected_spell_count"], 5)
+        self.assertEqual(contract["resolution_record_count"], 7)
+        self.assertEqual(contract["selected_source_closed_key_count"], 4)
+        self.assertEqual(contract["selected_source_closed_subobligation_count"], 5)
+        self.assertEqual(contract["selected_source_held_key_count"], 2)
+        self.assertEqual(contract["selected_source_held_subobligation_count"], 2)
+        self.assertEqual(contract["cumulative_reviewed_key_count"], 77)
+        self.assertEqual(contract["cumulative_resolution_record_count"], 81)
+        self.assertEqual(contract["cumulative_source_closed_key_count"], 60)
+        self.assertEqual(contract["cumulative_source_closed_subobligation_count"], 64)
+        self.assertEqual(contract["cumulative_source_held_key_count"], 17)
+        self.assertEqual(contract["cumulative_source_held_subobligation_count"], 17)
+        self.assertEqual(contract["active_source_blocker_count"], 17)
+        self.assertEqual(contract["active_source_blocker_entry_count"], 17)
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 81)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 64)
+        self.assertEqual(classification["source_held_subobligation_count"], 17)
+        self.assertEqual(classification["source_blocking_key_count"], 17)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 60)
+        self.assertTrue(
+            SEVENTH_SOURCE_CLOSED_KEYS.isdisjoint(
+                set(classification["source_blocking_keys"])
+            )
+        )
+        self.assertTrue(
+            SEVENTH_SOURCE_HELD_KEYS.issubset(set(classification["source_held_keys"]))
+        )
+        self.assertEqual(contract["future_native_proof_status"], "NOT_ESTABLISHED")
+        self.assertEqual(
+            contract["full_339_source_qualification_status"], "NOT_ESTABLISHED"
+        )
+        self.assertEqual(contract["production_claim"], "NONE")
+
+    def test_seventh_source_qualifiers_preserve_holds_and_separate_residuals(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+        rows = {
+            (row["unresolved_key"], row["source_category"]): row
+            for row in manifest["source_seventh_resolution_evidence"]
+        }
+        familiar = rows[
+            (
+                "source.spell.find_familiar.unresolved.eligible_form_census",
+                "source_mapping_review",
+            )
+        ]
+        self.assertEqual(familiar["disposition"], "SOURCE_HELD")
+        self.assertIn("Bat, Cat, Frog", familiar["source_interpretation"])
+        self.assertIn(
+            "another Beast that has a Challenge Rating of 0",
+            familiar["source_interpretation"],
+        )
+        familiar_qualifiers = "\n".join(familiar["material_qualifiers"])
+        self.assertIn("not the complete eligible-form census", familiar_qualifiers)
+        self.assertTrue(
+            "100-foot predicates are specific to telepathy and touch delivery"
+            in familiar_qualifiers
+        )
+        self.assertIn(
+            "Touch delivery uses the familiar's Reaction", familiar_qualifiers
+        )
+        self.assertIn(
+            "Gear is left on zero HP or pocket disappearance, not every dismissal.",
+            familiar_qualifiers,
+        )
+
+        steed_mapping = rows[
+            (
+                "source.spell.find_steed.unresolved.type_to_action_mapping",
+                "source_mapping_review",
+            )
+        ]
+        self.assertIn("Fiend → Fell Glare", steed_mapping["source_interpretation"])
+        self.assertIn("Fey → Fey Step", steed_mapping["source_interpretation"])
+        self.assertIn(
+            "Celestial → Healing Touch", steed_mapping["source_interpretation"]
+        )
+        self.assertIn(
+            "No action availability is inferred in every mount state from the type/action mapping.",
+            steed_mapping["material_qualifiers"],
+        )
+        self.assertIn(
+            "The absence of a rider does not categorically forbid Fey Step.",
+            steed_mapping["material_qualifiers"],
+        )
+        steed_numbers = rows[
+            (
+                "source.spell.find_steed.unresolved.steed_numeric_cells",
+                "source_parameter",
+            )
+        ]
+        self.assertIn("10 + 1 per spell level", steed_numbers["source_interpretation"])
+        self.assertIn("5 + 10 per spell level", steed_numbers["source_interpretation"])
+        self.assertIn("Int 6/−2/−2", steed_numbers["source_interpretation"])
+        self.assertIn(
+            "Fly 60 feet only with a level 4+ spell",
+            steed_numbers["source_interpretation"],
+        )
+
+        bond = rows[
+            (
+                "source.spell.warding_bond.unresolved.copied_damage_policy",
+                "source_semantics",
+            )
+        ]
+        self.assertEqual(bond["disposition"], "SOURCE_HELD")
+        self.assertIn(
+            "or the spell is cast again on either connected creature.",
+            bond["source_interpretation"],
+        )
+        self.assertIn(
+            "reciprocal/recursive bond default", "\n".join(bond["material_qualifiers"])
+        )
+        self.assertIn(
+            "Warding Bond itself is not a Concentration spell.",
+            bond["material_qualifiers"],
+        )
+
+        web = rows[
+            (
+                "source.spell.web.unresolved.web_numeric_geometry",
+                "source_parameter",
+            )
+        ]
+        self.assertIn("20-foot Cube", web["source_interpretation"])
+        self.assertIn("two solid masses", web["source_interpretation"])
+        self.assertIn("2d4 Fire", web["source_interpretation"])
+        web_qualifiers = "\n".join(web["material_qualifiers"])
+        self.assertIn("Cube origin can be anywhere on a face.", web_qualifiers)
+        self.assertIn(
+            "Cube origin is excluded unless the creator chooses otherwise.",
+            web_qualifiers,
+        )
+        self.assertIn(
+            "The Cube is not assumed centered on its origin point.", web_qualifiers
+        )
+        self.assertIn(
+            "Restrained sets Speed to 0 and affects attacks and Dexterity saves.",
+            web_qualifiers,
+        )
+
+        old_holds = (
+            FIRST12_SOURCE_HELD_KEYS
+            | NEXT12_SOURCE_HELD_KEYS
+            | TOOL.THIRD12_SOURCE_HELD_KEYS
+            | TOOL.FOURTH_SOURCE_HELD_KEYS
+            | TOOL.FIFTH_SOURCE_HELD_KEYS
+            | TOOL.SIXTH_SOURCE_HELD_KEYS
+        )
+        self.assertEqual(
+            set(classification["source_held_keys"]),
+            old_holds | SEVENTH_SOURCE_HELD_KEYS,
+        )
+        future = [
+            subobligation
+            for row in manifest["source_unknown_classifications"]
+            for subobligation in row["subobligations"]
+            if subobligation["category"]
+            == "downstream_domain_consumer_admission_native_proof"
+        ]
+        self.assertEqual(len(future), 33)
+        self.assertTrue(
+            all(
+                row["status"] == "NOT_ESTABLISHED"
+                and row["gate_phase"] == "FUTURE_PROOF"
+                for row in future
+            )
+        )
+        self.assertEqual(
+            manifest["content_owner_default_repair"]["status"],
+            "REQUIRED_BEFORE_PACKAGE_PROMOTION",
+        )
+        self.assertEqual(
+            manifest["source_modeling_residuals"][0]["source_exact_name"],
+            "Word of Recall",
+        )
+        self.assertEqual(
+            manifest["source_modeling_residuals"][0]["status"], "NOT_ESTABLISHED"
+        )
+
+    def test_seventh_steed_life_bond_uses_actual_caster_regain(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        TOOL._validate_source_unknown_classifications(manifest)
+        life_bond = seventh_evidence_by_key_category_for(
+            manifest,
+            "source.spell.find_steed.unresolved.steed_numeric_cells",
+            "source_parameter",
+        )
+
+        self.assertIn(
+            "the caster actually regains Hit Points from a level 1+ spell",
+            life_bond["source_interpretation"],
+        )
+        self.assertIn(
+            "the steed regains the same number of Hit Points the caster actually regained",
+            life_bond["source_interpretation"],
+        )
+        self.assertIn(
+            "not rolled or nominal spell healing or overheal",
+            "\n".join(life_bond["material_qualifiers"]),
+        )
+
+    def test_seventh_steed_fell_glare_retains_wisdom_and_steed_target_predicates(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        TOOL._validate_source_unknown_classifications(manifest)
+        fell_glare = seventh_evidence_by_key_category_for(
+            manifest,
+            "source.spell.find_steed.unresolved.type_to_action_mapping",
+            "source_mapping_review",
+        )
+        interpretation = fell_glare["source_interpretation"]
+
+        self.assertIn(
+            "Wisdom saving throw against the caster's spell save DC", interpretation
+        )
+        self.assertIn(
+            "one creature within 60 feet of the steed that the steed can see",
+            interpretation,
+        )
+        self.assertIn(
+            "On failure, the target has the Frightened condition until the end of the caster's next turn.",
+            interpretation,
+        )
+        self.assertIn("Bonus Action that recharges after a Long Rest", interpretation)
+
+    def test_seventh_steed_unicode_minus_qualifier_matches_actual_signed_cells(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        TOOL._validate_source_unknown_classifications(manifest)
+        steed = seventh_evidence_by_key_category_for(
+            manifest,
+            "source.spell.find_steed.unresolved.steed_numeric_cells",
+            "source_parameter",
+        )
+        interpretation = steed["source_interpretation"]
+        qualifiers = "\n".join(steed["material_qualifiers"])
+
+        self.assertIn("Int 6/−2/−2", interpretation)
+        self.assertIn("Wis 12/+1/+1", interpretation)
+        self.assertIn("Cha 8/−1/−1", interpretation)
+        self.assertIn(
+            "Preserve U+2212 in negative Int (−2/−2) and Cha (−1/−1) modifier/save cells; Wisdom is positive +1/+1.",
+            qualifiers,
+        )
+        self.assertNotIn("U+2212 in Wisdom", qualifiers)
+
+    def test_seventh_source_batch_rejects_frozen_mutations(self) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+        rejected = load_json(REJECTED_PATH)["seventh_rejections"]
+
+        def apply_mutation(
+            candidate: dict[str, object], rejection: dict[str, object]
+        ) -> None:
+            mutation = rejection["mutation"]
+            if mutation == "review_field":
+                candidate["source_seventh_review"][rejection["field"]] = rejection[
+                    "value"
+                ]
+                return
+            if mutation == "replace_common_qualifier":
+                candidate["source_seventh_resolution_contract"]["common_qualifiers"][
+                    rejection["index"]
+                ] = rejection["value"]
+                return
+            if mutation == "subobligation_field":
+                classification = next(
+                    value
+                    for value in candidate["source_unknown_classifications"]
+                    if value["unresolved_key"] == rejection["unresolved_key"]
+                )
+                subobligation = next(
+                    value
+                    for value in classification["subobligations"]
+                    if value["category"] == rejection["category"]
+                )
+                subobligation[rejection["field"]] = rejection["value"]
+                return
+            row = seventh_evidence_by_key_category_for(
+                candidate, rejection["unresolved_key"], rejection["source_category"]
+            )
+            if mutation == "evidence_field":
+                row[rejection["field"]] = rejection["value"]
+            elif mutation == "source_record_field":
+                row["source_record_ref"][rejection["field"]] = rejection["value"]
+            elif mutation == "span_hash":
+                row["source_markdown_locators"][rejection["locator_index"]][
+                    "span_sha256"
+                ] = rejection["value"]
+            elif mutation == "disposition":
+                row["disposition"] = rejection["value"]
+            elif mutation == "source_interpretation":
+                row["source_interpretation"] = rejection["value"]
+            elif mutation == "remove_material_qualifier":
+                row["material_qualifiers"].pop(rejection["index"])
+            elif mutation == "replace_material_qualifier":
+                row["material_qualifiers"][rejection["index"]] = rejection["value"]
+            else:
+                raise AssertionError(f"unknown seventh rejection mutation: {mutation}")
+
+        self.assertTrue(rejected)
+        for rejection in rejected:
+            candidate = copy.deepcopy(baseline)
+            with self.subTest(case=rejection["case_id"]):
+                apply_mutation(candidate, rejection)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(
+                    caught.exception.code, rejection["expected_error_code"]
+                )
+
+    def test_seventh_source_batch_rejects_current_markdown_span_drift(self) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        read_pinned = TOOL._read_pinned_local_evidence
+
+        def drift_cube_origin(
+            relative_path: str, expected_sha256: str, evidence_name: str
+        ) -> bytes:
+            data = read_pinned(relative_path, expected_sha256, evidence_name)
+            if relative_path == TOOL.SOURCE_MARKDOWN_RELATIVE_PATH:
+                return data.replace(
+                    b"located anywhere on a face of the Cube",
+                    b"located only at the center of the Cube",
+                    1,
+                )
+            return data
+
+        with (
+            patch.object(
+                TOOL, "_read_pinned_local_evidence", side_effect=drift_cube_origin
+            ),
+            self.assertRaises(TOOL.SourceQualificationError) as caught,
+        ):
+            TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(caught.exception.code, "source_seventh_markdown_span_hash")
+
+    def test_seventh_rejected_fixture_keeps_prior_negative_cases_byte_values(
+        self,
+    ) -> None:
+        rejected = load_json(REJECTED_PATH)
+        original = {
+            key: rejected[key]
+            for key in (
+                "paired_rejections",
+                "numeric_rejections",
+                "corroboration_rejections",
+                "mode_rejections",
+            )
+        }
+        original_bytes = json.dumps(
+            original, sort_keys=True, separators=(",", ":")
+        ).encode()
+        self.assertEqual(sum(len(values) for values in original.values()), 18)
+        self.assertEqual(
+            hashlib.sha256(original_bytes).hexdigest(),
+            "bce30d5c43a8d5e611200d2fea3b8a1d5af57cbf377c183b681b9d6d0b974988",
+        )
+        sixth_bytes = json.dumps(
+            rejected["sixth_rejections"], sort_keys=True, separators=(",", ":")
+        ).encode()
+        self.assertEqual(len(rejected["sixth_rejections"]), 11)
+        self.assertEqual(
+            hashlib.sha256(sixth_bytes).hexdigest(),
+            "a714edb5bb72c73eb79eb677534264a909ce59cf6e45b0b6f98eb61b336c99f6",
+        )
 
     def test_third12_rejects_binding_provenance_enum_bound_actor_and_hash_drift(
         self,

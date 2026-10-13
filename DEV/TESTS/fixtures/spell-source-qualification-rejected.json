@@ -220,5 +220,195 @@
       "source_category": "source_semantics",
       "value": "A willing touched creature selects one of the exact eleven source-listed types. Damage of that chosen type before the spell ends reduces total damage taken by 1d4, only once per turn."
     }
+  ],
+  "seventh_rejections": [
+    {
+      "case_id": "seventh-review-base-substituted",
+      "expected_error_code": "source_seventh_review",
+      "mutation": "review_field",
+      "field": "candidate_source_base_sha",
+      "value": "0000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "seventh-review-source-fixture-basis-substituted",
+      "expected_error_code": "source_seventh_review",
+      "mutation": "review_field",
+      "field": "source_fixture_basis_sha",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "seventh-classification-key-substituted",
+      "expected_error_code": "source_seventh_census",
+      "mutation": "evidence_field",
+      "unresolved_key": "source.spell.augury.unresolved.four_omen_members",
+      "source_category": "source_mapping_review",
+      "field": "unresolved_key",
+      "value": "source.spell.blur.unresolved.sense_eligibility"
+    },
+    {
+      "case_id": "seventh-borrowed-classification-pointer",
+      "expected_error_code": "source_seventh_binding",
+      "mutation": "evidence_field",
+      "unresolved_key": "source.spell.augury.unresolved.four_omen_members",
+      "source_category": "source_mapping_review",
+      "field": "source_classification_pointer",
+      "value": "/source_unknown_classifications/8"
+    },
+    {
+      "case_id": "seventh-borrowed-current-map-pointer",
+      "expected_error_code": "source_seventh_binding",
+      "mutation": "evidence_field",
+      "unresolved_key": "source.spell.augury.unresolved.four_omen_members",
+      "source_category": "source_mapping_review",
+      "field": "current_map_pointer",
+      "value": "/source_mapping_lanes/0/mapping_payload/entries/48"
+    },
+    {
+      "case_id": "seventh-borrowed-source-body-hash",
+      "expected_error_code": "source_seventh_provenance",
+      "mutation": "source_record_field",
+      "unresolved_key": "source.spell.web.unresolved.web_numeric_geometry",
+      "source_category": "source_parameter",
+      "field": "raw_body_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "seventh-web-cube-replaced-with-radius",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.web.unresolved.web_numeric_geometry",
+      "source_category": "source_parameter",
+      "value": "Web fills a 20-foot radius and burns away as one whole zone."
+    },
+    {
+      "case_id": "seventh-web-common-cube-origin-qualifier-missing",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "remove_material_qualifier",
+      "unresolved_key": "source.spell.web.unresolved.web_numeric_geometry",
+      "source_category": "source_parameter",
+      "index": 0
+    },
+    {
+      "case_id": "seventh-promote-familiar-census-hold",
+      "expected_error_code": "source_seventh_disposition",
+      "mutation": "disposition",
+      "unresolved_key": "source.spell.find_familiar.unresolved.eligible_form_census",
+      "source_category": "source_mapping_review",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "seventh-promote-warding-bond-copy-hold",
+      "expected_error_code": "source_seventh_disposition",
+      "mutation": "disposition",
+      "unresolved_key": "source.spell.warding_bond.unresolved.copied_damage_policy",
+      "source_category": "source_semantics",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "seventh-drop-ritual-common-qualifier",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "replace_common_qualifier",
+      "index": 8,
+      "value": "Ritual casting always uses a higher-level slot."
+    },
+    {
+      "case_id": "seventh-web-span-hash-drift",
+      "expected_error_code": "source_seventh_locator",
+      "mutation": "span_hash",
+      "unresolved_key": "source.spell.web.unresolved.web_numeric_geometry",
+      "source_category": "source_parameter",
+      "locator_index": 0,
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "seventh-promote-familiar-future-native-proof",
+      "expected_error_code": "source_unknown_subobligation",
+      "mutation": "subobligation_field",
+      "unresolved_key": "source.spell.find_familiar.unresolved.eligible_form_census",
+      "category": "downstream_domain_consumer_admission_native_proof",
+      "field": "status",
+      "value": "ESTABLISHED"
+    },
+    {
+      "case_id": "seventh-life-bond-uses-rolled-healing",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.steed_numeric_cells",
+      "source_category": "source_parameter",
+      "value": "Life Bond mirrors the spell's rolled healing amount, including overheal, while the caster is nearby."
+    },
+    {
+      "case_id": "seventh-fell-glare-uses-wrong-save-ability",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare uses a Charisma saving throw against the caster's spell save DC."
+    },
+    {
+      "case_id": "seventh-fell-glare-uses-caster-visibility",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare targets one creature within range that the caster can see."
+    },
+    {
+      "case_id": "seventh-fell-glare-range-measured-from-caster",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare targets a creature within 60 feet of the caster that the steed can see."
+    },
+    {
+      "case_id": "seventh-wisdom-minus-qualifier-drift",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "replace_material_qualifier",
+      "unresolved_key": "source.spell.find_steed.unresolved.steed_numeric_cells",
+      "source_category": "source_parameter",
+      "index": 0,
+      "value": "Preserve U+2212 minus signs in Int, Wis and Cha modifier/save cells."
+    },
+    {
+      "case_id": "seventh-life-bond-uses-rolled-healing",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.steed_numeric_cells",
+      "source_category": "source_parameter",
+      "value": "Life Bond mirrors the spell's rolled healing amount, including overheal, while the caster is nearby."
+    },
+    {
+      "case_id": "seventh-fell-glare-uses-wrong-save-ability",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare uses a Charisma saving throw against the caster's spell save DC."
+    },
+    {
+      "case_id": "seventh-fell-glare-uses-caster-visibility",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare targets one creature within 60 feet of the caster that the caster can see."
+    },
+    {
+      "case_id": "seventh-fell-glare-range-measured-from-caster",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.type_to_action_mapping",
+      "source_category": "source_mapping_review",
+      "value": "Fell Glare targets a creature within 60 feet of the caster that the steed can see."
+    },
+    {
+      "case_id": "seventh-wisdom-cell-changed-to-negative",
+      "expected_error_code": "source_seventh_qualifier",
+      "mutation": "source_interpretation",
+      "unresolved_key": "source.spell.find_steed.unresolved.steed_numeric_cells",
+      "source_category": "source_parameter",
+      "value": "Otherworldly Steed has Wis 12/−1/−1."
+    }
   ]
 }
