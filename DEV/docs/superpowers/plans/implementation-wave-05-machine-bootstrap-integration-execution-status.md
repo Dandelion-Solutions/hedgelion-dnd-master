@@ -3823,3 +3823,69 @@ VERSION_IMPACT NONE under actual compatible DEV schema1 evidence scope; no GAME,
 active policy/recipe/profile/catalog/package/persisted/digest-generation change.
 This checkpoint's evidence integration advances no native/corpus readiness.
 Normal publication/read-back of code and this status synchronization follows.
+
+## 2026-10-14 Familiar census and reviewed auth/turn canonicalization
+
+INTEGRATED_SOURCE_SHA:92aa8ce2bc432e9213395595c725374382dd5e3b;
+tree1865298b088a45e1734fd4f5a5b182bd3c00d90b. Isolated reviewed inputs:
+Familiar a6a56c6dac788444b8cf2853cc0b43c5e2bffd85 and canonical docs
+e750dc6e85bd1c91124285ff8a7e750d24f611ca; integrated bytes unchanged.
+
+FAMILIAR_SOURCE: originalkey30 resolved by complete adopted330-statblock domain
+inventory with24 eligible CR0 Beasts,11 examples+13 additions. Every24 body and
+source qualification retained:23 prohibited attacks, Bubble Dash and Ink Cloud
+conditional behavior, eleven nonattack actions including first-aid branches.
+Independent SOURCE R2 review ses_ec4669e64ffeImv1WFlFKVWEdf PASS. First machine
+review found digest/37 summaries insufficient without151 exact references and673
+member joins. Repaired with complete durable carrier and derivative-only stdlib
+producer build_spell_familiar_source_evidence.py; all37 entries,151 ordered refs,
+673 joins,49 original+33 new clauses,24 body bindings and5 full variable-input
+qualifications now retained. Cold registry validation made zero external reads;
+no task-/tmp dependency, hash does not substitute for source completeness.
+Independent machine R2 reviewer ses_ec40390c3ffeWB1Jqr2r9bcECC SPEC/QUALITY PASS,
+blocking F01 CLOSED; reviewed nine-path manifest
+64401119f71292abd5104d481cbb3b99f7dc84f483934384c6cd3e99eeb22f97.
+Current67 resolved (61 SOURCE+6 OWNER_DECIDED)/10 active HOLDs, all77 reviewed;
+33 future-proof/default/Word of Recall/full339/native gates unchanged. Familiar
+source census closure does not admit its forms/actions into runtime package.
+
+AUTH_TURN_FINAL_OWNERS:
+- DEV/docs/superpowers/specs/2026-10-14-sp03-authenticated-input-canonical-spec.md
+- DEV/docs/superpowers/specs/2026-10-14-sp03-common-turn-gate-canonical-spec.md
+HISTORY: DEV/docs/superpowers/design/2026-10-14-sp03-auth-turn-history/README.md.
+Separate Step3 briefs/Step4 HumanDecisionNO, exact candidates, impact,63 case
+obligations/19 wire dispositions and primary-source/finding records retained.
+Independent whole-project Step6 ses_ec4669fdeffeEgdXm9m8BF8ciG foundAT6-01
+action/direct codec mismatch,AT6-02 response/P/survivor gap,AT6-03 concrete3/generic2
+ordering dispatch; R2 repair thenAT6-04 same-invocation mixed response+extra-intent
+gap. R3 re-review PASS, allfour CLOSED; no new material findings or PO question.
+Step7 propagation through every affected brief/candidate/case/impact/version wire
+and history complete; rejected formulations explicitly superseded. Canonical
+two-owner/11-upstream-owner propagation fidelity independently PASS; no semantic
+law left solely in provenance. Current-source identity, schema/digest targets,
+operation-specific historical/current authority, no-PlayerI!=M, native response
+survivor/mixed phases, actual-turn/Actor gate/lazy causal normalization preserved.
+No GAME/schema/module/protocol generation activated by these documents.
+
+FINAL_INTEGRATED_PROOF92aa8ce2: clean real-Git sameSHA/tree; canonical audit PASS;
+fullpytest2035 passed/91 skipped; canonicalunittest1732 OK/skipped91; actualinstalled
+context24/membership17 OK; fullversioncensusunclassified/legacyEMPTY; releasebuild
+PASS; allchainexit0.PYTHONDONTWRITEBYTECODE=1/declaredvenv. Worker dirty provenance
+failure is not PASS; clean final full proof includesclean-headcase. No hostedCI/
+deployedauth/nativekernel/performance claim. Verification applies to exact source
+above; coordinator's subsequent map/index/control synchronization is documentary.
+
+VERSION_IMPACT:NONE for bounded DEVdraftschema1sourceevidence, derivativeproducer
+and document-only canonicalization/routing. ActiveGAME/nativeprofile/schema/
+catalog/package/persistence/digest contracts unchanged; future targets require
+separate atomic materialization bumps/consumer synchronization. HumanNO retained;
+no weakertrust/authority/availability policy selected. Newheldsource matrices for
+Locate Plants/Mending/Unseen Servant are still evidence proposals, not closures.
+
+NEXT_GATE: finish shared source/status/routes verification, publish/readback,
+then independent AUTH_TURN SeniorStop2 (A–FStop2 is distinct). AfterGO reconcile
+stableplan/ImplementationImpactEnvelope and requiredSeniorplanGO; no automatic
+implementationfromdocumentpublication. Actual deployed originalinputissuer proof
+UNAVAILABLE and actualGAME turn/admission/reset/slot atomic producer NOT_ESTABLISHED
+remain separate positive execution/activation gates, not a reversedSP03->SP04edge.
+Continue remaining10source and independentnativeconformance lanes without PO pause.

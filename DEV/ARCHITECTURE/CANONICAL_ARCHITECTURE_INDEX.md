@@ -893,3 +893,14 @@ must be checked separately from accepted architecture.
 ## Local spell canonical source route — PO-013
 
 Use `DEV/docs/superpowers/specs/2026-10-04-local-spell-execution-canonical-spec.md`, exact execution/lifecycle/content-acquisition/Wish annexes and `2026-10-04-spell-architecture-owner-decision.md`. They delegate to existing Activity/MechanicalContext/Actor/Asset/Health/Effect/Zone/Information/Step3/Step5/WP16 and narrowly qualify proven exclusions. `DEV/docs/superpowers/design/2026-10-04-spell-execution-architecture/canonicalization.md` routes manifest/dispositions/findings/risks/deferred actual proofs; candidate/source passes remain evidence. Navigation grants no machine admission, measured latency or activation. Global state is only `DEV/CURRENT_PROGRESS.md`; execution only stable plan index/cursor.
+
+The exact original-input/current-operation authority and common caster actual-turn
+extensions route to `DEV/docs/superpowers/specs/2026-10-14-sp03-authenticated-input-canonical-spec.md`
+and `DEV/docs/superpowers/specs/2026-10-14-sp03-common-turn-gate-canonical-spec.md`.
+Their Step3–8 provenance,63 cases/19 wires and AT6-01..04 resolution are retained
+under `DEV/docs/superpowers/design/2026-10-14-sp03-auth-turn-history/README.md`.
+These are technically reviewed architecture contracts, not active schema or
+runtime producers. Independent Senior Stop2 and implementation-plan gates follow
+publication/read-back; actual deployed input issuer and native atomic producer
+proof remain separately gated. Current applicability is owned by the global and
+Wave05 cursors, not this index.
