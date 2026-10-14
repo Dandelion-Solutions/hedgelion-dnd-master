@@ -2,6 +2,8 @@
 
 Status: **ACCEPTED BASELINE PRESERVED / COMPLETE LOCAL-SPELL EXTENSION — INDEPENDENT SENIOR PLAN GO / GLOBAL ACTIVATION OWNED BY `DEV/CURRENT_PROGRESS.md`**
 
+Bounded auth/turn reconciliation in SP03 and its SP04 writer joins: **IMPLEMENTATION-PLAN REVIEW CANDIDATE / SENIOR PLAN GO PENDING**. Prior accepted work remains preserved; the older GO does not authorize this revised envelope.
+
 Goal: integrate the completed owner contracts into the single strict 17-world/17-runtime machine, realize the accepted local339 spell profile over existing owners, complete bootstrap/product paths, and finish each shared physical integration through its one designated writer with owner-correct version cutovers.
 
 Use `implementation-plan-execution-contract.md`. Fresh-read every shared file immediately before its final writer; integrate all required GREEN deltas in one checkpoint.
@@ -1456,8 +1458,8 @@ AttackHitFrontierInput is the exact transient Mirror Image pre-damage consumer: 
 
 SP04 native_execution helpers:
 ```python
-begin_segment_plan(catalog: AdmittedActivityCatalog, compiled: CompiledActivity,
-    accepted_command: Mapping[str,object], resolution: Mapping[str,object], *,
+begin_segment_plan(catalog: AdmittedActivityCatalog, compiled: CompiledActivity | None,
+    accepted_command: Mapping[str,object], resolution: Mapping[str,object] | None, *,
     owner_session: CurrentOwnerReadSession, rng: SegmentRngProvider,
     procedure_state: Mapping[str,object]|None=None,
     continuation_state: Mapping[str,object]|None=None) -> NativePlanBuilder
@@ -1474,10 +1476,10 @@ Derive profiles/IDs/allocations from admitted inputs; reacquire whole union on e
 
 SP04 sole NEW `DEV/TESTS/spell_native_test_support.py`:
 ```python
-NativeSpellHarness.open(*,source_fixture:Path,activity_id:str,
-    mode_policy_profile_id:str,native_sources:Mapping[str,object],
+NativeSpellHarness.open(*,source_fixture:Path,activity_id:str | None,
+    mode_policy_profile_id:str | None,native_sources:Mapping[str,object],
     entropy:tuple[int,...],selected_live_fixture:Path|None=None) -> NativeSpellHarness
-harness.begin(*,accepted_command:Mapping[str,object],resolution:Mapping[str,object],
+harness.begin(*,accepted_command:Mapping[str,object],resolution:Mapping[str,object] | None,
     procedure_state:Mapping[str,object]|None=None,
     continuation_state:Mapping[str,object]|None=None) -> NativePlanBuilder
 harness.establish(plan:NativeSegmentPlan) -> NativeSegmentEstablishment
@@ -1485,6 +1487,8 @@ harness.read(owner_ref:NativeOwnerRef) -> CurrentOwnerRead
 harness.recover() -> NativeSpellHarness
 ```
 Actual source-admitted temporary package/lock/compile/accept_command/P0/native SQLite/RNG/native-first recovery. Entropy trusted test composition only; no fixture flag/raw-staging/seal shortcut. Private `DEV/TESTS/fixtures/local-spells/<task>/` sources retain explicit single-package topology, never production claims; later tasks own private fixtures and reuse helper.
+
+The auth/turn reconciliation inside SP03/SP04 qualifies this shared ABI: action requires actual CompiledActivity and Resolution; direct requires `compiled=None`, `resolution=None` and the exact inventory-admitted transition binding/request, with K as execution owner. Never invent an Activity or Resolution to satisfy an action-only signature. Pure response and mixed Plan materialization use their native input/response edges, not an ordinary command wrapper. The existing harness remains one SP04-owned helper; its direct entry uses the exact native profile and no synthetic Activity selection. See the SP04 joins for phase/source/authority requirements.
 
 ## W05.SP01 — Closed spell machine shapes and typed preparation contracts
 
@@ -1682,15 +1686,548 @@ CURRENTNESS RE-READ SET BEFORE WRITE: Files + pair/fact/acquisition/version
 
 Future: `PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_local_spell_context_cast.py DEV/TESTS/test_s6d_04_mechanical_context_contract.py DEV/TESTS/test_s6d_05_portable_value_contract.py DEV/TESTS/test_s6d_06_activity_primitive_contract.py DEV/TESTS/test_s6d_07_character_mvp_seed.py DEV/TESTS/test_s6d_08_health_effects_recovery_contract.py DEV/TESTS/test_rd15_catalog_runtime.py`. FOCUSED_BEHAVIOR + INTEGRATION_SCENARIO; independent source checks accompany arithmetic fixtures.
 
+### SP03 accepted auth/turn reconciliation — implementation-plan review candidate
+
+> **For agentic workers:** use `subagent-driven-development` when bounded independent workers are available, otherwise `executing-plans`; use TDD for each behavior change. This is part of SP03 in this stable plan, not a second executable plan.
+
+**Goal:** prepare the accepted original-input/current-authority and common actual-turn contracts, with complete strict source/read consumers, then transfer native establishment obligations to the existing SP04 writer.
+
+**Architecture:** native Interaction/Message/Plan/clause, command or real Resolution, Procedure and Actor retain their existing ownership. Source validators and immutable contract preparation may precede the kernel; only the native kernel accepts coupled semantic changes. Infrastructure authentication and actual-turn dependencies are not MechanicalContext facts or synthetic gameplay roles.
+
+**Tech stack:** existing standard-library GAME Python, JSON Schema/installed assertion projection, trusted bound RuntimeHost, P0 finite read sessions, existing SQLite/LIVE fences and repository-owned DEV test environment. Add no runtime dependency or test framework.
+
+**Spec:** `DEV/docs/superpowers/specs/2026-10-14-sp03-authenticated-input-canonical-spec.md` (A) and `DEV/docs/superpowers/specs/2026-10-14-sp03-common-turn-gate-canonical-spec.md` (B), read in full. Retained evidence: `DEV/docs/superpowers/design/2026-10-14-sp03-auth-turn-history/{case-source-ledger,resolution-review,stage8-closure}.md`; AT6-01..04 remain closed requirements, not executed implementation proof.
+
+**Gate:** independent AUTH_TURN Stop2 GO is supplied by the planning assignment, session `ses_ec4669fdeffeEgdXm9m8BF8ciG`, published source commit `c3e7b9ad27af0dc62eacec37a86356d090954082`, tree `d8d65037839bb0662693212546f656b0aaec3b9e`, parent `92aa8ce2bc432e9213395595c725374382dd5e3b`. This is historical source evidence, not a target development ref. The source spec/control headers still describe the earlier pending state; the publication coordinator owns their gate/currentness synchronization. **Proposed Senior implementation-plan GO: PENDING.** The older whole-plan GO does not self-approve this changed envelope. No production changes are authorized by this candidate.
+
+#### Global constraints and ordering
+
+- Preserve all accepted SP03 policy/source/read work and all original 32 local-spell tasks. Four subunits below are reviewable slices within SP03; the three named joins below belong inside SP04. They add no task/readiness ID, output checkpoint, roadmap, execution cursor or new task graph.
+- Retain `SP02 -> SP03 -> SP04`. SP03 output means source/bridge/read preparation conformance, not native mutation or connected authentication. SP04 consumes it and proves actual establishment; SP03 must not wait for that downstream proof to publish its preparation output. Existing full SP03 obligations outside this amendment still apply.
+- Source bytes, verified flag, DTO, hash, random invocation key, publisher identity, method existence or private seal are insufficient external authentication. Deployed supported issuer evidence remains **UNAVAILABLE**. A trusted-composition fixture may prove the contract implementation, never deployment; absent installed capability returns `AUTHORITY_UNAVAILABLE` before protected work/RNG/cost. Do not invent a fixed deployed DTO or substitute another transport.
+- Actual GAME creation admission/start/initialize/reset/slot native producer remains **NOT_ESTABLISHED** until SP04 witnesses below. DEV transitions, temporal evaluation, Actor shape admission and synthetic ExecutionStore events cannot close it.
+- No new CurrentOwner service/authority, AUTH store, registry/family, ActorGate owner, full-history authority, session lease, extra dedicated model call, broad campaign/Player/LIVE scan, eager reset, generic callback/patch mechanism or always-publish-arrival policy.
+- Historical accepted input and current operation authority are independent. Retry first validates the stored identity/result; new protected work separately reacquires current principal/access/purpose/control. Creator singleplayer uses HistoryService's native first-initialization evidence and current login, without a Player. Outbound disclosure remains recipient-qualified.
+- Closed variants reject forbidden fields even when empty/null. Integer generations/revisions reject bool. Native envelope identity wins; conflicting flattened aliases reject. Unknown newer schemas/profiles fail closed. Same-I mixed phases preserve irreducible extra meaning and cannot replay a response.
+- Each schema cutover includes its producers, parsers, consumers, fixtures, installed projections and current identities in the same checkpoint. A protocol-only activation followed by a later required repair is not a safe checkpoint. Source conformance can exist without production issuance; no stub success or permanently disabled half-migration.
+
+#### Inspected implementation basis and exact owner route
+
+All locations in this paragraph were inspected on the source commit above; line numbers are locators, never patch instructions after intervening changes. `runtime_execution.py:1045–1307` accepts/validates only actions and hashes a fixed action field set. `mechanics.py:522–594,958–963` repeats that codec and schema2 Procedure assumption. `runtime_host.py:1675–1966` issues root-only contexts from K/R/roles, explicitly excludes Procedure/Continuation/progressed work, and does not read I/M/P or original/current author authority. `activity_contracts.py:540–715` independently checks exactly K/R/roles; `spell_cast.py:184–288` independently adds Effect/Asset membership to that old base. These three derivations must change together; removing the exact-union check is forbidden.
+
+`recovery_roots.validate_unresolved_input_owner` requires Player/P, treats any response emission as resolved and returns M as I identity. `durability.RoutedSerializedOperation`, `_handoff_owner_id` repeat M-as-I. `native_storage.native_identity_from_record` already uses envelope.id; preserve WP11 routes. `durability.join_execution_durability` requires one R and event, reads flattened catalog generation, and constructs action-only policy basis. `publication._accepted_identity` and its policy forwarding, `recovery.validate_recovered_basis`, `_validate_recovered_root_closures`, `_hydrate_execution_result`, `_validate_catalog_closure`, `_accepted_policy_refs` repeat those assumptions. `collaboration._load_interaction`, `_load_clause`, `_CLAUSE_FIELDS`, `associate_input`, `_validate_persisted_input_owners` and `_validate_historical_input_associations` need variant/unit-aware validation, while retaining current versus historical agency separation.
+
+`information._normalize_emission:280–363` is the actual outbound Message producer and currently emits no state schema_version: qualify it with initial1 when W02 changes, keeping recipient/disclosure law. `emission.commit_visible_payload:129–219` is the recipient-bound visible surface, not an inbound issuer or compactor; keep it inspect-only unless a concrete retained-input consumer join requires a change. No GAME compaction/retention/protection/garbage-collection module or corresponding dedicated DEV schema exists at this source basis. Do not name an imaginary existing compactor as a hook. Narrow native I/M/R/Actor source-retention and sufficient-survivor validation belongs in these existing owners/kernel joins: same-domain root/reference/retained bytes fence together; cross-source dependence needs the admitted existing freeze/self-containment/protection capability or holds before acceptance. A generic cleanup/protection engine is out of scope. Negative race probes mutate the exact test source between observation/final fence and demand hold; positive compact cause probes establish sufficient native survivor bytes through the actual kernel and recover them. Neither is a claim that a general cleanup producer has been implemented.
+
+`access_control.resolve_principal` accepts trusted mappings/VerifiedPrincipal; its `verified` default is not an external issuer. Reuse `resolve_player(principal, route, load_exact_player, *, campaign_id)` and `authorize_operation(..., operation=..., creator_provenance=..., campaign_id=...)` behind trusted infrastructure, validating complete route plus every nominated native Player envelope/state and exact controlled subject. Do not relabel these helpers as deployed authentication. `RuntimeHost._begin_operation` currently pins campaign/LIVE only; composition is `compose_runtime_host(..., hot_owner_store=None)` / bootstrap's selected-host route. Any admitted input capability is bound there, never in a gameplay request. `HistoryService.observe_first_initialization_history()` is the creator source; no History seal reconstructed from stored fields.
+
+`DEV/TOOLS/validate_domain_rules_coverage.py:198–275` owns DEV seven-transition conformance: initialize/start/spend_action/spend_movement/end/advance_round/terminate; state2, unqualified after-digest and synthetic `resolution:{key}` IDs currently occur there. Its `advance_combat_turn` helper is not that lifecycle and must not be composed into production. `runtime_execution._validate_linked_procedure`, `mechanics._validate_procedure_binding`, `recovery_roots._validate_native_owner` hardcode schema2. Generic `runtime-procedure-state` is closed spent-only schema2, unlike concrete capacity/spent state2. B admits concrete3, not a global rewrite of generic2.
+
+**Read before each relevant subunit:** A/B plus Step3; Step5.2 v2 resumable closure, Step5.4 handoff, Step5.11 retention, Step5.13 protection; WP11 routing, WP12 HOT, WP13 publication, WP14 recovery, WP16 authority/LIVE, WP17 agency, WP15 independently-due enrollment; creator-login continuity decision and current version/clean-slate owners. PROJECT_MAP and CANONICAL_ARCHITECTURE_INDEX are locators only. Re-read the actual current code/schema/test owners named here before editing them. Accepted source interpretations A–F and original lifecycle/cast owners remain binding; this plan adds no source rule.
+
+#### Complete Implementation Impact Envelope
+
+```text
+SPEC / APPROVED DESIGN: final A §§1–7; final B §§1–6; existing local-spell execution/lifecycle contracts
+BASELINE SHA / TREE: c3e7b9ad27af0dc62eacec37a86356d090954082 / d8d65037839bb0662693212546f656b0aaec3b9e
+IMPLEMENTATION START HEAD: record fresh exact published source after independent plan GO; refresh affected owners
+PRIMARY OWNER ARTIFACTS: A/B; existing Step3/Step5/WP11–17/access/creator/version owners
+EXPECTED OWNERS TO CHANGE: native input/interpretation/command codec; Procedure subtype/turn cause;
+  Actor common gate companion; existing root/promise/hydration/collaboration validators;
+  immutable contract/compiler/source/read preparation; SP04 alone native coupled establishment
+EXPECTED CONSUMERS TO CHANGE: Host + independent activity validation + spell membership;
+  mechanics/durability/publication/recovery; native-storage adapters; Actor continuity;
+  exact response/mixed clause/use and retention/protection consumers
+ALLOWED INTERFACES / CONTRACTS TO CHANGE: exact signatures and wire matrix below; one input codec3;
+  action-R/direct-K projection1; input/resume1; concrete3/generic2 dispatch;
+  Actor3 strict companion; phase-derived finite infrastructure union; trusted composition binding
+GAME RUNTIME / PROJECTION SURFACES: runtime_execution, runtime_host, bootstrap, activity_contracts,
+  activity_runtime, catalog_runtime, mechanical_context, mechanical_sources, spell_cast, mechanics, durability,
+  publication, recovery, recovery_roots, native_storage, actor_continuity; hot_store/live_state
+  only for the SP04 named native acceptance/protection joins; temporal/information/emission only
+  for exact occurrence or retained input/recipient validators, never new owners
+DEV SCHEMAS / CATALOGS / MACHINE CONTRACTS: W01–W19 disposition matrix; Actor envelope/state,
+  spell-native-profile-values, concrete request/result, existing compiler declaration/inventory
+  source members; generated activity_contract_shapes.json/activity_compiler_contracts.json
+PERSISTENCE / RECOVERY / CURRENTNESS CONSUMERS: own-I phase roots; same-source closure/fence;
+  command/direct/response/mixed hydration; exact native compact causes/protection;
+  current source first, no accepted-mechanics replay or serialized capability revival
+VALIDATORS / TESTS / AUDITS: four SP03 subunit suites, three SP04 joins; existing RD03–07/09/10/12/14/15,
+  S6D04/05/06/09/11, compiler/version/package suites; full unittest/pytest/audit/build
+DOCUMENTATION / INSTALL / PACKAGE PROJECTIONS: module headers + generated installed assertions/compiler
+  package/inventory metadata via existing producer; public README untouched; final CORE/install T08 remains
+CROSS-WAVE JOINS: existing P0/SP02 -> SP03 prep -> SP04 native -> existing SP06/SP07/SP28 and W06 proof;
+  shared physical writer serialized with P2/P3; no full P2 native proof before SP04
+PROTECTED ARCHITECTURE INVARIANTS: one native truth/codec/mutation/RNG; complete route/current control;
+  no auth/current-owner/gate registry; no synthetic rootR; same-I mixed meaning;
+  no publication/DB transaction across external wait; CAS before HOT adoption; survivor before loss
+ARCHITECTURE-SENSITIVE SURFACES: issuer TCB, original vs current agency, root release, digest identity,
+  subtype dispatch, common gate subject/cost cause, local/LIVE acceptance, retry/compaction races
+EXPECTED CROSS-MODULE / INTEGRATION VERIFICATION: exact 63-case and 19-wire bindings below;
+  final source->command/response->native->durability->publication->cold recovery on real kernel
+KNOWN OUT-OF-SCOPE OWNERS / SURFACES: new transport/provider, general auth/ACL/delegation, general
+  Procedure ordering, import certification, migration fabricated causes, all339 activation,
+  History gameplay authority, Story, full host dispatcher (SP28), new temporal scheduler
+VERSION IMPACT: documentation reconciliation NONE; realization transitions and per-checkpoint ledger below
+SCHEMA / CATALOG / CHECKPOINT IMPACT: no new family/status/root kind/output ID; exact existing contract cutovers
+MIGRATION IMPACT: clean-slate pre-v1 replacement, no compatibility shim; released adoption reopens proper gate
+HG-01 CONSTRAINTS AFFECTED: bounded source reads/context; pre-RNG authority; no secret-target free probe/refund;
+  zero added dedicated model phases, no broad scan or mandatory per-arrival repository publication
+CURRENTNESS RE-READ SET BEFORE WRITE: specs/retained cases + all actual owner/consumer bytes in subunit,
+  version metadata/namespace owners; current coordinator gate/cursor and accepted previous checkpoints
+```
+
+**File-action rules for this amendment:** all named existing modules/schemas are `EXISTING_MODIFY` only where their subunit requires a material delta; `current_owner.py` remains the existing read-session implementation, not a new owner. Source-compatible wire rows explicitly marked verify-only remain `INSPECT_ONLY` unless a failing admitted contract proves a needed bounded edit. `NEW_CREATE` only the two conformance test modules `DEV/TESTS/test_sp03_authenticated_input.py`, `DEV/TESTS/test_sp03_common_turn_gate.py` and their private data fixtures; native tests/harness stay SP04-owned as already declared. New helpers live in the existing natural owner modules, not an AUTH package. Existing SP03 files in the older NEW_CREATE list now exist: modify them, do not recreate them. Every touched GAME surface is `V1_COMPATIBLE` accepted v1 law; old mandatory Player/P, action-only codec and concrete2 checks are `MIXED` surfaces with the specifically superseded fragment replaced, not preserved as a dual-read path.
+
+#### SP03 subunit 1 — own-I and phase-correct input/root closure first
+
+**Deliverable:** deterministic native source parsing, root/promise routing and recovery closure support for all input variants, independently testable without a MechanicalContext DAG, executable command or native kernel. This repairs identity/discoverability before new acceptance can escape. It does not issue authenticated input or consume offers.
+
+**Files:** modify W01–W04 schemas as a coherent initial-schema1 contract, `runtime_execution.py` pure input grammar, `recovery_roots.py`, `durability.py` (`RoutedSerializedOperation`, `_handoff_owner_id`, promise freeze), `recovery.py` (root/input hydration), `native_storage.py` only envelope adapters that still flatten incompatible identity; `collaboration.py` strict input/clause loaders; `information.py` outbound Message initial1 and narrow native content validators. `emission.py` remains inspect-only absent a proved retained-input join. Add tests in `test_sp03_authenticated_input.py`; extend `test_rd02_information_native_contracts.py`, `test_rd05_operational_roots.py`, `test_rd06_durability_publication.py`, `test_rd07_recovery.py`, `test_rd12_collaboration.py`. No native mutation builder in this slice.
+
+**Interfaces:** preserve `route_native_record`, `validate_loaded_identity`, `validate_unresolved_input_owner(campaign_id, owner_kind, native_owner)->str`, `route_serialized_operation(owner_kind, owner_id, payload)->RoutedSerializedOperation` and `issue_durability_handoff_promise` signature. Add owner-local pure `runtime_execution.validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object], message: Mapping[str, object], plan: Mapping[str, object] | None, accepted_response_segment: Mapping[str, object] | None) -> None`. Inputs are native envelopes from exact reads; shape validation here is not authentication/current authority. It checks I/M reciprocity, representation and phase-dependent links; native response proof is separately required for a trusted protected acceptance. Root predicate uses this grammar plus actual owner-issued promise, never response emission alone. Unpromised arrivals do not enroll.
+
+- [ ] RED own-I route test with envelope `id=interaction-1`, `input_message_id=message-9`, current native I/M bytes and accepted promise. Assert root owner_id and route use `interaction-1`; `route_serialized_operation('runtime.interaction','message-9',I)` rejects. Test MP and creator variants; no Player is read for creator. Existing M-as-I code fails for the intended reason.
+- [ ] RED phase matrix: intent requires P; pure response forbids P; mixed awaiting forbids P/ref; ready requires genuine ref/marker but forbids P; materialized requires same-I complete P/ref. Response emitted while ready remains unresolved; missing materialized P or missing exact unplanned M yields recovery BLOCKED/INCOMPLETE, not resolved/default text. No fake normal K for response.
+- [ ] GREEN parse native envelope before state, require alias equality, enforce A§§2/5 closed grammar. Use `id` as I owner, never M. Root/promise/loaders share phase predicates; keep existing four root families and root1/handoff2 wire. Establish all required I/M/result/protection routing in promise closure; permit P absence only in the lawful phases. Retain roots until downstream bounded discovery/meaning discharge, including nonexec collaboration units.
+- [ ] GREEN enforce inbound M has no recipient/delivery evidence, outbound retains old recipient/emission law, compacted M forbids exact_text. Exact retained UTF-8 digest must match I; unplanned meaning cannot compact to a hash. Incomplete protection/negative proof retains. Unknown/duplicate plan clause IDs/order or copied marker mismatch rejects.
+- [ ] Run module command S1 below, then root/durability/recovery/collaboration modules in full. Review the actual delta, classify versions, run checkpoint checks and publish only coherent GREEN consumers under later execution authorization. This candidate does not publish.
+
+Concrete root-first regression construction (uses existing public promise/routing APIs; install complete A§2 valid source fixture in this test module, not an issued seal):
+
+```python
+text = 'Choose A; then move'
+digest = hashlib.sha256(text.encode('utf-8')).hexdigest()
+interaction = {
+    'kind': 'runtime.interaction', 'id': 'interaction-1',
+    'state': {
+        'schema_version': 1, 'campaign_id': 'campaign-1', 'session_id': 'session-1',
+        'player_id': 'player-1', 'input_message_id': 'message-9',
+        'input_kind': 'response_and_intent', 'planning_phase': 'awaiting_response',
+        'accepted_input_basis': {
+            'basis_generation': 1, 'repository_identity': 'fixture-repository',
+            'adapter_profile_id': 'fixture.input', 'adapter_profile_generation': 1,
+            'accepted_exchange_key': 'exchange-1', 'host_invocation_ref': 'invocation-1',
+            'principal': {'provider': 'github', 'stable_account_id': '123',
+                          'login_at_acceptance': 'fixture-player'},
+            'representation': {'kind': 'accepted_text', 'digest_generation': 1,
+                               'content_digest': digest},
+            'authority_at_acceptance': {
+                'kind': 'multiplayer', 'player_id': 'player-1',
+                'accepted_subject_ids': ['actor-1'], 'campaign_authority_revision': 'access-1',
+                'player_revision': 1, 'route_evidence_revision': 'route-1',
+            },
+        },
+        'response_target': {'root_command_id': 'command-1', 'resolution_id': 'resolution-1',
+            'continuation_id': 'continuation-1', 'continuation_generation': 1,
+            'offer_kind': 'choice', 'offer_id': 'offer-1', 'responder_id': 'actor-1'},
+        'response_selection': {'kind': 'choice', 'option_id': 'option-A'},
+    },
+}
+message = {'kind': 'runtime.message', 'id': 'message-9', 'state': {
+    'schema_version': 1, 'message_id': 'message-9', 'interaction_id': 'interaction-1',
+    'direction': 'inbound', 'input_basis_generation': 1, 'representation_kind': 'accepted_text',
+    'payload_state': 'message.exact_retained', 'exact_text': text, 'content_digest': digest,
+}}
+# These are explicit test source bytes for shape/root tests, not authentication proof.
+validate_input_closure(campaign_id='campaign-1', interaction=interaction,
+    message=message, plan=None, accepted_response_segment=None)
+promise = issue_durability_handoff_promise(
+    campaign_id=interaction['state']['campaign_id'], owner_kind='runtime.interaction',
+    native_owner=interaction, scope='handoff',
+)
+page = enumerate_operational_root_page(
+    interaction['state']['campaign_id'], [('runtime.interaction', interaction, promise)],
+)
+self.assertNotEqual(interaction['id'], interaction['state']['input_message_id'])
+self.assertEqual(page.roots[0].owner_id, interaction['id'])
+self.assertEqual(page.roots[0].relative_path,
+                 route_native_record('runtime.interaction', (interaction['id'],)).relative_path)
+```
+
+Construction is not a fixture that sets `accepted=True`: write actual closed I/M envelopes and exact phase; the promise issuer must validate source grammar. For ready/materialized positives, initially test retained native source validation only; production-issued marker/atomic acceptance belongs to SP04 join 2. Reject caller-authored success fields.
+
+Required schema construction in W01 (in addition to A's complete closed field/type definitions) includes these phase conditions; native validators enforce equal cross-record identities and actual proof:
+
+```json
+{"allOf":[
+  {"if":{"properties":{"input_kind":{"const":"response"}},"required":["input_kind"]},
+   "then":{"required":["response_target","response_selection"],
+           "not":{"anyOf":[{"required":["intent_plan_id"]},{"required":["planning_phase"]}]}}},
+  {"if":{"properties":{"input_kind":{"const":"response_and_intent"}},"required":["input_kind"]},
+   "then":{"required":["response_target","response_selection","planning_phase"]}},
+  {"if":{"properties":{"planning_phase":{"const":"awaiting_response"}},"required":["planning_phase"]},
+   "then":{"not":{"anyOf":[{"required":["intent_plan_id"]},{"required":["accepted_resume_ref"]}]}}},
+  {"if":{"properties":{"planning_phase":{"const":"ready_to_plan"}},"required":["planning_phase"]},
+   "then":{"required":["accepted_resume_ref"],"not":{"required":["intent_plan_id"]}}},
+  {"if":{"properties":{"planning_phase":{"const":"materialized"}},"required":["planning_phase"]},
+   "then":{"required":["intent_plan_id","accepted_resume_ref"]}}
+]}
+```
+
+Do not rely on `if.properties` without `required` (absent discriminator otherwise matches); intent separately requires P and forbids response/phase/ref. Authority union separately requires MP.player_id equality or creator no-Player. Test missing/null/extra fields in each branch, plus ready noP lawful versus materialized missingP defective, through both installed and DEV schema validators.
+
+#### SP03 subunit 2 — trusted origin/current authority and one action/direct codec cutover
+
+**Deliverable:** source-backed preparation validates protected accepted origin and current requested authority; all action/direct identity consumers agree on schema4/hash3. Independently testable TC contract with explicit missing-deployed-issuer hold. Exact source origin validation does not manufacture native acceptance.
+
+**Files:** `runtime_execution.py`, `mechanics.py`, `durability.py`, `publication.py`, `recovery.py`, `runtime_host.py`, `bootstrap.py`, `activity_contracts.py`, `mechanical_context.py`, `mechanical_sources.py`, `spell_cast.py`; W05/W06 and W07/W09 initial schema fields; W16 verify only. `access_control.py` only minimum exact envelope/control adapter validation, without changing its underlying creator or account rules. Add S2 tests and update existing RD05/06/07/09/14/15/Host/compiler fixtures and installed schema/compiler projections in the same checkpoint. Do not leave mechanics/recovery running codec2 after the schema4 producer switch.
+
+**Exact planned interfaces in existing owners:**
+
+```text
+# runtime_execution.py; new pure source helpers, not authority issuers
+def accepted_input_origin(*, campaign_id: str,
+    interaction: Mapping[str, object], message: Mapping[str, object],
+    plan: Mapping[str, object], clause_id: str,
+    accepted_response_segment: Mapping[str, object] | None = None,
+) -> Mapping[str, object]
+
+def command_input_fingerprint(command: Mapping[str, object], *,
+    origin: Mapping[str, object]) -> str
+
+def execution_identity(command: Mapping[str, object], *,
+    execution_owner_kind: str, execution_owner_id: str,
+    segment: Mapping[str, object]) -> Mapping[str, object]
+
+# extend existing command entry points; required keyword prevents old unbound calls
+def accept_command(interpreter_result: object, context: BoundCatalogContext,
+    candidate: object, command_proposal: object, *,
+    input_observation: CurrentOwnerObservation,
+    adjudication_basis: AcceptedAdjudicationBasis | None = None,
+) -> dict[str, object] | CatalogGap
+
+def validate_execution_proposal(accepted_command: object,
+    context: BoundCatalogContext, candidate: object, *,
+    input_observation: CurrentOwnerObservation,
+) -> None
+```
+
+These are target signatures, not existing installed APIs. Implement bodies from the construction below; the signature listing is not executable stub code. `input_observation` must belong to the bound Host's current operation and exact source session; copying a dataclass/acceptance flag cannot issue it. Host entry authenticates with its bound infrastructure capability and owner access checks; pure helpers only validate native sources. Recovery rebuilds a read observation from current selected sources, validates historical origin, and applies current auth only for requested new protected work. For direct dispatch `interpreter_result` and `candidate` are `None` and forbidden in serialized command; exact native profile/schema binding is loaded from admitted inventory. Action uses the existing actual interpreter/candidate binder. No fake Activity/interpreter for a transition.
+
+`join_execution_durability(accepted_command, execution, promise, *, routed_operation)` keeps its call signature. Replace its action-only identity members with exact `execution_identity` projection1, including event_ids (possibly empty on an admitted eventless edge); retain catalog/policy/RNG/routed-operation evidence. Update its `to_dict` and every `_accepted_identity`/recovery consumer together. Actual action result alone carries resolution_id; direct carries command owner and no resolution_id. Do not set resolution_id=K or manufacture an event to fit the old constructor. Policy basis is a closed variant: action_request OR transition_request+transition_binding, plus actual invocation_facts/policy_refs. Preserve nested `BoundCatalogContext.to_dict()` and its `basis.catalog_generation` validation, synchronized with PT-D1; do not flatten it.
+
+- [ ] RED actual native I/M/P/C/K/R source test at root preparation, not a fact-read test: remove origin, change M, foreign campaign/host/session association, replace P/C/command reciprocity, duplicate clause, response clause as K, alter action roles/targets/facts/context. Each fails before preparation/RNG/cost. Historical session remains a link, not an executor lease.
+- [ ] RED current authority matrix: complete native account route nominates all Players; inactive, duplicate, rebound, omitted/invalid envelope/state, lost subject control fail. Creator uses real HistoryService first-init discovery and current login, no Player; rename/Admin/stable-ID shortcut fails. Old historical author/result remains after revocation; new voluntary work requires fresh exact purpose/control and executor mapping. Automatic mandatory child has real native causal mapping or holds.
+- [ ] GREEN bind optional infrastructure-only accepted-input capability at existing Host/bootstrap composition. Its required conformance operations are exact exchange lookup (repository/campaign/profile/key), current acting principal, and exact accepted representation/invocation/retry mapping; gameplay cannot provide/replace the capability or verdict. No current supported deployed implementation has been evidenced: absence is a typed hold, not a fake principal adapter. TC fixture implements those contract operations under trusted constructor composition and persists its retry mapping in its own test infrastructure; native I is the protected source, no product auth registry/store. Lookup nominates I before ambient rebinding; validate exact native basis/result and present read eligibility. Key reuse with changed origin/content conflicts; new intentional equal prose gets new I/M.
+- [ ] GREEN derive origin from observed native I/M/P/C (and exact mixed prior marker), not command.shadow_origin. Require exactly one reciprocal C; precommand held clauses have no command_id. Hash complete closed action/direct material below. Mechanics imports the one runtime_execution codec; remove its competing field/domain implementation. Dispatch kind before fields, catalog policy and hydration. Pending direct with no segment is recoverable typed work, not corruption or replayed facts.
+- [ ] GREEN change Host, independent activity validation and membership base union together to base execution refs ∪ phase-required input refs ∪ full route-nominated Player refs ∪ owner-native refs; membership then adds its declared complete Effects/Assets. Infrastructure creator/principal/config evidence remains external source evidence, not fake role/fact. Each expansion reacquires the entire accumulated union; final source/control revalidation and wait invalidation remain mandatory. Source-sensitive cache includes origin/unit/resume/current subject/binding, not global revision.
+- [ ] Run S2 and existing action/direct acceptance, durability, publication, cold recovery, Host/source membership suites. Exact codec3 mutation tests must fail even when attacker recomputes a plain hash: forged native origin/cross-links still reject. Freeze and review full synchronized checkpoint.
+
+Codec construction (after closed native/profile validation; these are complete algorithms, not constant-success bodies):
+
+```python
+common = {'command_kind', 'catalog_context_fingerprint', 'catalog_context', 'invocation_facts'}
+variant = {
+    'action': {'action_request', 'interpreter_result',
+               'interpreter_result_fingerprint_generation',
+               'interpreter_result_fingerprint', 'candidate_binding'},
+    'transition': {'transition_request', 'transition_binding'},
+}[command['command_kind']]
+material = {key: thaw(command[key]) for key in common | variant}
+material['accepted_input_origin'] = thaw(origin)
+digest = hashlib.sha256(b'HDM_RUNTIME_COMMAND_INPUT/3\n' + json.dumps(
+    material, ensure_ascii=False, sort_keys=True, separators=(',', ':'),
+    allow_nan=False).encode('utf-8')).hexdigest()
+```
+
+Use the existing `_thaw`/canonical_json implementation, checking allow_nan=False; the sketch's `thaw` is that operation, not a new serializer. Test each direct payload target/destination/amount/kind/profile/schema and all origin members independently; diagnostic/segment/result/planning progression is excluded. Origin mixed ref is prior accepted provenance and included; pure response cannot create ordinary K. The exact projection is `{identity_generation:1, command_id, input_fingerprint_generation:3, input_fingerprint, execution_owner_kind, execution_owner_id, segment_id, event_ids}`. Root/segment reciprocal linkage is separately validated, never inferred from hash equality.
+
+#### SP03 subunit 3 — response/mixed interpretation, collaboration and retention conformance
+
+**Deliverable:** strict response marker/hash, same-I phased interpretation and protected promise/retention source validation; offers remain offers. Read-only/source conformance does not consume, materialize a current P or certify atomicity.
+
+**Files:** `runtime_execution.py` response/origin validators, `recovery_roots.py`, `durability.py`, `recovery.py`, `collaboration.py`, inbound retention helpers in `information.py`/`emission.py` as required; W01–W04/W07/W09 changes integrated with all strict consumers and generated projection. Verify W08/W10–W16 unchanged wire where sufficient. Add S3 tests and RD05 roots/RD07/RD12/RD10 retained-content tests. Preserve existing complete guard/class/disposition/collection grammar, not a reduced replacement plan.
+
+**Interfaces:** add `runtime_execution.resume_input_fingerprint(*, interaction: Mapping[str, object], message: Mapping[str, object]) -> str`, validating exact A§4 target/selection and I/M representation. Extend `validate_input_closure` from subunit1 with native marker/ref validation. Keep `collaboration.associate_input(obligation, host, interaction_id, clause_id, *, principal, player_route, generation=None)` signature; its public principal/route arguments cannot be new authority, so compare/reacquire through the trusted Host operation before protected association. Current association authorizes present agency; historical-use validation checks fixed accepted native origin/meaning without reauthorizing the old author.
+
+- [ ] RED pure choice/reaction I/M has fixed target/selection and no P/K. `pending_response` alone cannot pass accepted provenance. Resume marker requires protected source issue, same I/M/root/R/G/offer/responder/selection; new I on consumed G is stale, even with equal selection.
+- [ ] RED mixed awaiting→ready→materialized source cases with same I/M. Ready has no P; materialized exactly one response clause and ≥1 real extra unit, actual canonical clause.intent.N order, fixed old resume ref. Reject dummy P, P replacement, response clause command/guard/payload, changed input_kind after issue, response replay to plan extras, loss of nonexec/OOC/held material.
+- [ ] GREEN resume hash1 uses exactly `response_interaction_id,response_message_id,input_kind,accepted_input_basis,target,selection` and domain `HDM_ACCEPTED_RESUME_INPUT/1\n`, existing canonical JSON; phase/P/C/K are excluded. Serialized `accepted_resume_input` lives only in the real consuming R segment and `accepted_resume_ref` only on I after accepted consume. Strict source validation cannot issue either; production writer is SP04 join2.
+- [ ] GREEN preserve accepted interpretation and extra semantics separately from response meaning. Reference-only collaboration associates `(I, clause.intent.N)` with exact class/content/G/purpose/control, never `(I, clause.response)` as actionable consent. No-K coordination is valid; creator cannot be coerced into a fake multiplayer contributor. Missing current MP participation returns existing scoped failure/hold, not invented Player.
+- [ ] GREEN promised ready phase retains exact M or admitted equally sufficient exact natural owner and native response closure before durability acknowledgement. I root releases only after P/K/use/history closure gives bounded discovery of every remaining unit; response emission/root settlement alone cannot release it. Compaction/protection validates both response retry and each extra unit; survivor first, release may lag. No full-history scan or hash-as-content.
+- [ ] Run S3. Keep all TC assertions separate from NP injection/crash evidence in SP04; no expected-failure future native tests enter this checkpoint.
+
+Concrete property assertions for subunit3 (in a unittest.TestCase, using complete native source fixtures built in this module):
+
+```python
+before = resume_input_fingerprint(interaction=ready_i, message=inbound_m)
+materialized_i = deepcopy(ready_i)
+materialized_i['state']['planning_phase'] = 'materialized'
+materialized_i['state']['intent_plan_id'] = plan['id']
+self.assertEqual(before, resume_input_fingerprint(
+    interaction=materialized_i, message=inbound_m))
+self.assertEqual(plan['state']['interaction_id'], ready_i['id'])
+self.assertEqual([c['clause_id'] for c in plan['state']['clauses']],
+                 ['clause.response', 'clause.intent.1'])
+self.assertNotIn('command_id', plan['state']['clauses'][0])
+```
+
+Construct mixed fixture from retained whole-message text `Choose A; then move` with actual option A, fixed native result and real extra transition clause; use response+OOC text for no-K case. Do not allocate a second I/M, create a fake response Activity or infer command consent from transcript prose. A matching marker hash does not bypass native issue/protection checks.
+
+#### SP03 subunit 4 — concrete turn3/Actor3 source bridge and pure common-gate reader
+
+**Deliverable:** complete strict subtype/cause/compiler/read conformance, including DEV seven transitions and all old consumers, without native establishment. Read-positive slot observation requires coherent already-established source causes; missing progress/cause holds. SP04 native join3 remains the sole actual issuer.
+
+**Files:** W17/W18/W19, `combat-procedure-transition-{request,result}.schema.json`, `world-record.schema.json`, `world-actor-state.schema.json`, `GAME/SCHEMA/actor.schema.yaml`, `spell-native-profile-values.schema.json`; `validate_domain_rules_coverage.py` and `test_s6d_09_domain_rules_coverage_contract.py`; `runtime_execution.py` linked subtype, `mechanics.py`, `recovery_roots.py`, `recovery.py`, `actor_continuity.py` strict Actor reader, `runtime_host.py`/`activity_contracts.py`/`mechanical_sources.py`/`mechanical_context.py`/`spell_cast.py` read union/gate validation; `activity_runtime.py` compiler infrastructure retention/generation and `catalog_runtime.py` strict installed compiler-source loader; immutable existing cast descriptor/compiler/inventory sources and projections described below. `temporal.py` only boundary projection validation, no reset/enrollment authority. Add S4 tests; extend generic Procedure, RD03/05/07 and closed-contract/compiler tests.
+
+**Interfaces in runtime_execution.py:** `validate_procedure_state(state: Mapping[str, object]) -> None` dispatches exact concrete kind3 or closed generic2 after envelope validation; `turn_occurrence_key(*, campaign_id: str, procedure_id: str, execution_owner_kind: str, execution_owner_id: str, segment_sequence: int, local_boundary_key: str) -> str` implements B§2 framing; `validate_common_turn_gate(*, campaign_id: str, actor: Mapping[str, object], procedure: Mapping[str, object], common_definition: Mapping[str, object]) -> Mapping[str, object]` validates B§§1–4 and returns only an observation (`turn_occurrence_key`, actual subject, consumed), otherwise existing scoped hold. No INITIALIZE/RESET/CONSUME in this reader. Native builder uses the same pure validators, not the reader as mutation authority.
+
+- [ ] RED concrete ACTIVE/turn_active requires complete current_turn_basis; concrete2, generic flattened concrete, kindless3/unknown kind, bool/invalid index/permutation/resource keys/capacity<spent/round-pending active fail. Generic spent/casting/progress schema2 still validates its own grammar and never yields actual-turn permission.
+- [ ] RED linked OFFER tests: current R awaiting exact Continuation/G/offer/responder/candidates + exact ACTIVE linked concrete3 or generic2 works; between_turns can link but cannot grant slot permission. ACTIVE combat without pending R offer is not RULE_OWNED_ORDERED/controller evidence; stale/foreign ordering owner holds without independent downgrade.
+- [ ] GREEN add exact B§2 basis to concrete3 iff active turn. Frame entire UTF-8 tuple with lengths and hex; derive transient BoundaryOccurrence from validated basis, not current message/round/index. DEV seven-transition conformance takes test-infrastructure execution coordinate separately from request payload, produces concrete3/request-result-event initial1 and qualified digest1; retain exactly one Procedure mutation. Production coordinate must come from native builder, not this DEV harness. Do not call advance_combat_turn from lifecycle.
+- [ ] GREEN Actor3 companion restricted to common key, B§3 closed admission/establishment/consumption; require companion iff common progress populated, consumed iff consumption evidence; admission can exist before progress. Include full TurnEvidence, revision and predecessor-pair law, CastEvidence and SlotEvidence with actual remaining/spent arithmetic. Preserve other spell_progress profiles. actor_continuity accepts the new complete envelope but its NPC phase cannot author slot/gate causes or reset via copied state. Missing old/imported creation lifetime remains held; schema bump certifies no history.
+- [ ] GREEN immutable existing `execution.spell_cast.srd521` contract binds one exact common definition generation1, all slot source/mode consumers equal it. Reject alias/divergent descriptor, payer/body-as-caster inference and unproved split/provider transfer. Declare infrastructure accepted_input_origin1/actual_combat_turn1 in existing inventory/compiler contract, outside fact DAG; compiler rejects caller fact/role substitution. Keep no-slot/ritual path free of missing-slot-gate dependency, while actual completion slot branch obtains then-current closure.
+- [ ] GREEN pure reader validates current Procedure and Actor cause/subject/binding/cost closure; no absent→false default, normalization forecast or initialization write. Host derives actual Procedure identity from accepted R/Continuation.procedure_id (direct start derives the exact Procedure from its admitted transition request), never ambient/caller-selected combat state. Union equality across Host/independent validator/membership includes full input+turn+cost+declared source members, invalidates on relevant movement/control/turn, preserves accepted fixed choice/RNG at safe recompute. No source fallback when selected LIVE missing.
+- [ ] Run S4 and strict Actor/Procedure/compiler/membership modules; regenerate/check projections with exact commands below. Accept only source/read bridge proof. No production receipt/actual start/gate atomicity claim.
+
+Concrete framing algorithm and injectivity/Unicode regression basis:
+
+```python
+def frame_turn(parts: tuple[str, ...]) -> str:
+    frame = bytearray(b'HDM-TURN-OCCURRENCE:1:')
+    for part in parts:
+        raw = part.encode('utf-8')
+        frame.extend(str(len(raw)).encode('ascii'))
+        frame.extend(b':')
+        frame.extend(raw)
+    return 'turn.' + frame.hex()
+
+# Validate nonempty native strings, admitted owner kind, sequence int>=1 (not bool),
+# and local_boundary_key=='turn_start' before calling this encoding helper.
+left = ('campaign-1', 'procedure-1', 'runtime.command', 'cmd:a', '1', 'turn_start')
+right = ('campaign-1', 'procedure-1', 'runtime.command', 'cmd', '11', 'turn_start')
+self.assertNotEqual(frame_turn(left), frame_turn(right))
+self.assertNotEqual(frame_turn(left), frame_turn(
+    ('campaign-1', 'procedure-2', 'runtime.command', 'cmd:a', '1', 'turn_start')))
+self.assertEqual(turn_occurrence_key(campaign_id=left[0], procedure_id=left[1],
+    execution_owner_kind=left[2], execution_owner_id=left[3], segment_sequence=1,
+    local_boundary_key=left[5]), frame_turn(left))
+```
+
+Also enumerate empty/colon/multibyte/non-ASCII/invalid-surrogate encodings, owner-kind/sequence/campaign/Procedure variation; the key is complete hex frame, not SHA or lexical ordering. For qualified Procedure state digest use `b'HDM_PROCEDURE_STATE/1\n' + canonical_json(complete_state3)`; assert changes in schema/basis/participant/budget affect digest and NaN/surrogate/bool invalid input rejects. No unqualified digest alias.
+
+#### Exact 19-wire synchronization map
+
+All W paths below are under `DEV/SCHEMAS/`. Every row gets positive valid-native and independent malformed/foreign/missing-field behavior coverage. Targets are initial/future contracts, not claims that they are installed now. “S” identifies the SP03 subunit; “J” identifies the SP04 join below; these are local prose labels, not runtime IDs.
+
+| Wire / physical schema | Source checkpoint and consumers | Version/negative disposition |
+|---|---|---|
+| W01 runtime-interaction-state.schema.json | S1/S3 -> J1/J2; roots/durability/recovery/collaboration/Host | initial1; own-I distinct M; exact intent/response/mixed phases/authority union |
+| W02 runtime-message-state.schema.json | S1/S3 -> J1/J2; information/emission/root protection | initial1; inbound no recipient/delivery; exact/compacted; extra unplanned text irreducible |
+| W03 runtime-intent-plan-state.schema.json | S1/S3 -> J1/J2; binder/recovery/collaboration | initial1; complete same-I nonempty units, one native materialization |
+| W04 intent-clause.schema.json | S1/S3 -> J2; binder/strict collaboration/current and historical use | initial1; response ref/noK/guard; canonical real extras, full previous fields retained |
+| W05 runtime-command-state.schema.json | S2 -> J1; acceptance/mechanics/durability/publication/recovery | 3->4, hash2->3; exact action/direct + protected intent/mixed origin; no response K |
+| W06 transition-request.schema.json | S2 -> J1/J3; exact admitted payload schema/binding | structural shape verify-only; payload whole in hash, generic object alone insufficient |
+| W07 runtime-resolution-state.schema.json | S2/S3 -> J2; actual root/children/embedded segments/recovery | initial1; response owner and real extra action R distinct, direct never fake R |
+| W08 runtime-continuation-state.schema.json | S3 -> J2; offer G/native single-consume/recovery | unchanged wire unless strict initial field qualification needed; offer not accepted marker |
+| W09 execution-segment.schema.json | S2/S3 -> J2/J3; native marker/hash/receipt/protection | initial1; optional exact accepted_resume_input only genuine solicited consume |
+| W10 resolution-receipt.schema.json | S2/S3 -> J1/J2/J3; joins/recovery/export/children | retain wire; owner K vs R exact; no response receipt implies extra-plan completion |
+| W11 choice-request.schema.json | S3 -> J2; native target/candidate/G | verify-only; no free-text/extra-as-option/decline invention |
+| W12 reaction-offer.schema.json | S3 -> J2; child remains under offered root | verify-only; no synthetic normal reaction command |
+| W13 operational-root-routing.schema.json | S1 -> J1/J2/J3; source-native routing/hydration | 1 unchanged/four kinds; phase-specific own-I/P closure |
+| W14 operational-root-handoff.schema.json | S1/S3 -> J1/J2; promise/source refs/protection | 2 unchanged; shape is routing, never accepting authority |
+| W15 recovery-result.schema.json | S1/S2/S3/S4 -> all joins; READY/RETRY/BLOCKED | 1 unchanged; lawful absent P vs missing required origin/content distinction |
+| W16 world-player-state.schema.json | S2/S3 -> J1/J2; full route/current and historical control | verify-only; history not lease; no creator Player projection |
+| W17 combat-minimal-procedure-state.schema.json | S4 -> J3; linked ordering/mechanics/root/recovery | concrete2->3; current basis iff active turn |
+| W18 runtime-procedure-state.schema.json | S4 -> J3; subtype dispatch/casting/progress | generic2 unchanged; no current_turn_basis, no kind/number substitution |
+| W19 procedure-state-changed-event.schema.json | S4 -> J3; DEV event, native final event/digest/recovery | initial outer1, payload state3/digest1; actual segment causal identity |
+
+**Additional exact schema surfaces:** Actor envelope2->3 simultaneously in `GAME/SCHEMA/actor.schema.yaml`, `world-record.schema.json` world.actor branch, strict `world-actor-state.schema.json`/`spell-native-profile-values.schema.json` companion and all envelope/source validators; do not create a global world-family revision. `combat-procedure-transition-request.schema.json` and result initial1 (including failure variant), `new_value` concrete3, event digest qualification and DEV producer/tests change together in S4. Structural schema conditions do not replace relational native checks (dynamic key equality, permutation, cause edge, controlled subjects, origin). Test strict installed `_wire_contract` projection against DEV owner bytes.
+
+#### Versions, exact identities and coherent checkpoint rules
+
+Read `DEV/RELEASE/VERSIONING.md` and `2026-09-05-hdm-versioning-namespace-compatibility-policy.md` at execution. Inspected current engine `1.0-alpha`, campaign_contract_generation2 in both DEV/GAME manifests, catalog2. Built-in package manifest schema2/revision1/compatibility generation1; inventory schema2; compiler projection schema1; profile contract generation1; ruleset-set/catalog-context/semantic-entry digest generations1. `GAME/SCHEMA/dnd_storage.schema.yaml` is schema4 and specifies portable storage generation3 (actual external storage marker is outside this checkout). Clean-slate pre-v1 replaces obsolete required shapes without compatibility shim/migration and cannot fabricate acceptance/lifetime causes. The family targets above are still explicit; campaign epoch is not mechanically bumped merely because this pre-release source realizes accepted targets. If implementation discovers released/adopted persisted semantics requiring coherent migration, stop for the owning System-Impact/migration ruling and synchronize campaign generation/manifests/projections atomically; do not silently retain2 or invent a migration. Storage layout/routes unchanged: no storage generation bump. Engine release identity unchanged by this plan.
+
+Current inspected material module headers (baseline, not permanent future targets): `runtime_execution 1.0.8`, `runtime_host 1.0.18`, `bootstrap 1.0.5`, `activity_contracts 1.0.12`, `activity_runtime 1.0.9`, `catalog_runtime 1.0.2`, `mechanical_context 1.0.6`, `mechanical_sources 1.0.2`, `spell_cast 1.0.3`, `mechanics 1.0.5`, `durability 1.0.4`, `publication 1.0.6`, `recovery 1.0.5`, `recovery_roots 1.0.15`, `collaboration 1.0.20`, `access_control 1.0.6`, `history 1.0.7`, `temporal 1.0.4`. Each actual coherent material edit increments that module's fresh revision exactly once, e.g. runtime_execution's first material slice8->9, later slice increments from actual then-current value. Unchanged conditional files get no speculative bump. `current_owner`, `native_storage`, `hot_store`, `actor_continuity`, `information`, `emission` have no `framework_module_version` header in the inspected source; do not invent one by analogy. New SP04 modules start1 under current engine1.0 as already planned.
+
+Initialize accepted-input basis/representation digest/resume marker/hash/execution projection/turn key/turn basis/common definition/profile/infrastructure generations at1 exactly as A/B specify. Command input2->3 is required because participating fields/variant/origin changed; no codec2 comparison or null action substitutions. Interpreter hash remains1. Native Continuation G, Actor state_revision and Procedure revision advance only at their real accepted edges, not schema cutover; they are not compatibility generations. Root1/handoff2/recovery-result1 remain because shape is unchanged but validators/predicates change. Common progress value shape unchanged; companion semantics require strict Actor3. No new Plan-digest namespace; native once-only materialization fence supplies identity.
+
+`DEV/TOOLS/validate_ruleset_package_closure.py` currently assembles five existing contract families via `ENGINE_CONTRACT_SOURCE_GROUPS`; schema_contract lists R/Continuation/profile/compiler schema but not the entire new input/turn closure. Add the exact participating W01–W07/W09/W17/W19/Actor and concrete request/result schema members there as needed for escaping admitted contract identity, in the existing family; add no sixth family/auth registry. Update its compiler-projection assembly and `DEV/TOOLS/build_activity_contract_shapes.py` ROOTS/reference closure to include actual required input/concrete/Actor validation. Immutable infrastructure/common definition descriptors belong in the existing cast/profile contract projection, never a gameplay selector or content fact. Review compiler cache identity when these exact contracts affect compiled interpretation: any changed participating-field/encoding rule must bump its owning digest/ABI generation, not merely leave a stale hash. Compatible additive inventory members keep inventory schema2, catalog2 and existing digest algorithm generation1 while exact hashes change; incompatible coordinated vocabulary/compiled ABI requires its actual owner-rule transition and all consumers, not an automatic catalog2 assumption.
+
+**Construction-level namespace classification:** carry immutable infrastructure/common-definition schema assertions as additional members of the existing schema_contract payload and existing compiler declaration/profile validation, not a new inventory family or new top-level compiler protocol. This keeps the enclosing inventory2/compiler-projection1 wire and digest1 algorithms; exact family/inventory/compiler bytes/hashes change and both DEV producer and `catalog_runtime` strict installed source loader must admit the same member set. Catalog2 stays because no coordinated catalog kind/member semantics are replaced by these infrastructure contracts; do not activate content/profile families to hide the change. Existing compiler_generation is supplied at actual admission/compile call sites (inspected fixtures use1), not an engine-global constant. The infrastructure-dependent compilation behavior changes here: move those production/conformance callers and emitted CompiledActivity/AdmittedActivityCatalog/cache metadata to compiler_generation2 in S4, reject stale generation1 compiled handles at this boundary and regenerate from admitted sources; preserve unrelated historical exact evidence. This is a compiler semantic-generation transition, not catalog-context/ruleset digest-generation arithmetic. If an actual output requires a different serialized top-level projection instead of these admitted existing member carriers, its ABI/schema bump and synchronized source loader are mandatory and must be included in the actual Version Impact review before checkpoint, not postponed behind passing tests.
+
+Regenerate `GAME/TOOLS/activity_contract_shapes.json` and `GAME/TOOLS/activity_compiler_contracts.json` through existing producers (`write_activity_compiler_contracts_projection` derives the latter; release builder validates it), update exact inventory/package/lock/attestation projections consumed by current fixtures/build, and reject stale mixed identities. Ruleset content/manifest revision/compatibility are changed only when actual package content/compatibility changes, never to turn missing evidence into support. Recompute affected source-derived identities from admitted bytes; R1/R2/R3 draft hashes were never installed compatibility identities. Every subunit records its actual namespace old->new table or owner-justified NONE. This plan-only change is **VERSION_IMPACT: NONE**: no active machine/runtime/schema/catalog identity or version namespace owner/projection changes.
+
+#### Item-complete 63-case implementation/proof mapping
+
+Each row binds the complete retained requirement, including its negative/qualifier, to a concrete subunit and final native/deployed channel. TC = trusted deterministic contract, NP = real native kernel/injection, DP = actual supported deployment. All outcomes below are **required future assertions**, not PASS. A DP column never becomes green from a fixture. J1/J2/J3 are detailed under SP04 immediately below.
+
+| Case | RED/GREEN assertion retained | Preparation / final proof |
+|---|---|---|
+| A01 | valid MP original origin + current exact route/control/source | S2 TC; J1 NP; DP unavailable |
+| A02 | foreign campaign rejected before RNG/cost | S2 TC; J1 NP |
+| A03 | foreign historical session substitution rejected; later executor session no blanket denial | S2 TC; J1 cold NP |
+| A04 | foreign M/reciprocal link/digest rejected; hash alone not auth | S1/S2 TC; J1 NP |
+| A05 | wrong invocation/replacement random retry key rejected | S2 TC; DP unavailable |
+| A06 | wrong P, zero/duplicate C, empty/wrong K separately reject; precommand held noK lawful | S1/S2 TC; J1 NP |
+| A07 | inactive Player denies new agency, preserves old result | S2 TC; J1 NP |
+| A08 | duplicate/rebound/stale Player/envelope mismatch or route omission denies | S2 TC; J1 NP |
+| A09 | removed/transferred PC denies old controller new work, keeps accepted cause | S2 TC; J1/J2 NP |
+| A10 | strings/DTO/verified flag/Actor/publisher/gameplay verdict insufficient | S2 TC; DP unavailable |
+| A11 | exact retry lookup before ambient rebind; same suspension, no RNG/cost | S2 TC; J1 NP; DP unavailable |
+| A12 | equal later prose is new I/M/current authority | S2 TC; DP unavailable |
+| A13 | edit/branch/regeneration no retcon/replay/host-cursor authority | S2 TC; J1 NP; DP unavailable |
+| A14 | choice/reaction exact candidate/G/current responder, root author may differ, no P/K | S3 TC; J2 NP; DP unavailable |
+| A15 | creator noPlayer; real history/login and own-I promise | S1/S2 TC; J1 NP; DP unavailable |
+| A16 | rename/unresolved creator login uncertain/read-only, no Admin/stable-ID shortcut | S2 TC; DP unavailable |
+| A17 | cold native origin/interpretation, fresh capability, no replay | S1/S2 TC; J1 NP; DP unavailable |
+| A18 | actual promised precommand/response/mixed root, irreducible meaning, no arrival SAVE | S1/S3 TC; J2 NP |
+| A19 | compaction only sufficient exact/semantic natural owner; hash no reconstruction | S1/S3 TC; J2 NP |
+| A20 | acceptance vs retire/compact race; protection before escape, negative proof retains | S3 TC; J2 NP injection |
+| A21 | distinct I/M MP and creator cold/handoff/root not stranded | S1 TC; J1/J2 NP |
+| A22 | waiting controller change lawful obsolete/successor, no fabricated consent | S2/S3 TC; J2 NP |
+| A23 | mandatory descendants native mapping/current required authority; publisher no new agency | S2 TC; J1/J2 NP; DP unavailable |
+| A24 | connected issuer evidence unavailable; no DTO/platform-impossibility substitution | S2 explicit capability gate; DP unavailable |
+| B01 | full ACTIVE concrete3/current cause+progress positive | S4 TC; J3 NP |
+| B02 | generic cannot substitute concrete or relocate gate | S4 TC |
+| B03 | malformed permutation/budget/index/phase/pending separately reject; no between/terminal turn | S4 TC; J3 NP |
+| B04 | wrong budget active participant denies; caster need not be active | S4 TC; J3 NP |
+| B05 | reaction on another creature actual turn with separate caster/control/budget | S4/S3 TC; J2/J3 NP |
+| B06 | second slot through another source denied by same definition | S4 TC; J3 NP race |
+| B07 | slotless needs no slot dependency/consume; other costs retained | S4 TC; J3 NP |
+| B08 | ritual no slot/ordinary slot import; actual time/component cost | S4 TC; J3 NP |
+| B09 | countered without slot retains actual cost, no consume/refund fiction | S4 TC; J3 NP |
+| B10 | long interrupted before slot no consume, prior accepted costs retained | S4 TC; J3 NP; SP07 final lifecycle |
+| B11 | long preparation/repeated action not slot; completion then-current turn | S4 TC; J3 NP; SP07 final lifecycle |
+| B12 | missing definition/progress/occurrence holds, not false | S4 TC |
+| B13 | forged producer/string/DEV receipt not start issue | S4 TC; J3 NP |
+| B14 | wrong subject/provider/execution/resource cause rejected | S4 TC; J3 NP |
+| B15 | start/reset/spend retry same key/once, no new unused value | S4 TC; J3 NP |
+| B16 | equal round/index different Procedure not time proof; genuine new start distinct | S4 TC; J3 NP |
+| B17 | first-use only protected creation; unknown/erased lifetime/re-enrollment held | S4 TC; J3 NP |
+| B18 | crash reset before none/after same coupled cause, no recovery reset | J3 NP injection |
+| B19 | crash slot spend all-none/no acknowledged half or reroll | J3 NP injection |
+| B20 | terminal/provider movement no free turn/reset; unproved continuity held | S4 TC; J3 NP |
+| B21 | compact cold cause sufficient/bounded, no hash/order-only summary | S4 TC; J3 NP |
+| B22 | LIVE/source split/compaction race; CAS then adoption, no distributed transaction | J3 NP injection |
+| B23 | split principal/body/source/payer exact mapping or hold; no second gate | S4 TC; J3 NP |
+| B24 | unrelated revisions/save/restart/absorption preserve actual turn/RNG/gate | S4 TC; J3 NP |
+| AR01 | direct original typed schema4/hash3 owns K segments/events/receipt, no fakeR | S2 TC; J1 NP; DP unavailable |
+| AR02 | direct payload/profile/schema/origin swaps fail; action fields forbidden | S2 TC; J1 NP |
+| AR03 | cold direct exact result/receipt; no-segment pending; missing true basis blocks | S2 TC; J1 NP |
+| AR04 | pure response no ordinary P/K; exact candidate/promise/hydration | S1/S3 TC; J2 NP; DP unavailable |
+| AR05 | old accepted response retry after G advances/Continuation retires no consume/RNG | S3 TC; J2 NP; DP unavailable |
+| AR06 | substituted I/M/account/selection conflicts; new I on consumed G stale | S3 TC; J2 NP |
+| AR07 | control before consume revalidates; accepted history survives with current disclosure | S2/S3 TC; J2 NP |
+| AR08 | marker/I locator/consume/result/child/protection complete before/after crash/LIVE | J2 NP injection, mixed phase included |
+| BR01 | concrete3/generic2 exact kind/schema dispatch, concrete2/unknown/schema-swap fail | S4 TC; J3 NP |
+| BR02 | linked exact ACTIVE offer concrete3/generic2 valid; bad link/lifecycle deny | S4 TC; J2/J3 NP |
+| BR03 | combat alone no ordering/controller; stale ref no independent downgrade | S4 TC |
+| MR01 | same message choose A then move; response first, same I/M/P/extra K/origin/ref | S3 TC; J2 NP; DP unavailable |
+| MR02 | response+nonexec real extra class/reference-only use no fakeK/response consent | S3 TC; J2 NP |
+| MR03 | promised consumed-before-P cold ready exact M/root; no hash/transcript guess | S1/S3 TC; J2 NP injection |
+| MR04 | retry materialized same P/K/use; fixed response hash; swapped links/kind fail | S2/S3 TC; J2 NP; DP unavailable |
+
+**Self-review closure required before plan GO:** exact set A01–A24/B01–B24/AR01–AR08/BR01–BR03/MR01–MR04 =63, each mapped above; exact W01–W19 =19, each producer/parser/consumer/projection disposition above. AT6-01 direct variant/codec/owner maps S2/J1; AT6-02 pure response/native survivor maps S1/S3/J2; AT6-03 concrete3/generic2 linked ordering maps S4/J3; AT6-04 same-I mixed phases/meaning/protection maps S1/S3/J2 with codec consumer S2. These bindings follow the actual retained resolution-review rows, not inferred labels. No case is discharged by the presence of its name. Reconcile actual future test methods/results against each row and preserve NP/DP qualifier. A mechanically missing consumer inside this envelope is repaired; new authority/unspecified compatibility or native atomic domain requires System-Impact review.
+
+#### Exact future verification commands and checkpoint receipt
+
+Commands run from the actual isolated implementation checkout; use its declared environment (prepare through `DEV/TOOLS/run_maintenance_audit.py` if absent). All below are future acceptance commands with **no result asserted**. New tests use unittest.TestCase and stdlib table/subTest loops so canonical unittest and pytest both execute them; no pytest-only function tests hidden from unittest. S1–S4 are classes in the two new modules: `InputRootClosureTests`, `AuthenticatedCommandCodecTests`, `ResponseMixedClosureTests`, `CommonTurnGateTests`.
+
+```sh
+# S1 / root-first, no DAG input
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_sp03_authenticated_input.InputRootClosureTests -v
+# S2
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_sp03_authenticated_input.AuthenticatedCommandCodecTests -v
+# S3
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_sp03_authenticated_input.ResponseMixedClosureTests -v
+# S4
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_sp03_common_turn_gate.CommonTurnGateTests -v
+# Each affected module in full after focused RED/GREEN; then cross-owner integration
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_sp03_authenticated_input.py DEV/TESTS/test_sp03_common_turn_gate.py DEV/TESTS/test_rd05_operational_roots.py DEV/TESTS/test_rd05_runtime_execution.py DEV/TESTS/test_rd06_durability_publication.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd12_collaboration.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_local_spell_context_cast.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_runtime_procedure_class_contract.py DEV/TESTS/test_s6d_09_domain_rules_coverage_contract.py DEV/TESTS/test_rd03_actor_asset_effect_continuity.py DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_rd10_role_emission.py DEV/TESTS/test_rd14_bootstrap.py DEV/TESTS/test_rd15_catalog_runtime.py DEV/TESTS/test_local_spell_closed_contracts.py DEV/TESTS/test_local_spell_catalog.py DEV/TESTS/test_versioning_namespace_policy.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_s6d_04_mechanical_context_contract.py DEV/TESTS/test_s6d_05_portable_value_contract.py DEV/TESTS/test_s6d_06_activity_primitive_contract.py DEV/TESTS/test_s6d_11_ruleset_package_closure.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_rd02_information_native_contracts.py
+# Regenerate assertion projection, then verify exact owner agreement
+.hdm-devtools/venv/bin/python DEV/TOOLS/build_activity_contract_shapes.py
+.hdm-devtools/venv/bin/python DEV/TOOLS/build_activity_contract_shapes.py --check
+# Regenerate the compiler projection from the current single package's exact lock/owners
+.hdm-devtools/venv/bin/python -c 'from pathlib import Path; import yaml; from GAME.TOOLS.ruleset_package import build_resolved_lock; from DEV.TOOLS.validate_ruleset_package_closure import write_activity_compiler_contracts_projection; r=Path.cwd(); v=yaml.safe_load((r/"GAME/ENGINE_VERSION.yaml").read_text())["engine_version"]; p="hdm.rules.dnd2024-srd52-core"; lock,_=build_resolved_lock([r/"GAME/RULES/packages"/p],root_package_ids=[p],engine_version=v,catalog_generation=2); write_activity_compiler_contracts_projection(r,engine_version=v,ruleset_set_sha256=lock["ruleset_set_sha256"])'
+# Every coherent publication boundary / final coherent candidate
+DEV/TOOLS/run_maintenance_audit.py
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest discover -s DEV/TESTS -v
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest DEV/TESTS -n auto
+DEV/TOOLS/run_release_build.py --output /tmp/hdm-dev/spell-recovery/auth-turn-native-build-20261014
+git diff --check
+```
+
+Verify compiler/package identity against owner derivation, not hand-edited hashes. Regenerate before the coherent candidate's focused/module/final checks, then run `build_activity_contract_shapes.py --check`; stale output never becomes a verification exception. Use task-owned external output with parent/location verified; no generated build carriers in scanned checkout. Broad parallel failure is reproduced sequentially in affected module before product classification. Add SP04's exact native command below only after its new module exists. Hosted CI result is recorded only if actually inspected for the published candidate, never inferred from local passes.
+
+At each later checkpoint: record expected RED/actual failure, GREEN/module/integration command exits, exact candidate byte identity, spec/code review and resolved findings, actual Impact Envelope delta, version transitions/projection equality, source/currentness evidence, capability holds and produced scope. Coordinator alone owns shared-file integration/index/cursor/publication. Finish with independent qualified Senior plan review now; implementation after GO ends with separate Senior final integration audit, not author self-approval.
+
 ## W05.SP04 — Native segment/RNG kernel and connected durability publication repair
 
 **HARD_PRECEDES:** `W05_SPELL_CONTEXT_CAST_CONSUMERS_READY`, accepted execution/durability/publication/recovery and P0 checkpoints. **Output:** `W05_SPELL_NATIVE_SEGMENT_KERNEL_READY`: native atomic machinery, fixed RNG and connected PT-D1/PT-D2 proven with real source-admitted common conformance consumers. It is not health/lifecycle/all339 support. **SHARED_FILE_CHECKPOINT:** serialize hot_store/current_owner/runtime_host/recovery edits against P2/P3 and later integrator. No semantic dependency on P1A/P1B. **JOIN_BEFORE_INTEGRATION:** this kernel + SP08-SP15 preparations + actual recipe consumers -> one final dispatcher/host checkpoint.
 
-**Files/actions:** `NEW_CREATE` `GAME/TOOLS/native_execution.py`, `segment_rng.py`, `DEV/TESTS/spell_native_test_support.py`, `DEV/TESTS/test_local_spell_native_segment.py`, SP04 private fixtures. `EXISTING_MODIFY` `GAME/TOOLS/hot_store.py`, `current_owner.py`, `mechanics.py`, `durability.py`, `runtime_host.py`, `recovery.py`; `live_state.py`/`publication.py` only for exact missing adapter validation required by the accepted section 6/section 9 contract. Modify `runtime_execution.py` only for strict execution evidence validation/real nested carrier retention; command settlement belongs SP06. `INSPECT_ONLY` native_storage, allocator, operational roots, exact LIVE close/absorb, current package and ActionRequest/Resolution/Continuation/receipt schemas. runtime_host's only SP04 gameplay API change is typed join forwarding; `ExecutionService` is final-integrator-owned.
+**Files/actions:** `NEW_CREATE` `GAME/TOOLS/native_execution.py`, `segment_rng.py`, `DEV/TESTS/spell_native_test_support.py`, `DEV/TESTS/test_local_spell_native_segment.py`, SP04 private fixtures. `EXISTING_MODIFY` `GAME/TOOLS/hot_store.py`, `current_owner.py`, `mechanics.py`, `durability.py`, `runtime_host.py`, `recovery.py`; `live_state.py`/`publication.py` for exact adapter validation and the named auth/turn joins below. `runtime_execution.py` supplies strict execution evidence/real nested carrier retention and the accepted input/response/turn validation joins; general command settlement belongs SP06. Native_storage, allocator, operational roots, exact LIVE close/absorb, current package and ActionRequest/Resolution/Continuation/receipt schemas remain inspect-only except the exact accepted input/response/turn establishment/root/protection deltas admitted below. RuntimeHost adds typed join forwarding plus those fixed bound input/response native joins; `ExecutionService` remains final-integrator-owned.
 
 **Interfaces:** the shared builder API above; `SegmentRngProvider.draw(request: Mapping[str,object]) -> Mapping[str,object]`, `before_frontier: str`, `proposed_frontier() -> str`. The native adapter implements the existing RngProvider contract, stages the accepted frontier locally, reuses prior fixed request/generation results and accepts its next frontier only with the coupled segment. Add an internal HOT native-mechanical establishment capability accepting only a final `NativeSegmentPlan`, exact observation and host token, atomically consuming/establishing all declared native/runtime/event/RNG/allocator/mandatory-work/idempotency/generation/dirty facts. No raw staging row becomes admitted. LIVE CAS is establishment for LIVE-owned changes; confirmed acceptance is required before HOT adoption.
 
 PT-D1: retain the complete actual `BoundCatalogContext.to_dict()` and validate `catalog_context.basis.catalog_generation`, exact lock/inventory and typed context/set/fingerprint/candidate/execution identity. Reject flattened/mixed aliases; remove the unsupported hardcoded cast-generation reinterpretation. Existing `join_execution_durability` signature stays. PT-D2: add `execution_durability_join: ExecutionDurabilityJoin | None = None` to `CampaignPublicationService.publish_owner_delta`, forward unchanged to the existing freeze owner and bind same campaign/route/command/input/Resolution/segment/event/native generations/full write/companion closure before transport dispatch. Non-command publication still needs no join.
+
+### SP04 named auth/turn writer joins — same kernel task, no reverse prerequisite
+
+These three joins consume the four SP03 preparation subunits and existing SP04 native kernel/PT-D1/PT-D2 construction. They extend the SP04 Impact Envelope with the exact SP03 envelope/wire/version table above; the old “inspect-only schemas/roots” allocation is superseded only for the named accepted-input/response/turn establishment and protection joins. Production authorizes through independent plan GO plus the task's actual inputs. No new output/task ID is introduced. SP04 kernel machinery can be constructed before its own joined producer proof; do not require its output as its own input or require SP03 to consume it.
+
+**Shared writer files:** `native_execution.py`, `segment_rng.py`, `activity_contracts.py`, `runtime_execution.py`, `runtime_host.py`, `hot_store.py`, `current_owner.py` only existing source fencing, `live_state.py`, `durability.py`, `publication.py`, `recovery.py`, `recovery_roots.py`, `collaboration.py`, strict source/schema/projection members already allocated above. Minimum per-join producer/consumer deltas are integrated once by this writer; SP03 must not stage a competing physical copy. Preserve later SP06 command/mandatory-child settlement, SP07 full long/ritual lifecycle, SP28 dispatcher and P2/P3 ownership. Tests in the existing planned `DEV/TESTS/test_local_spell_native_segment.py` and sole `spell_native_test_support.py`; no second harness/native executor. Production primitives stay with their existing owners.
+
+**Native API qualification:** use shared `begin_segment_plan`/`merge`/`seal`/`establish_segment`. Admit the direct branch with compiled/resolution absent; actual inventory profile controls finite request schema/normalization/read/control/cost/semantics. General plan builder knows command-versus-resolution execution owner, exact segment sequence/local boundary coordinate, immutable command codec3/input observation and native closure. For input-only acceptance/Plan materialization, add fixed internal owner-native functions in `native_execution.py`, invoked only by the bound Host input path:
+
+```text
+accept_external_input(host: RuntimeHost, *, accepted_exchange: object) -> Mapping[str, object]
+materialize_mixed_plan(host: RuntimeHost, *, interaction_id: str,
+    interpreted_plan: Mapping[str, object]) -> Mapping[str, object]
+```
+
+`accepted_exchange` means the actual installed adapter's trusted contract result or TC conformance equivalent, not an invented platform DTO. Source/runtime cannot provide it to a public gameplay API. Unknown/unissued/foreign/moved exchange fails before this edge. The input function performs adapter lookup, native identity/content validation and authority closure, derives/allocates I/M under existing native allocation, then co-establishes complete input/root/protection state. It is not a general after-image writer or universal evidence issuer. `interpreted_plan` is a complete typed proposal from the existing interpretation phase over retained text/native response; native validation/fence issues one P, never trusts an LLM acceptance flag. Result mappings return only existing accepted native identity/phase/outcome refs; no new persisted status/receipt/queue. Explicit capability absence is a hold; no dummy successful implementation of either entry point.
+
+#### SP04 join 1 — authentic native input/command and action/direct durability closure
+
+**Files:** native_execution/hot_store/runtime_host/runtime_execution/segment_rng plus mechanics/durability/publication/recovery/root consumers and J1 tests; schemas/projections from S1/S2 only if real native realization changes exact admitted participating contract. No new auth persistence.
+
+- [ ] RED trusted fixture exchange -> native I/M issuance -> ordinary interpretation P/C -> real action K/R OR direct K -> segment -> actual owner read -> durability join -> publication -> cold recovery. Run both MP and creator with I≠M. Missing issuer/current authority denies before any command, cost, RNG or admitted row. Source helpers alone do not count as this witness.
+- [ ] GREEN lookup exact prior exchange mapping before ambient rebind; validate native I/M/origin/result under present read eligibility. New input binds actual principal/text/invocation and rejects reused key with changed basis. Allocation/protected input meaning co-establish before protected command/cost/RNG. At command acceptance atomically join C.command_id=K with K/I/P/C reciprocity and actual action R when applicable, root/dirty/protection and stable ID allocation. Held nonexecutable clause has no K. Retry returns exact stored K/result without new allocation/roll/spend.
+- [ ] GREEN kernel dispatches action R versus direct K segments/receipt/events and carries projection1 through unchanged join call signature. Direct accepted no-segment remains pending; after segment requires exact increasing K:segment:N IDs and real result/mandatory closure before settled. Eventless lawful native edge exports empty event_ids and no dummy event. Action result carries real R; direct forbids resolution_id. Complete nested catalog and actual policy variant forward to freeze; joined owner generations/write/helper closure must equal actual native result before transport dispatch. PT-D2 forwarding stays owner-issued.
+- [ ] RED/GREEN injection before I/M establishment, command/C allocation, every native row/allocator/RNG/root/dirty stage, after established edge before acknowledgement/publication, and cold retry. Before commit none; after commit recover exact IDs/cost/RNG/receipt/remaining closure. Cross-source/LIVE coupling either has one lawful exact-source domain or prerequisite close/freeze/forward closure before edge; otherwise hold. Do not network-wait inside SQLite or roll back an accepted edge after adoption/publication loss.
+- [ ] Review and run J1/full RD05/06/07/09/Host; Version Impact actual transitions, full boundary commands and remote read-back under the coordinator. Deployed adapter remains DP unavailable until real profile evidence separately obtained; TCB native mechanics proof may pass without advertising deployed authentication.
+
+#### SP04 join 2 — native response consume, same-I extra Plan and content/protection fences
+
+**Files:** native_execution/runtime_execution/runtime_host/hot_store/live_state/recovery_roots/durability/recovery/collaboration plus strict S3 projections and J2 tests. Original root mandatory reaction children remain owned by their native execution/closure owners, not extra commands.
+
+- [ ] RED pure response exact current Choice/Reaction candidate under another lawful responder than root author; awaiting mixed chooses A then extra move/nonexec coordination; native response consume cannot create normal P/K or change immutable I.kind. Unsupported free-text/decline mapping holds/clarifies under actual offer, never fabricates an option.
+- [ ] GREEN one native accepting edge validates current root/R/Continuation/G/offer/responder/control/source, establishes consume+real segment/accepted_resume_input+I.accepted_resume_ref+result/children/next Continuation/fixed RNG/idempotency/consequences/protection/root closure. Mixed additionally advances awaiting_response->ready_to_plan in that same edge, retaining exact unplanned M. LIVE acceptance precedes HOT adoption; unavailable common atomic domain or lawful source freeze holds before consume.
+- [ ] GREEN after native response unit/mandatory barrier permits planning, materialize one complete typed P with response clause/native ref and ≥1 real extra intent unit, I.P and ready->materialized in one native fence/allocation/dirty/root/protection edge. New K or no-K collaboration use remains later current agency. Concurrent planner observes same P or conflicts; never a second P/reinterpretation. Response failure cannot be leapfrogged. Response accepted history survives extra-work denial/revocation; old author rights cannot be extended in immutable basis.
+- [ ] RED/GREEN inject consume-before-P crash with actual promised SAVE/handoff: cold root discovers I/M/marker/result with no P, resumes planning once without consume/roll/cost; materialized retry returns same P/K/use. Existing I root is kept until complete bounded P/native-use handoff. Exact response retry survives old Continuation retirement through I->R->same segment/survivor. Different I/same offer is stale, not winner's retry. Return old result only with present read/disclosure eligibility.
+- [ ] RED/GREEN race compaction/retirement with response acceptance, Plan materialization and collaboration association; verify exact/native sufficient survivor and existing typed protection before dependence escapes. Remove required unplanned text/origin/marker/result and get BLOCKED, not transcript/hash reconstruction. Unknown needed refs remain; release may lag. Crash/LIVE movement cannot expose half consume/I/phase or acknowledged pending meaning only in RAM. No global protection registry/all-LIVE scan.
+- [ ] Run J2 and full root/RD06/RD07/RD10/RD12 suites, reviewed namespace/projection checkpoint and boundary commands. Later SP06 closure consumers use this actual accepted response/children, not a fixture copied marker.
+
+#### SP04 join 3 — genuine combat start/creation admission/lazy common slot edge
+
+**Files:** native_execution/runtime_execution/segment_rng/hot_store/runtime_host/live_state, actor_continuity strict validation only, S4 source/read/cause validators, durability/recovery/protection consumers, J3 tests. Procedure-owned source/cost mutation joins its exact native owner; no separate universal turn service or ActorGate store.
+
+- [ ] RED real direct command-driven Procedure initialize/start using bound original input/current authority and exact native execution coordinate. Initialize round1/index0 yields no turn/Actor reset; actual accepted start issues one complete basis and budget reset. Spend action/movement preserves basis; end removes; advance_round between-turn pending issues none; terminate removes active basis but preserves necessary history. No DEV synthetic Resolution/event or advance_combat_turn shortcut.
+- [ ] GREEN native creation admits exact common Actor definition before any slot consumer can spend, stores lifetime admission even outside combat; old unproved Actor cannot be enrolled as if newly created. For SP04 conformance, create one minimal ordinary native Actor through the actual owner-valid creation+allocator+admission kernel edge before exercising slots; a source fixture already carrying admission is not producer proof. This is the kernel's minimum owner join, not SP10 forms/construction or P1A production materialization; those later writers consume it and are not prerequisites of SP04. Immutable definition is common to every admitted slot-to-cast source. Native start uses actual K/R owner and segment/local turn_start once, co-establishes phase/budgets/basis/event/receipt/RNG/idempotency/dirty/roots. Current Procedure read and protected compact Actor cause remain separate.
+- [ ] GREEN builder dispatches exact `progress.spell_slot.admit/initialize/reset/consume` contract1 from admitted graph. Missing progress+protected creation INITIALIZE; coherent older genuine occurrence RESET with exact predecessor/sufficient old-cause survivor; actual current false CONSUME with real CostSpec slot expenditure. Capability removal/re-enrollment preserves state. Same occurrence true denies a second source; unrelated revision/saving/absorption not a new turn. No numeric/lexical greater-than rule or unproved different-provider reset.
+- [ ] GREEN combine normalize+consume in one segment/Actor revision and retain both causes with actual pre-edge predecessor (or absent for INITIALIZE), not fictitious intermediate revision. Slot resource Actor/Asset remaining subtraction or Procedure spent addition and exact before/after resource revision, compiled consumer/cast edge/common subject all agree. Validate actual then-current turn including reaction on another creature's turn; subject/payer/budget remain separate. Unproved split mapping holds.
+- [ ] RED/GREEN no-slot/ritual/countered-without-slot/long-before-slot branches do not consume or add missing gate dependence, but retain actual action/component/time/concentration consequences. Temporary real-source common consumers exercise actual branch/cost machinery at SP04; they are not full recipe/long-cast lifecycle acceptance (SP07/SP28 later). Actual long completion selects its then-current slot branch/turn. Secret-invalid target retains source-defined spend/no-effect, never a free probe/refund.
+- [ ] RED/GREEN two concurrent slot sources on the same Actor/turn: one accepted native spend, one stale/conflict/revalidation; exact retry of winner same result. Inject before/after normalize/resource/execution/RNG/event/receipt/dirty/root/protection transaction stages; no gate-only/resource-only accepted state, reroll, duplicate consequence or recovery reset. Repeat across selected LIVE conflict/indeterminate/CAS acceptance then lost adoption, and terminal/provider movement/close/absorb. Split domains hold unless lawful prerequisite freeze/exact forward closure exists.
+- [ ] GREEN cold recovery after detailed start/cast compaction uses validated bounded admission/establishment/consumption cause + required current source/contract/result refs; missing sufficient survivor blocks. No recursive receipt-history walk/hash/order-only survivor. Independently-due health/Effect/turn-start temporal enrollment remains mandatory; lazy common gate has no separate scheduled reset. Current reader remains pure throughout.
+- [ ] Run J3/full S4/Procedure/Actor/RD04/05/06/07/09 suites, per-checkpoint Version Impact and exact boundary commands; independent task review plus final Senior integration audit. Only this actual evidence can change NOT_ESTABLISHED for these native producers; no full spell package/connected deployment claim follows.
+
+**Native test classes/commands:** create `AuthenticatedNativeEdgeTests`, `ResponseMixedNativeEdgeTests`, `ActualTurnSlotNativeEdgeTests` in the sole native test module. Use class-focused unittest in RED/GREEN then the full existing SP04 command; no future nonexistent test is published as RED debt:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_local_spell_native_segment.AuthenticatedNativeEdgeTests -v
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_local_spell_native_segment.ResponseMixedNativeEdgeTests -v
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m unittest DEV.TESTS.test_local_spell_native_segment.ActualTurnSlotNativeEdgeTests -v
+PYTHONDONTWRITEBYTECODE=1 .hdm-devtools/venv/bin/python -m pytest -q DEV/TESTS/test_local_spell_native_segment.py DEV/TESTS/test_sp03_authenticated_input.py DEV/TESTS/test_sp03_common_turn_gate.py DEV/TESTS/test_rd04_native_routing_index_hot.py DEV/TESTS/test_rd05_runtime_execution.py DEV/TESTS/test_rd06_durability_publication.py DEV/TESTS/test_rd07_recovery.py DEV/TESTS/test_rd09_access_live.py DEV/TESTS/test_rd12_collaboration.py DEV/TESTS/test_runtime_host_composition.py DEV/TESTS/test_rd15_catalog_runtime.py
+```
+
+**Required native property construction:** the existing harness must create actual source-admitted common consumers, accepted command or response, P0 session and real SQLite/LIVE establishment. For failure injection, capture all coupled native owners/allocator/root/RNG/dirty evidence before dispatch, inject once at each real establishment stage using test-owned infrastructure instrumentation, reopen via `harness.recover()`, then compare either the exact predecessor or exact accepted coherent successor. Retry the same exchange/command and assert unchanged IDs/fingerprint/occurrence/receipt/fixed rolls/resource amount; submit a distinct command/source at the same turn and assert no second accepted slot. Never implement the assertion by assigning desired balances to NativeHotStore, forging _issue_seal, monkeypatching semantic validation, setting consumed=True in a fixture as proof, using FixedRng as accepted roll authority or emitting a synthetic event as establishment. Fixture source envelopes exercise parsers; only traversing actual producer/fence closes NP.
+
+**SP04 completion remains:** its existing kernel checkpoint, not a new auth/turn readiness ID. Record TC/NP case-level actual results and separate DP capability evidence. Deployed issuer proof demands real account bound to exact accepted text/invocation/key, exact retry versus later-identical/edit/branch, cold mapping and no gameplay override on the supported connected profile; this task has no such observed evidence and must retain UNAVAILABLE until obtained. Unsupported capability follows accepted restrict/refine/reopen law, not weakened auth. Original SP06/SP07/SP28/W06 joins retain their own actual input/proof gates.
 
 **Minimum Impact Envelope:**
 
@@ -1866,8 +2403,8 @@ New profile contract generations are integer1; do not reset existing family/modu
 SP04 exact `GAME/TOOLS/native_execution.py` API:
 
 ```python
-begin_segment_plan(catalog: AdmittedActivityCatalog, compiled: CompiledActivity,
-    accepted_command: Mapping[str, object], resolution: Mapping[str, object], *,
+begin_segment_plan(catalog: AdmittedActivityCatalog, compiled: CompiledActivity | None,
+    accepted_command: Mapping[str, object], resolution: Mapping[str, object] | None, *,
     owner_session: CurrentOwnerReadSession, rng: SegmentRngProvider,
     procedure_state: Mapping[str, object] | None = None,
     continuation_state: Mapping[str, object] | None = None) -> NativePlanBuilder
@@ -1884,11 +2421,11 @@ Preparation functions below return success-only PreparedNativeFragment. NativePr
 SP04 is sole writer of `DEV/TESTS/spell_native_test_support.py`:
 
 ```python
-NativeSpellHarness.open(*, source_fixture: Path, activity_id: str,
-    mode_policy_profile_id: str, native_sources: Mapping[str, object],
+NativeSpellHarness.open(*, source_fixture: Path, activity_id: str | None,
+    mode_policy_profile_id: str | None, native_sources: Mapping[str, object],
     entropy: tuple[int, ...], selected_live_fixture: Path | None = None
 ) -> NativeSpellHarness
-h.begin(*, accepted_command: Mapping, resolution: Mapping,
+h.begin(*, accepted_command: Mapping, resolution: Mapping | None,
     procedure_state: Mapping | None = None,
     continuation_state: Mapping | None = None) -> NativePlanBuilder
 h.establish(plan: NativeSegmentPlan) -> NativeSegmentEstablishment
@@ -2179,7 +2716,7 @@ required contracts == exact available compatible contracts;
 required scoped proof keys == fresh actual proof keys.
 These are explicit typed mappings, not string equality between source names and Activity IDs. Extras are a separately named disjoint set. Preserve exceptions, applicability/non-goals, confidence, negative evidence and revisit triggers in source/requirement rows. The 13 research families are review facets, never 13 services/executors. Finite parameter domains are source legal domains; chunk size cannot truncate them.
 
-The sole SP04 `DEV/TESTS/spell_native_test_support.py` API is `NativeSpellHarness.open(*, source_fixture: Path, activity_id: str, mode_policy_profile_id: str, native_sources: Mapping[str,object], entropy: tuple[int,...], selected_live_fixture: Path | None = None) -> NativeSpellHarness`; `begin(*, accepted_command: Mapping[str,object], resolution: Mapping[str,object], procedure_state: Mapping[str,object] | None = None, continuation_state: Mapping[str,object] | None = None) -> NativePlanBuilder`; `establish(plan: NativeSegmentPlan) -> NativeSegmentEstablishment`; `read(owner_ref: NativeOwnerRef) -> CurrentOwnerRead`; `recover() -> NativeSpellHarness`. Entropy is trusted test-composition input, never a fixture flag/caller-accepted-roll authority. Harness construction traverses actual package/lock/binder/compiler/accepted-command/P0/native SQLite/RNG/recovery. After SP28, all-mode production proof also traverses its actual bound Host ExecutionService/durability/publication join; direct plan-builder unit proof cannot replace that composed path.
+The sole SP04 `DEV/TESTS/spell_native_test_support.py` API is `NativeSpellHarness.open(*, source_fixture: Path, activity_id: str | None, mode_policy_profile_id: str | None, native_sources: Mapping[str,object], entropy: tuple[int,...], selected_live_fixture: Path | None = None) -> NativeSpellHarness`; `begin(*, accepted_command: Mapping[str,object], resolution: Mapping[str,object] | None, procedure_state: Mapping[str,object] | None = None, continuation_state: Mapping[str,object] | None = None) -> NativePlanBuilder`; `establish(plan: NativeSegmentPlan) -> NativeSegmentEstablishment`; `read(owner_ref: NativeOwnerRef) -> CurrentOwnerRead`; `recover() -> NativeSpellHarness`. Action requires real Activity/mode/Resolution; direct uses absent Activity/mode/Resolution and its exact inventory binding as qualified in SP03/SP04. Entropy is trusted test-composition input, never a fixture flag/caller-accepted-roll authority. Harness construction traverses actual package/lock/binder/compiler/accepted-command/P0/native SQLite/RNG/recovery. After SP28, all-mode production proof also traverses its actual bound Host ExecutionService/durability/publication join; direct plan-builder unit proof cannot replace that composed path.
 
 Every native scenario starts from real accepted IntentPlan/Command/BoundCatalogContext carriers, traverses native owner validation, established HOT or accepted LIVE, RuntimeHost/durability/publication, and asserts exact eligible receipt/state/continuation outcomes. A content task owns golden/source/branch arithmetic plus native scenarios and retry/recovery negatives. Source expected outputs are independently authored; do not compute expected arithmetic with the implementation being tested.
 
