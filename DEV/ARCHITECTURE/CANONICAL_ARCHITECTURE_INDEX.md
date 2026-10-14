@@ -899,8 +899,8 @@ extensions route to `DEV/docs/superpowers/specs/2026-10-14-sp03-authenticated-in
 and `DEV/docs/superpowers/specs/2026-10-14-sp03-common-turn-gate-canonical-spec.md`.
 Their Step3–8 provenance,63 cases/19 wires and AT6-01..04 resolution are retained
 under `DEV/docs/superpowers/design/2026-10-14-sp03-auth-turn-history/README.md`.
-These are technically reviewed architecture contracts, not active schema or
-runtime producers. Independent Senior Stop2 and implementation-plan gates follow
-publication/read-back; actual deployed input issuer and native atomic producer
-proof remain separately gated. Current applicability is owned by the global and
-Wave05 cursors, not this index.
+These are accepted architecture contracts, not active schema or runtime
+producers. Auth/turn Senior Stop2 and the stable Wave05 amendment Senior plan GO
+are recorded in the execution cursor; actual deployed input issuer and native
+atomic producer proof remain separately gated. Current applicability is owned
+by the global and Wave05 cursors, not this index.
