@@ -1,6 +1,12 @@
 # SP00 deterministic source interpretations — Decision Brief
 
-Status: **NEEDS_PO FOR SIX NARROW OUTCOME POLICIES; NO POLICY SELECTED**
+Status: **HISTORICAL PRE-ACCEPTANCE BRIEF — SIX POLICIES ACCEPTED 2026-10-14**
+
+Current final law: [accepted A–F owner decision](../specs/2026-10-14-sp00-source-interpretation-owner-decision.md).
+The Product Owner accepted the entire proposed package, explicitly including
+Resistance chosen-type-only/no-spill. The proposals and review qualifications
+below remain history of the decision; pending-approval wording is no longer
+current scheduling or normative authority.
 
 Targeted re-review: `DEV/docs/superpowers/design/2026-10-14-sp00-source-interpretation-review.md` (2026-10-14). This revision separates source-grounded defaults from material interpretation choices. Independent dart draws and automatic Resistance occurrence are not equal alternatives requiring new optional mechanics; exact instance/allocation policies remain held.
 Source basis: `39ab1b4a1c7a844f4df2e7886c4b2ac17e401243`

@@ -1,6 +1,13 @@
 # SP00 source interpretation - independent targeted re-review
 
 Status: **REVIEW COMPLETE; SIX NARROW OUTCOME POLICIES REMAIN NEEDS_PO. Unsupported equal-alternative framing corrected; no gameplay policy selected.**
+
+Historical review disposition at the pinned source below. The subsequent
+Product Owner accepts the complete proposed package, expressly Resistance
+chosen-type-only/no-spill; current final authority is
+[the accepted A–F owner decision](../specs/2026-10-14-sp00-source-interpretation-owner-decision.md).
+This review's source/inference findings remain evidence; its pending-owner
+decision state is superseded, not a current gate.
 Date: 2026-10-14.
 Pinned source HEAD: fc3ffd5cb92c71676e92447df71f4d36942730c8.
 Role: HDM Architect / targeted Senior source-and-owner reviewer. Two disjoint independent reviewers checked A/D/F and B/C/E against the same source; neither authored a gameplay choice or changed code.

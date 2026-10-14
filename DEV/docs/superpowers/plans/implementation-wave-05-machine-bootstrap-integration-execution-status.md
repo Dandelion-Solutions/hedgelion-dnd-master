@@ -3761,3 +3761,33 @@ code or hidden accepted bridge design. No further human checkpoint GO is require
 
 REPORT: `DEV/docs/superpowers/design/2026-10-14-sp00-source-interpretation-review.md`.
 DISPOSITION: six narrowed material outcome profiles remain NEEDS_PO; all source HELD records/counts retained. Ordinary per-dart draws and prescribed automatic Resistance occurrence are source-grounded; pending Magic Missile instance/Concentration and Resistance mixed allocation remain distinct. Exact source-conformance lifecycle wording now says once per actual turn with a target-local actual-turn gate. Brief/control framing corrected; no gameplay policy selected, no full task completed or accepted output advanced. Existing independent source evidence/native/auth-turn continuation remains authorized. VERSION_IMPACT NONE; no production code.
+
+## 2026-10-14 explicit A–F Product Owner acceptance
+
+PO_ACCEPTANCE: entire proposed package accepted, with explicit Resistance
+chosen-type-only, zero floor/no spill into other types. NEEDS_PO: NONE for A–F.
+FINAL_OWNER: `DEV/docs/superpowers/specs/2026-10-14-sp00-source-interpretation-owner-decision.md`.
+Execution/lifecycle annexes route to this sole final owner; prior Decision Brief
+and targeted review are explicitly historical for pending-approval language.
+Accepted source choices do not register recipes or prove runtime realization.
+
+VERSION_IMPACT: NONE for DEV semantic decision/routing/control only; no active
+module/profile/schema/catalog/package/persistent/hash contract changed. Actual
+source evidence and materialization assess their affected namespace rules.
+SP00 existing machine counts remain77 reviewed/60 closed/17 held until coherent
+accepted-owner evidence integration; do not conflate PO closure and native proof.
+Independent candidate/self-review, publication/read-back and final Senior gate
+complete this canonicalization. Next exact task: accepted-owner source evidence
+integration plus remaining source/census work and independent auth/turn design.
+FullSP00/SP03/SP04/P2/native/corpus/performance readiness remains NOT_PRODUCED.
+
+CANONICALIZATION_CRITIC: independent `ses_ec4c23b17ffeguPvUedtqzevkv`
+candidate/spec PASS on the exact seven-path interpretation/routing delta;
+no BLOCKING/SIGNIFICANT finding. A–F individually checked against accepted
+package, health/lifecycle/execution and source owners; no additional policy
+chosen. Step7 propagation: SPI-01/02 source-grounded draws/automatic occurrence,
+SPI-03 actual-turn wording, SPI-04 taken-damage/proximate cause and SPI-05 Aid/
+Speed consequences are preserved in final owner; prior review/brief explicitly
+historical, annexes and current status route to one final owner. Step8 self-review
+confirms owner/terminology/examples/proof exclusions/version accounting. Final
+Senior review follows verified publication/read-back; its result is not yet PASS.

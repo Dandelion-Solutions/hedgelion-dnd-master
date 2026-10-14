@@ -160,6 +160,12 @@ The exact Planar Binding cross-effect profile may extend the originating spell's
 
 ## 7. Typed prospective interception — SP24/SP12
 
+Source-specific Aid current-bonus transitions, Magic Missile simultaneous
+per-dart instances, Resistance chosen-type-only interception, Warding Bond
+typed linked input, and the associated movement/selection interpretations are
+owned by the accepted [A–F decision](2026-10-14-sp00-source-interpretation-owner-decision.md).
+This adds no physical HP/progress owner and activates no native producer.
+
 `TypedHealthCause.kind` is `damage | healing | maximum_change | instant_death`. Required common fields are `cause_occurrence_id`, `principal_subject_id`, `physical_actor_id`, source/origin binding and exact bound health/LifeState policy. Damage additionally carries `damage_instance_id`, optional source-declared `simultaneous_group_id`, typed damage components/origins/bypass and accepted raw roll refs. Maximum change carries its exact native contribution/normalization cause. Instant death carries the exact admitted nondamage killing profile; zero HP arithmetic cannot masquerade as this kind.
 
 `TypedEffectEndCause.kind` is `expiry | dispel | dismissal | support_lost | rule_transition`, with occurrence, ending application, source and exact requested scope/reason. Interception handlers receive declared prospective inputs/readsets and return only closed typed results: `unchanged`, `replace_health_result`, `prevent_native_edge`, `terminate_application`, `resolve_declared_child`, or an exact admitted combination. They cannot execute external callbacks, patch arbitrary state or reinterpret an already accepted event. If multiple eligible handlers produce outcome-sensitive order, use existing Step3 rules/controller/order-adjudication semantics.
