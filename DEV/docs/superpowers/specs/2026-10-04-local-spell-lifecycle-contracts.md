@@ -184,6 +184,8 @@ Native zero-HP/LifeState/form/reversion, mirrored Steed healing, damage-source r
 
 Progress is native state, not Effect parameters, a Rule Element counter, timestamp or historical cast ledger. The exact owner (Actor/Effect/Asset/Location/process) is fixed by the immutable profile. Add optional `spell_progress` maps only to owners with proved consumers; keys resolve declared progress definitions, values must match one closed variant below. A profile cannot move a counter to another owner merely to simplify storage.
 
+The [SP03 common-turn owner](2026-10-14-sp03-common-turn-gate-canonical-spec.md) closes the common caster slot definition, Procedure-issued actual occurrence, unchanged Actor turn-gate value and compact Actor-native admission/establishment/consumption evidence with exact-subject lazy normalization. This narrowly adds that consumer's causal realization contract without relocating progress or equating principal/body/payer. Resistance/re-entry gates below remain separately keyed/owned; actual-turn interface alone proves no health/reset/spend. Native GAME producer proof remains NOT_ESTABLISHED and no profile/schema is activated by these reviewed architecture documents.
+
 | Profile | Exact mutable value; rule constants remain in definition |
 |---|---|
 | `lifecycle.progress.turn_gate` | `{turn_occurrence_key, consumed}`; one rule-defined subject gate, no wall time. Re-entry/Resistance gates are independently keyed by source/subject as required. |

@@ -251,6 +251,8 @@ If Resolution/Continuation carries `procedure_id`, exact current
 `runtime.procedure` is also loaded and must validate as schema version 2,
 `lifecycle=ACTIVE`, with consistent identity/linkage.
 
+The schema2 sentence records the original linked machine projection. The reviewed [SP03 common-turn owner§1.1](../specs/2026-10-14-sp03-common-turn-gate-canonical-spec.md#11-concrete3generic2-dispatch-and-narrow-ordering) narrowly supersedes that concrete-combat realization target with subtype-specific concrete3 validation; generic Procedure2 remains distinct. It preserves this generation1 pending-Resolution/Continuation/offer-only positive route: ACTIVE combat/current turn alone still proves no RULE_OWNED_ORDERED. This architectural qualification activates no current schema/producer and remains pending publication/independent bridge SeniorStop2.
+
 An ACTIVE Procedure by itself does **not** prove responder/order semantics.
 There is no generation-1 Procedure-only positive ordered route because the
 current Procedure schema contains no such ordering contract.

@@ -109,6 +109,8 @@ Message and execution evidence require the source-native epoch-qualified ID
 already required by the live/message owners; WP-16 realizes that identity policy
 without a campaign-allocator fallback.
 
+The [SP03 input owner](2026-10-14-sp03-authenticated-input-canonical-spec.md) preserves distinct `(runtime.interaction,I)` and `(runtime.message,M)` routes, including I≠M and same-I mixed response/Plan units. Its accepted resume stays an embedded Resolution segment; direct segments stay under K. [Common-turn evidence](2026-10-14-sp03-common-turn-gate-canonical-spec.md) stays embedded under existing Procedure/Actor owners, not a BoundaryOccurrence family. These reviewed contracts change no route encoding/family/index or active identifier policy here.
+
 ## Index rules
 
 1. A known-ID read calculates one route and never enumerates a directory or

@@ -317,6 +317,8 @@ A bare `message_id` cannot substitute for semantic content that would otherwise 
 
 This applies to knowledge/disclosure provenance, contracts, historical events, corrections and other retained consumers.
 
+For the accepted input graph, [SP03 input§§4–6](2026-10-14-sp03-authenticated-input-canonical-spec.md#4-current-authority-and-accepted-resume) makes both response retry and unplanned/planned extra units explicit protected consumers. A mixed response receipt alone cannot discharge its remaining Message meaning; compaction waits for sufficient typed material content/provenance and exact dependencies. [Common-turn cause§5](2026-10-14-sp03-common-turn-gate-canonical-spec.md#5-recovery-protection-failures-and-concrete-protocol) retains bounded native establishment/consumption survivors before detail loss. Neither requires a permanent transcript/new retention family or treats hashes as content.
+
 ---
 
 # 11. Natural-owner promotion

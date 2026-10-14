@@ -245,6 +245,8 @@ Existing Interaction/IntentPlan/message evidence owns sufficient accepted semant
 
 If exact wording is temporarily the only evidence preserving accepted meaning, that specific evidence is irreducible until sufficient typed semantic state is materialized; the complete transcript does not become universal authority.
 
+For pure/mixed response and original intent, [SP03 input§§4–6](2026-10-14-sp03-authenticated-input-canonical-spec.md#4-current-authority-and-accepted-resume) closes the phase-qualified native dependencies: promised mixed `ready_to_plan` retains own-I root and required exact Message meaning after native response consumption but before same-I P; response_message_id/old-root settlement does not discharge it. Direct K hydrates command-owned segments, not a fake rootR. [SP03 common turn](2026-10-14-sp03-common-turn-gate-canonical-spec.md) preserves active Procedure occurrence/Actor cause while lazy gate use does not waive independently-due enrollment. Root classes/lifecycle/promise law above are unchanged; machine hydration/producer proof is not implied.
+
 ---
 
 # 5. Current root classes and admission

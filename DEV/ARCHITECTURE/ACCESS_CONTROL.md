@@ -40,6 +40,8 @@ In singleplayer the creator check applies to every gameplay-state write. Other c
 
 In multiplayer normal gameplay authority requires explicit active player binding. Resolve authenticated GitHub stable user ID to exactly one active PLAYER record.
 
+[SP03 authenticated-input design](../docs/superpowers/specs/2026-10-14-sp03-authenticated-input-canonical-spec.md) owns historical origin attribution and its exact current-operation join. Original accepted input is not a current publisher/Player/control lease; pure/mixed responses retain their own native author/selection evidence. No-Player creator input remains the separate history/current-login branch, including rename read-only outcome. The new representation is reviewed architecture pending publication/independent Stop2; this does not weaken current principal/control/creator law or claim deployed issuer proof.
+
 The pre-binding/self-service exceptions remain narrow:
 - `open_contributors` permits a verified collaborator with sufficient access to create the minimal PLAYER binding/index for their own user ID;
 - a voluntarily self-deactivated player may reactivate the same binding for the same authenticated user.

@@ -223,6 +223,8 @@ If an Interaction has been accepted but complete material meaning is not yet rep
 
 A dangling message identifier whose content cannot be resolved after host destruction is not sufficient recovery evidence.
 
+[SP03 input§5](2026-10-14-sp03-authenticated-input-canonical-spec.md#5-same-invocation-mixed-response-and-extra-material) specifies this closure for same-message response+extra intent: after accepted response and before Plan, an actual promised handoff preserves I phase, exact required M, native response survivor/interpretation and root/protection. It does not replay response or manufacture a second Interaction/Plan from a digest. No new universal per-message handoff/save edge is introduced.
+
 ## LAW 5.4-14 — INTERPRETABILITY CLOSURE SURVIVES HANDOFF
 
 Open accepted execution is recovery-safe only when its compatible accepted runtime/catalog/rules interpretation context is recoverable as required by Step 5.2.

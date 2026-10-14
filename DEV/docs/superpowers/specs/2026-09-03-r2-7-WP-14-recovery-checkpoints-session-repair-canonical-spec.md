@@ -116,6 +116,8 @@ Still-significant accepted work must recover compatible accepted runtime/catalog
 
 Exact retained wording/evidence remains a recovery dependency only where its owning contract still makes it irreducible.
 
+The [SP03 input owner](2026-10-14-sp03-authenticated-input-canonical-spec.md) supplies exact origin/action-direct/resume/mixed-phase hydration and fingerprint joins. Lawful absent P before mixed materialization differs from a missing materialized Plan; accepted response survives Continuation advancement while promised remaining Message meaning/root survives independently. [SP03 common turn](2026-10-14-sp03-common-turn-gate-canonical-spec.md) supplies current Procedure/Actor causal hydration, never recovery-issued reset/new turn. Both preserve domain pins/current-operation auth, bounded dependencies and native READY/RETRY/BLOCKED; current action-only machine helpers are not these proofs.
+
 ## LAW WP14-11 — Ambient host context has no recovery authority
 
 Chat history, Project memory, model context and hidden reasoning cannot establish campaign canon/currentness, recover lost unpublished state, select sources or supply missing historical dependencies merely because material is physically present.

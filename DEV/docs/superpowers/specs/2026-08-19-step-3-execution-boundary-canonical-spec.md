@@ -88,6 +88,8 @@ It SHALL NOT own world mutation, Procedure ResourceState, RNG progression, or a 
 
 Same prose in a later intentional turn is a new Interaction. Transport retry of the same invocation reuses Interaction identity.
 
+The [SP03 authenticated-input owner](2026-10-14-sp03-authenticated-input-canonical-spec.md) closes the exact historical-origin/current-authorization join, independent Interaction/Message identities, creator no-Player variant and intent/response/mixed grammar. Pure solicited response needs no artificial IntentPlan; mixed input retains one I/M and materializes its real Plan only after response resolution. This is reviewed architecture pending publication/independent SeniorStop2, not active schema or deployed-issuer proof.
+
 ### 3.2 IntentPlan
 
 IntentPlan SHALL contain every material interpreted clause in finite order.
@@ -187,6 +189,8 @@ Optional/nonmechanical presentation work does not hold command closure open.
 - stable provenance class/reference where provenance changes mechanical identity/adjudication.
 
 Exclude narration/explanation text, wall-clock time, SQL/list order and presentation-only data.
+
+The exact action/direct generation3 codec and execution-owner discriminator are delegated to the [SP03 input owner§3.1](2026-10-14-sp03-authenticated-input-canonical-spec.md#31-closed-actiondirect-codec-and-execution-owner-identity). Direct transitions hash their admitted transition payload/origin and retain K-owned segments without a fake ActionRequest/root Resolution. These are realization targets; current generation2 machine evidence is not relabeled generation3.
 
 ### 5.2 Retry lookup order
 
@@ -495,6 +499,8 @@ A reaction Activity may create a child Resolution under the same root command an
 
 Unrelated extra intent in the same message may be planned only after the pending response is resolved; it SHALL NOT be silently folded into the reaction child.
 
+[SP03 input owner§§4–5](2026-10-14-sp03-authenticated-input-canonical-spec.md#4-current-authority-and-accepted-resume) owns the concrete accepted-resume marker/survivor and same-invocation response_and_intent phases. Pending_response is the offer, not accepted author/selection evidence. Response consumption and later same-I P/extra clauses/K or nonexecutable uses remain separate native edges; an actual intervening durability promise retains the pending material meaning/root without replaying the response.
+
 ### 13.2 Continuation payload
 
 Continuation is portable authority for one suspended Resolution generation and preserves fixed historical inputs/safe recompute boundary.
@@ -618,6 +624,8 @@ stable occurrence key
 ```
 
 Producer establishes occurrence; each state owner owns its response.
+
+For actual minimal-combat turn issuance, the [SP03 common-turn owner](2026-10-14-sp03-common-turn-gate-canonical-spec.md) closes stable Procedure-native start-turn cause, transient boundary reconstruction and Actor-native common slot gate/cause. Timing/cursor/revision/recovery never issues a replacement occurrence. Generic Procedure2 and concrete combat3 realization target remain separate; active combat alone creates no RULE_OWNED_ORDERED evidence or native-producer PASS.
 
 If committed boundary progress creates mandatory later work that cannot finish in the same segment, pending obligation identity is materialized atomically with the committed boundary progress.
 
