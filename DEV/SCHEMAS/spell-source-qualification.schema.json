@@ -45,6 +45,9 @@
     "source_ninth_review",
     "source_ninth_resolution_contract",
     "source_ninth_resolution_evidence",
+    "source_tenth_review",
+    "source_tenth_resolution_contract",
+    "source_tenth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -190,6 +193,16 @@
       "minItems": 1,
       "maxItems": 1,
       "items": {"$ref": "#/$defs/sourceNinthResolutionEvidence"}
+    },
+    "source_tenth_review": {"$ref": "#/$defs/sourceTenthReview"},
+    "source_tenth_resolution_contract": {
+      "$ref": "#/$defs/sourceTenthResolutionContract"
+    },
+    "source_tenth_resolution_evidence": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/sourceTenthResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -2585,6 +2598,135 @@
         "new_source_clause_count": {"const": 33},
         "parameterized_input_category_count": {"const": 5},
         "retained_source_residual": {"const": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; native consumer admission, action execution, full-339 source qualification and package readiness remain NOT_ESTABLISHED."},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
+      }
+    },
+    "sourceTenthReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "source_report_name",
+        "source_report_sha256", "senior_ruling_id", "senior_ruling",
+        "accepted_scope", "task_evidence_path", "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_OPEN_DOMAIN_RECONCILIATION_20261014"},
+        "integration_base_sha": {"const": "c3e7b9ad27af0dc62eacec37a86356d090954082"},
+        "source_report_name": {"const": "SP00-open-domain-reconciliation-20261014.md"},
+        "source_report_sha256": {"const": "100a8c75aa6087bb0c05d81a06b28521c5e8e8328756a3d98300d643aca1c933"},
+        "senior_ruling_id": {"const": "ses_ec3aae68fffea0W12EXQmT1zaR"},
+        "senior_ruling": {"const": "GO_SOURCE_ONLY_THREE_EXISTING_OWNER_SUBOBLIGATIONS; NO_PO_OR_NEW_GAME_POLICY; NATIVE_SOURCE_CONSUMER_NOT_ESTABLISHED"},
+        "accepted_scope": {"const": "EXACTLY_KEYS_47_56_78_SOURCE_ONLY; PRESERVE_PRIOR_RECORDS_AND_KEY_79; ALL_NATIVE_CONSUMER_AND_FUTURE_PROOF_REMAIN_NOT_ESTABLISHED"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-14-sp00-open-domain-source-reconciliation.md"},
+        "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceTenthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_source_closed_key_count", "selected_source_closed_subobligation_count",
+        "prior_reviewed_key_count", "prior_resolution_record_count",
+        "prior_source_resolved_key_count", "prior_source_resolved_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "prior_active_source_blocker_entry_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_closed_key_count", "cumulative_owner_decided_key_count",
+        "cumulative_source_resolved_key_count", "cumulative_source_resolved_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "original_record_count", "original_source_blocking_key_count",
+        "downstream_only_key_count", "active_source_blocker_count",
+        "active_source_blocker_entry_count", "future_native_proof_status",
+        "full_339_source_qualification_status", "production_claim",
+        "selected_original_classification_indexes"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_TENTH_OPEN_DOMAIN_SOURCE_ONLY"},
+        "selected_key_count": {"const": 3},
+        "resolution_record_count": {"const": 3},
+        "selected_source_closed_key_count": {"const": 3},
+        "selected_source_closed_subobligation_count": {"const": 3},
+        "prior_reviewed_key_count": {"const": 77},
+        "prior_resolution_record_count": {"const": 88},
+        "prior_source_resolved_key_count": {"const": 67},
+        "prior_source_resolved_subobligation_count": {"const": 71},
+        "prior_source_held_key_count": {"const": 10},
+        "prior_source_held_subobligation_count": {"const": 10},
+        "prior_active_source_blocker_count": {"const": 10},
+        "prior_active_source_blocker_entry_count": {"const": 10},
+        "cumulative_reviewed_key_count": {"const": 77},
+        "cumulative_resolution_record_count": {"const": 91},
+        "cumulative_source_closed_key_count": {"const": 64},
+        "cumulative_owner_decided_key_count": {"const": 6},
+        "cumulative_source_resolved_key_count": {"const": 70},
+        "cumulative_source_resolved_subobligation_count": {"const": 74},
+        "cumulative_source_held_key_count": {"const": 7},
+        "cumulative_source_held_subobligation_count": {"const": 7},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 7},
+        "active_source_blocker_entry_count": {"const": 7},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {"const": [47, 56, 78]}
+      }
+    },
+    "sourceTenthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_record_ref",
+        "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "source_markdown_locators", "source_interpretation",
+        "material_qualifiers", "negative_findings", "retained_source_residual",
+        "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {"enum": ["TENTH-01", "TENTH-02", "TENTH-03"]},
+        "unresolved_key": {"enum": [
+          "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+          "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+          "source.spell.unseen_servant.unresolved.subject_health_classification"
+        ]},
+        "source_exact_name": {"enum": ["Locate Animals or Plants", "Mending", "Unseen Servant"]},
+        "source_category": {"enum": ["source_mapping_review", "source_parameter", "source_semantics"]},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"const": "SOURCE_CLOSED"},
+        "source_record_ref": {"$ref": "#/$defs/sourceFifthRecordRef"},
+        "source_classification_pointer": {"type": "string", "pattern": "^/source_unknown_classifications/[0-9]+$"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/[0-9]+$"},
+        "current_map_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/entries/[0-9]+$"},
+        "source_markdown_locators": {
+          "type": "array", "minItems": 1, "maxItems": 1,
+          "items": {"$ref": "#/$defs/sourceFifthMarkdownLocator"}
+        },
+        "source_interpretation": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "material_qualifiers": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "negative_findings": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"enum": [
+            "NO_FINITE_INDIVIDUALLY_NAMED_ORDINARY_FLORA_CENSUS",
+            "NO_ACTUAL_MATCH_OR_NEAREST_ABSENCE_PROOF",
+            "NO_CALLER_TYPE_OR_COMPLETENESS_GRANT",
+            "NO_MISSING_MATERIAL_QUANTITY_OR_RECONSTRUCTION_FORMULA",
+            "NO_SOURCE_ESTABLISHED_GENERAL_MATTER_CREATION_PERMISSION",
+            "NO_UNIVERSAL_ZERO_LOSS_RULE",
+            "NO_GENERIC_OBJECT_HP_HEALING_OR_MAXIMUM_FILL",
+            "NO_CATEGORICAL_CREATURE_OBJECT_OR_NONCREATURE_CLASSIFICATION",
+            "ACTOR_PROXY_DOES_NOT_GRANT_CREATURE_TYPE_OR_TARGET_ELIGIBILITY",
+            "NO_PRIVATE_MIND_DEATH_SAVES_OR_ASSET_DURABILITY_PROFILE",
+            "NO_NATIVE_TARGET_OR_HEALTH_CONSUMER_PROOF"
+          ]}
+        },
+        "retained_source_residual": {"type": "string", "minLength": 1},
         "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
         "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }

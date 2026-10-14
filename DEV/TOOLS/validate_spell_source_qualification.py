@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "b8936badb8ebdd1ddccd571b112e41a91c9c432e4cb6f7de9124c334952ed527"
+    "66512ea7f3df0ebdcba1bffbf4af0212d30c7468029e6a118f595c28e54d4f51"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -6124,6 +6124,277 @@ SOURCE_INTERPRETATION_OWNER: dict[str, object] = {
     ],
 }
 
+SOURCE_TENTH_EVIDENCE_RELATIVE_PATH = (
+    "DEV/docs/superpowers/design/2026-10-14-sp00-open-domain-source-reconciliation.md"
+)
+SOURCE_TENTH_EVIDENCE_SHA256 = (
+    "69430685d90632764022af04d960f7a3849818e68102433cb161ef27d45bdc8f"
+)
+SOURCE_TENTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_OPEN_DOMAIN_RECONCILIATION_20261014",
+    "integration_base_sha": "c3e7b9ad27af0dc62eacec37a86356d090954082",
+    "source_report_name": "SP00-open-domain-reconciliation-20261014.md",
+    "source_report_sha256": "100a8c75aa6087bb0c05d81a06b28521c5e8e8328756a3d98300d643aca1c933",
+    "senior_ruling_id": "ses_ec3aae68fffea0W12EXQmT1zaR",
+    "senior_ruling": "GO_SOURCE_ONLY_THREE_EXISTING_OWNER_SUBOBLIGATIONS; NO_PO_OR_NEW_GAME_POLICY; NATIVE_SOURCE_CONSUMER_NOT_ESTABLISHED",
+    "accepted_scope": "EXACTLY_KEYS_47_56_78_SOURCE_ONLY; PRESERVE_PRIOR_RECORDS_AND_KEY_79; ALL_NATIVE_CONSUMER_AND_FUTURE_PROOF_REMAIN_NOT_ESTABLISHED",
+    "task_evidence_path": SOURCE_TENTH_EVIDENCE_RELATIVE_PATH,
+    "task_evidence_sha256": SOURCE_TENTH_EVIDENCE_SHA256,
+}
+SOURCE_TENTH_EVIDENCE_ORDER = (
+    (
+        "TENTH-01",
+        "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+        "source_mapping_review",
+    ),
+    (
+        "TENTH-02",
+        "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+        "source_parameter",
+    ),
+    (
+        "TENTH-03",
+        "source.spell.unseen_servant.unresolved.subject_health_classification",
+        "source_semantics",
+    ),
+)
+SOURCE_TENTH_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain": {
+        "source_exact_name": "Locate Animals or Plants",
+        "source_category": "source_mapping_review",
+        "classification_index": 47,
+        "map_entry_index": 80,
+        "source_pass_row": 82,
+        "body_witness_row": 190,
+        "printed_page": 144,
+        "source_header_line": 12635,
+        "raw_body_sha256": "6d80aaa14cac0094cf4f3f5ccb31386a263528fe63da0f3882ab71d59e3e29b8",
+        "locator": {
+            "heading": "Locate Animals or Plants",
+            "line_start": 13107,
+            "line_end": 13119,
+            "span_sha256": "b63c752076f267ac95c197582ad1c377b80139802f7fbcdefa8b3de1bd14b7bf",
+        },
+        "source_phrases": (
+            "Level 2 Divination (Bard, Druid, Ranger)",
+            "Casting Time:** Action or Ritual",
+            "Describe or name a specific kind of Beast, Plant creature, or nonmagical plant.",
+            "the closest creature or plant of that kind within 5 miles, if any are present.",
+        ),
+        "source_interpretation": (
+            "The complete published search domain is Beast, Plant creature and "
+            "nonmagical plant. The caster describes or names a specific kind; the "
+            "spell returns direction and distance to the closest matching creature "
+            "or plant within 5 miles, if any are present."
+        ),
+        "material_qualifiers": (
+            (
+                "The source gives three category predicates but no finite individually named "
+                "roster of ordinary plant kinds; the predicate set is not three named items."
+            ),
+            (
+                "A kind is described or named. No arbitrary creature type, individual-identity "
+                "or familiarity requirement, or all-matches result is added."
+            ),
+            (
+                "The source does not prove current matching subjects, nearest-match completeness "
+                "or absence. A partial stored-record scan or caller-supplied complete list/flag "
+                "is insufficient; failed completeness is a hold, not an empty result."
+            ),
+            (
+                "Genuinely missing world facts use only the accepted bounded adjudication route "
+                "at the exact eligible consumer, prospectively before outcome; this does not "
+                "supply native type or query proof."
+            ),
+            (
+                "Finite adopted creature content remains a separate dependency only where "
+                "actually needed; ordinary flora are not converted into stat-bearing creatures."
+            ),
+            (
+                "Native matching/type/nearest/absence completeness and recipient-scoped "
+                "acquisition/disclosure remain NOT_ESTABLISHED."
+            ),
+        ),
+        "negative_findings": (
+            "NO_FINITE_INDIVIDUALLY_NAMED_ORDINARY_FLORA_CENSUS",
+            "NO_ACTUAL_MATCH_OR_NEAREST_ABSENCE_PROOF",
+            "NO_CALLER_TYPE_OR_COMPLETENESS_GRANT",
+        ),
+        "retained_source_residual": (
+            "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source predicates and the "
+            "closest-within-five-mile result are closed. Native current matching/type, "
+            "nearest/absence completeness and recipient-scoped disclosure remain "
+            "NOT_ESTABLISHED; no finite flora census is implied."
+        ),
+    },
+    "source.spell.mending.unresolved.repair_dimension_and_missing_matter": {
+        "source_exact_name": "Mending",
+        "source_category": "source_parameter",
+        "classification_index": 56,
+        "map_entry_index": 88,
+        "source_pass_row": 90,
+        "body_witness_row": 209,
+        "printed_page": 148,
+        "source_header_line": 13005,
+        "raw_body_sha256": "ef7396f774552d6d76c86bba757b4c685912d33f37fe8a35ed30e9dfa1ba524b",
+        "locator": {
+            "heading": "Mending",
+            "line_start": 13461,
+            "line_end": 13475,
+            "span_sha256": "49b027486fa211fad47212b375d1ab66586cb5d0bf78e7fdfdeb43b189d32046",
+        },
+        "source_phrases": (
+            "Casting Time:** 1 minute",
+            "Range:** Touch",
+            "a single break or tear in an object you touch",
+            "no larger than 1 foot in any dimension",
+            "leaving no trace of the former damage.",
+            "physically repair a magic item",
+            "can’t restore magic",
+        ),
+        "source_interpretation": (
+            "Mending repairs a single break or tear in a touched object when it is no "
+            "larger than 1 foot in any dimension, leaving no trace. It can physically "
+            "repair a magic item without restoring its magic. Casting time is 1 minute; "
+            "range is Touch."
+        ),
+        "material_qualifiers": (
+            (
+                "The complete bounded source body gives no numeric missing-material allowance, "
+                "substitute-material rule or reconstruction formula. Its absence is not a number."
+            ),
+            (
+                "The prior protective phrase 'no matter creation' means no general "
+                "source-established matter-creation permission; it is not a universal zero-loss "
+                "prohibition. Neither a numeric allowance nor a blanket missing-material "
+                "exclusion is sourced."
+            ),
+            (
+                "No generic object-HP healing, HP maximum/fill formula or unlimited repair loop "
+                "is established. Cosmetic/fictional repair does not itself require HP materialization."
+            ),
+            (
+                "Particular physical applicability beyond an explicit source case is an existing "
+                "bounded pre-outcome adjudication question at the exact accepted consumer, not "
+                "permission to guess deterministic mechanics or decide after outcome."
+            ),
+            (
+                "When integrity is mechanically material, native Asset durability remains the "
+                "sole native Asset durability authority; cosmetic repair need not materialize HP."
+            ),
+            (
+                "The mechanically material Asset repair/profile and composed cast/interruption/"
+                "retry/recovery proof remain NOT_ESTABLISHED."
+            ),
+        ),
+        "negative_findings": (
+            "NO_MISSING_MATERIAL_QUANTITY_OR_RECONSTRUCTION_FORMULA",
+            "NO_SOURCE_ESTABLISHED_GENERAL_MATTER_CREATION_PERMISSION",
+            "NO_UNIVERSAL_ZERO_LOSS_RULE",
+            "NO_GENERIC_OBJECT_HP_HEALING_OR_MAXIMUM_FILL",
+        ),
+        "retained_source_residual": (
+            "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; exact break/dimension/touch/magic/"
+            "casting-time bounds are closed while no missing-matter number is supplied. "
+            "Bounded applicability adjudication and the native mechanically material Asset "
+            "transition/profile/recovery remain NOT_ESTABLISHED."
+        ),
+    },
+    "source.spell.unseen_servant.unresolved.subject_health_classification": {
+        "source_exact_name": "Unseen Servant",
+        "source_category": "source_semantics",
+        "classification_index": 78,
+        "map_entry_index": 134,
+        "source_pass_row": 136,
+        "body_witness_row": 320,
+        "printed_page": 171,
+        "source_header_line": 15220,
+        "raw_body_sha256": "f650682363b2b72639401347b5415a21fbc9d9e2fab4bd98bf4da8930e94c4b4",
+        "locator": {
+            "heading": "Unseen Servant",
+            "line_start": 15641,
+            "line_end": 15655,
+            "span_sha256": "0f32649763cb95c6ce7d3fde0e844325df5af09d74932110ecec545a9a5265b6",
+        },
+        "source_phrases": (
+            "Invisible, mindless, shapeless, Medium force",
+            "AC 10, 1 Hit Point, and a Strength of 2",
+            "it can’t attack.",
+            "If it drops to 0 Hit Points, the spell ends.",
+            "Once on each of your turns as a Bonus Action",
+            "move up to 15 feet",
+            "more than 60 feet away from you",
+        ),
+        "source_interpretation": (
+            "The source describes an Invisible, mindless, shapeless, Medium force with "
+            "AC 10, 1 HP and Strength 2; it cannot attack and the spell ends at 0 HP. "
+            "The source body does not settle creature/object or categorical noncreature "
+            "target eligibility. Existing S116/L149 select a sparse native Actor force proxy."
+        ),
+        "material_qualifiers": (
+            (
+                "Actor is the representation selected by existing S116/L149; the Actor carrier "
+                "itself does not grant a creature-type tag or creature-only target eligibility."
+            ),
+            (
+                "The source does not establish categorical creature, object or noncreature legality; "
+                "genuine source ambiguity is resolved only at the exact target consumer through "
+                "existing bounded pre-outcome adjudication/policy input."
+            ),
+            (
+                "No private mind, character death saves, generic Asset durability, caller type "
+                "assertion, universal category grant or retroactive ruling is introduced."
+            ),
+            (
+                "AC/HP/Strength/attack/zero-HP source facts do not prove archetype/profile "
+                "registration, target admission, native health execution or recovery."
+            ),
+            (
+                "Key 79 remains separately closed: one caster-turn Bonus Action commands up to "
+                "15 feet and object interaction; 15 feet is not Speed, and ending occurs when "
+                "the commanded task would move the servant over 60 feet away, not by an ambient leash."
+            ),
+            (
+                "Exact native force profile, target/health consumer admission, runtime and recovery "
+                "remain NOT_ESTABLISHED."
+            ),
+        ),
+        "negative_findings": (
+            "NO_CATEGORICAL_CREATURE_OBJECT_OR_NONCREATURE_CLASSIFICATION",
+            "ACTOR_PROXY_DOES_NOT_GRANT_CREATURE_TYPE_OR_TARGET_ELIGIBILITY",
+            "NO_PRIVATE_MIND_DEATH_SAVES_OR_ASSET_DURABILITY_PROFILE",
+            "NO_NATIVE_TARGET_OR_HEALTH_CONSUMER_PROOF",
+        ),
+        "retained_source_residual": (
+            "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source-described force and the "
+            "accepted sparse Actor representation/ambiguity route are reconciled. Exact native "
+            "profile, target/health consumer admission, runtime execution and recovery remain "
+            "NOT_ESTABLISHED."
+        ),
+    },
+}
+SOURCE_TENTH_SOURCE_KEYS = frozenset(SOURCE_TENTH_ITEMS)
+SOURCE_TENTH_PRIOR_HOLDS = (
+    (
+        "source_fourth_resolution_evidence",
+        "FOURTH-03",
+        "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+        "source_mapping_review",
+    ),
+    (
+        "source_fifth_resolution_evidence",
+        "FIFTH-01",
+        "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+        "source_parameter",
+    ),
+    (
+        "source_sixth_resolution_evidence",
+        "SIXTH-11A",
+        "source.spell.unseen_servant.unresolved.subject_health_classification",
+        "source_semantics",
+    ),
+)
+
 SOURCE_EIGHTH_ITEMS: dict[str, dict[str, object]] = {
     "source.spell.aid.unresolved.health_normalization_policy": {
         "review_item_id": "OWNER-A", "source_exact_name": "Aid", "source_category": "source_semantics",
@@ -10680,6 +10951,385 @@ def _validate_source_familiar_census_evidence(
     }
 
 
+def _validate_source_tenth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind exactly three open-domain closures to existing records and source spans."""
+    review = _object(manifest.get("source_tenth_review"), "source_tenth_review")
+    if review != SOURCE_TENTH_REVIEW:
+        _fail("source_tenth_review", "Senior ruling identity or accepted scope differs")
+
+    task_bytes = _read_pinned_local_evidence(
+        SOURCE_TENTH_EVIDENCE_RELATIVE_PATH,
+        SOURCE_TENTH_EVIDENCE_SHA256,
+        "source_tenth_task_evidence",
+    )
+    try:
+        task_text = " ".join(task_bytes.decode("utf-8").split())
+    except UnicodeDecodeError:
+        _fail("source_tenth_review", "durable reconciliation evidence is not UTF-8")
+    task_text_lower = task_text.lower()
+    required_task_tokens = (
+        "sp00 open-domain source reconciliation",
+        "100a8c75aa6087bb0c05d81a06b28521c5e8e8328756a3d98300d643aca1c933",
+        "ses_ec3aae68fffea0w12exqmt1zar",
+        "go for exactly three existing-owner source-only closures; no product owner decision or new gameplay policy; native source consumer remains not_established.",
+        "no finite individually named ordinary-flora census is published or implied.",
+        "no numeric missing-material quantity, substitute-material rule or reconstruction formula",
+        "not a universal zero-loss prohibition",
+        "the actor carrier does **not** confer creature-only target eligibility or a private mind",
+        "key `79` remains the previously source-closed adjacent numeric profile",
+        "all 33 `future_proof` obligations remain `not_established` with empty native proof references.",
+        "version_impact: none",
+        "system_impact: none",
+    )
+    if any(token not in task_text_lower for token in required_task_tokens):
+        _fail(
+            "source_tenth_review",
+            "durable ruling, scope or source-negative evidence differs",
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_tenth_markdown",
+    )
+    try:
+        byte_lines = markdown_bytes.splitlines(keepends=True)
+        text_lines = [line.decode("utf-8") for line in byte_lines]
+    except UnicodeDecodeError:
+        _fail("source_tenth_markdown", "source Markdown is not UTF-8")
+
+    rows = [
+        _object(value, f"source_tenth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_tenth_resolution_evidence"),
+                "source_tenth_resolution_evidence",
+            )
+        )
+    ]
+    actual_order = tuple(
+        (
+            str(row.get("review_item_id")),
+            str(row.get("unresolved_key")),
+            str(row.get("source_category")),
+        )
+        for row in rows
+    )
+    if (
+        len(rows) != len(SOURCE_TENTH_EVIDENCE_ORDER)
+        or actual_order != SOURCE_TENTH_EVIDENCE_ORDER
+    ):
+        _fail("source_tenth_census", "the selected key/category/order census differs")
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_carrier = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    body_rows = _rows(body_carrier, "rows", "source-body-witnesses")
+
+    for (item_id, key, category), row in zip(
+        SOURCE_TENTH_EVIDENCE_ORDER, rows, strict=True
+    ):
+        spec = SOURCE_TENTH_ITEMS[key]
+        name = str(spec["source_exact_name"])
+        classification_index = int(spec["classification_index"])
+        map_entry_index = int(spec["map_entry_index"])
+        source_pass_row = int(spec["source_pass_row"])
+        body_witness_row = int(spec["body_witness_row"])
+        source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+        body_pointer = f"/rows/{body_witness_row}"
+        classification_pointer = (
+            f"/source_unknown_classifications/{classification_index}"
+        )
+        history_pointer = (
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+            f"{classification_index}"
+        )
+        map_pointer = (
+            f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+        )
+        subobligation_id = f"{key}::{category}"
+
+        classification = classified_by_key.get(key)
+        if classification is None:
+            _fail("source_tenth_binding", f"{key} has no original classification")
+        original = _object(
+            _resolve_json_pointer(
+                manifest, classification_pointer, "tenth classification pointer"
+            ),
+            f"{key}.classification",
+        )
+        history = _object(
+            _resolve_json_pointer(manifest, history_pointer, "tenth history pointer"),
+            f"{key}.history",
+        )
+        map_entry = _object(
+            _resolve_json_pointer(manifest, map_pointer, "tenth map pointer"),
+            f"{key}.current_map",
+        )
+        history_matches = (
+            history.get("unresolved_key") == key
+            and history.get("source_exact_name") == name
+            and history.get("reason") == original.get("original_reason")
+            and history.get("evidence_ref") == original.get("evidence_ref")
+            and history.get("status") == "NOT_ESTABLISHED"
+            and history.get("disposition")
+            == "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+        )
+        map_unresolved = [
+            _object(value, f"{key}.map.unresolved_keys[{index}]")
+            for index, value in enumerate(
+                _array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys")
+            )
+        ]
+        matching_source = [
+            _object(value, f"{key}.source_subobligation[{index}]")
+            for index, value in enumerate(
+                _array(original.get("subobligations"), f"{key}.subobligations")
+            )
+            if isinstance(value, dict)
+            and value.get("subobligation_id") == subobligation_id
+        ]
+        downstream = [
+            _object(value, f"{key}.future_proof[{index}]")
+            for index, value in enumerate(
+                _array(original.get("subobligations"), f"{key}.subobligations")
+            )
+            if isinstance(value, dict)
+            and value.get("category")
+            == "downstream_domain_consumer_admission_native_proof"
+        ]
+        if (
+            row.get("review_item_id") != item_id
+            or row.get("unresolved_key") != key
+            or row.get("source_exact_name") != name
+            or row.get("source_category") != category
+            or row.get("subobligation_id") != subobligation_id
+            or row.get("disposition") != "SOURCE_CLOSED"
+            or row.get("source_classification_pointer") != classification_pointer
+            or row.get("source_unresolved_record_pointer") != history_pointer
+            or row.get("current_map_pointer") != map_pointer
+            or original.get("unresolved_key") != key
+            or original.get("source_exact_name") != name
+            or original.get("source_unresolved_record_pointer") != history_pointer
+            or original.get("source_ready_blocking") is not True
+            or original.get("original_status") != "NOT_ESTABLISHED"
+            or original.get("original_disposition")
+            != "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+            or not history_matches
+            or map_entry.get("source_exact_name") != name
+            or not any(value.get("unresolved_key") == key for value in map_unresolved)
+            or len(matching_source) != 1
+            or matching_source[0].get("category") != category
+            or matching_source[0].get("gate_phase") != "SP00_SOURCE"
+            or matching_source[0].get("status") != "NOT_ESTABLISHED"
+            or len(downstream) != 1
+            or downstream[0].get("gate_phase") != "FUTURE_PROOF"
+            or downstream[0].get("status") != "NOT_ESTABLISHED"
+        ):
+            _fail(
+                "source_tenth_binding",
+                f"{key} no longer binds to its exact historical source and held future proof",
+            )
+
+        source_record = source_rows[source_pass_row]
+        body_witness = body_rows[body_witness_row]
+        raw_hash_basis = "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"
+        expected_source_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": raw_hash_basis,
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+        }
+        expected_classification_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "exact_record_name": name,
+            "record_index": source_pass_row,
+            "source_asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "source_heading": name,
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": raw_hash_basis,
+            "body_witness_ref": {
+                "artifact_id": "source-body-witnesses",
+                "json_pointer": body_pointer,
+            },
+            "qualification_ref": {
+                "artifact_id": "source-pass-0-2",
+                "json_pointer": qualification_pointer,
+            },
+            "evidence_boundary": (
+                "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; "
+                "NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF"
+            ),
+        }
+        if (
+            source_record.get("name") != name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or source_record.get("hash_basis") != raw_hash_basis
+            or not isinstance(source_record.get("qualifications"), list)
+            or body_witness.get("name") != name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+            or row.get("source_record_ref") != expected_source_ref
+            or original.get("evidence_ref") != expected_classification_ref
+        ):
+            _fail("source_tenth_provenance", f"{key} source/body witness differs")
+
+        locator_values = [
+            _object(value, f"{key}.source_markdown_locators[{index}]")
+            for index, value in enumerate(
+                _array(
+                    row.get("source_markdown_locators"),
+                    f"{key}.source_markdown_locators",
+                )
+            )
+        ]
+        expected_locator = _object(spec["locator"], f"{key}.expected_locator")
+        if len(locator_values) != 1:
+            _fail("source_tenth_locator", f"{key} Markdown locator count differs")
+        locator = locator_values[0]
+        if any(
+            locator.get(field) != expected_locator.get(field)
+            for field in ("heading", "line_start", "line_end")
+        ):
+            _fail("source_tenth_locator", f"{key} Markdown location differs")
+        start, end = (
+            int(expected_locator["line_start"]),
+            int(expected_locator["line_end"]),
+        )
+        if start < 1 or end < start or end > len(byte_lines):
+            _fail("source_tenth_locator", f"{key} Markdown span bounds are invalid")
+        span = b"".join(byte_lines[start - 1 : end])
+        actual_span_sha256 = hashlib.sha256(span).hexdigest()
+        expected_span_sha256 = str(expected_locator["span_sha256"])
+        if (
+            locator.get("span_sha256") != expected_span_sha256
+            or actual_span_sha256 != expected_span_sha256
+        ):
+            _fail("source_tenth_span_hash", f"{key} Markdown span hash differs")
+        if text_lines[start - 1].strip() != f"##### {name}":
+            _fail("source_tenth_locator", f"{key} Markdown body heading differs")
+        section = "".join(text_lines[start - 1 : end])
+        if any(phrase not in section for phrase in spec["source_phrases"]):
+            _fail(
+                "source_tenth_source_text",
+                f"{key} required source qualifier is absent",
+            )
+
+        expected_row = {
+            "review_item_id": item_id,
+            "unresolved_key": key,
+            "source_exact_name": name,
+            "source_category": category,
+            "subobligation_id": subobligation_id,
+            "disposition": "SOURCE_CLOSED",
+            "source_record_ref": expected_source_ref,
+            "source_classification_pointer": classification_pointer,
+            "source_unresolved_record_pointer": history_pointer,
+            "current_map_pointer": map_pointer,
+            "source_markdown_locators": [dict(expected_locator)],
+            "source_interpretation": spec["source_interpretation"],
+            "material_qualifiers": list(spec["material_qualifiers"]),
+            "negative_findings": list(spec["negative_findings"]),
+            "retained_source_residual": spec["retained_source_residual"],
+            "future_native_proof_status": "NOT_ESTABLISHED",
+            "actual_native_proof_refs": [],
+        }
+        if (
+            row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+            or row.get("actual_native_proof_refs") != []
+        ):
+            _fail("source_tenth_future_proof", f"{key} promotes native proof")
+        if row != expected_row:
+            _fail(
+                "source_tenth_qualifier",
+                f"{key} source interpretation, qualifiers or negative findings differ",
+            )
+
+    for field, review_item_id, key, category in SOURCE_TENTH_PRIOR_HOLDS:
+        historical_rows = [
+            _object(value, f"{field}[{index}]")
+            for index, value in enumerate(_array(manifest.get(field), field))
+            if isinstance(value, dict) and value.get("review_item_id") == review_item_id
+        ]
+        if (
+            len(historical_rows) != 1
+            or historical_rows[0].get("unresolved_key") != key
+            or historical_rows[0].get("source_category") != category
+            or historical_rows[0].get("disposition") != "SOURCE_HELD"
+        ):
+            _fail("source_tenth_history", f"{key} prior SOURCE_HELD history changed")
+
+    key79_rows = [
+        _object(value, f"source_sixth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_sixth_resolution_evidence"),
+                "source_sixth_resolution_evidence",
+            )
+        )
+        if isinstance(value, dict) and value.get("review_item_id") == "SIXTH-11B"
+    ]
+    if (
+        len(key79_rows) != 1
+        or key79_rows[0].get("disposition") != "SOURCE_CLOSED"
+        or key79_rows[0].get("source_interpretation")
+        != (
+            "Unseen Servant has AC 10, 1 HP and Strength 2, cannot attack and ends at "
+            "0 HP. Once on each caster turn, a Bonus Action can command up to 15 feet "
+            "movement plus object interaction. It continues simple human-doable tasks "
+            "to best ability until completion, then waits. A commanded task that would "
+            "move it more than 60 feet from the caster ends the spell."
+        )
+        or key79_rows[0].get("material_qualifiers")
+        != [
+            "commanded-task termination predicate",
+            "not an ambient caster-motion leash",
+            "15 feet is not a Speed stat",
+            "no own turn or free independent action budget",
+            "no carrying capacity or universal repair/material-generation promise",
+            "classification and native stat/action/health consumers remain NOT_ESTABLISHED",
+        ]
+    ):
+        _fail("source_tenth_key79", "prior key-79 numeric qualifiers were changed")
+
+    closed_ids = [
+        f"{key}::{category}" for _, key, category in SOURCE_TENTH_EVIDENCE_ORDER
+    ]
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": [key for _, key, _ in SOURCE_TENTH_EVIDENCE_ORDER],
+        "source_closed_subobligation_ids": closed_ids,
+        "source_held_keys": [],
+        "source_held_subobligation_ids": [],
+        "source_resolved_subobligation_count": len(closed_ids),
+        "source_held_subobligation_count": 0,
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -11183,6 +11833,128 @@ def _validate_source_unknown_classifications(
     if ninth_contract != expected_ninth_contract:
         _fail("source_ninth_contract", "familiar closure cumulative counts differ")
 
+    source_blocking_keys_before_tenth = list(source_blocking_keys)
+    source_held_keys_before_tenth = list(source_held_keys)
+    current_open_subobligations_before_tenth = set(
+        current_open_source_subobligation_ids
+    )
+    closed_subobligation_ids_before_tenth = set(closed_subobligation_ids)
+    all_records_before_tenth = list(all_records)
+    reviewed_keys_before_tenth = set(reviewed_keys)
+    all_resolved_keys_before_tenth = set(all_resolved_keys)
+    source_closed_key_set_before_tenth = set(source_closed_key_set)
+
+    tenth_resolution = _validate_source_tenth_resolution_evidence(
+        manifest, classified_by_key
+    )
+    tenth_closed_ids = set(tenth_resolution["source_closed_subobligation_ids"])
+    tenth_keys = set(tenth_resolution["source_resolved_keys"])
+    expected_tenth_closed_ids = {
+        f"{key}::{category}" for _, key, category in SOURCE_TENTH_EVIDENCE_ORDER
+    }
+    if (
+        tenth_keys != SOURCE_TENTH_SOURCE_KEYS
+        or tenth_closed_ids != expected_tenth_closed_ids
+        or not tenth_keys.issubset(source_blocking_keys_before_tenth)
+        or tenth_keys & all_resolved_keys_before_tenth
+        or tenth_closed_ids & closed_subobligation_ids_before_tenth
+        or len(source_blocking_keys_before_tenth) != 10
+        or len(current_open_subobligations_before_tenth) != 10
+        or len(all_records_before_tenth) != 88
+    ):
+        _fail(
+            "source_tenth_prior_state",
+            "the three keys are not exactly the remaining reviewed holds",
+        )
+
+    closed_subobligation_ids.update(tenth_closed_ids)
+    source_blocking_keys = [
+        key
+        for key in source_blocking_keys_before_tenth
+        if any(
+            subobligation["subobligation_id"] not in closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    current_open_source_subobligation_ids = {
+        str(subobligation["subobligation_id"])
+        for key in source_blocking_keys
+        for subobligation in classified_by_key[key]["subobligations"]
+        if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        and subobligation["subobligation_id"] not in closed_subobligation_ids
+    }
+    active_source_blocker_entry_count = len(
+        {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
+    )
+    source_held_keys = [
+        key for key in source_held_keys_before_tenth if key in source_blocking_keys
+    ]
+    if (
+        set(source_held_keys) != set(source_blocking_keys)
+        or len(source_blocking_keys) != 7
+        or len(current_open_source_subobligation_ids) != 7
+        or active_source_blocker_entry_count != 7
+    ):
+        _fail("source_tenth_hold_accounting", "seven current source holds must remain")
+
+    all_records = [
+        *all_records_before_tenth,
+        *tenth_resolution["source_resolution_records"],
+    ]
+    source_closed_key_set = source_closed_key_set_before_tenth | tenth_keys
+    all_resolved_keys = source_closed_key_set | source_owner_decided_key_set
+    reviewed_keys = reviewed_keys_before_tenth | tenth_keys
+    expected_tenth_contract = {
+        "status": "PARTIAL_TENTH_OPEN_DOMAIN_SOURCE_ONLY",
+        "selected_key_count": len(SOURCE_TENTH_ITEMS),
+        "resolution_record_count": len(tenth_resolution["source_resolution_records"]),
+        "selected_source_closed_key_count": len(tenth_keys),
+        "selected_source_closed_subobligation_count": len(tenth_closed_ids),
+        "prior_reviewed_key_count": len(reviewed_keys_before_tenth),
+        "prior_resolution_record_count": len(all_records_before_tenth),
+        "prior_source_resolved_key_count": len(all_resolved_keys_before_tenth),
+        "prior_source_resolved_subobligation_count": len(
+            closed_subobligation_ids_before_tenth
+        ),
+        "prior_source_held_key_count": len(source_blocking_keys_before_tenth),
+        "prior_source_held_subobligation_count": len(
+            current_open_subobligations_before_tenth
+        ),
+        "prior_active_source_blocker_count": len(source_blocking_keys_before_tenth),
+        "prior_active_source_blocker_entry_count": len(
+            {
+                classified_by_key[key]["source_exact_name"]
+                for key in source_blocking_keys_before_tenth
+            }
+        ),
+        "cumulative_reviewed_key_count": len(reviewed_keys),
+        "cumulative_resolution_record_count": len(all_records),
+        "cumulative_source_closed_key_count": len(source_closed_key_set),
+        "cumulative_owner_decided_key_count": len(source_owner_decided_key_set),
+        "cumulative_source_resolved_key_count": len(all_resolved_keys),
+        "cumulative_source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "cumulative_source_held_key_count": len(source_blocking_keys),
+        "cumulative_source_held_subobligation_count": len(
+            current_open_source_subobligation_ids
+        ),
+        "original_record_count": len(classifications),
+        "original_source_blocking_key_count": len(historical_source_blocking_keys),
+        "downstream_only_key_count": len(downstream_only_keys),
+        "active_source_blocker_count": len(source_blocking_keys),
+        "active_source_blocker_entry_count": active_source_blocker_entry_count,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": [47, 56, 78],
+    }
+    tenth_contract = _object(
+        manifest.get("source_tenth_resolution_contract"),
+        "source_tenth_resolution_contract",
+    )
+    if tenth_contract != expected_tenth_contract:
+        _fail("source_tenth_contract", "open-domain closure cumulative counts differ")
+
     source_resolved_keys = list(
         dict.fromkeys(
             [
@@ -11192,13 +11964,14 @@ def _validate_source_unknown_classifications(
             ]
             + [str(key) for key in eighth_resolution["source_owner_decided_keys"]]
             + [str(key) for key in familiar_resolution["source_resolved_keys"]]
+            + [key for _, key, _ in SOURCE_TENTH_EVIDENCE_ORDER]
         )
     )
     if (
-        len(source_resolved_keys) != 67
+        len(source_resolved_keys) != 70
         or set(source_resolved_keys) != all_resolved_keys
     ):
-        _fail("source_ninth_resolution_census", "67 exact resolved keys are not unique")
+        _fail("source_tenth_resolution_census", "70 exact resolved keys are not unique")
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
@@ -11225,6 +11998,10 @@ def _validate_source_unknown_classifications(
             "source_resolution_records"
         ],
         "source_ninth_resolution_contract": ninth_contract,
+        "source_tenth_resolution_evidence": tenth_resolution[
+            "source_resolution_records"
+        ],
+        "source_tenth_resolution_contract": tenth_contract,
         "source_reviewed_key_count": len(reviewed_keys),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[

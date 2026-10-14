@@ -116637,5 +116637,172 @@
       "future_native_proof_status": "NOT_ESTABLISHED",
       "actual_native_proof_refs": []
     }
+  ],
+  "source_tenth_review": {
+    "review_id": "SP00_OPEN_DOMAIN_RECONCILIATION_20261014",
+    "integration_base_sha": "c3e7b9ad27af0dc62eacec37a86356d090954082",
+    "source_report_name": "SP00-open-domain-reconciliation-20261014.md",
+    "source_report_sha256": "100a8c75aa6087bb0c05d81a06b28521c5e8e8328756a3d98300d643aca1c933",
+    "senior_ruling_id": "ses_ec3aae68fffea0W12EXQmT1zaR",
+    "senior_ruling": "GO_SOURCE_ONLY_THREE_EXISTING_OWNER_SUBOBLIGATIONS; NO_PO_OR_NEW_GAME_POLICY; NATIVE_SOURCE_CONSUMER_NOT_ESTABLISHED",
+    "accepted_scope": "EXACTLY_KEYS_47_56_78_SOURCE_ONLY; PRESERVE_PRIOR_RECORDS_AND_KEY_79; ALL_NATIVE_CONSUMER_AND_FUTURE_PROOF_REMAIN_NOT_ESTABLISHED",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-14-sp00-open-domain-source-reconciliation.md",
+    "task_evidence_sha256": "69430685d90632764022af04d960f7a3849818e68102433cb161ef27d45bdc8f"
+  },
+  "source_tenth_resolution_contract": {
+    "status": "PARTIAL_TENTH_OPEN_DOMAIN_SOURCE_ONLY",
+    "selected_key_count": 3,
+    "resolution_record_count": 3,
+    "selected_source_closed_key_count": 3,
+    "selected_source_closed_subobligation_count": 3,
+    "prior_reviewed_key_count": 77,
+    "prior_resolution_record_count": 88,
+    "prior_source_resolved_key_count": 67,
+    "prior_source_resolved_subobligation_count": 71,
+    "prior_source_held_key_count": 10,
+    "prior_source_held_subobligation_count": 10,
+    "prior_active_source_blocker_count": 10,
+    "prior_active_source_blocker_entry_count": 10,
+    "cumulative_reviewed_key_count": 77,
+    "cumulative_resolution_record_count": 91,
+    "cumulative_source_closed_key_count": 64,
+    "cumulative_owner_decided_key_count": 6,
+    "cumulative_source_resolved_key_count": 70,
+    "cumulative_source_resolved_subobligation_count": 74,
+    "cumulative_source_held_key_count": 7,
+    "cumulative_source_held_subobligation_count": 7,
+    "original_record_count": 82,
+    "original_source_blocking_key_count": 77,
+    "downstream_only_key_count": 5,
+    "active_source_blocker_count": 7,
+    "active_source_blocker_entry_count": 7,
+    "future_native_proof_status": "NOT_ESTABLISHED",
+    "full_339_source_qualification_status": "NOT_ESTABLISHED",
+    "production_claim": "NONE",
+    "selected_original_classification_indexes": [47, 56, 78]
+  },
+  "source_tenth_resolution_evidence": [
+    {
+      "review_item_id": "TENTH-01",
+      "unresolved_key": "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+      "source_exact_name": "Locate Animals or Plants",
+      "source_category": "source_mapping_review",
+      "subobligation_id": "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain::source_mapping_review",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/82/required_modes_or_exceptions",
+        "source_exact_name": "Locate Animals or Plants",
+        "printed_page": 144,
+        "source_header_line": 12635,
+        "raw_body_sha256": "6d80aaa14cac0094cf4f3f5ccb31386a263528fe63da0f3882ab71d59e3e29b8",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/190"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/82/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/47",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/47",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/80",
+      "source_markdown_locators": [{"heading": "Locate Animals or Plants", "line_start": 13107, "line_end": 13119, "span_sha256": "b63c752076f267ac95c197582ad1c377b80139802f7fbcdefa8b3de1bd14b7bf"}],
+      "source_interpretation": "The complete published search domain is Beast, Plant creature and nonmagical plant. The caster describes or names a specific kind; the spell returns direction and distance to the closest matching creature or plant within 5 miles, if any are present.",
+      "material_qualifiers": [
+        "The source gives three category predicates but no finite individually named roster of ordinary plant kinds; the predicate set is not three named items.",
+        "A kind is described or named. No arbitrary creature type, individual-identity or familiarity requirement, or all-matches result is added.",
+        "The source does not prove current matching subjects, nearest-match completeness or absence. A partial stored-record scan or caller-supplied complete list/flag is insufficient; failed completeness is a hold, not an empty result.",
+        "Genuinely missing world facts use only the accepted bounded adjudication route at the exact eligible consumer, prospectively before outcome; this does not supply native type or query proof.",
+        "Finite adopted creature content remains a separate dependency only where actually needed; ordinary flora are not converted into stat-bearing creatures.",
+        "Native matching/type/nearest/absence completeness and recipient-scoped acquisition/disclosure remain NOT_ESTABLISHED."
+      ],
+      "negative_findings": [
+        "NO_FINITE_INDIVIDUALLY_NAMED_ORDINARY_FLORA_CENSUS",
+        "NO_ACTUAL_MATCH_OR_NEAREST_ABSENCE_PROOF",
+        "NO_CALLER_TYPE_OR_COMPLETENESS_GRANT"
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source predicates and the closest-within-five-mile result are closed. Native current matching/type, nearest/absence completeness and recipient-scoped disclosure remain NOT_ESTABLISHED; no finite flora census is implied.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "TENTH-02",
+      "unresolved_key": "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+      "source_exact_name": "Mending",
+      "source_category": "source_parameter",
+      "subobligation_id": "source.spell.mending.unresolved.repair_dimension_and_missing_matter::source_parameter",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/90/required_modes_or_exceptions",
+        "source_exact_name": "Mending",
+        "printed_page": 148,
+        "source_header_line": 13005,
+        "raw_body_sha256": "ef7396f774552d6d76c86bba757b4c685912d33f37fe8a35ed30e9dfa1ba524b",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/209"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/90/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/56",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/56",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/88",
+      "source_markdown_locators": [{"heading": "Mending", "line_start": 13461, "line_end": 13475, "span_sha256": "49b027486fa211fad47212b375d1ab66586cb5d0bf78e7fdfdeb43b189d32046"}],
+      "source_interpretation": "Mending repairs a single break or tear in a touched object when it is no larger than 1 foot in any dimension, leaving no trace. It can physically repair a magic item without restoring its magic. Casting time is 1 minute; range is Touch.",
+      "material_qualifiers": [
+        "The complete bounded source body gives no numeric missing-material allowance, substitute-material rule or reconstruction formula. Its absence is not a number.",
+        "The prior protective phrase 'no matter creation' means no general source-established matter-creation permission; it is not a universal zero-loss prohibition. Neither a numeric allowance nor a blanket missing-material exclusion is sourced.",
+        "No generic object-HP healing, HP maximum/fill formula or unlimited repair loop is established. Cosmetic/fictional repair does not itself require HP materialization.",
+        "Particular physical applicability beyond an explicit source case is an existing bounded pre-outcome adjudication question at the exact accepted consumer, not permission to guess deterministic mechanics or decide after outcome.",
+        "When integrity is mechanically material, native Asset durability remains the sole native Asset durability authority; cosmetic repair need not materialize HP.",
+        "The mechanically material Asset repair/profile and composed cast/interruption/retry/recovery proof remain NOT_ESTABLISHED."
+      ],
+      "negative_findings": [
+        "NO_MISSING_MATERIAL_QUANTITY_OR_RECONSTRUCTION_FORMULA",
+        "NO_SOURCE_ESTABLISHED_GENERAL_MATTER_CREATION_PERMISSION",
+        "NO_UNIVERSAL_ZERO_LOSS_RULE",
+        "NO_GENERIC_OBJECT_HP_HEALING_OR_MAXIMUM_FILL"
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; exact break/dimension/touch/magic/casting-time bounds are closed while no missing-matter number is supplied. Bounded applicability adjudication and the native mechanically material Asset transition/profile/recovery remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    },
+    {
+      "review_item_id": "TENTH-03",
+      "unresolved_key": "source.spell.unseen_servant.unresolved.subject_health_classification",
+      "source_exact_name": "Unseen Servant",
+      "source_category": "source_semantics",
+      "subobligation_id": "source.spell.unseen_servant.unresolved.subject_health_classification::source_semantics",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/136/required_modes_or_exceptions",
+        "source_exact_name": "Unseen Servant",
+        "printed_page": 171,
+        "source_header_line": 15220,
+        "raw_body_sha256": "f650682363b2b72639401347b5415a21fbc9d9e2fab4bd98bf4da8930e94c4b4",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/320"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/136/qualifications"}
+      },
+      "source_classification_pointer": "/source_unknown_classifications/78",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/78",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/134",
+      "source_markdown_locators": [{"heading": "Unseen Servant", "line_start": 15641, "line_end": 15655, "span_sha256": "0f32649763cb95c6ce7d3fde0e844325df5af09d74932110ecec545a9a5265b6"}],
+      "source_interpretation": "The source describes an Invisible, mindless, shapeless, Medium force with AC 10, 1 HP and Strength 2; it cannot attack and the spell ends at 0 HP. The source body does not settle creature/object or categorical noncreature target eligibility. Existing S116/L149 select a sparse native Actor force proxy.",
+      "material_qualifiers": [
+        "Actor is the representation selected by existing S116/L149; the Actor carrier itself does not grant a creature-type tag or creature-only target eligibility.",
+        "The source does not establish categorical creature, object or noncreature legality; genuine source ambiguity is resolved only at the exact target consumer through existing bounded pre-outcome adjudication/policy input.",
+        "No private mind, character death saves, generic Asset durability, caller type assertion, universal category grant or retroactive ruling is introduced.",
+        "AC/HP/Strength/attack/zero-HP source facts do not prove archetype/profile registration, target admission, native health execution or recovery.",
+        "Key 79 remains separately closed: one caster-turn Bonus Action commands up to 15 feet and object interaction; 15 feet is not Speed, and ending occurs when the commanded task would move the servant over 60 feet away, not by an ambient leash.",
+        "Exact native force profile, target/health consumer admission, runtime and recovery remain NOT_ESTABLISHED."
+      ],
+      "negative_findings": [
+        "NO_CATEGORICAL_CREATURE_OBJECT_OR_NONCREATURE_CLASSIFICATION",
+        "ACTOR_PROXY_DOES_NOT_GRANT_CREATURE_TYPE_OR_TARGET_ELIGIBILITY",
+        "NO_PRIVATE_MIND_DEATH_SAVES_OR_ASSET_DURABILITY_PROFILE",
+        "NO_NATIVE_TARGET_OR_HEALTH_CONSUMER_PROOF"
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; source-described force and the accepted sparse Actor representation/ambiguity route are reconciled. Exact native profile, target/health consumer admission, runtime execution and recovery remain NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    }
   ]
 }

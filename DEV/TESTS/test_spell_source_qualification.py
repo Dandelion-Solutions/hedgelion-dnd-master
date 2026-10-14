@@ -65,6 +65,11 @@ SEVENTH_SOURCE_HELD_KEYS = {
 FAMILIAR_SOURCE_CLOSED_KEYS = {
     "source.spell.find_familiar.unresolved.eligible_form_census",
 }
+TENTH_SOURCE_CLOSED_KEYS = {
+    "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+    "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+    "source.spell.unseen_servant.unresolved.subject_health_classification",
+}
 OWNER_DECIDED_SOURCE_KEYS = {
     "source.spell.aid.unresolved.health_normalization_policy",
     "source.spell.magic_missile.unresolved.rng_damage_grouping",
@@ -617,8 +622,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             for blocker in receipt["source_ready_gate"]["blockers"]
             if blocker["code"] == "UNRESOLVED_SOURCE_KEYS"
         )
-        self.assertEqual(unresolved_blocker["count"], 10)
-        self.assertEqual(unresolved_blocker["entry_count"], 10)
+        self.assertEqual(unresolved_blocker["count"], 7)
+        self.assertEqual(unresolved_blocker["entry_count"], 7)
         recipe_blocker = next(
             blocker
             for blocker in receipt["source_ready_gate"]["blockers"]
@@ -906,7 +911,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             "source.spell.chill_touch.unresolved.recovery_consumer_closure",
             classification["source_blocking_keys"],
         )
-        self.assertEqual(classification["source_blocking_key_count"], 10)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
         self.assertEqual(classification["mixed_source_and_downstream_key_count"], 28)
@@ -960,10 +965,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 10)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
         self.assertEqual(
             manifest["source_unknown_resolution_contract"][
                 "source_closed_subobligation_count"
@@ -985,9 +990,11 @@ class TestSpellSourceQualification(unittest.TestCase):
         source_blocking_keys = set(classification["source_blocking_keys"])
         self.assertTrue(FIRST12_SOURCE_CLOSED_KEYS.isdisjoint(source_blocking_keys))
         self.assertTrue(
-            (FIRST12_SOURCE_HELD_KEYS - OWNER_DECIDED_SOURCE_KEYS).issubset(
-                source_blocking_keys
-            )
+            (
+                FIRST12_SOURCE_HELD_KEYS
+                - OWNER_DECIDED_SOURCE_KEYS
+                - TENTH_SOURCE_CLOSED_KEYS
+            ).issubset(source_blocking_keys)
         )
         self.assertNotIn(
             "source.spell.augury.unresolved.four_omen_members", source_blocking_keys
@@ -1165,10 +1172,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         receipt = TOOL._source_qualification_receipt(manifest, roster)
         classification = receipt["source_unknown_classification"]
 
-        self.assertEqual(classification["source_blocking_key_count"], 10)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
         self.assertEqual(
@@ -1181,6 +1188,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.SIXTH_SOURCE_CLOSED_KEYS
             | SEVENTH_SOURCE_CLOSED_KEYS
             | FAMILIAR_SOURCE_CLOSED_KEYS
+            | TENTH_SOURCE_CLOSED_KEYS
             | OWNER_DECIDED_SOURCE_KEYS,
         )
         self.assertEqual(
@@ -1195,11 +1203,12 @@ class TestSpellSourceQualification(unittest.TestCase):
                 | SEVENTH_SOURCE_HELD_KEYS
             )
             - OWNER_DECIDED_SOURCE_KEYS
-            - FAMILIAR_SOURCE_CLOSED_KEYS,
+            - FAMILIAR_SOURCE_CLOSED_KEYS
+            - TENTH_SOURCE_CLOSED_KEYS,
         )
-        self.assertEqual(len(classification["source_resolved_keys"]), 67)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 67)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
+        self.assertEqual(len(classification["source_resolved_keys"]), 70)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 70)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
         self.assertEqual(len(classification["historical_source_blocking_keys"]), 77)
         self.assertNotIn(
             "source.spell.augury.unresolved.four_omen_members",
@@ -1296,11 +1305,11 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
         self.assertEqual(classification["downstream_only_key_count"], 5)
-        self.assertEqual(classification["source_blocking_key_count"], 10)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
-        self.assertEqual(len(classification["source_resolved_keys"]), 67)
-        self.assertEqual(len(classification["source_held_keys"]), 10)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
+        self.assertEqual(len(classification["source_resolved_keys"]), 70)
+        self.assertEqual(len(classification["source_held_keys"]), 7)
         self.assertEqual(classification["source_reviewed_key_count"], 77)
         self.assertEqual(
             set(classification["source_resolved_keys"]),
@@ -1312,6 +1321,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.SIXTH_SOURCE_CLOSED_KEYS
             | SEVENTH_SOURCE_CLOSED_KEYS
             | FAMILIAR_SOURCE_CLOSED_KEYS
+            | TENTH_SOURCE_CLOSED_KEYS
             | OWNER_DECIDED_SOURCE_KEYS,
         )
         self.assertEqual(
@@ -1326,13 +1336,14 @@ class TestSpellSourceQualification(unittest.TestCase):
                 | SEVENTH_SOURCE_HELD_KEYS
             )
             - OWNER_DECIDED_SOURCE_KEYS
-            - FAMILIAR_SOURCE_CLOSED_KEYS,
+            - FAMILIAR_SOURCE_CLOSED_KEYS
+            - TENTH_SOURCE_CLOSED_KEYS,
         )
         self.assertIn(
             "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
             classification["source_held_keys"],
         )
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
 
     def test_fourth_source_batch_adds_only_reviewed_closures_and_holds(self) -> None:
         assert TOOL is not None
@@ -1340,10 +1351,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         classification = TOOL._validate_source_unknown_classifications(manifest)
 
         self.assertEqual(classification["source_reviewed_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
-        self.assertEqual(classification["source_blocking_key_count"], 10)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
         self.assertEqual(
             set(classification["source_held_keys"]),
             (
@@ -1356,7 +1367,8 @@ class TestSpellSourceQualification(unittest.TestCase):
                 | SEVENTH_SOURCE_HELD_KEYS
             )
             - OWNER_DECIDED_SOURCE_KEYS
-            - FAMILIAR_SOURCE_CLOSED_KEYS,
+            - FAMILIAR_SOURCE_CLOSED_KEYS
+            - TENTH_SOURCE_CLOSED_KEYS,
         )
         self.assertNotIn(
             "source.spell.lesser_restoration.unresolved.multisource_condition_removal",
@@ -1599,11 +1611,11 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         classification = TOOL._validate_source_unknown_classifications(manifest)
         self.assertEqual(classification["source_reviewed_key_count"], 77)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
-        self.assertEqual(classification["source_blocking_key_count"], 10)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
-        self.assertEqual(len(classification["source_held_keys"]), 10)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
+        self.assertEqual(len(classification["source_held_keys"]), 7)
         self.assertEqual(
             set(classification["source_held_keys"]),
             (
@@ -1616,13 +1628,14 @@ class TestSpellSourceQualification(unittest.TestCase):
                 | SEVENTH_SOURCE_HELD_KEYS
             )
             - OWNER_DECIDED_SOURCE_KEYS
-            - FAMILIAR_SOURCE_CLOSED_KEYS,
+            - FAMILIAR_SOURCE_CLOSED_KEYS
+            - TENTH_SOURCE_CLOSED_KEYS,
         )
         self.assertEqual(
             classification["source_held_keys"][-2:],
             [
+                "source.spell.prayer_of_healing.unresolved.responder_census",
                 "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
-                "source.spell.unseen_servant.unresolved.subject_health_classification",
             ],
         )
         phantasmal_force = [
@@ -1858,9 +1871,11 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.FOURTH_SOURCE_HELD_KEYS
         )
         self.assertTrue(
-            (expected_prior_holds - OWNER_DECIDED_SOURCE_KEYS).issubset(
-                set(classification["source_held_keys"])
-            )
+            (
+                expected_prior_holds
+                - OWNER_DECIDED_SOURCE_KEYS
+                - TENTH_SOURCE_CLOSED_KEYS
+            ).issubset(set(classification["source_held_keys"]))
         )
         future = [
             subobligation
@@ -2001,10 +2016,10 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertEqual(contract["selected_source_held_key_count"], 3)
         self.assertEqual(contract["selected_source_held_subobligation_count"], 3)
         self.assertEqual(result["source_reviewed_key_count"], 77)
-        self.assertEqual(len(result["source_resolution_evidence"]), 88)
-        self.assertEqual(result["source_resolved_subobligation_count"], 71)
-        self.assertEqual(result["source_held_subobligation_count"], 10)
-        self.assertEqual(result["source_blocking_key_count"], 10)
+        self.assertEqual(len(result["source_resolution_evidence"]), 91)
+        self.assertEqual(result["source_resolved_subobligation_count"], 74)
+        self.assertEqual(result["source_held_subobligation_count"], 7)
+        self.assertEqual(result["source_blocking_key_count"], 7)
         self.assertEqual(result["future_proof_subobligation_count"], 33)
         self.assertEqual(contract["future_native_proof_status"], "NOT_ESTABLISHED")
         self.assertEqual(
@@ -2030,7 +2045,7 @@ class TestSpellSourceQualification(unittest.TestCase):
             | TOOL.FIFTH_SOURCE_HELD_KEYS
         )
         self.assertTrue(
-            (old_holds - OWNER_DECIDED_SOURCE_KEYS).issubset(
+            (old_holds - OWNER_DECIDED_SOURCE_KEYS - TENTH_SOURCE_CLOSED_KEYS).issubset(
                 set(result["source_held_keys"])
             )
         )
@@ -2286,11 +2301,11 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertEqual(contract["active_source_blocker_count"], 17)
         self.assertEqual(contract["active_source_blocker_entry_count"], 17)
         self.assertEqual(classification["source_reviewed_key_count"], 77)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
-        self.assertEqual(classification["source_blocking_key_count"], 10)
-        self.assertEqual(len(set(classification["source_resolved_keys"])), 67)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(len(set(classification["source_resolved_keys"])), 70)
         self.assertTrue(
             SEVENTH_SOURCE_CLOSED_KEYS.isdisjoint(
                 set(classification["source_blocking_keys"])
@@ -2318,12 +2333,12 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         classification = TOOL._validate_source_unknown_classifications(manifest)
 
-        self.assertEqual(classification["source_resolved_key_count"], 67)
-        self.assertEqual(classification["source_closed_key_count"], 61)
+        self.assertEqual(classification["source_resolved_key_count"], 70)
+        self.assertEqual(classification["source_closed_key_count"], 64)
         self.assertEqual(classification["source_owner_decided_key_count"], 6)
-        self.assertEqual(classification["source_held_key_count"], 10)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
+        self.assertEqual(classification["source_held_key_count"], 7)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
         self.assertEqual(classification["future_proof_subobligation_count"], 33)
         self.assertEqual(
             classification["source_blocking_keys"],
@@ -2332,12 +2347,9 @@ class TestSpellSourceQualification(unittest.TestCase):
                 "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
                 "source.spell.detect_magic.unresolved.aura_overlay_policy",
                 "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
-                "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
                 "source.spell.magic_mouth.unresolved.trigger_episode_frequency",
-                "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
                 "source.spell.prayer_of_healing.unresolved.responder_census",
                 "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
-                "source.spell.unseen_servant.unresolved.subject_health_classification",
             ],
         )
 
@@ -2399,7 +2411,7 @@ class TestSpellSourceQualification(unittest.TestCase):
                 for row in receipt["source_ready_gate"]["blockers"]
                 if row["code"] == "UNRESOLVED_SOURCE_KEYS"
             )["count"],
-            10,
+            7,
         )
         self.assertEqual(
             [row["source_exact_name"] for row in receipt["source_modeling_residuals"]],
@@ -2913,7 +2925,8 @@ class TestSpellSourceQualification(unittest.TestCase):
             set(classification["source_held_keys"]),
             (old_holds | SEVENTH_SOURCE_HELD_KEYS)
             - OWNER_DECIDED_SOURCE_KEYS
-            - FAMILIAR_SOURCE_CLOSED_KEYS,
+            - FAMILIAR_SOURCE_CLOSED_KEYS
+            - TENTH_SOURCE_CLOSED_KEYS,
         )
         future = [
             subobligation
@@ -3907,14 +3920,15 @@ class TestSpellSourceQualification(unittest.TestCase):
 
         resolved_keys = set(classification["source_resolved_keys"])
         held_keys = set(classification["source_held_keys"])
-        self.assertEqual(len(resolved_keys), 67)
+        self.assertEqual(len(resolved_keys), 70)
         self.assertTrue(OWNER_DECIDED_SOURCE_KEYS.issubset(resolved_keys))
         self.assertTrue(FAMILIAR_SOURCE_CLOSED_KEYS.issubset(resolved_keys))
-        self.assertEqual(classification["source_blocking_key_count"], 10)
-        self.assertEqual(classification["source_resolved_subobligation_count"], 71)
-        self.assertEqual(classification["source_held_subobligation_count"], 10)
+        self.assertTrue(TENTH_SOURCE_CLOSED_KEYS.issubset(resolved_keys))
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
         self.assertEqual(classification["source_reviewed_key_count"], 77)
-        self.assertEqual(len(classification["source_resolution_evidence"]), 88)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
         self.assertEqual(
             held_keys,
             {
@@ -3922,12 +3936,9 @@ class TestSpellSourceQualification(unittest.TestCase):
                 "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
                 "source.spell.detect_magic.unresolved.aura_overlay_policy",
                 "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
-                "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
                 "source.spell.magic_mouth.unresolved.trigger_episode_frequency",
-                "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
                 "source.spell.prayer_of_healing.unresolved.responder_census",
                 "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
-                "source.spell.unseen_servant.unresolved.subject_health_classification",
             },
         )
         self.assertEqual(classification["historical_source_blocking_key_count"], 77)
@@ -3944,9 +3955,10 @@ class TestSpellSourceQualification(unittest.TestCase):
                     "source_fifth_resolution_evidence",
                     "source_sixth_resolution_evidence",
                     "source_seventh_resolution_evidence",
+                    "source_tenth_resolution_evidence",
                 )
             ],
-            [12, 13, 12, 11, 13, 13, 7],
+            [12, 13, 12, 11, 13, 13, 7, 3],
         )
 
         owner = manifest["source_interpretation_owner"]
@@ -4053,6 +4065,243 @@ class TestSpellSourceQualification(unittest.TestCase):
         self.assertEqual(receipt["status"], "W05_SPELL_SOURCE_CENSUS_PARTIAL")
         self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
         self.assertFalse(receipt["source_ready_gate"]["ready"])
+
+    def test_tenth_open_domain_batch_closes_only_three_source_obligations(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        manifest = load_json(MANIFEST_PATH)
+        classification = TOOL._validate_source_unknown_classifications(manifest)
+        self.assertEqual(classification["source_resolved_key_count"], 70)
+
+        selected = manifest["source_tenth_resolution_evidence"]
+        self.assertEqual(
+            [
+                (
+                    row["review_item_id"],
+                    row["unresolved_key"],
+                    row["source_category"],
+                    row["disposition"],
+                )
+                for row in selected
+            ],
+            [
+                (
+                    "TENTH-01",
+                    "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+                    "source_mapping_review",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "TENTH-02",
+                    "source.spell.mending.unresolved.repair_dimension_and_missing_matter",
+                    "source_parameter",
+                    "SOURCE_CLOSED",
+                ),
+                (
+                    "TENTH-03",
+                    "source.spell.unseen_servant.unresolved.subject_health_classification",
+                    "source_semantics",
+                    "SOURCE_CLOSED",
+                ),
+            ],
+        )
+        self.assertEqual(classification["source_closed_key_count"], 64)
+        self.assertEqual(classification["source_owner_decided_key_count"], 6)
+        self.assertEqual(classification["source_resolved_subobligation_count"], 74)
+        self.assertEqual(classification["source_held_key_count"], 7)
+        self.assertEqual(classification["source_held_subobligation_count"], 7)
+        self.assertEqual(classification["source_blocking_key_count"], 7)
+        self.assertEqual(classification["source_reviewed_key_count"], 77)
+        self.assertEqual(len(classification["source_resolution_evidence"]), 91)
+        self.assertEqual(classification["future_proof_subobligation_count"], 33)
+        self.assertEqual(
+            set(classification["source_held_keys"]),
+            {
+                "source.spell.arcane_lock.unresolved.destruction_access_policy",
+                "source.spell.create_or_destroy_water.unresolved.container_and_extent_bounds",
+                "source.spell.detect_magic.unresolved.aura_overlay_policy",
+                "source.spell.gentle_repose.unresolved.corpse_and_revival_binding",
+                "source.spell.magic_mouth.unresolved.trigger_episode_frequency",
+                "source.spell.prayer_of_healing.unresolved.responder_census",
+                "source.spell.spike_growth.unresolved.displacement_and_distance_policy",
+            },
+        )
+        contract = manifest["source_tenth_resolution_contract"]
+        self.assertEqual(contract["status"], "PARTIAL_TENTH_OPEN_DOMAIN_SOURCE_ONLY")
+        self.assertEqual(
+            contract["selected_original_classification_indexes"], [47, 56, 78]
+        )
+        self.assertEqual(contract["cumulative_source_closed_key_count"], 64)
+        self.assertEqual(contract["cumulative_owner_decided_key_count"], 6)
+        self.assertEqual(contract["cumulative_source_resolved_key_count"], 70)
+        self.assertEqual(contract["cumulative_source_held_key_count"], 7)
+        self.assertEqual(contract["future_native_proof_status"], "NOT_ESTABLISHED")
+        self.assertEqual(
+            contract["full_339_source_qualification_status"], "NOT_ESTABLISHED"
+        )
+        self.assertEqual(contract["production_claim"], "NONE")
+
+        by_key = {row["unresolved_key"]: row for row in selected}
+        locate = by_key[
+            "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain"
+        ]
+        locate_text = "\n".join(
+            [locate["source_interpretation"], *locate["material_qualifiers"]]
+        )
+        self.assertIn("Beast, Plant creature and nonmagical plant", locate_text)
+        self.assertIn("specific kind", locate_text)
+        self.assertIn("closest matching", locate_text)
+        self.assertIn("within 5 miles", locate_text)
+        self.assertIn("no finite individually named", locate_text.lower())
+        self.assertIn("failed completeness", locate_text.lower())
+        self.assertNotIn("complete three-member census", locate_text.lower())
+
+        mending = by_key[
+            "source.spell.mending.unresolved.repair_dimension_and_missing_matter"
+        ]
+        mending_text = "\n".join(
+            [mending["source_interpretation"], *mending["material_qualifiers"]]
+        )
+        self.assertIn("1 foot in any dimension", mending_text)
+        self.assertIn("1 minute", mending_text)
+        self.assertIn("no numeric missing-material allowance", mending_text.lower())
+        self.assertIn("not a universal zero-loss prohibition", mending_text.lower())
+        self.assertIn("sole native Asset durability authority", mending_text)
+        self.assertIn("cosmetic", mending_text.lower())
+        self.assertNotIn("missing-matter quantity is zero", mending_text.lower())
+
+        servant = by_key[
+            "source.spell.unseen_servant.unresolved.subject_health_classification"
+        ]
+        servant_text = "\n".join(
+            [servant["source_interpretation"], *servant["material_qualifiers"]]
+        )
+        self.assertIn("Medium force", servant_text)
+        self.assertIn("sparse native Actor force proxy", servant_text)
+        self.assertIn("does not grant a creature-type tag", servant_text)
+        self.assertIn("bounded pre-outcome adjudication", servant_text)
+        self.assertNotIn("categorically a creature", servant_text.lower())
+
+        review = manifest["source_tenth_review"]
+        self.assertEqual(review["senior_ruling_id"], "ses_ec3aae68fffea0W12EXQmT1zaR")
+        self.assertEqual(
+            review["source_report_sha256"],
+            "100a8c75aa6087bb0c05d81a06b28521c5e8e8328756a3d98300d643aca1c933",
+        )
+
+        for index, key in (
+            (47, locate["unresolved_key"]),
+            (56, mending["unresolved_key"]),
+            (78, servant["unresolved_key"]),
+        ):
+            original = manifest["source_unknown_classifications"][index]
+            self.assertEqual(original["unresolved_key"], key)
+            self.assertEqual(original["original_status"], "NOT_ESTABLISHED")
+            self.assertTrue(original["source_ready_blocking"])
+            self.assertEqual(
+                original["original_disposition"],
+                "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS",
+            )
+
+        self.assertEqual(
+            fourth_evidence_by_key_for(
+                manifest,
+                "source.spell.locate_animals_or_plants.unresolved.eligible_search_domain",
+            )["disposition"],
+            "SOURCE_HELD",
+        )
+        self.assertEqual(
+            next(
+                row
+                for row in manifest["source_fifth_resolution_evidence"]
+                if row["unresolved_key"]
+                == "source.spell.mending.unresolved.repair_dimension_and_missing_matter"
+            )["disposition"],
+            "SOURCE_HELD",
+        )
+        self.assertEqual(
+            next(
+                row
+                for row in manifest["source_sixth_resolution_evidence"]
+                if row["review_item_id"] == "SIXTH-11A"
+            )["disposition"],
+            "SOURCE_HELD",
+        )
+        key79 = next(
+            row
+            for row in manifest["source_sixth_resolution_evidence"]
+            if row["review_item_id"] == "SIXTH-11B"
+        )
+        self.assertEqual(key79["disposition"], "SOURCE_CLOSED")
+        self.assertIn(
+            "not an ambient caster-motion leash", key79["material_qualifiers"]
+        )
+
+        self.assertTrue(
+            all(
+                row["status"] == "NOT_ESTABLISHED"
+                and row["gate_phase"] == "FUTURE_PROOF"
+                for row in classification["future_proof_subobligations"]
+            )
+        )
+        roster = TOOL.derive_source_requirement_roster(manifest)
+        receipt = TOOL._source_qualification_receipt(manifest, roster)
+        self.assertEqual(receipt["source_qualification_status"], "NOT_ESTABLISHED")
+        self.assertFalse(receipt["source_ready_gate"]["ready"])
+        self.assertEqual(
+            next(
+                row
+                for row in receipt["source_ready_gate"]["blockers"]
+                if row["code"] == "UNRESOLVED_SOURCE_KEYS"
+            )["count"],
+            7,
+        )
+
+    def test_tenth_open_domain_batch_rejects_scope_qualifier_and_proof_mutations(
+        self,
+    ) -> None:
+        assert TOOL is not None
+        baseline = load_json(MANIFEST_PATH)
+        rejections = load_json(REJECTED_PATH)["tenth_source_rejections"]
+        self.assertGreaterEqual(len(rejections), 12)
+
+        def mutate(candidate: dict[str, object], rejection: dict[str, object]) -> None:
+            target = rejection["target"]
+            if target == "review":
+                row = candidate["source_tenth_review"]
+            elif target == "contract":
+                row = candidate["source_tenth_resolution_contract"]
+            elif target == "evidence":
+                row = candidate["source_tenth_resolution_evidence"][
+                    rejection["record_index"]
+                ]
+            elif target == "locator":
+                row = candidate["source_tenth_resolution_evidence"][
+                    rejection["record_index"]
+                ]["source_markdown_locators"][rejection["locator_index"]]
+            else:
+                raise AssertionError(f"unknown tenth-source target: {target}")
+
+            field = rejection["field"]
+            operation = rejection["operation"]
+            if operation == "replace":
+                row[field] = rejection["value"]
+            elif operation == "append":
+                row[field].append(rejection["value"])
+            else:
+                raise AssertionError(f"unknown tenth-source mutation: {operation}")
+
+        self.assertEqual(len({row["case_id"] for row in rejections}), len(rejections))
+        for rejection in rejections:
+            candidate = copy.deepcopy(baseline)
+            with self.subTest(case=rejection["case_id"]):
+                mutate(candidate, rejection)
+                with self.assertRaises(TOOL.SourceQualificationError) as caught:
+                    TOOL._validate_source_unknown_classifications(candidate)
+                self.assertEqual(
+                    caught.exception.code, rejection["expected_error_code"]
+                )
 
 
 if __name__ == "__main__":

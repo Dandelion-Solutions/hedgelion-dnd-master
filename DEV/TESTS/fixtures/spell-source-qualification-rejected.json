@@ -633,5 +633,183 @@
       "value": "READY",
       "expected_error_code": "source_ninth_contract"
     }
+  ],
+  "tenth_source_rejections": [
+    {
+      "case_id": "tenth-senior-ruling-identity-is-pinned",
+      "target": "review",
+      "operation": "replace",
+      "field": "senior_ruling_id",
+      "value": "unreviewed-session",
+      "expected_error_code": "source_tenth_review"
+    },
+    {
+      "case_id": "tenth-source-report-hash-is-pinned",
+      "target": "review",
+      "operation": "replace",
+      "field": "source_report_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_tenth_review"
+    },
+    {
+      "case_id": "tenth-task-evidence-hash-is-pinned",
+      "target": "review",
+      "operation": "replace",
+      "field": "task_evidence_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_tenth_review"
+    },
+    {
+      "case_id": "tenth-accepted-scope-cannot-broaden",
+      "target": "review",
+      "operation": "replace",
+      "field": "accepted_scope",
+      "value": "ALL_SPELL_SOURCE_KEYS_AND_NATIVE_CONSUMERS",
+      "expected_error_code": "source_tenth_review"
+    },
+    {
+      "case_id": "tenth-source-closure-count-is-derived",
+      "target": "contract",
+      "operation": "replace",
+      "field": "cumulative_source_held_key_count",
+      "value": 6,
+      "expected_error_code": "source_tenth_contract"
+    },
+    {
+      "case_id": "tenth-selected-key-census-is-exact",
+      "target": "evidence",
+      "record_index": 1,
+      "operation": "replace",
+      "field": "unresolved_key",
+      "value": "source.spell.unreviewed.unresolved.substitute",
+      "expected_error_code": "source_tenth_census"
+    },
+    {
+      "case_id": "tenth-selected-disposition-cannot-revert-to-held",
+      "target": "evidence",
+      "record_index": 1,
+      "operation": "replace",
+      "field": "disposition",
+      "value": "SOURCE_HELD",
+      "expected_error_code": "source_tenth_binding"
+    },
+    {
+      "case_id": "locate-predicates-are-not-a-finite-three-member-census",
+      "target": "evidence",
+      "record_index": 0,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "Beast, Plant creature and nonmagical plant are a complete individually named census of three subjects.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "locate-query-must-name-or-describe-a-specific-kind",
+      "target": "evidence",
+      "record_index": 0,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "Search any creature or plant and return every match.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "locate-caller-list-cannot-prove-nearest-absence",
+      "target": "evidence",
+      "record_index": 0,
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "A caller-supplied complete list proves that no closer matching subject exists.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "locate-source-span-hash-is-pinned",
+      "target": "locator",
+      "record_index": 0,
+      "locator_index": 0,
+      "operation": "replace",
+      "field": "span_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_tenth_span_hash"
+    },
+    {
+      "case_id": "mending-dimension-applies-to-every-dimension",
+      "target": "evidence",
+      "record_index": 1,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "Mending repairs a break up to 1 foot in total size.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "mending-cast-time-remains-one-minute",
+      "target": "evidence",
+      "record_index": 1,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "Mending is an Action that repairs a touched object.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "mending-no-number-is-not-a-zero-loss-rule",
+      "target": "evidence",
+      "record_index": 1,
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "Every amount of missing material categorically makes the source repair ineligible.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "unseen-force-does-not-infer-creature-type",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "The force is categorically a creature and qualifies for every creature target spell.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "unseen-force-does-not-infer-noncreature-legality",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "The force is categorically a noncreature and every target rule permits it.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "actor-proxy-does-not-indirectly-grant-type-targeting",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "The Actor proxy grants creature-type target eligibility to every spell.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "unseen-force-does-not-gain-private-mind",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "The Actor carrier has a private autonomous mind.",
+      "expected_error_code": "source_tenth_qualifier"
+    },
+    {
+      "case_id": "unseen-native-consumer-proof-remains-held",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "replace",
+      "field": "future_native_proof_status",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_tenth_future_proof"
+    },
+    {
+      "case_id": "unseen-native-proof-reference-cannot-be-fabricated",
+      "target": "evidence",
+      "record_index": 2,
+      "operation": "replace",
+      "field": "actual_native_proof_refs",
+      "value": ["native.actor.unseen_servant"],
+      "expected_error_code": "source_tenth_future_proof"
+    }
   ]
 }
