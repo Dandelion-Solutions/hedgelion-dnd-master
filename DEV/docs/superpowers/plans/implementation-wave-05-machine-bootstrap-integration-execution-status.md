@@ -3756,3 +3756,8 @@ FullSP03/SP00/P2 outputs NOT_PRODUCED; actualSP04 and later joins retain inputs.
 UNPUBLISHED_WORK: this verified source/design candidate and documentary briefs/
 cursor synchronization pending normal publication/read-back. No unfinished runtime
 code or hidden accepted bridge design. No further human checkpoint GO is required.
+
+## 2026-10-14 bounded A–F source-and-owner re-review
+
+REPORT: `DEV/docs/superpowers/design/2026-10-14-sp00-source-interpretation-review.md`.
+DISPOSITION: six narrowed material outcome profiles remain NEEDS_PO; all source HELD records/counts retained. Ordinary per-dart draws and prescribed automatic Resistance occurrence are source-grounded; pending Magic Missile instance/Concentration and Resistance mixed allocation remain distinct. Exact source-conformance lifecycle wording now says once per actual turn with a target-local actual-turn gate. Brief/control framing corrected; no gameplay policy selected, no full task completed or accepted output advanced. Existing independent source evidence/native/auth-turn continuation remains authorized. VERSION_IMPACT NONE; no production code.
