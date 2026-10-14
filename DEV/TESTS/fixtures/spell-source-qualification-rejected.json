@@ -488,5 +488,150 @@
       "field": "original_reason",
       "value": "Owner decision rewrote historical classification."
     }
+  ],
+  "familiar_source_rejections": [
+    {
+      "case_id": "familiar-census-cannot-drop-an-eligible-body",
+      "target": "census_fixture",
+      "mutation": "remove_form",
+      "name": "Weasel",
+      "expected_error_code": "source_familiar_member_census"
+    },
+    {
+      "case_id": "familiar-member-must-retain-beast-and-cr-zero-predicate",
+      "target": "census_fixture",
+      "mutation": "change_form_field",
+      "name": "Bat",
+      "field": "challenge_rating",
+      "value": "1/8",
+      "expected_error_code": "source_familiar_member"
+    },
+    {
+      "case_id": "familiar-predicate-does-not-create-a-swarm-ban",
+      "target": "census_fixture",
+      "mutation": "change_eligibility_predicate",
+      "field": "swarm_is_independent_exclusion_predicate",
+      "value": true,
+      "expected_error_code": "source_familiar_predicate"
+    },
+    {
+      "case_id": "familiar-body-origin-span-is-pinned",
+      "target": "census_fixture",
+      "mutation": "change_span_start",
+      "name": "Cat",
+      "value": 32706,
+      "expected_error_code": "source_familiar_span_hash"
+    },
+    {
+      "case_id": "familiar-stat-and-trait-body-identity-is-pinned",
+      "target": "census_fixture",
+      "mutation": "change_span_digest",
+      "name": "Baboon",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_familiar_span_hash"
+    },
+    {
+      "case_id": "familiar-state-action-kind-is-conditional",
+      "target": "census_fixture",
+      "mutation": "change_form_option_field",
+      "name": "Bubble Dash",
+      "field": "action_type",
+      "value": "BONUS_ACTION",
+      "expected_error_code": "source_familiar_form_action"
+    },
+    {
+      "case_id": "familiar-ink-cloud-origin-and-trigger-remain-bound",
+      "target": "census_fixture",
+      "mutation": "change_form_option_field",
+      "name": "Ink Cloud (1/Day)",
+      "field": "condition",
+      "value": "ANYTIME_WHILE_VISIBLE",
+      "expected_error_code": "source_familiar_form_action"
+    },
+    {
+      "case_id": "familiar-attack-only-pack-tactics-is-not-relayed",
+      "target": "census_fixture",
+      "mutation": "remove_attack_only_trait",
+      "value": "source.srd521.statblock.vulture",
+      "expected_error_code": "source_familiar_attack_trait"
+    },
+    {
+      "case_id": "familiar-source-prerequisite-root-cannot-be-omitted",
+      "target": "prerequisites_fixture",
+      "mutation": "remove_root",
+      "value": "PR37",
+      "expected_error_code": "source_familiar_prerequisite_census"
+    },
+    {
+      "case_id": "familiar-caster-component-source-clause-cannot-be-omitted",
+      "target": "prerequisites_fixture",
+      "mutation": "remove_source_clause",
+      "value": "source.srd521.prerequisite.casting.components",
+      "expected_error_code": "source_familiar_source_prerequisites"
+    },
+    {
+      "case_id": "familiar-help-stabilization-does-not-require-medicine-proficiency",
+      "target": "prerequisites_fixture",
+      "mutation": "help_first_aid_field",
+      "field": "medicine_proficiency_required",
+      "value": true,
+      "expected_error_code": "source_familiar_help_first_aid"
+    },
+    {
+      "case_id": "familiar-parameterized-input-boundary-cannot-shrink",
+      "target": "prerequisites_fixture",
+      "mutation": "remove_parameterized_input",
+      "value": "external.selected_touch_spell",
+      "expected_error_code": "source_familiar_parameterized_inputs"
+    },
+    {
+      "case_id": "familiar-source-fixture-path-is-not-caller-selected",
+      "target": "manifest_review",
+      "mutation": "review_field",
+      "field": "census_fixture_path",
+      "value": "/tmp/unreviewed-familiar.json",
+      "expected_error_code": "source_ninth_review"
+    },
+    {
+      "case_id": "familiar-original-current-map-entry-remains-bound",
+      "target": "manifest_current_map",
+      "mutation": "current_map_field",
+      "field": "source_exact_name",
+      "value": "Find Steed",
+      "expected_error_code": "source_third12_binding"
+    },
+    {
+      "case_id": "familiar-resolution-rejects-unowned-template-flags",
+      "target": "manifest_evidence",
+      "mutation": "add_evidence_field",
+      "field": "native_template_ready",
+      "value": true,
+      "expected_error_code": "source_ninth_binding"
+    },
+    {
+      "case_id": "familiar-source-closure-cannot-promote-native-proof",
+      "target": "manifest_evidence",
+      "mutation": "evidence_field",
+      "field": "future_native_proof_status",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_familiar_future_proof"
+    },
+    {
+      "case_id": "familiar-future-proof-classification-remains-held",
+      "target": "classification_future_proof",
+      "mutation": "classification_subobligation_field",
+      "category": "downstream_domain_consumer_admission_native_proof",
+      "field": "status",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_unknown_subobligation"
+    },
+    {
+      "case_id": "familiar-source-closure-does-not-claim-source-ready",
+      "target": "manifest_contract",
+      "mutation": "contract_field",
+      "field": "production_claim",
+      "value": "READY",
+      "expected_error_code": "source_ninth_contract"
+    }
   ]
 }

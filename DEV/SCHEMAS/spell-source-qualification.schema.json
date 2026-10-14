@@ -42,6 +42,9 @@
     "source_interpretation_owner",
     "source_eighth_resolution_contract",
     "source_eighth_resolution_evidence",
+    "source_ninth_review",
+    "source_ninth_resolution_contract",
+    "source_ninth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -178,6 +181,16 @@
       "maxItems": 6,
       "items": {"$ref": "#/$defs/sourceEighthResolutionEvidence"}
     },
+    "source_ninth_review": {"$ref": "#/$defs/sourceNinthReview"},
+    "source_ninth_resolution_contract": {
+      "$ref": "#/$defs/sourceNinthResolutionContract"
+    },
+    "source_ninth_resolution_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/sourceNinthResolutionEvidence"}
+    },
     "source_modeling_resolutions": {
       "type": "array",
       "minItems": 5,
@@ -238,6 +251,52 @@
     "package_notice_observation": {"$ref": "#/$defs/packageNoticeObservation"}
   },
   "$defs": {
+    "familiarPrerequisiteEntry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["prerequisite_id", "review_register_line", "review_root", "classification", "subject_role", "applicable_member_source_keys", "source_refs", "member_body_refs", "predicates_and_outcomes", "permitted_conditional_contexts", "non_goals", "native_consumer_admission_status", "attack_relay_classification"],
+      "properties": {
+        "prerequisite_id": {"type": "string", "pattern": "^PR[0-9]{2}$"},
+        "review_register_line": {"type": "integer", "minimum": 171, "maximum": 207},
+        "review_root": {"type": "string", "minLength": 1},
+        "classification": {"type": "string", "minLength": 1},
+        "subject_role": {"enum": ["FAMILIAR_OR_APPLICABLE_OTHER_CREATURE", "CASTER_AND_FAMILIAR", "CASTER"]},
+        "applicable_member_source_keys": {"$ref": "#/$defs/familiarNonemptyStrings"},
+        "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/familiarSourceReference"}},
+        "member_body_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/familiarMemberJoin"}},
+        "predicates_and_outcomes": {"$ref": "#/$defs/familiarNonemptyStrings"},
+        "permitted_conditional_contexts": {"$ref": "#/$defs/familiarNonemptyStrings"},
+        "non_goals": {"$ref": "#/$defs/familiarNonemptyStrings"},
+        "native_consumer_admission_status": {"const": "NOT_ESTABLISHED"},
+        "attack_relay_classification": {"const": "NOT_DECIDED_BY_THIS_SOURCE_LEDGER"}
+      }
+    },
+    "familiarNonemptyStrings": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "familiarSourceSpan": {
+      "type": "object", "additionalProperties": false,
+      "required": ["line_start", "line_end", "raw_utf8_sha256"],
+      "properties": {"line_start": {"type": "integer", "minimum": 1}, "line_end": {"type": "integer", "minimum": 1}, "raw_utf8_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "familiarMemberJoin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_key", "record_index", "span"],
+      "properties": {"source_key": {"type": "string", "minLength": 1}, "record_index": {"type": "integer", "minimum": 0, "maximum": 329}, "span": {"$ref": "#/$defs/familiarSourceSpan"}}
+    },
+    "familiarSourceReference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "collection", "source_path", "line_start", "line_end", "raw_utf8_sha256"],
+      "properties": {
+        "kind": {"const": "SOURCE_SPAN"},
+        "collection": {"enum": ["spell_body", "support_clauses", "prerequisite_source_clauses"]},
+        "index": {"type": "integer", "minimum": 0},
+        "source_path": {"const": "DEV/docs/SRD_CC_v5.2.1.md"},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1},
+        "raw_utf8_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "if": {"properties": {"collection": {"const": "spell_body"}}},
+      "then": {"not": {"required": ["index"]}},
+      "else": {"required": ["index"]}
+    },
     "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "evidenceArtifact": {
       "type": "object",
@@ -2397,6 +2456,137 @@
         "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
         "actual_native_proof_refs": {"type": "array", "maxItems": 0},
         "golden_witness": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sourceEighthResistanceGoldenWitness"}]}
+      }
+    },
+    "sourceNinthReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "candidate_revision",
+        "accepted_census_path", "accepted_census_sha256",
+        "accepted_prerequisites_path", "accepted_prerequisites_sha256",
+        "r2_manifest_path", "r2_manifest_sha256", "r1_review_sha256",
+        "independent_r2_review_path", "independent_r2_review_sha256",
+        "census_fixture_path", "census_fixture_sha256",
+        "prerequisites_fixture_path", "prerequisites_fixture_sha256",
+        "source_path", "source_git_blob", "source_sha256",
+        "task_evidence_path", "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_FAMILIAR_CENSUS_R2_SOURCE_REVIEW_20261014"},
+        "integration_base_sha": {"const": "75bc49af2fc6ca3159c18c4e59fd63befaa0894b"},
+        "candidate_revision": {"const": "R2"},
+        "accepted_census_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-20261014.json"},
+        "accepted_census_sha256": {"const": "f3671f452d6d382abdae3f89318da03ac79743ba60bfa0a159c24dafac4eec0d"},
+        "accepted_prerequisites_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-familiar-prerequisites-20261014.json"},
+        "accepted_prerequisites_sha256": {"const": "5869ec71cf99487e28c6d0400e3583ceee80daafc300559e9483818c7dd7800f"},
+        "r2_manifest_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-familiar-R2-manifest-20261014.json"},
+        "r2_manifest_sha256": {"const": "44d8c10b03f1e3276bf11ad0fc0f29dd9761d91decbcfaf7010fb50a3a51f0c7"},
+        "r1_review_sha256": {"const": "2867feaa6d9bbd62c59fbddcfc4f6681305b2ceb5c86db273123c608d4d0d55c"},
+        "independent_r2_review_path": {"const": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-R2-review-20261014.md"},
+        "independent_r2_review_sha256": {"const": "bd878a6746e71705db8d2d7c0947cb2ed8239086a93d932a275832e57d6a6405"},
+        "census_fixture_path": {"const": "DEV/TESTS/fixtures/spell-familiar-source-census.json"},
+        "census_fixture_sha256": {"const": "28c16ff9717cb066a316bbd8442944dc7cbd3400079f1cd88a460b76e3fc05ae"},
+        "prerequisites_fixture_path": {"const": "DEV/TESTS/fixtures/spell-familiar-source-prerequisites.json"},
+        "prerequisites_fixture_sha256": {"const": "8fcde530c41b8f67b85f71b679f9236d9f434615e9bc6ab69b64e3824b55ad63"},
+        "source_path": {"const": "DEV/docs/SRD_CC_v5.2.1.md"},
+        "source_git_blob": {"const": "45392ab96e8adfeba66694bca8950b6ce1a71797"},
+        "source_sha256": {"const": "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-14-sp00-familiar-source-census-integration.md"},
+        "task_evidence_sha256": {"const": "07b976f4a70d2c4008c0bdf2821ade9dcd2503eefdf44aeddf98c6e65cc765cb"}
+      }
+    },
+    "sourceNinthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_source_closed_key_count", "selected_source_closed_subobligation_count",
+        "prior_reviewed_key_count", "prior_resolution_record_count",
+        "prior_source_resolved_key_count", "prior_source_resolved_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "prior_active_source_blocker_entry_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_closed_key_count", "cumulative_owner_decided_key_count",
+        "cumulative_source_resolved_key_count", "cumulative_source_resolved_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "original_record_count", "original_source_blocking_key_count",
+        "downstream_only_key_count", "active_source_blocker_count",
+        "active_source_blocker_entry_count", "future_native_proof_status",
+        "full_339_source_qualification_status", "production_claim",
+        "selected_original_classification_indexes"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_NINTH_FIND_FAMILIAR_CENSUS_SOURCE_ONLY"},
+        "selected_key_count": {"const": 1},
+        "resolution_record_count": {"const": 1},
+        "selected_source_closed_key_count": {"const": 1},
+        "selected_source_closed_subobligation_count": {"const": 1},
+        "prior_reviewed_key_count": {"const": 77},
+        "prior_resolution_record_count": {"const": 87},
+        "prior_source_resolved_key_count": {"const": 66},
+        "prior_source_resolved_subobligation_count": {"const": 70},
+        "prior_source_held_key_count": {"const": 11},
+        "prior_source_held_subobligation_count": {"const": 11},
+        "prior_active_source_blocker_count": {"const": 11},
+        "prior_active_source_blocker_entry_count": {"const": 11},
+        "cumulative_reviewed_key_count": {"const": 77},
+        "cumulative_resolution_record_count": {"const": 88},
+        "cumulative_source_closed_key_count": {"const": 61},
+        "cumulative_owner_decided_key_count": {"const": 6},
+        "cumulative_source_resolved_key_count": {"const": 67},
+        "cumulative_source_resolved_subobligation_count": {"const": 71},
+        "cumulative_source_held_key_count": {"const": 10},
+        "cumulative_source_held_subobligation_count": {"const": 10},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 10},
+        "active_source_blocker_entry_count": {"const": 10},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {"const": [30]}
+      }
+    },
+    "sourceNinthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_classification_pointer",
+        "source_unresolved_record_pointer", "current_map_pointer",
+        "census_fixture_pointer", "prerequisites_fixture_pointer",
+        "eligible_form_count", "named_example_count", "additional_form_count",
+        "blocked_attack_count", "general_nonattack_action_count",
+        "source_prerequisite_root_count", "source_prerequisite_reference_count",
+        "new_source_clause_count", "parameterized_input_category_count",
+        "retained_source_residual", "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {"const": "FAMILIAR-CENSUS-01"},
+        "unresolved_key": {"const": "source.spell.find_familiar.unresolved.eligible_form_census"},
+        "source_exact_name": {"const": "Find Familiar"},
+        "source_category": {"const": "source_mapping_review"},
+        "subobligation_id": {"const": "source.spell.find_familiar.unresolved.eligible_form_census::source_mapping_review"},
+        "disposition": {"const": "SOURCE_CLOSED"},
+        "source_classification_pointer": {"const": "/source_unknown_classifications/30"},
+        "source_unresolved_record_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/30"},
+        "current_map_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/entries/48"},
+        "census_fixture_pointer": {"const": "DEV/TESTS/fixtures/spell-familiar-source-census.json#/eligible_forms"},
+        "prerequisites_fixture_pointer": {"const": "DEV/TESTS/fixtures/spell-familiar-source-prerequisites.json#/review_register_roots"},
+        "eligible_form_count": {"const": 24},
+        "named_example_count": {"const": 11},
+        "additional_form_count": {"const": 13},
+        "blocked_attack_count": {"const": 23},
+        "general_nonattack_action_count": {"const": 11},
+        "source_prerequisite_root_count": {"const": 37},
+        "source_prerequisite_reference_count": {"const": 151},
+        "new_source_clause_count": {"const": 33},
+        "parameterized_input_category_count": {"const": 5},
+        "retained_source_residual": {"const": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; native consumer admission, action execution, full-339 source qualification and package readiness remain NOT_ESTABLISHED."},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }
     },
     "packageNoticeObservation": {

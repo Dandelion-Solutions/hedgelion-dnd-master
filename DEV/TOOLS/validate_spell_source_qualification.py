@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "3fcbb6d7177a468e00803a2cbf4c8df9bd7021b291fdc7bad568edb194a652eb"
+    "b8936badb8ebdd1ddccd571b112e41a91c9c432e4cb6f7de9124c334952ed527"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -3023,6 +3023,137 @@ SOURCE_MARKDOWN_RELATIVE_PATH = "DEV/docs/SRD_CC_v5.2.1.md"
 SOURCE_MARKDOWN_SHA256 = (
     "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e"
 )
+FAMILIAR_CENSUS_FIXTURE_PATH = "DEV/TESTS/fixtures/spell-familiar-source-census.json"
+FAMILIAR_CENSUS_FIXTURE_SHA256 = (
+    "28c16ff9717cb066a316bbd8442944dc7cbd3400079f1cd88a460b76e3fc05ae"
+)
+FAMILIAR_PREREQUISITES_FIXTURE_PATH = (
+    "DEV/TESTS/fixtures/spell-familiar-source-prerequisites.json"
+)
+FAMILIAR_PREREQUISITES_FIXTURE_SHA256 = (
+    "8fcde530c41b8f67b85f71b679f9236d9f434615e9bc6ab69b64e3824b55ad63"
+)
+FAMILIAR_SOURCE_EVIDENCE_PATH = (
+    "DEV/docs/superpowers/design/2026-10-14-sp00-familiar-source-census-integration.md"
+)
+FAMILIAR_SOURCE_EVIDENCE_SHA256 = (
+    "07b976f4a70d2c4008c0bdf2821ade9dcd2503eefdf44aeddf98c6e65cc765cb"
+)
+FAMILIAR_NAMED_EXAMPLES = (
+    "Bat",
+    "Cat",
+    "Frog",
+    "Hawk",
+    "Lizard",
+    "Octopus",
+    "Owl",
+    "Rat",
+    "Raven",
+    "Spider",
+    "Weasel",
+)
+FAMILIAR_ADDITIONAL_FORMS = (
+    "Baboon",
+    "Badger",
+    "Crab",
+    "Deer",
+    "Eagle",
+    "Giant Fire Beetle",
+    "Goat",
+    "Hyena",
+    "Jackal",
+    "Piranha",
+    "Scorpion",
+    "Seahorse",
+    "Vulture",
+)
+FAMILIAR_FORM_NAMES = (
+    "Baboon",
+    "Badger",
+    "Bat",
+    "Cat",
+    "Crab",
+    "Deer",
+    "Eagle",
+    "Frog",
+    "Giant Fire Beetle",
+    "Goat",
+    "Hawk",
+    "Hyena",
+    "Jackal",
+    "Lizard",
+    "Octopus",
+    "Owl",
+    "Piranha",
+    "Rat",
+    "Raven",
+    "Scorpion",
+    "Seahorse",
+    "Spider",
+    "Vulture",
+    "Weasel",
+)
+FAMILIAR_NONATTACK_ACTIONS = (
+    "Dash",
+    "Disengage",
+    "Dodge",
+    "Help",
+    "Hide",
+    "Influence",
+    "Magic",
+    "Ready",
+    "Search",
+    "Study",
+    "Utilize",
+)
+FAMILIAR_PARAMETERIZED_INPUTS = (
+    ("external.selected_touch_spell", ("PR36",)),
+    ("external.granted_magic_feature_item_spell", ("PR11", "PR12")),
+    ("external.object_or_improvised_task", ("PR15",)),
+    (
+        "external.environment_web_water_terrain",
+        ("PR19", "PR20", "PR22", "PR23", "PR24", "PR25", "PR26", "PR27", "PR30"),
+    ),
+    (
+        "external.affected_target_or_incoming_effect",
+        ("PR08", "PR09", "PR10", "PR17", "PR18", "PR31"),
+    ),
+)
+FAMILIAR_R2_MANIFEST_SHA256 = (
+    "44d8c10b03f1e3276bf11ad0fc0f29dd9761d91decbcfaf7010fb50a3a51f0c7"
+)
+FAMILIAR_R2_REVIEW_SHA256 = (
+    "bd878a6746e71705db8d2d7c0947cb2ed8239086a93d932a275832e57d6a6405"
+)
+FAMILIAR_SOURCE_REFERENCE_TUPLES_SHA256 = (
+    "fb51198cc78998575f3faf79aa1906163c0d23d53f2b981b877935315e6c7b47"
+)
+FAMILIAR_NEW_SOURCE_CLAUSE_TUPLES_SHA256 = (
+    "2fce4179339bd674fec246c8e3a5605f843766f2fad0eff6b0ef922b06769f36"
+)
+FAMILIAR_SOURCE_NINTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_FAMILIAR_CENSUS_R2_SOURCE_REVIEW_20261014",
+    "integration_base_sha": "75bc49af2fc6ca3159c18c4e59fd63befaa0894b",
+    "candidate_revision": "R2",
+    "accepted_census_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-20261014.json",
+    "accepted_census_sha256": "f3671f452d6d382abdae3f89318da03ac79743ba60bfa0a159c24dafac4eec0d",
+    "accepted_prerequisites_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-prerequisites-20261014.json",
+    "accepted_prerequisites_sha256": "5869ec71cf99487e28c6d0400e3583ceee80daafc300559e9483818c7dd7800f",
+    "r2_manifest_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-R2-manifest-20261014.json",
+    "r2_manifest_sha256": "44d8c10b03f1e3276bf11ad0fc0f29dd9761d91decbcfaf7010fb50a3a51f0c7",
+    "r1_review_sha256": "2867feaa6d9bbd62c59fbddcfc4f6681305b2ceb5c86db273123c608d4d0d55c",
+    "independent_r2_review_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-R2-review-20261014.md",
+    "independent_r2_review_sha256": "bd878a6746e71705db8d2d7c0947cb2ed8239086a93d932a275832e57d6a6405",
+    "census_fixture_path": "DEV/TESTS/fixtures/spell-familiar-source-census.json",
+    "census_fixture_sha256": "28c16ff9717cb066a316bbd8442944dc7cbd3400079f1cd88a460b76e3fc05ae",
+    "prerequisites_fixture_path": "DEV/TESTS/fixtures/spell-familiar-source-prerequisites.json",
+    "prerequisites_fixture_sha256": "8fcde530c41b8f67b85f71b679f9236d9f434615e9bc6ab69b64e3824b55ad63",
+    "source_path": "DEV/docs/SRD_CC_v5.2.1.md",
+    "source_git_blob": "45392ab96e8adfeba66694bca8950b6ce1a71797",
+    "source_sha256": "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-14-sp00-familiar-source-census-integration.md",
+    "task_evidence_sha256": "07b976f4a70d2c4008c0bdf2821ade9dcd2503eefdf44aeddf98c6e65cc765cb",
+}
 SOURCE_RESIDUAL_EVIDENCE_RELATIVE_PATH = "DEV/docs/superpowers/design/2026-10-07-sp00-first12-markdown-source-qualification.md"
 SOURCE_RESIDUAL_EVIDENCE_SHA256 = (
     "2ab8076aabba92f9e315dcf8e01af7928e50e83ce5645234c099c58d96ad9c08"
@@ -9541,6 +9672,1014 @@ def _validate_source_eighth_resolution_evidence(
     }
 
 
+def _familiar_source_form_matches_predicate(member: Mapping[str, object]) -> bool:
+    """Apply only the source spell's Beast and exact CR 0 eligibility predicate."""
+    return (
+        member.get("creature_type") == "Beast" and member.get("challenge_rating") == "0"
+    )
+
+
+def _validate_familiar_prerequisite_ledger(
+    prerequisites: Mapping[str, object], census: Mapping[str, object], lines: list[str]
+) -> None:
+    """Validate retained rows and every actual source/member join, cold and in full."""
+    expected_fields = {
+        "artifact_kind",
+        "candidate_revision",
+        "pinned_commit",
+        "source_identity_owner",
+        "accepted_input",
+        "classification",
+        "source_reference_tuple_sha256",
+        "new_source_clause_tuple_sha256",
+        "completeness",
+        "review_register_roots",
+        "entries",
+        "source_reference_tuples",
+        "parameterized_inputs",
+        "accepted_scope",
+        "accepted_terminal_boundary",
+        "finding_dispositions",
+        "general_nonattack_actions",
+        "new_source_clauses",
+        "parameterized_input_categories",
+        "help_first_aid",
+        "source_boundary",
+    }
+    if set(prerequisites) != expected_fields:
+        _fail(
+            "source_familiar_prerequisite_schema",
+            "complete closed ledger shape differs",
+        )
+    entries = _array(prerequisites.get("entries"), "familiar.entries")
+    schema = _decode_json(SCHEMA_PATH.read_bytes(), "source schema")
+    entry_schema = {
+        "$ref": "#/$defs/familiarPrerequisiteEntry",
+        "$defs": schema["$defs"],
+    }
+    validator = Draft202012Validator(entry_schema)
+    if len(entries) != 37 or any(not validator.is_valid(entry) for entry in entries):
+        _fail(
+            "source_familiar_prerequisite_schema",
+            "complete typed root carriers required",
+        )
+    if [entry["prerequisite_id"] for entry in entries] != [
+        f"PR{i:02d}" for i in range(1, 38)
+    ]:
+        _fail("source_familiar_prerequisite_schema", "exact ordered root set differs")
+    tuples = [
+        [
+            entry["prerequisite_id"],
+            ref["collection"],
+            ref.get("index"),
+            ref["line_start"],
+            ref["line_end"],
+            ref["raw_utf8_sha256"],
+        ]
+        for entry in entries
+        for ref in entry["source_refs"]
+    ]
+    if (
+        len(tuples) != 151
+        or prerequisites.get("source_reference_tuples") != tuples
+        or _canonical_json_sha256(tuples) != FAMILIAR_SOURCE_REFERENCE_TUPLES_SHA256
+    ):
+        _fail(
+            "source_familiar_reference_digest",
+            "ordered 151 retained reference rows differ",
+        )
+    forms = census["eligible_forms"]
+    members = {
+        row["source_key"]: (index, row["span"])
+        for index, row in zip(
+            census["eligible_form_record_indexes"], forms, strict=True
+        )
+    }
+    actual_heading_lines = [
+        line_number
+        for line_number, line in enumerate(lines, start=1)
+        if 22046 <= line_number <= 35372 and line.startswith("#### ")
+    ]
+    if len(actual_heading_lines) != 330:
+        _fail("source_familiar_member_join", "actual source statblock index differs")
+    support = census["source_support_clause_catalog"]
+    if len(support) != 49:
+        _fail(
+            "source_familiar_reference_join",
+            "complete original support catalog required",
+        )
+    for index, row in enumerate(support):
+        if (
+            set(row)
+            != {
+                "index",
+                "source_key",
+                "name",
+                "line_start",
+                "line_end",
+                "raw_utf8_sha256",
+            }
+            or row["index"] != index
+        ):
+            _fail(
+                "source_familiar_reference_join",
+                "closed original collection identity differs",
+            )
+        start, end = row["line_start"], row["line_end"]
+        if (
+            hashlib.sha256("".join(lines[start - 1 : end]).encode("utf-8")).hexdigest()
+            != row["raw_utf8_sha256"]
+        ):
+            _fail(
+                "source_familiar_reference_join", "original support source bytes differ"
+            )
+    new_clauses = prerequisites["new_source_clauses"]
+    new_indexes: set[int] = set()
+    join_count = 0
+    for entry in entries:
+        body_refs = entry["member_body_refs"]
+        if [ref["source_key"] for ref in body_refs] != entry[
+            "applicable_member_source_keys"
+        ]:
+            _fail(
+                "source_familiar_member_join",
+                f"{entry['prerequisite_id']} applicability/body set differs",
+            )
+        for ref in body_refs:
+            if members.get(ref["source_key"]) != (ref["record_index"], ref["span"]):
+                _fail(
+                    "source_familiar_member_join",
+                    f"{entry['prerequisite_id']} actual member join differs",
+                )
+            start, end = ref["span"]["line_start"], ref["span"]["line_end"]
+            if (
+                actual_heading_lines[ref["record_index"]] != start
+                or hashlib.sha256(
+                    "".join(lines[start - 1 : end]).encode("utf-8")
+                ).hexdigest()
+                != ref["span"]["raw_utf8_sha256"]
+            ):
+                _fail(
+                    "source_familiar_member_join",
+                    "actual indexed member body bytes differ",
+                )
+            join_count += 1
+        for ref in entry["source_refs"]:
+            collection, index = ref["collection"], ref.get("index")
+            actual = [ref["line_start"], ref["line_end"], ref["raw_utf8_sha256"]]
+            if collection == "spell_body":
+                owner = census["source"]["find_familiar_span"]
+                expected = [
+                    owner["line_start"],
+                    owner["line_end"],
+                    owner["raw_utf8_sha256"],
+                ]
+            elif collection == "support_clauses" and index < len(support):
+                owner = support[index]
+                if owner["index"] != index:
+                    _fail(
+                        "source_familiar_reference_join",
+                        "support collection index differs",
+                    )
+                expected = [
+                    owner["line_start"],
+                    owner["line_end"],
+                    owner["raw_utf8_sha256"],
+                ]
+            elif collection == "prerequisite_source_clauses" and index < len(
+                new_clauses
+            ):
+                expected = new_clauses[index][1:]
+                new_indexes.add(index)
+            else:
+                _fail(
+                    "source_familiar_reference_join",
+                    "reference collection/index is unavailable",
+                )
+            if actual != expected:
+                _fail(
+                    "source_familiar_reference_join",
+                    "reference differs from actual collection owner",
+                )
+            start, end, digest = actual
+            if (
+                not 1 <= start <= end <= len(lines)
+                or hashlib.sha256(
+                    "".join(lines[start - 1 : end]).encode("utf-8")
+                ).hexdigest()
+                != digest
+            ):
+                _fail(
+                    "source_familiar_reference_join",
+                    "retained reference source bytes differ",
+                )
+    if join_count != 673 or new_indexes != set(range(33)):
+        _fail(
+            "source_familiar_member_join",
+            "exact 673 joins / complete new-clause coverset differs",
+        )
+    summaries = [
+        [
+            e["prerequisite_id"],
+            e["review_register_line"],
+            e["classification"],
+            len(e["source_refs"]),
+        ]
+        for e in entries
+    ]
+    if prerequisites["review_register_roots"] != summaries:
+        _fail(
+            "source_familiar_prerequisite_semantics",
+            "root summaries disagree with retained entries",
+        )
+    if (
+        _canonical_json_sha256(entries)
+        != "c1406765cff90ef77ee83d9782f96fd71da79a0b4fee6f279b9f4fa68fddad8d"
+    ):
+        _fail(
+            "source_familiar_prerequisite_semantics",
+            "accepted applicability/roles/predicates/contexts/non-goals drifted",
+        )
+    boundary_fields = (
+        "parameterized_inputs",
+        "accepted_scope",
+        "accepted_terminal_boundary",
+        "finding_dispositions",
+    )
+    if (
+        _canonical_json_sha256({key: prerequisites[key] for key in boundary_fields})
+        != "80a221fa37bb256ce0a052d5b4357eb957a6fce704f3e9e6c40aa78b3f88a807"
+    ):
+        _fail(
+            "source_familiar_prerequisite_semantics",
+            "accepted finite scope/input qualifications drifted",
+        )
+
+
+def _validate_source_familiar_census_evidence(
+    manifest: Mapping[str, object],
+) -> dict[str, object]:
+    """Close only Find Familiar's source census against immutable source fixtures."""
+    review = _object(manifest.get("source_ninth_review"), "source_ninth_review")
+    if review != FAMILIAR_SOURCE_NINTH_REVIEW:
+        _fail("source_ninth_review", "frozen R2 evidence or source identity differs")
+
+    task_bytes = _read_pinned_local_evidence(
+        FAMILIAR_SOURCE_EVIDENCE_PATH,
+        FAMILIAR_SOURCE_EVIDENCE_SHA256,
+        "source_ninth_task_evidence",
+    )
+    try:
+        task_evidence = task_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_ninth_task_evidence", "task evidence is not UTF-8")
+    required_task_tokens = (
+        "Status: **BOUNDED SOURCE-ONLY INTEGRATION EVIDENCE**",
+        "75bc49af2fc6ca3159c18c4e59fd63befaa0894b",
+        "bd878a6746e71705db8d2d7c0947cb2ed8239086a93d932a275832e57d6a6405",
+        "24 complete source bodies",
+        "all 37 root meanings",
+        "67 resolved keys = 61 SOURCE_CLOSED + 6 OWNER_DECIDED; 10 source HOLDs",
+        "native consumer admission, action execution, and full-339 readiness remain `NOT_ESTABLISHED`",
+    )
+    if any(token not in task_evidence for token in required_task_tokens):
+        _fail(
+            "source_ninth_task_evidence",
+            "integration evidence omits its frozen boundary",
+        )
+
+    census_bytes = _read_pinned_local_evidence(
+        FAMILIAR_CENSUS_FIXTURE_PATH,
+        FAMILIAR_CENSUS_FIXTURE_SHA256,
+        "source_familiar_census_fixture_identity",
+    )
+    prerequisites_bytes = _read_pinned_local_evidence(
+        FAMILIAR_PREREQUISITES_FIXTURE_PATH,
+        FAMILIAR_PREREQUISITES_FIXTURE_SHA256,
+        "source_familiar_prerequisites_fixture_identity",
+    )
+    try:
+        census = _object(
+            json.loads(census_bytes.decode("utf-8")), "source_familiar_census_fixture"
+        )
+        prerequisites = _object(
+            json.loads(prerequisites_bytes.decode("utf-8")),
+            "source_familiar_prerequisites_fixture",
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        _fail(
+            "source_familiar_fixture_json",
+            "pinned source fixture is not valid UTF-8 JSON",
+        )
+
+    accepted_census = _object(
+        census.get("accepted_inputs"), "source_familiar_census.accepted_inputs"
+    )
+    accepted_prerequisites = _object(
+        prerequisites.get("accepted_input"),
+        "source_familiar_prerequisites.accepted_input",
+    )
+    if (
+        census.get("artifact_kind") != "SP00_FIND_FAMILIAR_SOURCE_CENSUS"
+        or census.get("candidate_revision") != "R2"
+        or census.get("pinned_commit")
+        != FAMILIAR_SOURCE_NINTH_REVIEW["integration_base_sha"]
+        or accepted_census.get("census_sha256")
+        != FAMILIAR_SOURCE_NINTH_REVIEW["accepted_census_sha256"]
+        or accepted_census.get("prerequisites_sha256")
+        != FAMILIAR_SOURCE_NINTH_REVIEW["accepted_prerequisites_sha256"]
+        or accepted_census.get("r2_manifest_sha256") != FAMILIAR_R2_MANIFEST_SHA256
+        or accepted_census.get("independent_r2_review_sha256")
+        != FAMILIAR_R2_REVIEW_SHA256
+        or accepted_prerequisites.get("sha256")
+        != FAMILIAR_SOURCE_NINTH_REVIEW["accepted_prerequisites_sha256"]
+        or accepted_prerequisites.get("r2_manifest_sha256")
+        != FAMILIAR_R2_MANIFEST_SHA256
+        or accepted_prerequisites.get("independent_r2_review_sha256")
+        != FAMILIAR_R2_REVIEW_SHA256
+        or prerequisites.get("artifact_kind")
+        != "SP00_FIND_FAMILIAR_SOURCE_PREREQUISITES"
+        or prerequisites.get("candidate_revision") != "R2"
+        or prerequisites.get("pinned_commit")
+        != FAMILIAR_SOURCE_NINTH_REVIEW["integration_base_sha"]
+        or prerequisites.get("source_identity_owner")
+        != {
+            "path": SOURCE_MARKDOWN_RELATIVE_PATH,
+            "identity_fixture_path": FAMILIAR_CENSUS_FIXTURE_PATH,
+        }
+    ):
+        _fail(
+            "source_familiar_fixture_provenance", "accepted R2 source identity differs"
+        )
+
+    source = _object(census.get("source"), "source_familiar_census.source")
+    if (
+        source.get("path") != SOURCE_MARKDOWN_RELATIVE_PATH
+        or source.get("raw_utf8_sha256") != SOURCE_MARKDOWN_SHA256
+        or source.get("git_blob") != "45392ab96e8adfeba66694bca8950b6ce1a71797"
+        or source.get("hash_basis")
+        != "Exact UTF-8 bytes, including line endings and final content-line newline"
+        or source.get("license_id") != "CC-BY-4.0"
+        or source.get("required_attribution") != ATTRIBUTION
+    ):
+        _fail(
+            "source_familiar_source_identity", "primary source path/hash/blob differs"
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_familiar_markdown",
+    )
+    git_blob_oid = hashlib.sha1(
+        b"blob " + str(len(markdown_bytes)).encode("ascii") + b"\0" + markdown_bytes,
+        usedforsecurity=False,
+    ).hexdigest()
+    if git_blob_oid != source.get("git_blob"):
+        _fail("source_familiar_source_blob", "primary source Git blob differs")
+    try:
+        byte_lines = markdown_bytes.splitlines(keepends=True)
+        text_lines = [line.decode("utf-8") for line in byte_lines]
+    except UnicodeDecodeError:
+        _fail("source_familiar_markdown", "primary source is not UTF-8")
+
+    def check_span(span_value: object, span_name: str) -> tuple[int, int, str]:
+        span = _object(span_value, span_name)
+        start, end, digest = (
+            span.get("line_start"),
+            span.get("line_end"),
+            span.get("raw_utf8_sha256"),
+        )
+        if (
+            type(start) is not int
+            or type(end) is not int
+            or not isinstance(digest, str)
+            or start < 1
+            or end < start
+            or end > len(byte_lines)
+        ):
+            _fail("source_familiar_span", f"{span_name} has invalid source bounds")
+        raw_span = b"".join(byte_lines[start - 1 : end])
+        if hashlib.sha256(raw_span).hexdigest() != digest:
+            _fail("source_familiar_span_hash", f"{span_name} source bytes changed")
+        return start, end, raw_span.decode("utf-8")
+
+    domain_spans = [
+        _object(value, f"source_familiar_census.domain_spans[{index}]")
+        for index, value in enumerate(
+            _array(source.get("domain_spans"), "domain_spans")
+        )
+    ]
+    if len(domain_spans) != 2 or [
+        (span.get("line_start"), span.get("line_end")) for span in domain_spans
+    ] != [(22046, 32336), (32337, 35372)]:
+        _fail(
+            "source_familiar_domain_spans", "Monster and Animals source bounds differ"
+        )
+    for index, span in enumerate(domain_spans):
+        check_span(span, f"domain_spans[{index}]")
+    check_span(source.get("index_span"), "Index of Stat Blocks")
+    spell_start, spell_end, spell_text = check_span(
+        source.get("find_familiar_span"), "Find Familiar spell body"
+    )
+    if (spell_start, spell_end) != (11609, 11629) or not all(
+        phrase in spell_text
+        for phrase in (
+            "another Beast that has a Challenge Rating of 0",
+            "A familiar can’t attack",
+            "it must take a Reaction to deliver the touch",
+            "within 100 feet of you",
+        )
+    ):
+        _fail(
+            "source_familiar_spell_body",
+            "spell predicate or source-specific limits differ",
+        )
+
+    expected_inventory = {
+        "index_records": 330,
+        "monsters_a_to_z_statblocks": 235,
+        "animals_statblocks": 95,
+        "cr_field_lines": 330,
+        "unique_statblock_keys": 330,
+        "index_minus_inventory": 0,
+        "inventory_minus_index": 0,
+        "missing_or_multiple_type_or_cr": 0,
+        "eligible_forms": 24,
+        "disjoint_negative_partitions": {
+            "cr0_nonbeast": 5,
+            "beast_nonzero_nonswarm": 60,
+            "swarms": 7,
+            "other_nonbeast_nonzero": 234,
+        },
+    }
+    if census.get("domain_inventory") != expected_inventory:
+        _fail("source_familiar_inventory", "330-record partition accounting differs")
+    predicate = _object(
+        census.get("eligibility_predicate"),
+        "source_familiar_census.eligibility_predicate",
+    )
+    if predicate != {
+        "creature_type": "Beast",
+        "challenge_rating_exact": "0",
+        "swarm_is_independent_exclusion_predicate": False,
+    }:
+        _fail(
+            "source_familiar_predicate", "familiar eligibility predicate was broadened"
+        )
+
+    named = _strings(census.get("named_spell_examples"), "named_spell_examples")
+    additional = _strings(census.get("additional_forms"), "additional_forms")
+    members = [
+        _object(value, f"source_familiar_census.eligible_forms[{index}]")
+        for index, value in enumerate(
+            _array(census.get("eligible_forms"), "eligible_forms")
+        )
+    ]
+    names = tuple(str(member.get("name")) for member in members)
+    if (
+        named != list(FAMILIAR_NAMED_EXAMPLES)
+        or additional != list(FAMILIAR_ADDITIONAL_FORMS)
+        or len(members) != 24
+        or names != FAMILIAR_FORM_NAMES
+        or set(named) & set(additional)
+        or set(named) | set(additional) != set(FAMILIAR_FORM_NAMES)
+        or len({member.get("source_key") for member in members}) != 24
+    ):
+        _fail("source_familiar_member_census", "eligible form membership differs")
+
+    source_text_by_key: dict[str, str] = {}
+    for member in members:
+        name = member.get("name")
+        source_key = member.get("source_key")
+        slug = (
+            re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+            if isinstance(name, str)
+            else ""
+        )
+        if (
+            set(member)
+            != {"source_key", "name", "creature_type", "challenge_rating", "span"}
+            or not isinstance(name, str)
+            or not isinstance(source_key, str)
+            or source_key != f"source.srd521.statblock.{slug}"
+            or not _familiar_source_form_matches_predicate(member)
+        ):
+            _fail("source_familiar_member", "member identity/type/CR differs")
+        start, end, body = check_span(member.get("span"), f"{source_key} body")
+        if (
+            text_lines[start - 1].strip() != f"#### {name}"
+            or not re.search(r"\*[^*\n]*\bBeast\b[^*\n]*\*", body)
+            or not re.search(r"\*\*CR\*\*\s+0(?:\s|$)", body)
+        ):
+            _fail(
+                "source_familiar_member_source",
+                f"{source_key} lacks Beast/CR 0 witnesses",
+            )
+        source_text_by_key[source_key] = body
+
+    expected_attack_keys = [
+        str(member["source_key"])
+        for member in members
+        if member.get("name") != "Seahorse"
+    ]
+    blocked_attacks = _object(census.get("blocked_attacks"), "blocked_attacks")
+    attack_keys = _strings(
+        blocked_attacks.get("member_source_keys"), "blocked_attacks.member_source_keys"
+    )
+    if (
+        blocked_attacks.get("count") != 23
+        or attack_keys != expected_attack_keys
+        or blocked_attacks.get("familiar_attack_grant") is not False
+        or blocked_attacks.get("attack_relay_classification")
+        != "NOT_DECIDED_BY_THIS_SOURCE_LEDGER"
+        or any(
+            not re.search(r"(?:Melee|Ranged) Attack Roll", source_text_by_key[key])
+            for key in attack_keys
+        )
+        or re.search(
+            r"(?:Melee|Ranged) Attack Roll",
+            source_text_by_key["source.srd521.statblock.seahorse"],
+        )
+    ):
+        _fail(
+            "source_familiar_attack_boundary",
+            "attack census or non-attack boundary differs",
+        )
+
+    expected_pack_tactics = (
+        "source.srd521.statblock.baboon",
+        "source.srd521.statblock.hyena",
+        "source.srd521.statblock.vulture",
+    )
+    attack_only_traits = _strings(
+        census.get("attack_only_traits"), "attack_only_traits"
+    )
+    actual_pack_tactics = tuple(
+        key for key, body in source_text_by_key.items() if "***Pack Tactics.***" in body
+    )
+    if (
+        attack_only_traits != list(expected_pack_tactics)
+        or actual_pack_tactics != expected_pack_tactics
+    ):
+        _fail(
+            "source_familiar_attack_trait",
+            "Pack Tactics attack-only membership differs",
+        )
+
+    options = [
+        _object(value, f"source_familiar_census.nonattack_form_options[{index}]")
+        for index, value in enumerate(
+            _array(census.get("nonattack_form_options"), "nonattack_form_options")
+        )
+    ]
+    expected_options = (
+        (
+            "source.srd521.statblock.seahorse",
+            "Bubble Dash",
+            "ACTION",
+            34893,
+            "6eff3db9c21e0548ff3051a70982d881d8c4cdba9bce234e861a2ad684ba8705",
+            "UNDERWATER_ONLY",
+        ),
+        (
+            "source.srd521.statblock.octopus",
+            "Ink Cloud (1/Day)",
+            "REACTION",
+            34416,
+            "ffacc7b5157b4c663a3f28204e8bc8d52ea32273ccd729da558b8cf0890a5228",
+            "CREATURE_ENDS_TURN_WITHIN_5_FEET_WHILE_OCTOPUS_UNDERWATER",
+        ),
+    )
+    if len(options) != 2:
+        _fail(
+            "source_familiar_form_action",
+            "two conditional non-attack form options are required",
+        )
+    for option, expected in zip(options, expected_options, strict=True):
+        key, name, action_type, line_number, raw_hash, condition = expected
+        if (
+            option.get("source_key") != key
+            or option.get("name") != name
+            or option.get("action_type") != action_type
+            or option.get("source_line") != line_number
+            or option.get("raw_line_sha256") != raw_hash
+            or option.get("condition") != condition
+        ):
+            _fail(
+                "source_familiar_form_action", f"{name} action kind/condition differs"
+            )
+        if key not in source_text_by_key:
+            _fail("source_familiar_form_action", f"{name} member body is missing")
+        member_source = next(
+            member for member in members if member.get("source_key") == key
+        )
+        member_span = _object(member_source.get("span"), f"{key}.span")
+        section_heading = (
+            "##### Actions" if action_type == "ACTION" else "##### Reactions"
+        )
+        if (
+            not int(member_span["line_start"])
+            <= line_number
+            <= int(member_span["line_end"])
+            or section_heading not in source_text_by_key[key]
+        ):
+            _fail(
+                "source_familiar_action_section",
+                f"{name} source section/origin differs",
+            )
+        raw_line = byte_lines[line_number - 1]
+        if hashlib.sha256(raw_line).hexdigest() != raw_hash:
+            _fail("source_familiar_action_line", f"{name} source line changed")
+        line_text = raw_line.decode("utf-8")
+        expected_phrases = (
+            (
+                "Bubble Dash.",
+                "While underwater",
+                "its Swim Speed",
+                "without provoking Opportunity Attacks",
+            )
+            if name == "Bubble Dash"
+            else (
+                "Ink Cloud (1/Day).",
+                "Trigger:",
+                "ends its turn within 5 feet",
+                "while underwater",
+                "Response:",
+            )
+        )
+        if any(phrase not in line_text for phrase in expected_phrases):
+            _fail(
+                "source_familiar_action_source",
+                f"{name} conditional source text differs",
+            )
+
+    source_support_spans = _object(source.get("support_spans"), "source.support_spans")
+    for span_name, expected_range in {
+        "general_actions": (896, 943),
+        "monster_actions_and_traits": (21958, 21978),
+        "limited_usage": (22034, 22042),
+    }.items():
+        start, end, span_text = check_span(
+            source_support_spans.get(span_name), span_name
+        )
+        if (start, end) != expected_range:
+            _fail("source_familiar_support_span", f"{span_name} span differs")
+        if span_name == "general_actions" and any(
+            name not in span_text for name in FAMILIAR_NONATTACK_ACTIONS
+        ):
+            _fail(
+                "source_familiar_action_roster",
+                "general non-attack action roster differs",
+            )
+        if span_name == "limited_usage" and not all(
+            phrase in span_text for phrase in ("X/Day", "finish a Long Rest", "once")
+        ):
+            _fail("source_familiar_usage_reset", "1/Day Long Rest rule differs")
+
+    prerequisites_identity = {
+        "classification": "FINITE_SOURCE_PREREQUISITE_LEDGER_NOT_NATIVE_GRAPH",
+        "source_reference_tuple_sha256": FAMILIAR_SOURCE_REFERENCE_TUPLES_SHA256,
+        "new_source_clause_tuple_sha256": FAMILIAR_NEW_SOURCE_CLAUSE_TUPLES_SHA256,
+        "completeness": {
+            "review_register_root_count": 37,
+            "source_reference_count": 151,
+            "new_source_clause_count": 33,
+            "parameterized_input_category_count": 5,
+            "general_nonattack_action_count": 11,
+        },
+    }
+    for field, expected in prerequisites_identity.items():
+        if prerequisites.get(field) != expected:
+            _fail("source_familiar_prerequisite_census", f"{field} differs")
+    roots = _array(prerequisites.get("review_register_roots"), "review_register_roots")
+    if len(roots) != 37:
+        _fail("source_familiar_prerequisite_census", "37 review roots are required")
+    reference_count = 0
+    for index, value in enumerate(roots, start=1):
+        if (
+            not isinstance(value, list)
+            or len(value) != 4
+            or value[0] != f"PR{index:02d}"
+            or value[1] != 170 + index
+            or not isinstance(value[2], str)
+            or not value[2]
+            or type(value[3]) is not int
+            or value[3] < 1
+        ):
+            _fail(
+                "source_familiar_prerequisite_root",
+                "review root identities/order differ",
+            )
+        reference_count += value[3]
+    if reference_count != 151:
+        _fail(
+            "source_familiar_prerequisite_root",
+            "151 exact source references are required",
+        )
+    actions = _strings(
+        prerequisites.get("general_nonattack_actions"),
+        "general_nonattack_actions",
+    )
+    if actions != list(FAMILIAR_NONATTACK_ACTIONS):
+        _fail("source_familiar_action_roster", "the eleven general actions differ")
+
+    source_clauses = _array(
+        prerequisites.get("new_source_clauses"), "new_source_clauses"
+    )
+    if len(source_clauses) != 33:
+        _fail(
+            "source_familiar_source_prerequisites", "33 new source clauses are required"
+        )
+    new_clause_tuples_sha256 = hashlib.sha256(
+        json.dumps(
+            source_clauses,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        ).encode("utf-8")
+    ).hexdigest()
+    if new_clause_tuples_sha256 != FAMILIAR_NEW_SOURCE_CLAUSE_TUPLES_SHA256:
+        _fail(
+            "source_familiar_source_prerequisites",
+            "new source-clause tuple digest differs",
+        )
+    clause_keys: set[str] = set()
+    for index, value in enumerate(source_clauses):
+        if (
+            not isinstance(value, list)
+            or len(value) != 4
+            or not isinstance(value[0], str)
+            or not value[0].startswith("source.srd521.prerequisite.")
+            or type(value[1]) is not int
+            or type(value[2]) is not int
+            or not isinstance(value[3], str)
+            or value[0] in clause_keys
+        ):
+            _fail(
+                "source_familiar_source_prerequisites",
+                f"clause {index} identity differs",
+            )
+        clause_keys.add(value[0])
+        start, end = value[1], value[2]
+        check_span(
+            {"line_start": start, "line_end": end, "raw_utf8_sha256": value[3]},
+            str(value[0]),
+        )
+    required_clause_keys = {
+        "source.srd521.prerequisite.help.stabilize",
+        "source.srd521.prerequisite.help.knockout_first_aid",
+        "source.srd521.prerequisite.rest.long",
+        "source.srd521.prerequisite.condition.stable",
+        "source.srd521.prerequisite.condition.unconscious",
+        "source.srd521.prerequisite.casting.components",
+        "source.srd521.prerequisite.casting.concentration",
+    }
+    if not required_clause_keys <= clause_keys:
+        _fail(
+            "source_familiar_source_prerequisites",
+            "bounded Help/rest/casting clauses are absent",
+        )
+
+    input_categories = _array(
+        prerequisites.get("parameterized_input_categories"),
+        "parameterized_input_categories",
+    )
+    normalized_input_categories = tuple(
+        (row[0], tuple(row[1]))
+        for row in input_categories
+        if isinstance(row, list) and len(row) == 2 and isinstance(row[1], list)
+    )
+    if normalized_input_categories != FAMILIAR_PARAMETERIZED_INPUTS:
+        _fail(
+            "source_familiar_parameterized_inputs",
+            "five external input categories differ",
+        )
+    help_first_aid = _object(prerequisites.get("help_first_aid"), "help_first_aid")
+    if help_first_aid != {
+        "stabilization_source_key": "source.srd521.prerequisite.help.stabilize",
+        "stabilization_target_hp": 0,
+        "stabilization_check": "DC 10 Wisdom (Medicine)",
+        "medicine_proficiency_required": False,
+        "stable_remains_unconscious": True,
+        "knockout_first_aid_source_key": "source.srd521.prerequisite.help.knockout_first_aid",
+        "knockout_first_aid_uses_action": True,
+        "knockout_creation_requires_melee_attack": True,
+        "knockout_creation_granted_to_familiar": False,
+        "familiar_at_zero_hp": "DISAPPEARS; NO_ON_SCENE_STABILIZATION_OVERRIDE",
+    }:
+        _fail(
+            "source_familiar_help_first_aid",
+            "Help applications or capability limits differ",
+        )
+
+    census_boundary = _object(census.get("source_boundary"), "source_boundary")
+    if census_boundary != {
+        "native_consumer_admission_status": "NOT_ESTABLISHED",
+        "actual_native_action_execution_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "source_ready_claim": "NONE",
+        "familiar_spellcasting_grant": "NONE",
+        "default_hands_or_voice": "NONE",
+        "automatic_attack_relay": "NOT_ESTABLISHED",
+        "universal_100_foot_command_or_sensory_leash": "NOT_ESTABLISHED",
+    }:
+        _fail(
+            "source_familiar_boundary", "source evidence claims downstream capability"
+        )
+    prerequisite_boundary = _object(
+        prerequisites.get("source_boundary"), "source_prerequisites.source_boundary"
+    )
+    if prerequisite_boundary != {
+        "terminal_boundary": "Finite shared source clauses for the registered roots; actual selected spells, grants, objects/tasks, incoming effects and environmental states remain parameterized inputs.",
+        "native_dependency_graph": "NOT_ESTABLISHED",
+        "native_consumer_admission": "NOT_ESTABLISHED",
+        "touch_spell_attack_save_statistic_classification": "NOT_DECIDED_HERE",
+        "form_hands_voice_language_proficiency_spellcasting_defaults": "NONE",
+        "general_action_labels_create_executor_entitlement": False,
+    }:
+        _fail("source_familiar_boundary", "finite-source terminal boundary differs")
+
+    _validate_familiar_prerequisite_ledger(prerequisites, census, text_lines)
+    key = "source.spell.find_familiar.unresolved.eligible_form_census"
+    subobligation_id = f"{key}::source_mapping_review"
+    classification_rows = [
+        _object(value, f"source_unknown_classifications[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_unknown_classifications"),
+                "source_unknown_classifications",
+            )
+        )
+    ]
+    if len(classification_rows) != 82:
+        _fail("source_ninth_binding", "original classification record count changed")
+    original = classification_rows[30]
+    if (
+        original.get("unresolved_key") != key
+        or original.get("source_exact_name") != "Find Familiar"
+        or original.get("source_ready_blocking") is not True
+        or original.get("source_unresolved_record_pointer")
+        != "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/30"
+    ):
+        _fail("source_ninth_binding", "original classification key 30 changed")
+    history = _object(
+        _resolve_json_pointer(
+            manifest,
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/30",
+            "familiar original history pointer",
+        ),
+        "familiar original history",
+    )
+    map_entry = _object(
+        _resolve_json_pointer(
+            manifest,
+            "/source_mapping_lanes/0/mapping_payload/entries/48",
+            "familiar current map pointer",
+        ),
+        "familiar current map entry",
+    )
+    map_unresolved_keys = [
+        _object(value, f"familiar.current_map.unresolved_keys[{index}]")
+        for index, value in enumerate(
+            _array(
+                map_entry.get("unresolved_keys"), "familiar.current_map.unresolved_keys"
+            )
+        )
+    ]
+    if (
+        history.get("unresolved_key") != key
+        or history.get("source_exact_name") != "Find Familiar"
+        or history.get("reason") != original.get("original_reason")
+        or history.get("evidence_ref") != original.get("evidence_ref")
+        or history.get("status") != original.get("original_status")
+        or history.get("disposition") != original.get("original_disposition")
+        or map_entry.get("source_exact_name") != "Find Familiar"
+        or not any(row.get("unresolved_key") == key for row in map_unresolved_keys)
+    ):
+        _fail("source_ninth_binding", "original history or current map entry changed")
+    source_subobligations = [
+        _object(value, f"source_ninth.original_subobligations[{index}]")
+        for index, value in enumerate(
+            _array(original.get("subobligations"), "familiar.subobligations")
+        )
+    ]
+    source_matches = [
+        item
+        for item in source_subobligations
+        if item.get("subobligation_id") == subobligation_id
+    ]
+    future_matches = [
+        item
+        for item in source_subobligations
+        if item.get("category") == "downstream_domain_consumer_admission_native_proof"
+    ]
+    if (
+        len(source_matches) != 1
+        or source_matches[0].get("category") != "source_mapping_review"
+        or source_matches[0].get("gate_phase") != "SP00_SOURCE"
+        or source_matches[0].get("status") != "NOT_ESTABLISHED"
+        or len(future_matches) != 1
+        or future_matches[0].get("gate_phase") != "FUTURE_PROOF"
+        or future_matches[0].get("status") != "NOT_ESTABLISHED"
+    ):
+        _fail(
+            "source_familiar_future_proof",
+            "separate future proof was changed or promoted",
+        )
+
+    historical_rows = [
+        _object(value, f"source_seventh_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_seventh_resolution_evidence"),
+                "source_seventh_resolution_evidence",
+            )
+        )
+        if isinstance(value, dict)
+        and value.get("unresolved_key") == key
+        and value.get("source_category") == "source_mapping_review"
+    ]
+    if (
+        len(historical_rows) != 1
+        or historical_rows[0].get("disposition") != "SOURCE_HELD"
+    ):
+        _fail(
+            "source_ninth_prior_hold",
+            "the seventh-batch historical HOLD was not preserved",
+        )
+
+    expected_row = {
+        "review_item_id": "FAMILIAR-CENSUS-01",
+        "unresolved_key": key,
+        "source_exact_name": "Find Familiar",
+        "source_category": "source_mapping_review",
+        "subobligation_id": subobligation_id,
+        "disposition": "SOURCE_CLOSED",
+        "source_classification_pointer": "/source_unknown_classifications/30",
+        "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/30",
+        "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/48",
+        "census_fixture_pointer": f"{FAMILIAR_CENSUS_FIXTURE_PATH}#/eligible_forms",
+        "prerequisites_fixture_pointer": f"{FAMILIAR_PREREQUISITES_FIXTURE_PATH}#/review_register_roots",
+        "eligible_form_count": 24,
+        "named_example_count": 11,
+        "additional_form_count": 13,
+        "blocked_attack_count": 23,
+        "general_nonattack_action_count": 11,
+        "source_prerequisite_root_count": 37,
+        "source_prerequisite_reference_count": 151,
+        "new_source_clause_count": 33,
+        "parameterized_input_category_count": 5,
+        "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; native consumer admission, action execution, full-339 source qualification and package readiness remain NOT_ESTABLISHED.",
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "actual_native_proof_refs": [],
+    }
+    rows = [
+        _object(value, f"source_ninth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_ninth_resolution_evidence"),
+                "source_ninth_resolution_evidence",
+            )
+        )
+    ]
+    if any(
+        row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+        or row.get("actual_native_proof_refs") != []
+        for row in rows
+    ):
+        _fail(
+            "source_familiar_future_proof",
+            "source closure promoted a native proof claim",
+        )
+    if rows != [expected_row]:
+        _fail(
+            "source_ninth_binding",
+            "the source-only familiar resolution binding differs",
+        )
+
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": [key],
+        "source_closed_subobligation_ids": [subobligation_id],
+        "source_held_keys": [],
+        "source_held_subobligation_ids": [],
+        "source_resolved_subobligation_count": 1,
+        "source_held_subobligation_count": 0,
+        "eligible_form_count": len(members),
+        "named_example_count": len(named),
+        "additional_form_count": len(additional),
+        "blocked_attack_count": len(attack_keys),
+        "general_nonattack_action_count": len(actions),
+        "source_prerequisite_root_count": len(roots),
+        "source_prerequisite_reference_count": reference_count,
+        "new_source_clause_count": len(source_clauses),
+        "parameterized_input_category_count": len(input_categories),
+        "native_consumer_admission_status": "NOT_ESTABLISHED",
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -9827,21 +10966,21 @@ def _validate_source_unknown_classifications(
             if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
         )
     ]
-    current_open_source_subobligation_ids = {
+    current_open_source_subobligation_ids_before_ninth = {
         str(subobligation["subobligation_id"])
         for key in source_blocking_keys
         for subobligation in classified_by_key[key]["subobligations"]
         if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
         and subobligation["subobligation_id"] not in closed_subobligation_ids
     }
-    all_records = [
+    all_records_before_ninth = [
         *prior_reviewed_records,
         *eighth_resolution["source_resolution_records"],
     ]
-    all_resolved_keys = prior_resolved_keys | set(
+    all_resolved_keys_before_ninth = prior_resolved_keys | set(
         eighth_resolution["source_owner_decided_keys"]
     )
-    reviewed_keys = prior_reviewed_keys | set(
+    reviewed_keys_before_ninth = prior_reviewed_keys | set(
         eighth_resolution["source_owner_decided_keys"]
     )
     expected_eighth_contract = {
@@ -9869,15 +11008,13 @@ def _validate_source_unknown_classifications(
                 for key in prior_active_source_blocker_keys
             }
         ),
-        "cumulative_reviewed_key_count": len(reviewed_keys),
-        "cumulative_resolution_record_count": len(all_records),
-        "cumulative_source_resolved_key_count": len(all_resolved_keys),
-        "cumulative_source_resolved_subobligation_count": len(
-            closed_subobligation_ids
-        ),
+        "cumulative_reviewed_key_count": len(reviewed_keys_before_ninth),
+        "cumulative_resolution_record_count": len(all_records_before_ninth),
+        "cumulative_source_resolved_key_count": len(all_resolved_keys_before_ninth),
+        "cumulative_source_resolved_subobligation_count": len(closed_subobligation_ids),
         "cumulative_source_held_key_count": len(source_blocking_keys),
         "cumulative_source_held_subobligation_count": len(
-            current_open_source_subobligation_ids
+            current_open_source_subobligation_ids_before_ninth
         ),
         "original_record_count": len(classifications),
         "original_source_blocking_key_count": len(historical_source_blocking_keys),
@@ -9905,24 +11042,163 @@ def _validate_source_unknown_classifications(
             "owner-decision cumulative counts differ from derived source-classification sets",
         )
     owner_decided_key_set = set(eighth_resolution["source_owner_decided_keys"])
-    source_held_keys: list[str] = []
+    source_held_keys_before_ninth: list[str] = []
     seen_held_keys: set[str] = set()
     for resolution in prior_resolutions:
         for key in resolution["source_held_keys"]:
             key_string = str(key)
             if key_string in source_blocking_keys and key_string not in seen_held_keys:
-                source_held_keys.append(key_string)
+                source_held_keys_before_ninth.append(key_string)
                 seen_held_keys.add(key_string)
-    if seen_held_keys != set(source_blocking_keys) or owner_decided_key_set & seen_held_keys:
+    if (
+        seen_held_keys != set(source_blocking_keys)
+        or owner_decided_key_set & seen_held_keys
+    ):
         _fail(
             "source_eighth_hold_accounting",
             "active holds do not equal historical holds minus the accepted owner decisions",
         )
-    source_resolved_keys = [
-        str(key)
-        for resolution in prior_resolutions
-        for key in resolution["source_resolved_keys"]
-    ] + [str(key) for key in eighth_resolution["source_owner_decided_keys"]]
+
+    source_blocking_keys_before_ninth = list(source_blocking_keys)
+    closed_subobligation_ids_before_ninth = set(closed_subobligation_ids)
+    if (
+        len(source_blocking_keys_before_ninth) != 11
+        or len(current_open_source_subobligation_ids_before_ninth) != 11
+    ):
+        _fail("source_ninth_prior_state", "eighth-batch source counts changed")
+    familiar_resolution = _validate_source_familiar_census_evidence(manifest)
+    familiar_key = "source.spell.find_familiar.unresolved.eligible_form_census"
+    familiar_subobligation_id = f"{familiar_key}::source_mapping_review"
+    familiar_closed_ids = set(familiar_resolution["source_closed_subobligation_ids"])
+    if (
+        set(familiar_resolution["source_resolved_keys"]) != {familiar_key}
+        or familiar_closed_ids != {familiar_subobligation_id}
+        or familiar_key not in source_blocking_keys_before_ninth
+        or familiar_key in prior_resolved_keys
+        or familiar_key in owner_decided_key_set
+        or familiar_subobligation_id in closed_subobligation_ids_before_ninth
+    ):
+        _fail(
+            "source_ninth_prior_state",
+            "familiar source key is not exactly the remaining hold",
+        )
+
+    closed_subobligation_ids.update(familiar_closed_ids)
+    source_blocking_keys = [
+        key
+        for key in source_blocking_keys_before_ninth
+        if any(
+            subobligation["subobligation_id"] not in closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    current_open_source_subobligation_ids = {
+        str(subobligation["subobligation_id"])
+        for key in source_blocking_keys
+        for subobligation in classified_by_key[key]["subobligations"]
+        if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        and subobligation["subobligation_id"] not in closed_subobligation_ids
+    }
+    active_source_blocker_entry_count = len(
+        {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
+    )
+    source_held_keys = [
+        key for key in source_held_keys_before_ninth if key in source_blocking_keys
+    ]
+    if (
+        set(source_held_keys) != set(source_blocking_keys)
+        or len(source_blocking_keys) != 10
+        or len(current_open_source_subobligation_ids) != 10
+        or active_source_blocker_entry_count != 10
+    ):
+        _fail(
+            "source_ninth_hold_accounting",
+            "current source holds differ from exact-key closure",
+        )
+
+    all_records = [
+        *all_records_before_ninth,
+        *familiar_resolution["source_resolution_records"],
+    ]
+    source_closed_key_set = prior_resolved_keys | set(
+        familiar_resolution["source_resolved_keys"]
+    )
+    source_owner_decided_key_set = owner_decided_key_set
+    all_resolved_keys = source_closed_key_set | source_owner_decided_key_set
+    reviewed_keys = reviewed_keys_before_ninth | set(
+        familiar_resolution["source_resolved_keys"]
+    )
+    expected_ninth_contract = {
+        "status": "PARTIAL_NINTH_FIND_FAMILIAR_CENSUS_SOURCE_ONLY",
+        "selected_key_count": 1,
+        "resolution_record_count": len(
+            familiar_resolution["source_resolution_records"]
+        ),
+        "selected_source_closed_key_count": len(
+            set(familiar_resolution["source_resolved_keys"])
+        ),
+        "selected_source_closed_subobligation_count": len(familiar_closed_ids),
+        "prior_reviewed_key_count": len(reviewed_keys_before_ninth),
+        "prior_resolution_record_count": len(all_records_before_ninth),
+        "prior_source_resolved_key_count": len(all_resolved_keys_before_ninth),
+        "prior_source_resolved_subobligation_count": len(
+            closed_subobligation_ids_before_ninth
+        ),
+        "prior_source_held_key_count": len(source_blocking_keys_before_ninth),
+        "prior_source_held_subobligation_count": len(
+            current_open_source_subobligation_ids_before_ninth
+        ),
+        "prior_active_source_blocker_count": len(source_blocking_keys_before_ninth),
+        "prior_active_source_blocker_entry_count": len(
+            {
+                classified_by_key[key]["source_exact_name"]
+                for key in source_blocking_keys_before_ninth
+            }
+        ),
+        "cumulative_reviewed_key_count": len(reviewed_keys),
+        "cumulative_resolution_record_count": len(all_records),
+        "cumulative_source_closed_key_count": len(source_closed_key_set),
+        "cumulative_owner_decided_key_count": len(source_owner_decided_key_set),
+        "cumulative_source_resolved_key_count": len(all_resolved_keys),
+        "cumulative_source_resolved_subobligation_count": len(closed_subobligation_ids),
+        "cumulative_source_held_key_count": len(source_blocking_keys),
+        "cumulative_source_held_subobligation_count": len(
+            current_open_source_subobligation_ids
+        ),
+        "original_record_count": len(classifications),
+        "original_source_blocking_key_count": len(historical_source_blocking_keys),
+        "downstream_only_key_count": len(downstream_only_keys),
+        "active_source_blocker_count": len(source_blocking_keys),
+        "active_source_blocker_entry_count": active_source_blocker_entry_count,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": [30],
+    }
+    ninth_contract = _object(
+        manifest.get("source_ninth_resolution_contract"),
+        "source_ninth_resolution_contract",
+    )
+    if ninth_contract != expected_ninth_contract:
+        _fail("source_ninth_contract", "familiar closure cumulative counts differ")
+
+    source_resolved_keys = list(
+        dict.fromkeys(
+            [
+                str(key)
+                for resolution in prior_resolutions
+                for key in resolution["source_resolved_keys"]
+            ]
+            + [str(key) for key in eighth_resolution["source_owner_decided_keys"]]
+            + [str(key) for key in familiar_resolution["source_resolved_keys"]]
+        )
+    )
+    if (
+        len(source_resolved_keys) != 67
+        or set(source_resolved_keys) != all_resolved_keys
+    ):
+        _fail("source_ninth_resolution_census", "67 exact resolved keys are not unique")
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
@@ -9931,6 +11207,9 @@ def _validate_source_unknown_classifications(
         "historical_source_blocking_keys": historical_source_blocking_keys,
         "source_resolved_subobligation_count": len(closed_subobligation_ids),
         "source_resolved_key_count": len(all_resolved_keys),
+        "source_closed_key_count": len(source_closed_key_set),
+        "source_owner_decided_key_count": len(source_owner_decided_key_set),
+        "source_held_key_count": len(source_blocking_keys),
         "source_resolved_keys": source_resolved_keys,
         "source_owner_decided_keys": eighth_resolution["source_owner_decided_keys"],
         "source_owner_decided_subobligation_count": eighth_resolution[
@@ -9942,6 +11221,10 @@ def _validate_source_unknown_classifications(
         "source_owner_decision_evidence": eighth_resolution[
             "source_resolution_records"
         ],
+        "source_ninth_resolution_evidence": familiar_resolution[
+            "source_resolution_records"
+        ],
+        "source_ninth_resolution_contract": ninth_contract,
         "source_reviewed_key_count": len(reviewed_keys),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[

@@ -1,0 +1,170 @@
+{
+  "artifact_kind": "SP00_FIND_FAMILIAR_SOURCE_CENSUS",
+  "candidate_revision": "R2",
+  "pinned_commit": "75bc49af2fc6ca3159c18c4e59fd63befaa0894b",
+  "accepted_inputs": {
+    "census_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-20261014.json",
+    "census_sha256": "f3671f452d6d382abdae3f89318da03ac79743ba60bfa0a159c24dafac4eec0d",
+    "prerequisites_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-prerequisites-20261014.json",
+    "prerequisites_sha256": "5869ec71cf99487e28c6d0400e3583ceee80daafc300559e9483818c7dd7800f",
+    "r2_manifest_sha256": "44d8c10b03f1e3276bf11ad0fc0f29dd9761d91decbcfaf7010fb50a3a51f0c7",
+    "r1_review_sha256": "2867feaa6d9bbd62c59fbddcfc4f6681305b2ceb5c86db273123c608d4d0d55c",
+    "independent_r2_review_path": "/tmp/hdm-dev/spell-recovery/SP00-familiar-full-census-R2-review-20261014.md",
+    "independent_r2_review_sha256": "bd878a6746e71705db8d2d7c0947cb2ed8239086a93d932a275832e57d6a6405"
+  },
+  "source": {
+    "path": "DEV/docs/SRD_CC_v5.2.1.md",
+    "git_blob": "45392ab96e8adfeba66694bca8950b6ce1a71797",
+    "raw_utf8_sha256": "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e",
+    "hash_basis": "Exact UTF-8 bytes, including line endings and final content-line newline",
+    "license_id": "CC-BY-4.0",
+    "required_attribution": "This work includes material from the System Reference Document 5.2.1 (\"SRD 5.2.1\") by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2.1 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.",
+    "domain_spans": [
+      {"line_start": 22046, "line_end": 32336, "raw_utf8_sha256": "7c3a92d7f95649a635edb767b1bb062167d7967f97231c16f3366edd6f407bde"},
+      {"line_start": 32337, "line_end": 35372, "raw_utf8_sha256": "684ff5697c9d1d9b4e67a2db550df74ca11a8bb56a6c5d65c914844256ce6ca7"}
+    ],
+    "index_span": {"line_start": 168, "line_end": 499, "raw_utf8_sha256": "b622cc0f85991fd4ed85cf7be973fe464944899a60ad05a702ee18c7fb801a1a"},
+    "find_familiar_span": {"line_start": 11609, "line_end": 11629, "raw_utf8_sha256": "ab7a578e4bd70abb8a5c3d57a0733b0a5dfd33f2b444ae17b488f68437bd3b98"},
+    "support_spans": {
+      "general_actions": {"line_start": 896, "line_end": 943, "raw_utf8_sha256": "f420c102ecb6ab480457b9fcbbc8fb030092e7c724b3b2cd1686085e0105d00e"},
+      "monster_actions_and_traits": {"line_start": 21958, "line_end": 21978, "raw_utf8_sha256": "89293acc0248b360f0f74d1392e52aa076d51d27030e58d047ef565207e5adbe"},
+      "limited_usage": {"line_start": 22034, "line_end": 22042, "raw_utf8_sha256": "fab878a7698c7edc4fc0c5036c726a2c06b622c1f088a94acd28837dfb4ef00a"}
+    }
+  },
+  "domain_inventory": {
+    "index_records": 330,
+    "monsters_a_to_z_statblocks": 235,
+    "animals_statblocks": 95,
+    "cr_field_lines": 330,
+    "unique_statblock_keys": 330,
+    "index_minus_inventory": 0,
+    "inventory_minus_index": 0,
+    "missing_or_multiple_type_or_cr": 0,
+    "eligible_forms": 24,
+    "disjoint_negative_partitions": {
+      "cr0_nonbeast": 5,
+      "beast_nonzero_nonswarm": 60,
+      "swarms": 7,
+      "other_nonbeast_nonzero": 234
+    }
+  },
+  "eligibility_predicate": {
+    "creature_type": "Beast",
+    "challenge_rating_exact": "0",
+    "swarm_is_independent_exclusion_predicate": false
+  },
+  "named_spell_examples": [
+    "Bat", "Cat", "Frog", "Hawk", "Lizard", "Octopus", "Owl", "Rat", "Raven", "Spider", "Weasel"
+  ],
+  "additional_forms": [
+    "Baboon", "Badger", "Crab", "Deer", "Eagle", "Giant Fire Beetle", "Goat", "Hyena", "Jackal", "Piranha", "Scorpion", "Seahorse", "Vulture"
+  ],
+  "eligible_forms": [
+    {"source_key": "source.srd521.statblock.baboon", "name": "Baboon", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32465, "line_end": 32494, "raw_utf8_sha256": "f8a29008624c198aded681c268735303b340f2fbcf5ea5d981c78dc529a0be4c"}},
+    {"source_key": "source.srd521.statblock.badger", "name": "Badger", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32498, "line_end": 32521, "raw_utf8_sha256": "0aba3e93f590a4f353a72556278312320267f06e4df8c83119ba358fb8eadbf3"}},
+    {"source_key": "source.srd521.statblock.bat", "name": "Bat", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32525, "line_end": 32548, "raw_utf8_sha256": "f9556a3f25cb2bdc614438e2413f148c1dd1602a421245ed1c64a677bb124c1a"}},
+    {"source_key": "source.srd521.statblock.cat", "name": "Cat", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32705, "line_end": 32734, "raw_utf8_sha256": "0bf995898caef33ebf4ac4e9a2db00f09366628a503544f057c66cecb975c487"}},
+    {"source_key": "source.srd521.statblock.crab", "name": "Crab", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32767, "line_end": 32796, "raw_utf8_sha256": "64a0d049873000bbd47e8ab6e33697e4ce54e557d56abb6850cfc3774d956d68"}},
+    {"source_key": "source.srd521.statblock.deer", "name": "Deer", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32833, "line_end": 32862, "raw_utf8_sha256": "ec4c24480c707b036dc99b9b137e928b2a04a0d32b725e518c60ca2c074fa4ea"}},
+    {"source_key": "source.srd521.statblock.eagle", "name": "Eagle", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 32926, "line_end": 32949, "raw_utf8_sha256": "29924c85e65e0d2ddb3cb4433bb64a4220cf30830978711c76856a007850dafb"}},
+    {"source_key": "source.srd521.statblock.frog", "name": "Frog", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 33048, "line_end": 33079, "raw_utf8_sha256": "7461fe66673d721891ee47e260a6e1eeadb7d24d2394f20d14d7b40a0c68e280"}},
+    {"source_key": "source.srd521.statblock.giant-fire-beetle", "name": "Giant Fire Beetle", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 33391, "line_end": 33420, "raw_utf8_sha256": "daae16888ecb86b5e3a03dabd9e0a22df3b4934731e03ebc24e37a948e508020"}},
+    {"source_key": "source.srd521.statblock.goat", "name": "Goat", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 33997, "line_end": 34020, "raw_utf8_sha256": "06acf86204dbbb28fad43f243f4f24983bc8530a343dc5f528f5a361b9d1c86e"}},
+    {"source_key": "source.srd521.statblock.hawk", "name": "Hawk", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34024, "line_end": 34047, "raw_utf8_sha256": "c716917dfaa162fa23cf69dd1974735c8c884b1301b8a9a872e4e985442d0ce8"}},
+    {"source_key": "source.srd521.statblock.hyena", "name": "Hyena", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34119, "line_end": 34148, "raw_utf8_sha256": "093d917b2400d90ca1989f8f8327846abe1775efafca374081f26db07f431c71"}},
+    {"source_key": "source.srd521.statblock.jackal", "name": "Jackal", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34152, "line_end": 34175, "raw_utf8_sha256": "edfc337d07c1b0c37bf4c758a850834d89757d42ac9ce9d1c3f234aa9c6da51a"}},
+    {"source_key": "source.srd521.statblock.lizard", "name": "Lizard", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34251, "line_end": 34280, "raw_utf8_sha256": "feee57f8b5709df536bb8da343b49e29e11e5da9c3e6196073eb1db98d7cd641"}},
+    {"source_key": "source.srd521.statblock.octopus", "name": "Octopus", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34379, "line_end": 34416, "raw_utf8_sha256": "b13fca94d6d01a056a017ff1ad4c5b47523666e643726e8eb9a9ddda90093aa1"}},
+    {"source_key": "source.srd521.statblock.owl", "name": "Owl", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34420, "line_end": 34449, "raw_utf8_sha256": "1406a8b0ddfd95957ba6197f7e545e5a69dfe7e4e1501c26ed052b2998a8bf24"}},
+    {"source_key": "source.srd521.statblock.piranha", "name": "Piranha", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34486, "line_end": 34515, "raw_utf8_sha256": "05f617b6f0a02b90babdf76a6d78f6f6d14985c052e3d53dab95f27a4dd183f6"}},
+    {"source_key": "source.srd521.statblock.rat", "name": "Rat", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34641, "line_end": 34670, "raw_utf8_sha256": "6845267a55e9b5e3279257ca18e756ec8051c5a460615c4446846ab632eed2f5"}},
+    {"source_key": "source.srd521.statblock.raven", "name": "Raven", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34674, "line_end": 34703, "raw_utf8_sha256": "3ea07b0b59a7ba1cc75be4638829939f7815cd24b2b47c099c48ba655b477e1b"}},
+    {"source_key": "source.srd521.statblock.scorpion", "name": "Scorpion", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34837, "line_end": 34860, "raw_utf8_sha256": "4d556b2b8a607a0494e245fbc1b130a6f11e6780f995a789c2c83f162159d9a0"}},
+    {"source_key": "source.srd521.statblock.seahorse", "name": "Seahorse", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34864, "line_end": 34893, "raw_utf8_sha256": "54866451aa84012831087d92b3b69448802925592ef0c1847c4cb95121406465"}},
+    {"source_key": "source.srd521.statblock.spider", "name": "Spider", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 34897, "line_end": 34928, "raw_utf8_sha256": "240b23bf92570eaca27cf992a390d9a238db9a5a9d632dc1acfeec1afcc9c40d"}},
+    {"source_key": "source.srd521.statblock.vulture", "name": "Vulture", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 35256, "line_end": 35285, "raw_utf8_sha256": "8d81c2bf993005666a295c61e6f0c681ef866fdec7e7172d20806ca8b469814c"}},
+    {"source_key": "source.srd521.statblock.weasel", "name": "Weasel", "creature_type": "Beast", "challenge_rating": "0", "span": {"line_start": 35316, "line_end": 35339, "raw_utf8_sha256": "7222b2267270e99c52da33d3b47b62885b7e24502d105aea26290080099bf491"}}
+  ],
+  "eligible_form_record_indexes": [
+    239, 240, 241, 247, 249, 251, 254, 258, 269, 287, 288, 291,
+    292, 295, 299, 300, 302, 307, 308, 313, 314, 315, 326, 328
+  ],
+  "source_support_clause_catalog": [
+    {"index": 0, "source_key": "source.srd521.glossary.Attack [Action]", "name": "Attack [Action]", "line_start": 16113, "line_end": 16119, "raw_utf8_sha256": "fa5c02078d130bf65f0a522d5c4b5ec2868ea107321ffb49b2e0862a9f84a122"},
+    {"index": 1, "source_key": "source.srd521.glossary.Blinded [Condition]", "name": "Blinded [Condition]", "line_start": 16141, "line_end": 16147, "raw_utf8_sha256": "89cca29fe7c4492c6cc4f80940b7cb9226db7f7db881d59d50114ee56c8b6d12"},
+    {"index": 2, "source_key": "source.srd521.glossary.Blindsight", "name": "Blindsight", "line_start": 16151, "line_end": 16153, "raw_utf8_sha256": "2803835c1a779cfb9e48d05b701ae848dce83e65f36622fa922da4814b5fce4d"},
+    {"index": 3, "source_key": "source.srd521.glossary.Bonus Action", "name": "Bonus Action", "line_start": 16163, "line_end": 16165, "raw_utf8_sha256": "4904371218d2b2bf35b374e6e885b9e831de93593c61f778f9f8a89b0d0343bc"},
+    {"index": 4, "source_key": "source.srd521.glossary.Bright Light", "name": "Bright Light", "line_start": 16210, "line_end": 16212, "raw_utf8_sha256": "270e85e6bcceccce7763a13661f31c899da20f94638481fce343994873cd355e"},
+    {"index": 5, "source_key": "source.srd521.glossary.Burrow Speed", "name": "Burrow Speed", "line_start": 16222, "line_end": 16224, "raw_utf8_sha256": "b016446d50e0e4ab73862720b056e66b2a54240f3441b071bbff2893de985ec0"},
+    {"index": 6, "source_key": "source.srd521.glossary.Climbing", "name": "Climbing", "line_start": 16282, "line_end": 16286, "raw_utf8_sha256": "602acbac9df14ae44f5fb8954cace321fad92fa05bc1b326485c74703ffa01fe"},
+    {"index": 7, "source_key": "source.srd521.glossary.Climb Speed", "name": "Climb Speed", "line_start": 16290, "line_end": 16292, "raw_utf8_sha256": "92a77eea371c45a2c825f8e04313b1c0ce09357a704dbc082ee97fa7334ced10"},
+    {"index": 8, "source_key": "source.srd521.glossary.Cover", "name": "Cover", "line_start": 16326, "line_end": 16328, "raw_utf8_sha256": "d1d22982ee38ce2beb594e4e5cc03b3bea92445192506720d966e84f87bf367c"},
+    {"index": 9, "source_key": "source.srd521.glossary.Cube [Area of Effect]", "name": "Cube [Area of Effect]", "line_start": 16360, "line_end": 16364, "raw_utf8_sha256": "46c701d69e86c32fec52eee71f624b7c2919619e719ca21b9a3b2c8c84cf53da"},
+    {"index": 10, "source_key": "source.srd521.glossary.Darkness", "name": "Darkness", "line_start": 16432, "line_end": 16434, "raw_utf8_sha256": "9f08795276db695a3bf81e93ed027e91b55bcec8204973f3f4a276c4d272f333"},
+    {"index": 11, "source_key": "source.srd521.glossary.Darkvision", "name": "Darkvision", "line_start": 16438, "line_end": 16440, "raw_utf8_sha256": "fb554f0d70a5a0714bdc8fd77d21d6aadc8722bfd1d5c30bd8c5bc41b006ecb5"},
+    {"index": 12, "source_key": "source.srd521.glossary.Dash [Action]", "name": "Dash [Action]", "line_start": 16444, "line_end": 16448, "raw_utf8_sha256": "74684cebfd3a7fb004ca410b57523716d243cb497f50efd73a6f7c5e8fd5a28e"},
+    {"index": 13, "source_key": "source.srd521.glossary.Dim Light", "name": "Dim Light", "line_start": 16519, "line_end": 16521, "raw_utf8_sha256": "3f192ea07ce5588e03d9f592747c3f7116b2e1f61f099f46d1d4f3f5ba372d25"},
+    {"index": 14, "source_key": "source.srd521.glossary.Disengage [Action]", "name": "Disengage [Action]", "line_start": 16531, "line_end": 16533, "raw_utf8_sha256": "fc4744cab8205891aabfed2fa0bbfdbb19dda74918019fa020a62a638e48447f"},
+    {"index": 15, "source_key": "source.srd521.glossary.Dodge [Action]", "name": "Dodge [Action]", "line_start": 16537, "line_end": 16541, "raw_utf8_sha256": "dc455a3332a087916610645cc0487e29283d6bffac918a46b91f50b0be344090"},
+    {"index": 16, "source_key": "source.srd521.glossary.Flying", "name": "Flying", "line_start": 16601, "line_end": 16603, "raw_utf8_sha256": "e8ae41130b77f7b2a5a9bed33f69f1fe89735f6610bd5e422bb02bc8b8f93540"},
+    {"index": 17, "source_key": "source.srd521.glossary.Fly Speed", "name": "Fly Speed", "line_start": 16607, "line_end": 16609, "raw_utf8_sha256": "26035aaf7fa6641902173bd9ba97c6dbdbf5eba23724c67683739d1a1ba3f2c6"},
+    {"index": 18, "source_key": "source.srd521.glossary.Heavily Obscured", "name": "Heavily Obscured", "line_start": 16665, "line_end": 16667, "raw_utf8_sha256": "6d1118346a2aee9b060a6dbe9716eb8c84fcfd79433e9208d31dc50d5d9ae124"},
+    {"index": 19, "source_key": "source.srd521.glossary.Help [Action]", "name": "Help [Action]", "line_start": 16671, "line_end": 16677, "raw_utf8_sha256": "77d848e90066318c7b2a2016ac1f8e8fa41ef964523055dcc9c8e29e19b81724"},
+    {"index": 20, "source_key": "source.srd521.glossary.Hide [Action]", "name": "Hide [Action]", "line_start": 16689, "line_end": 16693, "raw_utf8_sha256": "602850c5d04e8ea36ed0c8af3856da594335f2e65303b4b372f7eadb36fd3404"},
+    {"index": 21, "source_key": "source.srd521.glossary.High Jump", "name": "High Jump", "line_start": 16697, "line_end": 16701, "raw_utf8_sha256": "df9b455435f89e24c70a1fa9b73d4e0d7318b602f82e54ad6b2c288d4bc1e233"},
+    {"index": 22, "source_key": "source.srd521.glossary.Incapacitated [Condition]", "name": "Incapacitated [Condition]", "line_start": 16757, "line_end": 16767, "raw_utf8_sha256": "c281e87c1436cb1011020e95fde8996d43e55e6fc43a2a12911b46f79a34bb3e"},
+    {"index": 23, "source_key": "source.srd521.glossary.Influence [Action]", "name": "Influence [Action]", "line_start": 16777, "line_end": 16797, "raw_utf8_sha256": "eb96f2b41eb6a99c11ec3ac0301626e4a6a1366f8252a1c044b9380935071319"},
+    {"index": 24, "source_key": "source.srd521.glossary.Invisible [Condition]", "name": "Invisible [Condition]", "line_start": 16809, "line_end": 16817, "raw_utf8_sha256": "cbf3644671e39a3df5e040933a31a70300194f8cfadffe6b1ff4e68d9e91b73c"},
+    {"index": 25, "source_key": "source.srd521.glossary.Lightly Obscured", "name": "Lightly Obscured", "line_start": 16835, "line_end": 16837, "raw_utf8_sha256": "0abffa175fbdeea2d6667f6093ca23e0293b97355e489c477ac76a0f887fdeb6"},
+    {"index": 26, "source_key": "source.srd521.glossary.Long Jump", "name": "Long Jump", "line_start": 16849, "line_end": 16853, "raw_utf8_sha256": "ca25229fa4868fce8c85cfd6fc13dcb824af7eae650a612be62b7ca35f942d96"},
+    {"index": 27, "source_key": "source.srd521.glossary.Magic [Action]", "name": "Magic [Action]", "line_start": 16887, "line_end": 16891, "raw_utf8_sha256": "c058c7161a70af3ac580fd1ce30766347d64288b2a58f0c430a1c31852056565"},
+    {"index": 28, "source_key": "source.srd521.glossary.Opportunity Attacks", "name": "Opportunity Attacks", "line_start": 16946, "line_end": 16948, "raw_utf8_sha256": "97d365915c83b2bbdce4e26c83e00f2e962f8c62bbffd9662d2a644c8bc399a5"},
+    {"index": 29, "source_key": "source.srd521.glossary.Passive Perception", "name": "Passive Perception", "line_start": 16968, "line_end": 16972, "raw_utf8_sha256": "11fcbe9850241a943c032416f91934003014e37d3ac20be705ed5ac8a6d3cc8c"},
+    {"index": 30, "source_key": "source.srd521.glossary.Reaction", "name": "Reaction", "line_start": 17044, "line_end": 17046, "raw_utf8_sha256": "0ad1a77a88acf0fee06ff0e623a104ad9e7dc157856349babe0dbbaea8ea772e"},
+    {"index": 31, "source_key": "source.srd521.glossary.Ready [Action]", "name": "Ready [Action]", "line_start": 17050, "line_end": 17056, "raw_utf8_sha256": "42f0010b2ae1bcbf92ce77ef12bccc20a10f9626455e440f129a7ebbdfdbdc53"},
+    {"index": 32, "source_key": "source.srd521.glossary.Ritual", "name": "Ritual", "line_start": 17078, "line_end": 17080, "raw_utf8_sha256": "3f4bc6da069b6634f84d1f834314e621a2b601f777d57d06e74d39bcd7514866"},
+    {"index": 33, "source_key": "source.srd521.glossary.Search [Action]", "name": "Search [Action]", "line_start": 17102, "line_end": 17115, "raw_utf8_sha256": "08be9955b4947364b9665296ed2862d8f71b34d529607197882cb98bd9376e5a"},
+    {"index": 34, "source_key": "source.srd521.glossary.Speed", "name": "Speed", "line_start": 17163, "line_end": 17169, "raw_utf8_sha256": "033e5886f45fe2767f324130b4d4cbcc6f4a27e8f7368fb8bb4e30bf4c9b3f15"},
+    {"index": 35, "source_key": "source.srd521.glossary.Study [Action]", "name": "Study [Action]", "line_start": 17251, "line_end": 17267, "raw_utf8_sha256": "e140495cf1c0f67e1067647f03e03c7903aa3e6081f5a63270543c87421336cd"},
+    {"index": 36, "source_key": "source.srd521.glossary.Suffocation [Hazard]", "name": "Suffocation [Hazard]", "line_start": 17283, "line_end": 17285, "raw_utf8_sha256": "3c0f3327f7904526884dcdb8bf1cf292f856483857958fc1973d0ee26721c76e"},
+    {"index": 37, "source_key": "source.srd521.glossary.Swimming", "name": "Swimming", "line_start": 17295, "line_end": 17297, "raw_utf8_sha256": "48a03ba63e3042c9d844a5f8a8dd51c2df28e3213a0502c541c63d2a3505ea54"},
+    {"index": 38, "source_key": "source.srd521.glossary.Swim Speed", "name": "Swim Speed", "line_start": 17301, "line_end": 17303, "raw_utf8_sha256": "d164c372cf28060de742301b4caf0386c7eb585d985ba14d786edcf97221eb6e"},
+    {"index": 39, "source_key": "source.srd521.glossary.Telepathy", "name": "Telepathy", "line_start": 17313, "line_end": 17317, "raw_utf8_sha256": "267e06e45d925044ed354fce2b39a6ecff097da29fd8ddcda0cf6f590cd5fc0b"},
+    {"index": 40, "source_key": "source.srd521.glossary.Unarmed Strike", "name": "Unarmed Strike", "line_start": 17359, "line_end": 17369, "raw_utf8_sha256": "c8edc1a3d7e646a2ed2287c306f86262d46be367272fb30997cac560fa58af86"},
+    {"index": 41, "source_key": "source.srd521.glossary.Utilize [Action]", "name": "Utilize [Action]", "line_start": 17397, "line_end": 17399, "raw_utf8_sha256": "766cd66fb3d389b916bc6d6ef007e33a4a463a2a371fd14d62b91aba08c46fe5"},
+    {"index": 42, "source_key": null, "name": "Stat Block Overview", "line_start": 21701, "line_end": 21719, "raw_utf8_sha256": "aa2a689d987f28f8809cd8f655a6d356ec78a4637846ec7bb65f3410be02b112"},
+    {"index": 43, "source_key": null, "name": "Monster actions and traits", "line_start": 21958, "line_end": 21978, "raw_utf8_sha256": "89293acc0248b360f0f74d1392e52aa076d51d27030e58d047ef565207e5adbe"},
+    {"index": 44, "source_key": null, "name": "Limited Usage", "line_start": 22034, "line_end": 22042, "raw_utf8_sha256": "fab878a7698c7edc4fc0c5036c726a2c06b622c1f088a94acd28837dfb4ef00a"},
+    {"index": 45, "source_key": null, "name": "General actions", "line_start": 896, "line_end": 943, "raw_utf8_sha256": "f420c102ecb6ab480457b9fcbbc8fb030092e7c724b3b2cd1686085e0105d00e"},
+    {"index": 46, "source_key": null, "name": "Longer Casting Times", "line_start": 9159, "line_end": 9161, "raw_utf8_sha256": "cf31fedb40e11967b8806caa5c42a5613692ef85112fdd6ad27e1309187a88f1"},
+    {"index": 47, "source_key": null, "name": "Vision and Light", "line_start": 987, "line_end": 1009, "raw_utf8_sha256": "4b4b28901ebf909a2b917e67585f6498e3ae89c9df821650eb6109d174af4d44"},
+    {"index": 48, "source_key": null, "name": "Range", "line_start": 9165, "line_end": 9175, "raw_utf8_sha256": "179d9da6357281de3a4e376fa4c89f5debd85dfd8751b0f095bc5843dcb38003"}
+  ],
+  "blocked_attacks": {
+    "count": 23,
+    "member_source_keys": [
+      "source.srd521.statblock.baboon", "source.srd521.statblock.badger", "source.srd521.statblock.bat", "source.srd521.statblock.cat", "source.srd521.statblock.crab", "source.srd521.statblock.deer", "source.srd521.statblock.eagle", "source.srd521.statblock.frog", "source.srd521.statblock.giant-fire-beetle", "source.srd521.statblock.goat", "source.srd521.statblock.hawk", "source.srd521.statblock.hyena", "source.srd521.statblock.jackal", "source.srd521.statblock.lizard", "source.srd521.statblock.octopus", "source.srd521.statblock.owl", "source.srd521.statblock.piranha", "source.srd521.statblock.rat", "source.srd521.statblock.raven", "source.srd521.statblock.scorpion", "source.srd521.statblock.spider", "source.srd521.statblock.vulture", "source.srd521.statblock.weasel"
+    ],
+    "familiar_attack_grant": false,
+    "attack_relay_classification": "NOT_DECIDED_BY_THIS_SOURCE_LEDGER"
+  },
+  "nonattack_form_options": [
+    {"source_key": "source.srd521.statblock.seahorse", "name": "Bubble Dash", "action_type": "ACTION", "source_line": 34893, "raw_line_sha256": "6eff3db9c21e0548ff3051a70982d881d8c4cdba9bce234e861a2ad684ba8705", "condition": "UNDERWATER_ONLY"},
+    {"source_key": "source.srd521.statblock.octopus", "name": "Ink Cloud (1/Day)", "action_type": "REACTION", "source_line": 34416, "raw_line_sha256": "ffacc7b5157b4c663a3f28204e8bc8d52ea32273ccd729da558b8cf0890a5228", "condition": "CREATURE_ENDS_TURN_WITHIN_5_FEET_WHILE_OCTOPUS_UNDERWATER", "usage_reset_source_key": "source.srd521.prerequisite.rest.long", "usage_reset_span": {"line_start": 16857, "line_end": 16883, "raw_utf8_sha256": "25c3660c221dd1b5617a7431b78703a12f44ced9c6abe62eab97c741f4086d63"}}
+  ],
+  "attack_only_traits": [
+    "source.srd521.statblock.baboon",
+    "source.srd521.statblock.hyena",
+    "source.srd521.statblock.vulture"
+  ],
+  "source_boundary": {
+    "native_consumer_admission_status": "NOT_ESTABLISHED",
+    "actual_native_action_execution_status": "NOT_ESTABLISHED",
+    "full_339_source_qualification_status": "NOT_ESTABLISHED",
+    "source_ready_claim": "NONE",
+    "familiar_spellcasting_grant": "NONE",
+    "default_hands_or_voice": "NONE",
+    "automatic_attack_relay": "NOT_ESTABLISHED",
+    "universal_100_foot_command_or_sensory_leash": "NOT_ESTABLISHED"
+  }
+}
