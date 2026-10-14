@@ -410,5 +410,83 @@
       "source_category": "source_parameter",
       "value": "Otherworldly Steed has Wis 12/−1/−1."
     }
+  ],
+  "owner_decision_rejections": [
+    {
+      "case_id": "owner-decision-hash-is-pinned",
+      "expected_error_code": "source_interpretation_owner",
+      "mutation": "owner_field",
+      "field": "decision_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "case_id": "owner-decision-authority-is-not-srd-text",
+      "expected_error_code": "source_interpretation_owner",
+      "mutation": "owner_field",
+      "field": "authority",
+      "value": "SRD_EXPLICIT"
+    },
+    {
+      "case_id": "owner-decision-scope-cannot-widen",
+      "expected_error_code": "source_interpretation_owner",
+      "mutation": "owner_field",
+      "field": "accepted_scope",
+      "value": "ALL_339_SOURCE_INTERPRETATIONS"
+    },
+    {
+      "case_id": "owner-decision-key-is-exact",
+      "expected_error_code": "source_eighth_census",
+      "mutation": "owner_row_field",
+      "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",
+      "field": "unresolved_key",
+      "value": "source.spell.alarm.unresolved.audible_sound_bounds"
+    },
+    {
+      "case_id": "owner-decision-section-is-exact",
+      "expected_error_code": "source_eighth_binding",
+      "mutation": "owner_row_field",
+      "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",
+      "field": "owner_section",
+      "value": "B"
+    },
+    {
+      "case_id": "owner-qualifier-cannot-claim-literal-raw",
+      "expected_error_code": "source_eighth_qualifier",
+      "mutation": "material_qualifier",
+      "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",
+      "index": 0,
+      "value": "The SRD itself explicitly states delta = b_after - b_before."
+    },
+    {
+      "case_id": "resistance-golden-no-spill-result-is-six",
+      "expected_error_code": "source_eighth_golden",
+      "mutation": "golden_value",
+      "unresolved_key": "source.spell.resistance.unresolved.damage_grouping_order",
+      "field": "expected_total_damage",
+      "value": 4
+    },
+    {
+      "case_id": "historical-seventh-warding-bond-hold-is-not-rewritten",
+      "expected_error_code": "source_seventh_disposition",
+      "mutation": "prior_hold_disposition",
+      "unresolved_key": "source.spell.warding_bond.unresolved.copied_damage_policy",
+      "value": "SOURCE_CLOSED"
+    },
+    {
+      "case_id": "future-proof-cannot-be-promoted-by-owner-decision",
+      "expected_error_code": "source_unknown_subobligation",
+      "mutation": "future_proof_field",
+      "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",
+      "field": "status",
+      "value": "ESTABLISHED"
+    },
+    {
+      "case_id": "original-classification-history-is-immutable",
+      "expected_error_code": "source_unknown_classification_witness",
+      "mutation": "historical_classification_field",
+      "unresolved_key": "source.spell.aid.unresolved.health_normalization_policy",
+      "field": "original_reason",
+      "value": "Owner decision rewrote historical classification."
+    }
   ]
 }

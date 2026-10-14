@@ -39,6 +39,9 @@
     "source_seventh_review",
     "source_seventh_resolution_contract",
     "source_seventh_resolution_evidence",
+    "source_interpretation_owner",
+    "source_eighth_resolution_contract",
+    "source_eighth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -164,6 +167,16 @@
       "minItems": 7,
       "maxItems": 7,
       "items": {"$ref": "#/$defs/sourceSeventhResolutionEvidence"}
+    },
+    "source_interpretation_owner": {"$ref": "#/$defs/sourceInterpretationOwner"},
+    "source_eighth_resolution_contract": {
+      "$ref": "#/$defs/sourceEighthResolutionContract"
+    },
+    "source_eighth_resolution_evidence": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {"$ref": "#/$defs/sourceEighthResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -2197,6 +2210,193 @@
         "retained_source_residual": {"type": "string", "minLength": 1},
         "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
         "actual_native_proof_refs": {"type": "array", "maxItems": 0}
+      }
+    },
+    "sourceInterpretationOwner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority", "status", "decision_path", "decision_sha256",
+        "decision_git_blob", "review_path", "review_sha256",
+        "historical_brief_path", "historical_brief_sha256", "accepted_scope",
+        "accepted_sections", "accepted_keys"
+      ],
+      "properties": {
+        "authority": {"const": "ACCEPTED_PRODUCT_OWNER_DECISION"},
+        "status": {"const": "ACCEPTED_PRODUCT_OWNER_DECISION"},
+        "decision_path": {"const": "DEV/docs/superpowers/specs/2026-10-14-sp00-source-interpretation-owner-decision.md"},
+        "decision_sha256": {"const": "9de384b36657bafe7e93252959825ed4ba4494f287ee972904d589f5c8759e5c"},
+        "decision_git_blob": {"const": "662d17d8299fae1ac264863a7da31bd99a9da183"},
+        "review_path": {"const": "DEV/docs/superpowers/design/2026-10-14-sp00-source-interpretation-review.md"},
+        "review_sha256": {"const": "c23981544f9dd0cac9e90f9fd6fe5020bb756bd16fd7cb5a2f0878e6c783b581"},
+        "historical_brief_path": {"const": "DEV/docs/superpowers/design/2026-10-13-sp00-source-interpretation-decision-brief.md"},
+        "historical_brief_sha256": {"const": "ba763309d102089ac82853178f072e2c3e5b09f2d874a3f11d611f06e3226e6a"},
+        "accepted_scope": {"const": "EXACTLY_SIX_NAMED_SP00_SOURCE_INTERPRETATION_SUBOBLIGATIONS; NO_NATIVE_CONSUMER_PROOF_OR_PACKAGE_READINESS"},
+        "accepted_sections": {"const": ["A", "B", "C", "D", "E", "F"]},
+        "accepted_keys": {
+          "const": [
+            "source.spell.aid.unresolved.health_normalization_policy",
+            "source.spell.magic_missile.unresolved.rng_damage_grouping",
+            "source.spell.pass_without_trace.unresolved.selection_timing",
+            "source.spell.ray_of_frost.unresolved.movement_composition",
+            "source.spell.resistance.unresolved.damage_grouping_order",
+            "source.spell.warding_bond.unresolved.copied_damage_policy"
+          ]
+        }
+      }
+    },
+    "sourceEighthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_owner_decided_key_count", "selected_owner_decided_subobligation_count",
+        "prior_reviewed_key_count", "prior_resolution_record_count",
+        "prior_source_resolved_key_count", "prior_source_resolved_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "prior_active_source_blocker_entry_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_resolved_key_count", "cumulative_source_resolved_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "original_record_count", "original_source_blocking_key_count",
+        "downstream_only_key_count", "active_source_blocker_count",
+        "active_source_blocker_entry_count", "future_native_proof_status",
+        "full_339_source_qualification_status", "production_claim",
+        "selected_original_classification_indexes"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_EIGHTH_ACCEPTED_OWNER_SET_SOURCE_ONLY"},
+        "selected_key_count": {"const": 6},
+        "resolution_record_count": {"const": 6},
+        "selected_owner_decided_key_count": {"const": 6},
+        "selected_owner_decided_subobligation_count": {"const": 6},
+        "prior_reviewed_key_count": {"const": 77},
+        "prior_resolution_record_count": {"const": 81},
+        "prior_source_resolved_key_count": {"const": 60},
+        "prior_source_resolved_subobligation_count": {"const": 64},
+        "prior_source_held_key_count": {"const": 17},
+        "prior_source_held_subobligation_count": {"const": 17},
+        "prior_active_source_blocker_count": {"const": 17},
+        "prior_active_source_blocker_entry_count": {"const": 17},
+        "cumulative_reviewed_key_count": {"const": 77},
+        "cumulative_resolution_record_count": {"const": 87},
+        "cumulative_source_resolved_key_count": {"const": 66},
+        "cumulative_source_resolved_subobligation_count": {"const": 70},
+        "cumulative_source_held_key_count": {"const": 11},
+        "cumulative_source_held_subobligation_count": {"const": 11},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 11},
+        "active_source_blocker_entry_count": {"const": 11},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {"const": [0, 52, 60, 66, 68, 80]}
+      }
+    },
+    "sourceEighthRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "json_pointer", "source_exact_name", "printed_page",
+        "source_header_line", "raw_body_sha256", "raw_hash_basis",
+        "body_witness_ref", "qualification_ref"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/required_modes_or_exceptions$"},
+        "source_exact_name": {"enum": ["Aid", "Magic Missile", "Pass without Trace", "Ray of Frost", "Resistance", "Warding Bond"]},
+        "printed_page": {"type": "integer", "minimum": 1},
+        "source_header_line": {"type": "integer", "minimum": 1},
+        "raw_body_sha256": {"$ref": "#/$defs/sha256"},
+        "raw_hash_basis": {"const": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"},
+        "body_witness_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+$"}
+          }
+        },
+        "qualification_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"type": "string", "pattern": "^/rows/[0-9]+/qualifications$"}
+          }
+        }
+      }
+    },
+    "sourceEighthMarkdownLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "line_start", "line_end", "span_sha256"],
+      "properties": {
+        "heading": {"enum": ["Aid", "Magic Missile", "Pass without Trace", "Ray of Frost", "Resistance", "Warding Bond"]},
+        "line_start": {"type": "integer", "minimum": 1},
+        "line_end": {"type": "integer", "minimum": 1},
+        "span_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceEighthResistanceGoldenWitness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "components", "chosen_damage_type", "fixed_d4_result",
+        "selected_type_subtotal_after_reduction", "ordinary_resistance_type",
+        "selected_type_damage_after_defense", "unselected_type_damage",
+        "expected_total_damage"
+      ],
+      "properties": {
+        "components": {"const": [{"damage_type": "Fire", "amount": 5}, {"damage_type": "Cold", "amount": 5}]},
+        "chosen_damage_type": {"const": "Fire"},
+        "fixed_d4_result": {"const": 3},
+        "selected_type_subtotal_after_reduction": {"const": 2},
+        "ordinary_resistance_type": {"const": "Fire"},
+        "selected_type_damage_after_defense": {"const": 1},
+        "unselected_type_damage": {"const": 5},
+        "expected_total_damage": {"const": 6}
+      }
+    },
+    "sourceEighthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_record_ref",
+        "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "source_markdown_locators", "owner_section",
+        "owner_section_heading", "resolution_authority", "resolution_basis",
+        "source_grounding_status", "source_grounded_findings",
+        "accepted_interpretation", "material_qualifiers", "retained_source_residual",
+        "future_native_proof_status", "actual_native_proof_refs", "golden_witness"
+      ],
+      "properties": {
+        "review_item_id": {"enum": ["OWNER-A", "OWNER-B", "OWNER-C", "OWNER-D", "OWNER-E", "OWNER-F"]},
+        "unresolved_key": {"enum": ["source.spell.aid.unresolved.health_normalization_policy", "source.spell.magic_missile.unresolved.rng_damage_grouping", "source.spell.pass_without_trace.unresolved.selection_timing", "source.spell.ray_of_frost.unresolved.movement_composition", "source.spell.resistance.unresolved.damage_grouping_order", "source.spell.warding_bond.unresolved.copied_damage_policy"]},
+        "source_exact_name": {"enum": ["Aid", "Magic Missile", "Pass without Trace", "Ray of Frost", "Resistance", "Warding Bond"]},
+        "source_category": {"enum": ["source_parameter", "source_semantics"]},
+        "subobligation_id": {"type": "string", "minLength": 1},
+        "disposition": {"const": "OWNER_DECIDED"},
+        "source_record_ref": {"$ref": "#/$defs/sourceEighthRecordRef"},
+        "source_classification_pointer": {"type": "string", "pattern": "^/source_unknown_classifications/(0|52|60|66|68|80)$"},
+        "source_unresolved_record_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/unresolved_key_index/(0|52|60|66|68|80)$"},
+        "current_map_pointer": {"type": "string", "pattern": "^/source_mapping_lanes/0/mapping_payload/entries/(2|85|95|105|107|136)$"},
+        "source_markdown_locators": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/sourceEighthMarkdownLocator"}},
+        "owner_section": {"enum": ["A", "B", "C", "D", "E", "F"]},
+        "owner_section_heading": {"type": "string", "minLength": 1},
+        "resolution_authority": {"const": "ACCEPTED_PRODUCT_OWNER_DECISION"},
+        "resolution_basis": {"const": "ACCEPTED_OWNER_INTERPRETATION_NOT_LITERAL_SRD_WORDING"},
+        "source_grounding_status": {"enum": ["SOURCE_BODY_HAS_DURATION_BONUS; OWNER_DECIDES_EFFECTIVE_DELTA_POLICY", "INDEPENDENT_DICE_AND_SIMULTANEOUS_GROUP_SOURCE_GROUNDED; OWNER_DECIDES_DAMAGE_INSTANCE_POLICY", "SOURCE_BODY_DOES_NOT_SPECIFY_MEMBERSHIP_TIMING; OWNER_DECIDES_CAST_TIME", "SOURCE_BODY_STATES_NEGATIVE_MODIFIER; OWNER_DECIDES_FINAL_NONNEGATIVE_FLOOR", "AUTOMATIC_TRIGGER_AND_ONCE_PER_TURN_SOURCE_GROUNDED; OWNER_DECIDES_CHOSEN_TYPE_ONLY_MIXED_ALLOCATION", "SOURCE_BODY_STATES_SAME_DAMAGE_AMOUNT; OWNER_DECIDES_TYPED_INPUT_AND_PROXIMATE_CAUSE"]},
+        "source_grounded_findings": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "accepted_interpretation": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "material_qualifiers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "retained_source_residual": {"type": "string", "minLength": 1},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0},
+        "golden_witness": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/sourceEighthResistanceGoldenWitness"}]}
       }
     },
     "packageNoticeObservation": {

@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "823e16cb327fedba14daeb7c8e0ef553534715def3e100ce68eed48caafd6243"
+    "3fcbb6d7177a468e00803a2cbf4c8df9bd7021b291fdc7bad568edb194a652eb"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -5971,6 +5971,156 @@ SEVENTH_SOURCE_HELD_KEYS = frozenset(
     if "SOURCE_HELD" in item["dispositions"].values()
 )
 
+SOURCE_INTERPRETATION_OWNER: dict[str, object] = {
+    "authority": "ACCEPTED_PRODUCT_OWNER_DECISION",
+    "status": "ACCEPTED_PRODUCT_OWNER_DECISION",
+    "decision_path": "DEV/docs/superpowers/specs/2026-10-14-sp00-source-interpretation-owner-decision.md",
+    "decision_sha256": "9de384b36657bafe7e93252959825ed4ba4494f287ee972904d589f5c8759e5c",
+    "decision_git_blob": "662d17d8299fae1ac264863a7da31bd99a9da183",
+    "review_path": "DEV/docs/superpowers/design/2026-10-14-sp00-source-interpretation-review.md",
+    "review_sha256": "c23981544f9dd0cac9e90f9fd6fe5020bb756bd16fd7cb5a2f0878e6c783b581",
+    "historical_brief_path": "DEV/docs/superpowers/design/2026-10-13-sp00-source-interpretation-decision-brief.md",
+    "historical_brief_sha256": "ba763309d102089ac82853178f072e2c3e5b09f2d874a3f11d611f06e3226e6a",
+    "accepted_scope": "EXACTLY_SIX_NAMED_SP00_SOURCE_INTERPRETATION_SUBOBLIGATIONS; NO_NATIVE_CONSUMER_PROOF_OR_PACKAGE_READINESS",
+    "accepted_sections": ["A", "B", "C", "D", "E", "F"],
+    "accepted_keys": [
+        "source.spell.aid.unresolved.health_normalization_policy",
+        "source.spell.magic_missile.unresolved.rng_damage_grouping",
+        "source.spell.pass_without_trace.unresolved.selection_timing",
+        "source.spell.ray_of_frost.unresolved.movement_composition",
+        "source.spell.resistance.unresolved.damage_grouping_order",
+        "source.spell.warding_bond.unresolved.copied_damage_policy",
+    ],
+}
+
+SOURCE_EIGHTH_ITEMS: dict[str, dict[str, object]] = {
+    "source.spell.aid.unresolved.health_normalization_policy": {
+        "review_item_id": "OWNER-A", "source_exact_name": "Aid", "source_category": "source_semantics",
+        "owner_section": "A", "owner_section_heading": "Aid — reversible effective current-HP contribution",
+        "classification_index": 0, "map_entry_index": 2, "source_pass_row": 2, "body_witness_row": 2,
+        "printed_page": 107, "source_header_line": 9021,
+        "raw_body_sha256": "40d66aae2ec29df83884c0d92830ddf6cc2c548bf81694f1e2d212483d1bb27b",
+        "markdown_locator": {"heading": "Aid", "line_start": 9307, "line_end": 9321, "span_sha256": "735037ddd8bc5621e8e0a5fade21ea6bc73c26c688d93115911b88a36b4863a0"},
+        "source_phrases": [(0, "Each target’s Hit Point maximum and current Hit Points increase by 5 for the duration.")],
+        "source_grounding_status": "SOURCE_BODY_HAS_DURATION_BONUS; OWNER_DECIDES_EFFECTIVE_DELTA_POLICY",
+        "source_grounded_findings": ["The SRD states that Aid raises target maximum and current Hit Points by 5 for the duration; the effective-bonus delta and overlap arithmetic are not explicit in that clause."],
+        "accepted_interpretation": "For a lawful application, expiry, suppression, resumption or overlap-winner transition, change current HP by the change in effective applicable Aid bonus; normalize to zero and the current derived maximum while preserving actual intervening damage and healing.",
+        "material_qualifiers": [
+            "The duration-bound current-HP increase is source text; reversible effective-bonus delta arithmetic is the accepted HDM owner interpretation.",
+            "Same-spell highest-potency/latest-equal arbitration remains unchanged; no independent stacking or repeated healing from unchanged arbitration.",
+            "Actor HP remains the sole amount; the bonus is not temporary HP or a second mutable health balance, and entry HP is never restored.",
+            "Reaching zero is not damage and creates no invented death-save failure; LifeState and target eligibility remain under existing owners, and dead subjects are not revived.",
+            "Native health and required LifeState atomic closure remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; do not claim the full arithmetic as explicit SRD wording. Native health and LifeState proof remain FUTURE_PROOF / NOT_ESTABLISHED.",
+    },
+    "source.spell.magic_missile.unresolved.rng_damage_grouping": {
+        "review_item_id": "OWNER-B", "source_exact_name": "Magic Missile", "source_category": "source_semantics",
+        "owner_section": "B", "owner_section_heading": "Magic Missile — per-dart instances in one simultaneous group",
+        "classification_index": 52, "map_entry_index": 85, "source_pass_row": 87, "body_witness_row": 198,
+        "printed_page": 146, "source_header_line": 12789,
+        "raw_body_sha256": "0f691800c3e9c5664ebd220ade84cb02ffff15989cecfa111fb365835724019c",
+        "markdown_locator": {"heading": "Magic Missile", "line_start": 13259, "line_end": 13273, "span_sha256": "e772f726833c5dcb9d05591eeb8537634ea860acf3412da63fb95599182b2a0d"},
+        "source_phrases": [(0, "A dart deals 1d4 + 1 Force damage to its target."), (0, "The darts all strike simultaneously")],
+        "source_grounding_status": "INDEPENDENT_DICE_AND_SIMULTANEOUS_GROUP_SOURCE_GROUNDED; OWNER_DECIDES_DAMAGE_INSTANCE_POLICY",
+        "source_grounded_findings": ["Ordinary independent damage-die draws are source-grounded; the SRD says each dart deals 1d4 + 1 Force and all darts strike simultaneously."],
+        "accepted_interpretation": "Each damaging dart is a distinct damage instance with its own Concentration obligation while the recipient remains concentrating; every dart in the cast remains in one simultaneous group.",
+        "material_qualifiers": [
+            "Independent dart draws and the simultaneous strike are source-grounded; per-dart damage-instance and Concentration grouping is the accepted owner interpretation.",
+            "Distinct instances are not sequential fictional attacks; actual turn-controller ordering applies and engine iteration cannot substitute for a lawful choice.",
+            "Draw, request, instance and group identity comes from accepted source occurrence, not caller list order or ambient RNG; retry and recovery reuse fixed results.",
+            "Do not make unnecessary saves after Concentration actually ends; damage reduction, rounding, zero-HP and death-save interactions retain their exact qualifications.",
+            "Production RNG, damage and Concentration realization remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; the source-grounded draw/group clauses do not make per-dart instance grouping explicit SRD wording. Production proof remains FUTURE_PROOF / NOT_ESTABLISHED.",
+    },
+    "source.spell.pass_without_trace.unresolved.selection_timing": {
+        "review_item_id": "OWNER-C", "source_exact_name": "Pass without Trace", "source_category": "source_semantics",
+        "owner_section": "C", "owner_section_heading": "Pass without Trace — cast-time membership",
+        "classification_index": 60, "map_entry_index": 95, "source_pass_row": 97, "body_witness_row": 224,
+        "printed_page": 151, "source_header_line": 13298,
+        "raw_body_sha256": "68b06279a1f031bb6976a24099a1972bce808c44b3c27a6f9f61b7c67d228407",
+        "markdown_locator": {"heading": "Pass without Trace", "line_start": 13735, "line_end": 13747, "span_sha256": "5286728517f232fad21e7a35ba72d36862ab98170e3a06ca57889586678a2132"},
+        "source_phrases": [(0, "each creature you choose have a +10 bonus to Dexterity (Stealth) checks")],
+        "source_grounding_status": "SOURCE_BODY_DOES_NOT_SPECIFY_MEMBERSHIP_TIMING; OWNER_DECIDES_CAST_TIME",
+        "source_grounded_findings": ["The SRD gives a chosen-creature set and grants its benefits while each selected creature is in the 30-foot Emanation; it does not state when membership is selected or changed."],
+        "accepted_interpretation": "Commit selected creature identities at casting and preserve that membership through lawful leave and reentry; benefits apply only while a selected creature is inside the current aura.",
+        "material_qualifiers": [
+            "Cast-time membership is the accepted HDM owner interpretation, not a timing rule stated by the SRD.",
+            "A later unselected entrant gains no benefit by arrival alone; no free reassignment or new update action is granted.",
+            "Current aura geometry, occupancy, duration, target legality and caster benefit remain unchanged; no generic ongoing caster-to-target range leash is added.",
+            "Spatial eligibility and native membership consumers remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; source timing ambiguity is not relabeled as explicit SRD wording. Spatial and native proof remain FUTURE_PROOF / NOT_ESTABLISHED.",
+    },
+    "source.spell.ray_of_frost.unresolved.movement_composition": {
+        "review_item_id": "OWNER-D", "source_exact_name": "Ray of Frost", "source_category": "source_parameter",
+        "owner_section": "D", "owner_section_heading": "Speed — final nonnegative movement capability",
+        "classification_index": 66, "map_entry_index": 105, "source_pass_row": 107, "body_witness_row": 251,
+        "printed_page": 157, "source_header_line": 13876,
+        "raw_body_sha256": "acbf5544ece9d8b267804f550f65e342733ad0d02eb95f8ee6c0e11d30f3cb35",
+        "markdown_locator": {"heading": "Ray of Frost", "line_start": 14272, "line_end": 14286, "span_sha256": "dae3f77c2b494c1afd20ba279f16583438d1df80127bf260e3a243c491b77ea0"},
+        "source_phrases": [(0, "its Speed is reduced by 10 feet until the start of your next turn")],
+        "source_grounding_status": "SOURCE_BODY_STATES_NEGATIVE_MODIFIER; OWNER_DECIDES_FINAL_NONNEGATIVE_FLOOR",
+        "source_grounded_findings": ["The SRD's Ray of Frost rider reduces Speed by 10 feet; its remaining-movement switching rule does not define a universal derived-Speed floor."],
+        "accepted_interpretation": "After complete lawful modifier composition, floor each resulting derived movement capability at zero; retain raw negative contributions and exact special-speed propagation and remaining-movement rules.",
+        "material_qualifiers": [
+            "The final nonnegative capability floor is the accepted HDM owner interpretation, not an explicit minimum in the Ray of Frost clause or Speed glossary.",
+            "Never floor each contribution independently or use source order to choose a result; preserve raw negative contributions and exact special-speed changes.",
+            "Exact-zero consumers observe the final capability, including Dodge, voluntary Prone, standing and flying as applicable.",
+            "Schema minima do not implement runtime behavior; movement-mode and budget consumers remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; this closes the accepted movement-normalization interpretation without claiming literal SRD floor text. Native movement proof remains FUTURE_PROOF / NOT_ESTABLISHED.",
+    },
+    "source.spell.resistance.unresolved.damage_grouping_order": {
+        "review_item_id": "OWNER-E", "source_exact_name": "Resistance", "source_category": "source_semantics",
+        "owner_section": "E", "owner_section_heading": "Resistance — automatic chosen-type-only reduction",
+        "classification_index": 68, "map_entry_index": 107, "source_pass_row": 109, "body_witness_row": 257,
+        "printed_page": 158, "source_header_line": 13968,
+        "raw_body_sha256": "f13455e2f9b58c45a738c097b310d12495a006028c9720b8047d941dd52e885b",
+        "markdown_locator": {"heading": "Resistance", "line_start": 14389, "line_end": 14401, "span_sha256": "c8eb5178fade2834aa5ad5c504723c2499bcbfaeeb821d120b5dbc729ab3432c"},
+        "source_phrases": [(0, "When the creature takes damage of the chosen type before the spell ends"), (0, "only once per turn")],
+        "source_grounding_status": "AUTOMATIC_TRIGGER_AND_ONCE_PER_TURN_SOURCE_GROUNDED; OWNER_DECIDES_CHOSEN_TYPE_ONLY_MIXED_ALLOCATION",
+        "source_grounded_findings": ["The automatic chosen-type trigger and once-per-turn reduction are source-grounded; the source grants no elective withholding or Reaction, while mixed-type allocation is not specified."],
+        "accepted_interpretation": "Automatically use the first eligible positive damaging occurrence of each actual turn; reduce only the selected damage-type subtotal by one fixed d4, floor that subtotal at zero with no spill, then apply ordinary type defenses.",
+        "material_qualifiers": [
+            "The automatic prescribed occurrence and once-per-turn rule are source-grounded; the target-local actual-turn gate includes other creatures' turns under the accepted lifecycle rule.",
+            "Chosen-type-only/no-spill mixed allocation is an accepted HDM owner interpretation, not explicit SRD allocation; do not roll per component or grant elective withholding.",
+            "A fully prevented effect does not consume the gate; evaluate prospective eligibility rather than substituting physical current-HP loss for damage taken.",
+            "5 Fire + 5 Cold, selected Fire, d4 = 3 and ordinary Fire Resistance yields floor((5-3)/2)+5=6; excess reduction cannot change Cold.",
+            "Gate consumption and accepted health changes require native causal/atomic closure, which remains FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; chosen-type-only/no-spill allocation is not labeled explicit SRD wording. Native damage and atomicity proof remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        "golden_witness": {
+            "components": [{"damage_type": "Fire", "amount": 5}, {"damage_type": "Cold", "amount": 5}],
+            "chosen_damage_type": "Fire", "fixed_d4_result": 3,
+            "selected_type_subtotal_after_reduction": 2, "ordinary_resistance_type": "Fire",
+            "selected_type_damage_after_defense": 1, "unselected_type_damage": 5,
+            "expected_total_damage": 6,
+        },
+    },
+    "source.spell.warding_bond.unresolved.copied_damage_policy": {
+        "review_item_id": "OWNER-F", "source_exact_name": "Warding Bond", "source_category": "source_semantics",
+        "owner_section": "F", "owner_section_heading": "Warding Bond — linked typed input with ordinary caster defenses",
+        "classification_index": 80, "map_entry_index": 136, "source_pass_row": 138, "body_witness_row": 329,
+        "printed_page": 173, "source_header_line": 15429,
+        "raw_body_sha256": "81941f005a019698af46d35f30a0afe20a613d8cc941a0c6deae0f4d95aa5cc6",
+        "markdown_locator": {"heading": "Warding Bond", "line_start": 15811, "line_end": 15825, "span_sha256": "cc1be68ce4911478cbf85ba39ea14612445549e3126ce317f8583707ce51a244"},
+        "source_phrases": [(0, "each time it takes damage, you take the same amount of damage")],
+        "source_grounding_status": "SOURCE_BODY_STATES_SAME_DAMAGE_AMOUNT; OWNER_DECIDES_TYPED_INPUT_AND_PROXIMATE_CAUSE",
+        "source_grounded_findings": ["The SRD states that each time the target takes damage, the caster takes the same amount; the accepted owner decision clarifies input typing, defense order and proximate cause."],
+        "accepted_interpretation": "Copy target-taken typed damage after target defenses and before HP allocation as a linked input; apply the caster's ordinary defenses and temporary-HP buffer, with Warding Bond as the new proximate cause.",
+        "material_qualifiers": [
+            "Neither raw attack damage nor physical current-HP loss defines the copied amount; damage absorbed entirely by target temporary HP still supplies the link.",
+            "Retain original causal-link, type and amount evidence, but do not blindly copy attack/origin/bypass attributes whose source conditions do not apply to the new Warding Bond cause.",
+            "No exceptional final-loss equality or unexpressed defense bypass is selected; target taking 5 Fire leads to a resistant caster taking 2 before its temporary HP.",
+            "Explicit recast/range/caster-zero termination and each participant's separate actual Concentration remain; Warding Bond is not itself Concentration and no reciprocal recursive default is added.",
+            "Native linked-damage, health and Concentration proof remains FUTURE_PROOF / NOT_ESTABLISHED.",
+        ],
+        "retained_source_residual": "OWNER_DECISION_ACCEPTED_FOR_SELECTED_SUBOBLIGATION_ONLY; the typed-input/ordinary-defense profile is accepted HDM interpretation, not a claim of extra literal SRD wording. Native proof remains FUTURE_PROOF / NOT_ESTABLISHED.",
+    },
+}
+
 
 def _read_pinned_local_evidence(
     relative_path: str, expected_sha256: str, evidence_name: str
@@ -9002,6 +9152,395 @@ def _validate_source_seventh_resolution_evidence(
     }
 
 
+def _validate_source_eighth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind six held SP00 keys to the accepted owner, without claiming explicit RAW."""
+    owner = _object(
+        manifest.get("source_interpretation_owner"), "source_interpretation_owner"
+    )
+    if owner != SOURCE_INTERPRETATION_OWNER:
+        _fail(
+            "source_interpretation_owner",
+            "accepted owner path, byte identity, authority, scope or key set differs",
+        )
+
+    decision_bytes = _read_pinned_local_evidence(
+        str(SOURCE_INTERPRETATION_OWNER["decision_path"]),
+        str(SOURCE_INTERPRETATION_OWNER["decision_sha256"]),
+        "source_interpretation_owner",
+    )
+    review_bytes = _read_pinned_local_evidence(
+        str(SOURCE_INTERPRETATION_OWNER["review_path"]),
+        str(SOURCE_INTERPRETATION_OWNER["review_sha256"]),
+        "source_interpretation_review",
+    )
+    brief_bytes = _read_pinned_local_evidence(
+        str(SOURCE_INTERPRETATION_OWNER["historical_brief_path"]),
+        str(SOURCE_INTERPRETATION_OWNER["historical_brief_sha256"]),
+        "source_interpretation_brief",
+    )
+    try:
+        decision_text = decision_bytes.decode("utf-8")
+        review_text = review_bytes.decode("utf-8")
+        brief_text = brief_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_interpretation_owner", "owner/review/brief is not UTF-8")
+
+    if not all(
+        token in decision_text
+        for token in (
+            "Status: **ACCEPTED PRODUCT OWNER DECISION — IMPLEMENTATION-FACING LAW**",
+            "This is the sole final owner of these six HDM interpretations.",
+            "Machine source evidence must bind this owner decision and synchronize",
+            "No active schema/catalog/profile/recipe is",
+            "registered here. Package/admission/native/end-to-end/latency proof, other source",
+            "holds, default/Word of Recall/future-proof lanes and auth/turn bridges remain.",
+        )
+    ):
+        _fail("source_interpretation_owner", "accepted owner status, scope or proof limit differs")
+    owner_lines = decision_text.splitlines()
+    section_required_tokens = {
+        "A": (
+            "Change current HP by delta = b_after - b_before",
+            "Actor HP remains the sole amount.",
+            "never restore entry HP",
+        ),
+        "B": (
+            "Each damaging dart is a distinct native damage instance",
+            "All darts of the cast retain the source's simultaneous group",
+            "Retry/recovery reuses fixed results and accepted identities.",
+        ),
+        "C": (
+            "Commit the selected creature identities at casting.",
+            "A previously unselected later entrant gains no benefit",
+            "No free reassignment, new update action or generic ongoing caster-to-target range leash",
+        ),
+        "D": (
+            "floor each resulting derived movement capability at0",
+            "Retain raw negative contributions",
+            "Exact-zero consumers observe the final nonnegative capability",
+        ),
+        "E": (
+            "Use the first eligible positive damaging occurrence of each actual turn",
+            "One fixed d4 reduces only the selected damage-type subtotal",
+            "No excess reduction spills into any other type",
+        ),
+        "F": (
+            "Copy the damage the target takes after its defenses, before allocation into its temporary/current HP.",
+            "Warding Bond is the new proximate cause",
+            "Target taking5Fire leads to resistant caster taking2",
+        ),
+    }
+    for key, spec in SOURCE_EIGHTH_ITEMS.items():
+        section = str(spec["owner_section"])
+        heading = f"## {section}. {spec['owner_section_heading']}"
+        matches = [index for index, line in enumerate(owner_lines) if line == heading]
+        if len(matches) != 1:
+            _fail("source_interpretation_owner", f"accepted owner section {section} is missing or duplicated")
+        start = matches[0] + 1
+        end = next(
+            (index for index in range(start, len(owner_lines)) if owner_lines[index].startswith("## ")),
+            len(owner_lines),
+        )
+        section_text = " ".join("\n".join(owner_lines[start:end]).split())
+        if any(token not in section_text for token in section_required_tokens[section]):
+            _fail("source_interpretation_owner", f"accepted owner section {section} lacks its bound clauses")
+
+    review_flat = " ".join(review_text.split())
+    brief_flat = " ".join(brief_text.split())
+    if not all(
+        token in review_flat
+        for token in (
+            "The subsequent Product Owner accepts the complete proposed package",
+            "current final authority is",
+            "The six narrower outcome profiles still require the explicit accepted interpretation gate.",
+        )
+    ):
+        _fail("source_interpretation_review", "historical targeted review no longer routes to accepted owner")
+    if not all(
+        token in brief_flat
+        for token in (
+            "Status: **HISTORICAL PRE-ACCEPTANCE BRIEF — SIX POLICIES ACCEPTED 2026-10-14**",
+            "Current final law: [accepted A–F owner decision]",
+            "pending-approval wording is no longer current scheduling or normative authority.",
+        )
+    ):
+        _fail("source_interpretation_brief", "superseded Decision Brief is not explicitly historical")
+
+    rows = [
+        _object(value, f"source_eighth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_eighth_resolution_evidence"),
+                "source_eighth_resolution_evidence",
+            )
+        )
+    ]
+    expected_order = tuple(SOURCE_INTERPRETATION_OWNER["accepted_keys"])
+    actual_order = tuple(str(row.get("unresolved_key")) for row in rows)
+    if len(rows) != 6 or actual_order != expected_order:
+        _fail("source_eighth_census", "owner-decision resolution key/order census differs")
+
+    prior_key_batches = (
+        ("source_unknown_resolution_evidence", "source_unknown_resolution_evidence"),
+        ("source_next12_resolution_evidence", "source_next12_resolution_evidence"),
+        ("source_third12_resolution_evidence", "source_third12_resolution_evidence"),
+        ("source_fourth_resolution_evidence", "source_fourth_resolution_evidence"),
+        ("source_fifth_resolution_evidence", "source_fifth_resolution_evidence"),
+        ("source_sixth_resolution_evidence", "source_sixth_resolution_evidence"),
+        ("source_seventh_resolution_evidence", "source_seventh_resolution_evidence"),
+    )
+    prior_records_by_field = {
+        field: [
+            _object(value, f"{field}[{index}]")
+            for index, value in enumerate(_array(manifest.get(field), field))
+        ]
+        for field, _ in prior_key_batches
+    }
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_carrier = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_rows = _rows(source_pass, "rows", "source-pass-0-2")
+    witness_rows = _rows(body_carrier, "rows", "source-body-witnesses")
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH, SOURCE_MARKDOWN_SHA256, "source_eighth_markdown"
+    )
+    try:
+        markdown_lines = markdown_bytes.splitlines(keepends=True)
+        markdown_text_lines = [line.decode("utf-8") for line in markdown_lines]
+    except UnicodeDecodeError:
+        _fail("source_eighth_markdown", "source Markdown is not UTF-8")
+
+    lane0 = next(
+        (
+            _object(value, f"source_mapping_lanes[{index}]")
+            for index, value in enumerate(_array(manifest.get("source_mapping_lanes"), "source_mapping_lanes"))
+            if isinstance(value, dict) and value.get("lane_id") == "source-pass-0-2"
+        ),
+        None,
+    )
+    if lane0 is None:
+        _fail("source_eighth_binding", "source-pass-0-2 current map is unavailable")
+
+    resolved_keys: list[str] = []
+    closed_ids: list[str] = []
+    for index, (key, row) in enumerate(zip(expected_order, rows, strict=True)):
+        spec = SOURCE_EIGHTH_ITEMS[key]
+        category = str(spec["source_category"])
+        section = str(spec["owner_section"])
+        classification_index = int(spec["classification_index"])
+        map_entry_index = int(spec["map_entry_index"])
+        source_pass_row = int(spec["source_pass_row"])
+        body_witness_row = int(spec["body_witness_row"])
+        source_name = str(spec["source_exact_name"])
+        subobligation_id = f"{key}::{category}"
+        classification_pointer = f"/source_unknown_classifications/{classification_index}"
+        history_pointer = (
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+            f"{classification_index}"
+        )
+        map_pointer = f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+        source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+        qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+        body_pointer = f"/rows/{body_witness_row}"
+        classification = classified_by_key.get(key)
+        if classification is None:
+            _fail("source_eighth_binding", f"{key} has no exact historical classification")
+        original = _object(
+            _resolve_json_pointer(manifest, classification_pointer, "eighth classification pointer"),
+            f"{key}.classification",
+        )
+        history = _object(
+            _resolve_json_pointer(manifest, history_pointer, "eighth history pointer"),
+            f"{key}.history",
+        )
+        map_entry = _object(
+            _resolve_json_pointer(manifest, map_pointer, "eighth current-map pointer"),
+            f"{key}.current_map",
+        )
+        expected_subobligations = [
+            value
+            for value in _array(original.get("subobligations"), f"{key}.subobligations")
+            if isinstance(value, dict) and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        ]
+        matching_subobligations = [
+            _object(value, f"{key}.source_subobligation")
+            for value in expected_subobligations
+            if value.get("subobligation_id") == subobligation_id
+        ]
+        if (
+            len(matching_subobligations) != 1
+            or matching_subobligations[0].get("category") != category
+            or matching_subobligations[0].get("gate_phase") != "SP00_SOURCE"
+            or matching_subobligations[0].get("status") != "NOT_ESTABLISHED"
+            or original.get("unresolved_key") != key
+            or original.get("source_exact_name") != source_name
+            or original.get("source_ready_blocking") is not True
+            or original.get("original_status") != "NOT_ESTABLISHED"
+            or original.get("source_unresolved_record_pointer") != history_pointer
+        ):
+            _fail("source_eighth_binding", f"{key} is not the exact open source subobligation")
+
+        expected_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "source_exact_name": source_name,
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+            "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": body_pointer},
+            "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": qualification_pointer},
+        }
+        expected_classification_ref = {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": source_pointer,
+            "exact_record_name": source_name,
+            "record_index": source_pass_row,
+            "source_asset_id": "srd52_en",
+            "edition": "SRD_5_2_1",
+            "printed_page": int(spec["printed_page"]),
+            "source_header_line": int(spec["source_header_line"]),
+            "source_heading": source_name,
+            "raw_body_sha256": str(spec["raw_body_sha256"]),
+            "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+            "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": body_pointer},
+            "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": qualification_pointer},
+            "evidence_boundary": "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF",
+        }
+        source_record = source_rows[source_pass_row]
+        body_witness = witness_rows[body_witness_row]
+        unresolved_rows = [
+            _object(value, f"{key}.map.unresolved_keys[{map_index}]")
+            for map_index, value in enumerate(_array(map_entry.get("unresolved_keys"), f"{key}.map.unresolved_keys"))
+        ]
+        if (
+            history.get("unresolved_key") != key
+            or history.get("source_exact_name") != source_name
+            or history.get("reason") != original.get("original_reason")
+            or history.get("evidence_ref") != original.get("evidence_ref")
+            or history.get("status") != original.get("original_status")
+            or history.get("disposition") != original.get("original_disposition")
+            or map_entry.get("source_exact_name") != source_name
+            or not any(value.get("unresolved_key") == key for value in unresolved_rows)
+            or original.get("evidence_ref") != expected_classification_ref
+            or source_record.get("name") != source_name
+            or source_record.get("source_page") != spec["printed_page"]
+            or source_record.get("source_header_line") != spec["source_header_line"]
+            or source_record.get("body_sha256") != spec["raw_body_sha256"]
+            or body_witness.get("name") != source_name
+            or body_witness.get("page") != spec["printed_page"]
+            or body_witness.get("line") != spec["source_header_line"]
+            or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+        ):
+            _fail("source_eighth_provenance", f"{key} differs from its original pass/body/map evidence")
+
+        prior_field = {
+            "A": "source_unknown_resolution_evidence",
+            "B": "source_fourth_resolution_evidence",
+            "C": "source_fifth_resolution_evidence",
+            "D": "source_fifth_resolution_evidence",
+            "E": "source_sixth_resolution_evidence",
+            "F": "source_seventh_resolution_evidence",
+        }[section]
+        prior_holds = [
+            value
+            for value in prior_records_by_field[prior_field]
+            if value.get("unresolved_key") == key
+            and value.get("subobligation_id") == subobligation_id
+        ]
+        if (
+            len(prior_holds) != 1
+            or prior_holds[0].get("disposition") != "SOURCE_HELD"
+        ):
+            _fail("source_eighth_prior_hold", f"{key} does not preserve its historical HOLD record")
+
+        locator = dict(spec["markdown_locator"])
+        locators = [
+            _object(value, f"{key}.source_markdown_locators[{locator_index}]")
+            for locator_index, value in enumerate(_array(row.get("source_markdown_locators"), f"{key}.source_markdown_locators"))
+        ]
+        if locators != [locator]:
+            _fail("source_eighth_locator", f"{key} Markdown locator differs from reviewed body section")
+        start, end = int(locator["line_start"]), int(locator["line_end"])
+        if start < 1 or end < start or end > len(markdown_lines):
+            _fail("source_eighth_locator", f"{key} Markdown span is out of bounds")
+        span = b"".join(markdown_lines[start - 1 : end])
+        if hashlib.sha256(span).hexdigest() != locator["span_sha256"]:
+            _fail("source_eighth_markdown_span_hash", f"{key} source span hash differs")
+        source_section = "".join(markdown_text_lines[start - 1 : end])
+        if markdown_text_lines[start - 1].strip() != f"##### {source_name}":
+            _fail("source_eighth_locator", f"{key} body span does not start at its exact heading")
+        if any(phrase not in source_section for _, phrase in spec["source_phrases"]):
+            _fail("source_eighth_source_text", f"{key} source body omits an exact source clause")
+
+        expected_row_values = {
+            "review_item_id": spec["review_item_id"],
+            "unresolved_key": key,
+            "source_exact_name": source_name,
+            "source_category": category,
+            "subobligation_id": subobligation_id,
+            "disposition": "OWNER_DECIDED",
+            "source_record_ref": expected_ref,
+            "source_classification_pointer": classification_pointer,
+            "source_unresolved_record_pointer": history_pointer,
+            "current_map_pointer": map_pointer,
+            "owner_section": section,
+            "owner_section_heading": spec["owner_section_heading"],
+            "resolution_authority": "ACCEPTED_PRODUCT_OWNER_DECISION",
+            "resolution_basis": "ACCEPTED_OWNER_INTERPRETATION_NOT_LITERAL_SRD_WORDING",
+            "source_grounding_status": spec["source_grounding_status"],
+            "source_grounded_findings": list(spec["source_grounded_findings"]),
+            "accepted_interpretation": spec["accepted_interpretation"],
+            "material_qualifiers": list(spec["material_qualifiers"]),
+            "retained_source_residual": spec["retained_source_residual"],
+            "future_native_proof_status": "NOT_ESTABLISHED",
+            "actual_native_proof_refs": [],
+            "golden_witness": spec.get("golden_witness"),
+        }
+        for field, expected in expected_row_values.items():
+            actual = row.get(field)
+            if actual != expected:
+                code = "source_eighth_qualifier" if field in {
+                    "source_grounding_status", "source_grounded_findings", "accepted_interpretation",
+                    "material_qualifiers", "retained_source_residual", "resolution_basis",
+                } else "source_eighth_golden" if field == "golden_witness" else "source_eighth_binding"
+                _fail(code, f"{key} field {field} differs from accepted owner/source evidence")
+
+        if section == "E":
+            golden = _object(row.get("golden_witness"), f"{key}.golden_witness")
+            components = [
+                _object(value, f"{key}.golden_witness.components[{component_index}]")
+                for component_index, value in enumerate(_array(golden.get("components"), f"{key}.golden_witness.components"))
+            ]
+            selected = max(0, sum(int(value["amount"]) for value in components if value["damage_type"] == "Fire") - int(golden["fixed_d4_result"]))
+            expected_damage = selected // 2 + sum(int(value["amount"]) for value in components if value["damage_type"] != "Fire")
+            if (
+                len(components) != 2
+                or selected != golden.get("selected_type_subtotal_after_reduction")
+                or selected // 2 != golden.get("selected_type_damage_after_defense")
+                or expected_damage != golden.get("expected_total_damage")
+                or expected_damage != 6
+            ):
+                _fail("source_eighth_golden", "Resistance chosen-type/no-spill witness must yield 6 damage")
+        elif row.get("golden_witness") is not None:
+            _fail("source_eighth_golden", f"{key} adds an unreviewed golden damage witness")
+        resolved_keys.append(key)
+        closed_ids.append(subobligation_id)
+
+    if set(resolved_keys) != set(SOURCE_EIGHTH_ITEMS) or len(set(closed_ids)) != 6:
+        _fail("source_eighth_census", "owner-decided source keys or subobligations are not unique")
+    return {
+        "source_resolution_records": rows,
+        "source_owner_decided_keys": resolved_keys,
+        "source_owner_decided_subobligation_ids": closed_ids,
+        "source_owner_decided_subobligation_count": len(closed_ids),
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -9210,6 +9749,18 @@ def _validate_source_unknown_classifications(
     seventh_resolution = _validate_source_seventh_resolution_evidence(
         manifest, classified_by_key
     )
+    eighth_resolution = _validate_source_eighth_resolution_evidence(
+        manifest, classified_by_key
+    )
+    prior_resolutions = (
+        first12_resolution,
+        next12_resolution,
+        third12_resolution,
+        fourth_resolution,
+        fifth_resolution,
+        sixth_resolution,
+        seventh_resolution,
+    )
     closed_subobligation_ids = set(
         first12_resolution["source_closed_subobligation_ids"]
     )
@@ -9225,6 +9776,9 @@ def _validate_source_unknown_classifications(
     closed_subobligation_ids.update(fifth_resolution["source_closed_subobligation_ids"])
     closed_subobligation_ids.update(sixth_resolution["source_closed_subobligation_ids"])
     closed_subobligation_ids.update(seventh_resolution["source_closed_subobligation_ids"])
+    closed_subobligation_ids.update(
+        eighth_resolution["source_owner_decided_subobligation_ids"]
+    )
     source_blocking_keys = [
         key
         for key in historical_source_blocking_keys
@@ -9234,25 +9788,141 @@ def _validate_source_unknown_classifications(
             if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
         )
     ]
-    resolution_contract = _object(
-        manifest.get("source_seventh_resolution_contract"),
-        "source_seventh_resolution_contract",
-    )
     active_source_blocker_entry_count = len(
         {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
     )
+    prior_closed_subobligation_ids = {
+        str(subobligation_id)
+        for resolution in prior_resolutions
+        for subobligation_id in resolution["source_closed_subobligation_ids"]
+    }
+    prior_resolved_keys = {
+        str(key)
+        for resolution in prior_resolutions
+        for key in resolution["source_resolved_keys"]
+    }
+    prior_held_keys = {
+        str(key)
+        for resolution in prior_resolutions
+        for key in resolution["source_held_keys"]
+    }
+    prior_reviewed_records = [
+        row
+        for resolution in prior_resolutions
+        for row in resolution["source_resolution_records"]
+    ]
+    prior_reviewed_keys = {
+        str(row["unresolved_key"]) for row in prior_reviewed_records
+    }
+    prior_held_subobligation_count = sum(
+        int(resolution["source_held_subobligation_count"])
+        for resolution in prior_resolutions
+    )
+    prior_active_source_blocker_keys = [
+        key
+        for key in historical_source_blocking_keys
+        if any(
+            subobligation["subobligation_id"] not in prior_closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    current_open_source_subobligation_ids = {
+        str(subobligation["subobligation_id"])
+        for key in source_blocking_keys
+        for subobligation in classified_by_key[key]["subobligations"]
+        if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        and subobligation["subobligation_id"] not in closed_subobligation_ids
+    }
+    all_records = [
+        *prior_reviewed_records,
+        *eighth_resolution["source_resolution_records"],
+    ]
+    all_resolved_keys = prior_resolved_keys | set(
+        eighth_resolution["source_owner_decided_keys"]
+    )
+    reviewed_keys = prior_reviewed_keys | set(
+        eighth_resolution["source_owner_decided_keys"]
+    )
+    expected_eighth_contract = {
+        "status": "PARTIAL_EIGHTH_ACCEPTED_OWNER_SET_SOURCE_ONLY",
+        "selected_key_count": len(SOURCE_EIGHTH_ITEMS),
+        "resolution_record_count": len(eighth_resolution["source_resolution_records"]),
+        "selected_owner_decided_key_count": len(
+            set(eighth_resolution["source_owner_decided_keys"])
+        ),
+        "selected_owner_decided_subobligation_count": len(
+            set(eighth_resolution["source_owner_decided_subobligation_ids"])
+        ),
+        "prior_reviewed_key_count": len(prior_reviewed_keys),
+        "prior_resolution_record_count": len(prior_reviewed_records),
+        "prior_source_resolved_key_count": len(prior_resolved_keys),
+        "prior_source_resolved_subobligation_count": len(
+            prior_closed_subobligation_ids
+        ),
+        "prior_source_held_key_count": len(prior_held_keys),
+        "prior_source_held_subobligation_count": prior_held_subobligation_count,
+        "prior_active_source_blocker_count": len(prior_active_source_blocker_keys),
+        "prior_active_source_blocker_entry_count": len(
+            {
+                classified_by_key[key]["source_exact_name"]
+                for key in prior_active_source_blocker_keys
+            }
+        ),
+        "cumulative_reviewed_key_count": len(reviewed_keys),
+        "cumulative_resolution_record_count": len(all_records),
+        "cumulative_source_resolved_key_count": len(all_resolved_keys),
+        "cumulative_source_resolved_subobligation_count": len(
+            closed_subobligation_ids
+        ),
+        "cumulative_source_held_key_count": len(source_blocking_keys),
+        "cumulative_source_held_subobligation_count": len(
+            current_open_source_subobligation_ids
+        ),
+        "original_record_count": len(classifications),
+        "original_source_blocking_key_count": len(historical_source_blocking_keys),
+        "downstream_only_key_count": len(downstream_only_keys),
+        "active_source_blocker_count": len(source_blocking_keys),
+        "active_source_blocker_entry_count": active_source_blocker_entry_count,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": [
+            int(SOURCE_EIGHTH_ITEMS[key]["classification_index"])
+            for key in SOURCE_INTERPRETATION_OWNER["accepted_keys"]
+        ],
+    }
+    resolution_contract = _object(
+        manifest.get("source_eighth_resolution_contract"),
+        "source_eighth_resolution_contract",
+    )
     if (
-        len(source_blocking_keys)
-        != resolution_contract.get("active_source_blocker_count")
-        or resolution_contract.get("active_source_blocker_count")
-        != len(source_blocking_keys)
-        or resolution_contract.get("active_source_blocker_entry_count")
-        != active_source_blocker_entry_count
+        resolution_contract != expected_eighth_contract
+        or len(source_blocking_keys) != active_source_blocker_entry_count
     ):
         _fail(
-            "source_unknown_resolution_blocker_count",
-            "active source blockers do not equal the preserved open subobligations",
+            "source_eighth_contract",
+            "owner-decision cumulative counts differ from derived source-classification sets",
         )
+    owner_decided_key_set = set(eighth_resolution["source_owner_decided_keys"])
+    source_held_keys: list[str] = []
+    seen_held_keys: set[str] = set()
+    for resolution in prior_resolutions:
+        for key in resolution["source_held_keys"]:
+            key_string = str(key)
+            if key_string in source_blocking_keys and key_string not in seen_held_keys:
+                source_held_keys.append(key_string)
+                seen_held_keys.add(key_string)
+    if seen_held_keys != set(source_blocking_keys) or owner_decided_key_set & seen_held_keys:
+        _fail(
+            "source_eighth_hold_accounting",
+            "active holds do not equal historical holds minus the accepted owner decisions",
+        )
+    source_resolved_keys = [
+        str(key)
+        for resolution in prior_resolutions
+        for key in resolution["source_resolved_keys"]
+    ] + [str(key) for key in eighth_resolution["source_owner_decided_keys"]]
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
@@ -9260,58 +9930,19 @@ def _validate_source_unknown_classifications(
         "historical_source_blocking_key_count": len(historical_source_blocking_keys),
         "historical_source_blocking_keys": historical_source_blocking_keys,
         "source_resolved_subobligation_count": len(closed_subobligation_ids),
-        "source_resolved_keys": [
-            *first12_resolution["source_resolved_keys"],
-            *next12_resolution["source_resolved_keys"],
-            *third12_resolution["source_resolved_keys"],
-            *fourth_resolution["source_resolved_keys"],
-            *fifth_resolution["source_resolved_keys"],
-            *sixth_resolution["source_resolved_keys"],
-            *seventh_resolution["source_resolved_keys"],
+        "source_resolved_key_count": len(all_resolved_keys),
+        "source_resolved_keys": source_resolved_keys,
+        "source_owner_decided_keys": eighth_resolution["source_owner_decided_keys"],
+        "source_owner_decided_subobligation_count": eighth_resolution[
+            "source_owner_decided_subobligation_count"
         ],
-        "source_held_subobligation_count": (
-            first12_resolution["source_held_subobligation_count"]
-            + next12_resolution["source_held_subobligation_count"]
-            + third12_resolution["source_held_subobligation_count"]
-            + fourth_resolution["source_held_subobligation_count"]
-            + fifth_resolution["source_held_subobligation_count"]
-            + sixth_resolution["source_held_subobligation_count"]
-            + seventh_resolution["source_held_subobligation_count"]
-        ),
-        "source_held_keys": [
-            *first12_resolution["source_held_keys"],
-            *next12_resolution["source_held_keys"],
-            *third12_resolution["source_held_keys"],
-            *fourth_resolution["source_held_keys"],
-            *fifth_resolution["source_held_keys"],
-            *sixth_resolution["source_held_keys"],
-            *seventh_resolution["source_held_keys"],
+        "source_held_subobligation_count": len(current_open_source_subobligation_ids),
+        "source_held_keys": source_held_keys,
+        "source_resolution_evidence": all_records,
+        "source_owner_decision_evidence": eighth_resolution[
+            "source_resolution_records"
         ],
-        "source_resolution_evidence": [
-            *first12_resolution["source_resolution_records"],
-            *next12_resolution["source_resolution_records"],
-            *third12_resolution["source_resolution_records"],
-            *fourth_resolution["source_resolution_records"],
-            *fifth_resolution["source_resolution_records"],
-            *sixth_resolution["source_resolution_records"],
-            *seventh_resolution["source_resolution_records"],
-        ],
-        "source_reviewed_key_count": len(
-            set(first12_resolution["source_resolved_keys"])
-            | set(first12_resolution["source_held_keys"])
-            | set(next12_resolution["source_resolved_keys"])
-            | set(next12_resolution["source_held_keys"])
-            | set(third12_resolution["source_resolved_keys"])
-            | set(third12_resolution["source_held_keys"])
-            | set(fourth_resolution["source_resolved_keys"])
-            | set(fourth_resolution["source_held_keys"])
-            | set(fifth_resolution["source_resolved_keys"])
-            | set(fifth_resolution["source_held_keys"])
-            | set(sixth_resolution["source_resolved_keys"])
-            | set(sixth_resolution["source_held_keys"])
-            | set(seventh_resolution["source_resolved_keys"])
-            | set(seventh_resolution["source_held_keys"])
-        ),
+        "source_reviewed_key_count": len(reviewed_keys),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[
             "command_approach_source_text"
