@@ -2,31 +2,57 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json",
   "title": "HDM runtime.interaction state",
-  "type": "object",
-  "additionalProperties": false,
-  "required": ["campaign_id", "session_id", "player_id", "input_message_id", "intent_plan_id"],
+  "type": "object", "additionalProperties": false,
+  "required": ["schema_version", "campaign_id", "session_id", "input_message_id", "input_kind", "accepted_input_basis"],
   "properties": {
-    "campaign_id": {"$ref": "#/$defs/id"},
-    "session_id": {"$ref": "#/$defs/id"},
-    "player_id": {"$ref": "#/$defs/id"},
-    "input_message_id": {"$ref": "#/$defs/id"},
-    "intent_plan_id": {"$ref": "#/$defs/id"},
-    "authenticated_principal_ref": {"type": "string", "minLength": 1},
-    "host_invocation_ref": {"type": "string", "minLength": 1},
-    "response_message_id": {"$ref": "#/$defs/id"},
-    "details": {"type": "object"}
+    "schema_version": {"type": "integer", "const": 1},
+    "campaign_id": {"$ref": "#/$defs/id"}, "session_id": {"$ref": "#/$defs/id"},
+    "input_message_id": {"$ref": "#/$defs/id"}, "player_id": {"$ref": "#/$defs/id"},
+    "intent_plan_id": {"$ref": "#/$defs/id"}, "response_message_id": {"$ref": "#/$defs/id"},
+    "input_kind": {"enum": ["intent", "response", "response_and_intent"]},
+    "planning_phase": {"enum": ["awaiting_response", "ready_to_plan", "materialized"]},
+    "accepted_input_basis": {"$ref": "#/$defs/basis"},
+    "response_target": {"$ref": "#/$defs/target"},
+    "response_selection": {"$ref": "#/$defs/selection"},
+    "accepted_resume_ref": {"$ref": "#/$defs/resumeRef"},
+    "host_invocation_ref": {"$ref": "#/$defs/text"}, "details": {"type": "object"}
   },
+  "allOf": [
+    {"if": {"properties": {"input_kind": {"const": "intent"}}, "required": ["input_kind"]}, "then": {"required": ["intent_plan_id"], "not": {"anyOf": [{"required": ["response_target"]}, {"required": ["response_selection"]}, {"required": ["planning_phase"]}, {"required": ["accepted_resume_ref"]}]}}},
+    {"if": {"properties": {"input_kind": {"const": "response"}}, "required": ["input_kind"]}, "then": {"required": ["response_target", "response_selection"], "not": {"anyOf": [{"required": ["intent_plan_id"]}, {"required": ["planning_phase"]}]}}},
+    {"if": {"properties": {"input_kind": {"const": "response_and_intent"}}, "required": ["input_kind"]}, "then": {"required": ["response_target", "response_selection", "planning_phase"]}},
+    {"if": {"properties": {"planning_phase": {"const": "awaiting_response"}}, "required": ["planning_phase"]}, "then": {"not": {"anyOf": [{"required": ["intent_plan_id"]}, {"required": ["accepted_resume_ref"]}]}}},
+    {"if": {"properties": {"planning_phase": {"const": "ready_to_plan"}}, "required": ["planning_phase"]}, "then": {"required": ["accepted_resume_ref"], "not": {"required": ["intent_plan_id"]}}},
+    {"if": {"properties": {"planning_phase": {"const": "materialized"}}, "required": ["planning_phase"]}, "then": {"required": ["intent_plan_id", "accepted_resume_ref"]}},
+    {"if": {"properties": {"accepted_input_basis": {"properties": {"authority_at_acceptance": {"properties": {"kind": {"const": "multiplayer"}}, "required": ["kind"]}}, "required": ["authority_at_acceptance"]}}, "required": ["accepted_input_basis"]}, "then": {"required": ["player_id"]}, "else": {"not": {"required": ["player_id"]}}}
+  ],
   "$defs": {
-    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"}
-  },
-  "examples": [
-    {
-      "campaign_id": "campaign-001",
-      "session_id": "session-0001",
-      "player_id": "player-0001",
-      "input_message_id": "message-0000001",
-      "intent_plan_id": "turn-000001-plan",
-      "authenticated_principal_ref": "github:user:example"
+    "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+    "text": {"type": "string", "minLength": 1},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "gen1": {"type": "integer", "const": 1},
+    "subjects": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/id"}},
+    "resumeRef": {"type": "object", "additionalProperties": false, "required": ["resolution_id", "segment_id"], "properties": {"resolution_id": {"$ref": "#/$defs/id"}, "segment_id": {"$ref": "#/$defs/id"}}},
+    "target": {"type": "object", "additionalProperties": false,
+      "required": ["root_command_id", "resolution_id", "continuation_id", "continuation_generation", "offer_kind", "offer_id", "responder_id"],
+      "properties": {"root_command_id": {"$ref": "#/$defs/id"}, "resolution_id": {"$ref": "#/$defs/id"}, "continuation_id": {"$ref": "#/$defs/id"}, "continuation_generation": {"type": "integer", "minimum": 1}, "offer_kind": {"enum": ["choice", "reaction"]}, "offer_id": {"$ref": "#/$defs/id"}, "responder_id": {"$ref": "#/$defs/id"}}},
+    "selection": {"oneOf": [
+      {"type": "object", "additionalProperties": false, "required": ["kind", "option_id"], "properties": {"kind": {"const": "choice"}, "option_id": {"$ref": "#/$defs/id"}}},
+      {"type": "object", "additionalProperties": false, "required": ["kind", "activity_id"], "properties": {"kind": {"const": "reaction"}, "activity_id": {"$ref": "#/$defs/id"}}}
+    ]},
+    "basis": {"type": "object", "additionalProperties": false,
+      "required": ["basis_generation", "repository_identity", "adapter_profile_id", "adapter_profile_generation", "accepted_exchange_key", "host_invocation_ref", "principal", "representation", "authority_at_acceptance"],
+      "properties": {
+        "basis_generation": {"$ref": "#/$defs/gen1"}, "repository_identity": {"$ref": "#/$defs/text"},
+        "adapter_profile_id": {"$ref": "#/$defs/text"}, "adapter_profile_generation": {"$ref": "#/$defs/gen1"},
+        "accepted_exchange_key": {"$ref": "#/$defs/text"}, "host_invocation_ref": {"$ref": "#/$defs/text"},
+        "principal": {"type": "object", "additionalProperties": false, "required": ["provider", "stable_account_id", "login_at_acceptance"], "properties": {"provider": {"const": "github"}, "stable_account_id": {"$ref": "#/$defs/text"}, "login_at_acceptance": {"$ref": "#/$defs/text"}}},
+        "representation": {"type": "object", "additionalProperties": false, "required": ["kind", "digest_generation", "content_digest"], "properties": {"kind": {"const": "accepted_text"}, "digest_generation": {"$ref": "#/$defs/gen1"}, "content_digest": {"$ref": "#/$defs/sha"}}},
+        "authority_at_acceptance": {"oneOf": [
+          {"type": "object", "additionalProperties": false, "required": ["kind", "player_id", "accepted_subject_ids", "campaign_authority_revision", "player_revision", "route_evidence_revision"], "properties": {"kind": {"const": "multiplayer"}, "player_id": {"$ref": "#/$defs/id"}, "accepted_subject_ids": {"$ref": "#/$defs/subjects"}, "campaign_authority_revision": {"$ref": "#/$defs/text"}, "player_revision": {"type": "integer", "minimum": 0}, "route_evidence_revision": {"$ref": "#/$defs/text"}}},
+          {"type": "object", "additionalProperties": false, "required": ["kind", "creator_history", "accepted_subject_ids"], "properties": {"kind": {"const": "creator_singleplayer"}, "accepted_subject_ids": {"$ref": "#/$defs/subjects"}, "creator_history": {"type": "object", "additionalProperties": false, "required": ["author_login", "initialization_revision", "parent_revision"], "properties": {"author_login": {"$ref": "#/$defs/text"}, "initialization_revision": {"$ref": "#/$defs/text"}, "parent_revision": {"$ref": "#/$defs/text"}}}}}
+        ]}
+      }
     }
-  ]
+  }
 }

@@ -7,22 +7,35 @@ current authority.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-import re
 from typing import Final, Protocol
 
 from .catalog_runtime import BoundCatalogContext, CatalogBindingError
 from .native_storage import NativeStorageError, route_native_record
-from .policy_basis import PinnedCampaign, PolicyBasisResolutionError, validate_frozen_adjudication_basis
-from .recovery_roots import derive_operational_root_delta
-from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
+from .policy_basis import (
+    PinnedCampaign,
+    PolicyBasisResolutionError,
+    validate_frozen_adjudication_basis,
+)
+from .recovery_roots import (
+    derive_operational_root_delta,
+    validate_unresolved_input_owner,
+)
+from .runtime_execution import (
+    CommandAcceptanceError,
+    input_native_state,
+    validate_execution_proposal,
+    validate_input_closure,
+    validate_input_interaction,
+    validate_input_resolution,
+)
 
-
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _NATIVE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
@@ -861,6 +874,9 @@ def _validate_recovered_root_closures(
     owners: Sequence[Mapping[str, object]],
 ) -> None:
     for owner in owners:
+        if owner.get("kind") in {"runtime.interaction", "runtime.intent_plan"}:
+            _hydrate_input_root_closure(repository, pinned, owner)
+            continue
         if not _is_runtime_command_owner(owner):
             continue
         accepted_command = owner
@@ -897,6 +913,96 @@ def _validate_recovered_root_closures(
         _validate_catalog_closure(repository, pinned, accepted_command, catalog_basis)
 
 
+def _hydrate_input_root_closure(
+    repository: object, pinned: PinnedCampaign, owner: Mapping[str, object],
+) -> None:
+    """Load exact native input links; no historical replay or current agency issue."""
+    try:
+        if owner["kind"] == "runtime.intent_plan":
+            plan = owner
+            plan_state = input_native_state(plan, "runtime.intent_plan")
+            interaction = _read_pinned_native_record(
+                repository, pinned, "runtime.interaction", (plan_state["interaction_id"],), "input Interaction",
+            )
+        else:
+            interaction = owner
+            plan = None
+        state = validate_input_interaction(campaign_id=pinned.campaign_id, interaction=interaction)
+        message = _read_pinned_native_record(
+            repository, pinned, "runtime.message", (state["input_message_id"],), "input Message",
+        )
+        if "intent_plan_id" in state:
+            if plan is None:
+                plan = _read_pinned_native_record(
+                    repository, pinned, "runtime.intent_plan", (state["intent_plan_id"],), "input Plan",
+                )
+        elif plan is not None:
+            raise RecoveryFailure("input phase forbids Plan", code=RecoveryFailureCode.CORRUPT)
+        segment = None
+        if "response_target" in state and "accepted_resume_ref" not in state:
+            from .runtime_execution import NativeOrderingError, resolve_native_ordering_evidence
+
+            target = state["response_target"]
+            try:
+                evidence = resolve_native_ordering_evidence(
+                    {"resolution_id": target["resolution_id"]}, repository=repository,
+                    campaign_pin=pinned, selected_live=None,
+                )
+            except NativeOrderingError as exc:
+                raise RecoveryFailure("input current offer source is incomplete", code=RecoveryFailureCode.INCOMPLETE) from exc
+            for field in ("resolution_id", "continuation_id", "continuation_generation", "offer_kind", "offer_id", "responder_id"):
+                if getattr(evidence, field, None) != target[field]:
+                    raise RecoveryFailure("input current offer source differs from fixed target", code=RecoveryFailureCode.CORRUPT)
+            current_resolution = _read_pinned_native_record(
+                repository, pinned, "runtime.resolution", (target["resolution_id"],), "input offer Resolution",
+            )
+            if current_resolution.get("root_command_id") != target["root_command_id"]:
+                raise RecoveryFailure("input offer root command differs", code=RecoveryFailureCode.CORRUPT)
+            continuation = _read_pinned_native_record(
+                repository, pinned, "runtime.continuation", (target["continuation_id"],), "input offer Continuation",
+            )
+            offer = _mapping_or_failure(continuation.get("pending_response"), "input offer")
+            selection = state["response_selection"]
+            key, candidates = ("option_id", "option_ids") if selection["kind"] == "choice" else ("activity_id", "candidate_activity_ids")
+            if selection[key] not in offer.get(candidates, ()):
+                raise RecoveryFailure("input selected candidate is foreign to offer", code=RecoveryFailureCode.CORRUPT)
+        if "accepted_resume_ref" in state:
+            reference = state["accepted_resume_ref"]
+            resolution = _read_pinned_native_record(
+                repository, pinned, "runtime.resolution", (reference["resolution_id"],), "input response Resolution",
+            )
+            resolution_state = validate_input_resolution(
+                resolution_id=reference["resolution_id"], resolution=resolution,
+            )
+            if resolution_state.get("root_command_id") != state["response_target"]["root_command_id"]:
+                raise RecoveryFailure("input response root differs", code=RecoveryFailureCode.CORRUPT)
+            segments = resolution_state.get("segments")
+            if not isinstance(segments, list):
+                raise RecoveryFailure("input response segments are missing", code=RecoveryFailureCode.INCOMPLETE)
+            matches = [item for item in segments if isinstance(item, Mapping) and item.get("segment_id") == reference["segment_id"]]
+            if len(matches) != 1:
+                raise RecoveryFailure("input exact response segment is missing/ambiguous", code=RecoveryFailureCode.INCOMPLETE)
+            segment = matches[0]
+            if not isinstance(segment.get("resulting_execution_state"), str):
+                raise RecoveryFailure("input response result survivor is missing", code=RecoveryFailureCode.INCOMPLETE)
+        validate_input_closure(campaign_id=pinned.campaign_id, interaction=interaction,
+                               message=message, plan=plan, accepted_response_segment=segment)
+        if plan is not None:
+            plan_state = input_native_state(plan, "runtime.intent_plan")
+            for clause in plan_state["clauses"]:
+                if "command_id" not in clause:
+                    continue
+                command = _read_pinned_native_record(
+                    repository, pinned, "runtime.command", (clause["command_id"],), "input clause command",
+                )
+                command_state = command.get("state", command)
+                if (not isinstance(command_state, Mapping) or command_state.get("interaction_id") != interaction["id"]
+                        or command_state.get("intent_plan_id") != plan["id"] or command_state.get("clause_id") != clause["clause_id"]):
+                    raise RecoveryFailure("input populated clause command reciprocity differs", code=RecoveryFailureCode.CORRUPT)
+    except CommandAcceptanceError as exc:
+        raise RecoveryFailure(f"input root closure is incomplete: {exc}", code=RecoveryFailureCode.INCOMPLETE) from exc
+
+
 def _is_runtime_command_owner(owner: Mapping[str, object]) -> bool:
     declared_kind = owner.get("kind")
     if declared_kind is not None:
@@ -921,6 +1027,10 @@ def _read_pinned_native_record(
         raise RecoveryFailure(f"{label} is missing", code=RecoveryFailureCode.MISSING) from exc
     value = _mapping_or_failure(payload, label)
     _validate_pinned_native_identity(family_key, identity, value)
+    if (family_key in {"runtime.interaction", "runtime.message", "runtime.intent_plan", "runtime.resolution"}
+            and "campaign_id" in value
+            and _string_or_failure(value["campaign_id"], "native campaign projection") != pinned.campaign_id):
+        raise RecoveryFailure("native campaign projection differs from selected campaign", code=RecoveryFailureCode.CORRUPT)
     return value
 
 
@@ -933,6 +1043,13 @@ def _validate_pinned_native_identity(
             "native owner kind differs from its exact route", code=RecoveryFailureCode.CORRUPT
         )
     owner_id = identity[0]
+    if family_key in {"runtime.interaction", "runtime.message", "runtime.intent_plan"}:
+        try:
+            input_native_state(payload, family_key)
+        except CommandAcceptanceError as exc:
+            raise RecoveryFailure("input native identity is malformed", code=RecoveryFailureCode.CORRUPT) from exc
+        if payload.get("id") != owner_id:
+            raise RecoveryFailure("input native identity differs from route", code=RecoveryFailureCode.CORRUPT)
     if family_key == "runtime.command" and payload.get("command_id") != owner_id:
         raise RecoveryFailure(
             "runtime command identity differs from its exact route",
@@ -951,6 +1068,11 @@ def _validate_pinned_native_identity(
                 code=RecoveryFailureCode.CORRUPT,
             )
     if family_key == "runtime.resolution":
+        if declared_kind is not None or "id" in payload or "state" in payload:
+            try:
+                validate_input_resolution(resolution_id=owner_id, resolution=payload)
+            except CommandAcceptanceError as exc:
+                raise RecoveryFailure("native Resolution identity/projection is corrupt", code=RecoveryFailureCode.CORRUPT) from exc
         declared_id = payload.get("resolution_id")
         if declared_id is not None and declared_id != owner_id:
             raise RecoveryFailure(
@@ -1243,6 +1365,13 @@ def _validate_root_owner(
     ):
         raise RecoveryFailure("root owner kind differs from route", code=RecoveryFailureCode.CORRUPT)
     try:
+        if owner_kind in {"runtime.interaction", "runtime.intent_plan"}:
+            # Presence in the pinned root page is promised routing evidence;
+            # do not mint a new ephemeral promise during cold hydration.
+            identity = validate_unresolved_input_owner(campaign_id, owner_kind, owner)
+            if identity != owner_id:
+                raise RecoveryFailure("input root identity differs", code=RecoveryFailureCode.CORRUPT)
+            return
         delta = derive_operational_root_delta(
             campaign_id, owner_kind, owner, existing_roots=(root,)
         )

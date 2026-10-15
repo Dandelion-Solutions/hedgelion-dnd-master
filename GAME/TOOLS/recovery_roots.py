@@ -18,8 +18,8 @@ import weakref
 from .native_storage import route_native_record
 
 
-# framework_module_version: 1.0.15
-FRAMEWORK_MODULE_VERSION: Final = "1.0.15"
+# framework_module_version: 1.0.16
+FRAMEWORK_MODULE_VERSION: Final = "1.0.16"
 OPERATIONAL_ROOT_SCHEMA_VERSION: Final = 1
 OPERATIONAL_ROOT_HANDOFF_SCHEMA_VERSION: Final = 2
 _OWNER_KINDS: Final = frozenset(
@@ -577,21 +577,28 @@ def validate_unresolved_input_owner(
         raise OperationalRootError("unresolved input owner must be a native mapping")
     if native_owner.get("kind") != owner_kind:
         raise OperationalRootError("native unresolved owner kind differs from requested owner kind")
-    if native_owner.get("campaign_id") != campaign_id:
-        raise OperationalRootError("native unresolved owner campaign differs from promise campaign")
     if owner_kind == "runtime.interaction":
-        required = ("session_id", "player_id", "input_message_id", "intent_plan_id")
-        for field in required:
-            _nonempty(native_owner.get(field), f"interaction {field}")
-        if native_owner.get("response_message_id") is not None:
-            raise OperationalRootError("native interaction is resolved, not unresolved")
-        return _nonempty(native_owner.get("input_message_id"), "interaction input_message_id")
+        from .runtime_execution import validate_input_interaction
 
-    owner_id = _nonempty(
-        native_owner.get("intent_plan_id", native_owner.get("id")), "intent plan id"
-    )
-    _nonempty(native_owner.get("interaction_id"), "intent plan interaction_id")
-    clauses = native_owner.get("clauses")
+        try:
+            validate_input_interaction(campaign_id=campaign_id, interaction=native_owner)
+        except ValueError as exc:
+            raise OperationalRootError(f"native interaction input grammar is invalid: {exc}") from exc
+        # I alone cannot prove downstream meaning discharge. Keep a promised I
+        # until the owner establishes its complete bounded handoff, regardless
+        # of response emission. Routing is not a completion/consume authority.
+        return _nonempty(native_owner.get("id"), "interaction id")
+
+    from .runtime_execution import validate_input_plan
+
+    try:
+        state = validate_input_plan(native_owner)
+    except ValueError as exc:
+        raise OperationalRootError(f"native intent plan grammar is invalid: {exc}") from exc
+    if native_owner.get("campaign_id", campaign_id) != campaign_id:
+        raise OperationalRootError("native unresolved owner campaign differs from promise campaign")
+    owner_id = _nonempty(native_owner.get("id"), "intent plan id")
+    clauses = state.get("clauses")
     if not isinstance(clauses, list) or not clauses:
         raise OperationalRootError("native intent plan clauses are required")
     if not any(

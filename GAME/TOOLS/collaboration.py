@@ -58,8 +58,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.20
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
+# framework_module_version: 1.0.21
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.21"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -91,6 +91,9 @@ _DEPENDENCY_CLASSES: Final[frozenset[str]] = frozenset(
 )
 _CLAUSE_FIELDS: Final[frozenset[str]] = frozenset(
     {
+        "schema_version",
+        "clause_kind",
+        "accepted_resume_ref",
         "clause_id",
         "order",
         "mapping_outcome",
@@ -121,6 +124,8 @@ _COLLABORATION_READ_FAMILIES: Final[frozenset[str]] = frozenset(
     {
         "runtime.interaction",
         "runtime.intent_plan",
+        "runtime.message",
+        "runtime.resolution",
         "world.player",
         "world.scene",
         "world.asset",
@@ -1630,16 +1635,39 @@ def _load_interaction(
     host: RuntimeHost, basis: _OperationBasis, interaction_id: str
 ) -> Mapping[str, object]:
     interaction = _read_native(host, basis, "runtime.interaction", interaction_id)
-    declared_id = interaction.get("interaction_id", interaction.get("id"))
-    if declared_id is not None and declared_id != interaction_id:
-        raise CollaborationAdmissionError(
-            "interaction identity differs from requested identity"
-        )
-    if interaction.get("campaign_id") != basis.pinned_campaign.campaign_id:
-        raise CollaborationAdmissionError("interaction belongs to another campaign")
-    for field in ("session_id", "player_id", "input_message_id", "intent_plan_id"):
-        _id(interaction.get(field), f"interaction {field}")
-    return interaction
+    from .runtime_execution import (
+        validate_input_closure,
+        validate_input_interaction,
+        validate_input_resolution,
+    )
+
+    try:
+        state = validate_input_interaction(campaign_id=basis.pinned_campaign.campaign_id, interaction=interaction)
+        message = _read_native(host, basis, "runtime.message", state["input_message_id"])
+        plan = None
+        if "intent_plan_id" in state:
+            plan = _read_native(host, basis, "runtime.intent_plan", state["intent_plan_id"])
+        segment = None
+        if "accepted_resume_ref" in state:
+            reference = state["accepted_resume_ref"]
+            resolution = _read_native(host, basis, "runtime.resolution", reference["resolution_id"])
+            resolution_state = validate_input_resolution(
+                resolution_id=reference["resolution_id"], resolution=resolution,
+            )
+            if resolution_state.get("root_command_id") != state["response_target"]["root_command_id"]:
+                raise CollaborationAdmissionError("input response Resolution root differs")
+            segments = _sequence(resolution_state.get("segments"), "input response segments")
+            matches = [item for item in segments if isinstance(item, Mapping) and item.get("segment_id") == reference["segment_id"]]
+            if len(matches) != 1:
+                raise CollaborationAdmissionError("input response segment is missing or ambiguous")
+            segment = matches[0]
+        validate_input_closure(campaign_id=basis.pinned_campaign.campaign_id, interaction=interaction,
+                               message=message, plan=plan, accepted_response_segment=segment)
+    except ValueError as exc:
+        raise CollaborationAdmissionError(f"interaction input closure differs: {exc}") from exc
+    # Existing collaboration agency APIs consume this owner-validated projection.
+    # It retains the native envelope; it is never an acceptance/authentication DTO.
+    return {**interaction, **state}
 
 
 def _load_plan(
@@ -1649,17 +1677,26 @@ def _load_plan(
     interaction_id: str,
 ) -> Mapping[str, object]:
     plan = _read_native(host, basis, "runtime.intent_plan", intent_plan_id)
-    declared_id = plan.get("intent_plan_id", plan.get("id"))
-    if declared_id is not None and declared_id != intent_plan_id:
-        raise CollaborationAdmissionError(
-            "intent plan identity differs from interaction route"
-        )
-    if plan.get("interaction_id") != interaction_id:
+    from .runtime_execution import validate_input_plan
+
+    try:
+        state = validate_input_plan(plan)
+    except ValueError as exc:
+        raise CollaborationAdmissionError(f"intent plan grammar differs: {exc}") from exc
+    if state.get("interaction_id") != interaction_id:
         raise CollaborationAdmissionError("intent plan is not owned by the interaction")
-    return plan
+    return {**plan, **state, "campaign_id": basis.pinned_campaign.campaign_id}
 
 
 def _load_clause(plan: Mapping[str, object], clause_id: str) -> Mapping[str, object]:
+    from .structural_contracts import validate_contract
+
+    try:
+        state = plan.get("state", plan)
+        validate_contract("runtime-intent-plan-state", {key: value for key, value in state.items()
+                                                      if key in {"schema_version", "interaction_id", "clauses", "details"}})
+    except ValueError as exc:
+        raise CollaborationAdmissionError(f"intent plan/clause grammar differs: {exc}") from exc
     clauses = _sequence(plan.get("clauses"), "intent plan clauses")
     matches = [
         clause
@@ -1671,6 +1708,8 @@ def _load_clause(plan: Mapping[str, object], clause_id: str) -> Mapping[str, obj
             "intent clause identity is missing or ambiguous"
         )
     clause = matches[0]
+    if clause.get("clause_kind") != "intent":
+        raise CollaborationAdmissionError("solicited response is not collaboration consent")
     if set(clause) - _CLAUSE_FIELDS:
         raise CollaborationAdmissionError(
             "intent clause contains an unsupported authority field"
@@ -5327,6 +5366,7 @@ def _resolution_publication_operations(
         transitioned_clause["execution_state"] = "intent.ready"
         clauses[target_index] = transitioned_clause
         transitioned_plan["clauses"] = clauses
+        transitioned_plan["state"]["clauses"] = deepcopy(clauses)
     if should_release:
         operations: dict[str, object | None] = {
             route_native_record(

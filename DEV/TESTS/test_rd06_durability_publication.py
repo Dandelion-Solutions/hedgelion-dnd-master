@@ -1098,14 +1098,9 @@ class CampaignIdentityImmutabilityTests(unittest.TestCase):
 
 class AuthorizedDurabilityHandoffTests(unittest.TestCase):
     def test_only_owner_issued_handoff_promise_may_enroll_unresolved_interaction(self) -> None:
-        interaction = {
-            "kind": "runtime.interaction",
-            "campaign_id": "campaign-000001",
-            "session_id": "session-1",
-            "player_id": "player-1",
-            "input_message_id": "message-1",
-            "intent_plan_id": "plan-1",
-        }
+        from DEV.TESTS.test_sp03_authenticated_input import input_sources
+        interaction, _, _ = input_sources(kind="intent")
+        interaction["state"]["campaign_id"] = "campaign-000001"
         promise = issue_durability_handoff_promise(
             campaign_id="campaign-000001",
             owner_kind="runtime.interaction",
@@ -1119,14 +1114,9 @@ class AuthorizedDurabilityHandoffTests(unittest.TestCase):
         self.assertEqual(delta.action, "ENROLL")
 
     def test_handoff_issuance_rejects_cross_campaign_and_resolved_or_fabricated_owner(self) -> None:
-        interaction = {
-            "kind": "runtime.interaction",
-            "campaign_id": "campaign-000001",
-            "session_id": "session-1",
-            "player_id": "player-1",
-            "input_message_id": "message-1",
-            "intent_plan_id": "plan-1",
-        }
+        from DEV.TESTS.test_sp03_authenticated_input import input_sources
+        interaction, _, _ = input_sources(kind="intent")
+        interaction["state"]["campaign_id"] = "campaign-000001"
         with self.assertRaisesRegex(DurabilityContractError, "campaign"):
             issue_durability_handoff_promise(
                 campaign_id="campaign-other",
@@ -1135,14 +1125,13 @@ class AuthorizedDurabilityHandoffTests(unittest.TestCase):
                 scope="accepted_handoff",
             )
 
-        resolved = interaction | {"response_message_id": "message-2"}
-        with self.assertRaisesRegex(DurabilityContractError, "unresolved"):
-            issue_durability_handoff_promise(
-                campaign_id="campaign-000001",
-                owner_kind="runtime.interaction",
-                native_owner=resolved,
-                scope="accepted_handoff",
-            )
+        # Emission alone cannot discharge promised semantic meaning.
+        interaction["state"]["response_message_id"] = "message-2"
+        issued = issue_durability_handoff_promise(
+            campaign_id="campaign-000001", owner_kind="runtime.interaction",
+            native_owner=interaction, scope="accepted_handoff",
+        )
+        self.assertEqual(issued.owner_id, interaction["id"])
 
         with self.assertRaisesRegex(DurabilityContractError, "native owner"):
             issue_durability_handoff_promise(

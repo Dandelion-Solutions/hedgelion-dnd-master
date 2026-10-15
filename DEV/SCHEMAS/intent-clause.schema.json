@@ -4,8 +4,11 @@
   "title": "HDM bounded intent clause",
   "type": "object",
   "additionalProperties": false,
-  "required": ["clause_id", "order", "mapping_outcome", "execution_state"],
+  "required": ["schema_version", "clause_kind", "clause_id", "order", "mapping_outcome", "execution_state"],
   "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "clause_kind": {"enum": ["intent", "solicited_response"]},
+    "accepted_resume_ref": {"$ref": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/resumeRef"},
     "clause_id": {"type": "string", "minLength": 1},
     "order": {"type": "integer", "minimum": 1},
     "mapping_outcome": {
@@ -56,6 +59,13 @@
     },
     "ordering_resolution_id": {"type": "string", "minLength": 1}
   },
+  "allOf": [
+    {"if": {"properties": {"clause_kind": {"const": "intent"}}, "required": ["clause_kind"]}, "then": {"not": {"required": ["accepted_resume_ref"]}}, "else": {
+      "required": ["accepted_resume_ref"],
+      "properties": {"clause_id": {"const": "clause.response"}, "order": {"const": 1}, "mapping_outcome": {"const": "exact"}, "execution_state": {"const": "intent.executed"}},
+      "not": {"anyOf": [{"required": ["command_id"]}, {"required": ["guard"]}, {"required": ["details"]}, {"required": ["collaboration_semantic_class"]}, {"required": ["normalized_semantics"]}, {"required": ["material_exact_text_refs"]}, {"required": ["dependency_kind"]}, {"required": ["purpose"]}, {"required": ["dependency_scope"]}, {"required": ["required_contributors"]}, {"required": ["optional_contributors"]}, {"required": ["native_basis_refs"]}, {"required": ["ordering_resolution_id"]}]}
+    }}
+  ],
   "$defs": {
     "scalar": {"type": ["string", "number", "boolean"]},
     "guard": {
@@ -119,6 +129,8 @@
   },
   "examples": [
     {
+      "schema_version": 1,
+      "clause_kind": "intent",
       "clause_id": "clause-02",
       "order": 2,
       "mapping_outcome": "exact",

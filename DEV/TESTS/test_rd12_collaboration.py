@@ -129,6 +129,28 @@ class RepositoryFixture:
         return {"ref": campaign_ref, "revision": revision}
 
     def put(self, family: str, record_id: str, value: dict[str, object]) -> None:
+        # Construct current native source bytes in the trusted fixture producer.
+        # These values exercise source grammar, never external issuer proof.
+        from DEV.TESTS.test_sp03_authenticated_input import input_sources
+        if family == "runtime.interaction":
+            interaction, message, _ = input_sources(kind="intent")
+            state = interaction["state"]
+            state.update({key: value[key] for key in (
+                "campaign_id", "session_id", "player_id", "input_message_id", "intent_plan_id",
+            ) if key in value})
+            state["accepted_input_basis"]["authority_at_acceptance"]["player_id"] = state["player_id"]
+            value = {**value, **state, "state": state}
+            message["id"] = state["input_message_id"]
+            message["state"]["message_id"] = message["id"]
+            message["state"]["interaction_id"] = record_id
+            self.records[route_native_record("runtime.message", (message["id"],)).relative_path] = message
+        elif family == "runtime.intent_plan":
+            clauses = value["clauses"]
+            for clause in clauses:
+                clause["schema_version"] = 1
+                clause["clause_kind"] = "intent"
+            state = {"schema_version": 1, "interaction_id": value["interaction_id"], "clauses": clauses}
+            value = {**value, **state, "state": state}
         self.records[route_native_record(family, (record_id,)).relative_path] = value
 
     def _install_records(self, clause: dict[str, object]) -> None:
@@ -516,6 +538,8 @@ def _player_record(
 
 def _collective_clause() -> dict[str, object]:
     return {
+        "schema_version": 1,
+        "clause_kind": "intent",
         "clause_id": "clause-1",
         "order": 1,
         "mapping_outcome": "exact",
@@ -3277,7 +3301,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.20")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.21")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(

@@ -19,8 +19,8 @@ from typing import Final
 
 from .native_storage import route_native_record
 
-# framework_module_version: 1.0.4
-FRAMEWORK_MODULE_VERSION: Final = "1.0.4"
+# framework_module_version: 1.0.5
+FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -346,13 +346,28 @@ class RoutedSerializedOperation:
             raise DurabilityContractError("serialized operation owner kind differs from payload")
         identity_field = {
             "runtime.command": "command_id",
-            "runtime.interaction": "input_message_id",
-            "runtime.intent_plan": "intent_plan_id",
+            "runtime.interaction": "id",
+            "runtime.intent_plan": "id",
             "runtime.collaboration_obligation": "obligation_id",
             "runtime.semantic_event": "event_id",
         }.get(self.owner_kind, "id")
         if copied.get(identity_field, copied.get("id")) != self.owner_id:
             raise DurabilityContractError("serialized operation owner identity differs from payload")
+        if self.owner_kind in {"runtime.interaction", "runtime.intent_plan"}:
+            from .runtime_execution import (
+                input_native_state,
+                validate_input_interaction,
+                validate_input_plan,
+            )
+
+            try:
+                state = input_native_state(copied, self.owner_kind)
+                if self.owner_kind == "runtime.interaction":
+                    validate_input_interaction(campaign_id=state.get("campaign_id"), interaction=copied)
+                else:
+                    validate_input_plan(copied)
+            except ValueError as exc:
+                raise DurabilityContractError(f"serialized input source grammar differs: {exc}") from exc
         object.__setattr__(self, "payload", _freeze(copied))
 
     def to_dict(self) -> dict[str, object]:
@@ -588,6 +603,7 @@ class DurabilityHandoffPromise:
     owner_id: str
     scope: str
     owner_state_fingerprint: str
+    required_dependencies: tuple[tuple[str, str], ...]
     ephemeral: bool = True
 
     def __init__(self, **_values: object) -> None:
@@ -607,10 +623,11 @@ class DurabilityHandoffPromise:
             and self.owner_kind == owner_kind
             and self.owner_id == owner_id
             and _native_owner_fingerprint(native_owner) == self.owner_state_fingerprint
+            and _input_handoff_dependencies(owner_kind, native_owner) == self.required_dependencies
         )
 
 
-_ISSUED_HANDOFF_PROMISES: weakref.WeakSet[DurabilityHandoffPromise] = weakref.WeakSet()
+_ISSUED_HANDOFF_PROMISES: weakref.WeakValueDictionary[int, DurabilityHandoffPromise] = weakref.WeakValueDictionary()
 
 
 def _native_owner_fingerprint(owner: Mapping[str, object]) -> str:
@@ -624,11 +641,35 @@ def _native_owner_fingerprint(owner: Mapping[str, object]) -> str:
 
 
 def _handoff_owner_id(owner_kind: str, owner: Mapping[str, object]) -> str:
-    if owner_kind == "runtime.interaction":
-        return _machine_id(owner.get("input_message_id"), "interaction input_message_id")
-    if owner_kind == "runtime.intent_plan":
-        return _machine_id(owner.get("intent_plan_id", owner.get("id")), "intent plan id")
+    if owner_kind in {"runtime.interaction", "runtime.intent_plan"}:
+        return _machine_id(owner.get("id"), "input native envelope id")
     raise DurabilityContractError("handoff promise owner kind is not unresolved input")
+
+
+def _input_handoff_dependencies(owner_kind: str, owner: Mapping[str, object]) -> tuple[tuple[str, str], ...]:
+    """Freeze finite native route obligations, not content/authority conclusions."""
+    from .runtime_execution import input_native_state
+
+    state = input_native_state(owner, owner_kind)
+    refs: set[tuple[str, str]] = set()
+    if owner_kind == "runtime.interaction":
+        refs.add(("runtime.message", state["input_message_id"]))
+        if "intent_plan_id" in state:
+            refs.add(("runtime.intent_plan", state["intent_plan_id"]))
+        if "response_target" in state:
+            target = state["response_target"]
+            refs.add(("runtime.resolution", target["resolution_id"]))
+            refs.add(("runtime.command", target["root_command_id"]))
+            if "accepted_resume_ref" not in state:
+                refs.add(("runtime.continuation", target["continuation_id"]))
+    else:
+        refs.add(("runtime.interaction", state["interaction_id"]))
+        for clause in state["clauses"]:
+            if "command_id" in clause:
+                refs.add(("runtime.command", clause["command_id"]))
+            if "accepted_resume_ref" in clause:
+                refs.add(("runtime.resolution", clause["accepted_resume_ref"]["resolution_id"]))
+    return tuple(sorted(refs))
 
 
 def issue_durability_handoff_promise(
@@ -659,12 +700,13 @@ def issue_durability_handoff_promise(
         "owner_id": owner_id,
         "scope": scope,
         "owner_state_fingerprint": _native_owner_fingerprint(native_owner),
+        "required_dependencies": _input_handoff_dependencies(owner_kind, native_owner),
         "ephemeral": True,
     }.items():
         object.__setattr__(promise, field, value)
-    _ISSUED_HANDOFF_PROMISES.add(promise)
+    _ISSUED_HANDOFF_PROMISES[id(promise)] = promise
     return promise
 
 
 def is_authorized_handoff_promise(value: object) -> bool:
-    return isinstance(value, DurabilityHandoffPromise) and value in _ISSUED_HANDOFF_PROMISES
+    return isinstance(value, DurabilityHandoffPromise) and _ISSUED_HANDOFF_PROMISES.get(id(value)) is value

@@ -6,6 +6,7 @@ from pathlib import Path
 import unittest
 
 from jsonschema import Draft202012Validator
+from DEV.TESTS.test_sp03_authenticated_input import input_sources
 
 from DEV.TOOLS.validate_domain_rules_coverage import (
     execute_combat_procedure_transition,
@@ -184,14 +185,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
         self.assertEqual(settled.action, "NOOP")
 
     def test_unresolved_input_fails_closed_until_authorized_promise_boundary(self) -> None:
-        interaction = {
-            "kind": "runtime.interaction",
-            "campaign_id": "campaign-1",
-            "session_id": "session-1",
-            "player_id": "player-1",
-            "input_message_id": "message-1",
-            "intent_plan_id": "plan-1",
-        }
+        interaction, _, _ = input_sources(kind="intent")
         with self.assertRaisesRegex(OperationalRootError, "promise"):
             derive_operational_root_delta(
                 campaign_id="campaign-1",
@@ -208,14 +202,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
             )
 
     def test_unresolved_input_rejects_caller_constructed_or_mismatched_promise(self) -> None:
-        interaction = {
-            "kind": "runtime.interaction",
-            "campaign_id": "campaign-1",
-            "session_id": "session-1",
-            "player_id": "player-1",
-            "input_message_id": "message-1",
-            "intent_plan_id": "plan-1",
-        }
+        interaction, _, _ = input_sources(kind="intent")
         with self.assertRaises(TypeError):
             AcceptedUnresolvedInputPromise(  # type: ignore[call-arg]
                 campaign_id="campaign-1",
@@ -231,14 +218,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
             )
 
     def test_enumeration_defers_interaction_until_authorized_promise_boundary(self) -> None:
-        interaction = {
-            "kind": "runtime.interaction",
-            "campaign_id": "campaign-1",
-            "session_id": "session-1",
-            "player_id": "player-1",
-            "input_message_id": "message-1",
-            "intent_plan_id": "plan-1",
-        }
+        interaction, _, _ = input_sources(kind="intent")
         with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
             enumerate_operational_root_page(
                 "campaign-1",
@@ -246,11 +226,7 @@ class OperationalRootEnrollmentTests(unittest.TestCase):
             )
 
     def test_enumeration_defers_intent_plan_until_authorized_promise_boundary(self) -> None:
-        intent_plan = {
-            "kind": "runtime.intent_plan",
-            "interaction_id": "message-1",
-            "clauses": [{"clause_id": "clause-1"}],
-        }
+        _, _, intent_plan = input_sources(kind="intent")
         with self.assertRaisesRegex(OperationalRootError, "authorized.*boundary"):
             enumerate_operational_root_page(
                 "campaign-1",

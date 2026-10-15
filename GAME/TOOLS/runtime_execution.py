@@ -33,9 +33,10 @@ from .policy_basis import (
     validate_frozen_adjudication_basis,
     validate_policy_applicability_witnesses,
 )
+from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.8
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.8"
+# framework_module_version: 1.0.9
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
@@ -95,6 +96,375 @@ _SHA256_HEX: Final = frozenset("0123456789abcdef")
 
 class CommandAcceptanceError(ValueError):
     """Raised when a command is not a valid accepted ``runtime.command`` record."""
+
+
+def input_native_state(owner: Mapping[str, object], kind: str) -> Mapping[str, object]:
+    """Read envelope identity first; flattened projections never override state.
+
+    This is source grammar, not external authentication or native acceptance.
+    """
+    if not isinstance(owner, Mapping) or owner.get("kind") != kind:
+        raise CommandAcceptanceError("input native envelope kind differs")
+    identity = owner.get("id")
+    if not isinstance(identity, str) or re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", identity) is None:
+        raise CommandAcceptanceError("input native envelope identity is invalid")
+    state = owner.get("state")
+    if not isinstance(state, Mapping):
+        raise CommandAcceptanceError("input native envelope state is missing")
+    if "campaign_id" in owner:
+        _input_id(owner["campaign_id"])
+    if set(owner) - {"kind", "id", "state", "revision", "campaign_id", "interaction_id", "intent_plan_id", "message_id"} - set(state):
+        raise CommandAcceptanceError("input native envelope has an undeclared private/authority field")
+    for field, value in state.items():
+        if field in owner and canonical_json(owner[field]) != canonical_json(value):
+            raise CommandAcceptanceError("input flattened alias differs from native state")
+    identity_field = {
+        "runtime.interaction": "interaction_id", "runtime.message": "message_id",
+        "runtime.intent_plan": "intent_plan_id",
+    }.get(kind)
+    if identity_field in owner and owner[identity_field] != identity:
+        raise CommandAcceptanceError("input flattened identity differs from native envelope")
+    if identity_field in state and state[identity_field] != identity:
+        raise CommandAcceptanceError("input state identity differs from native envelope")
+    if kind == "runtime.interaction":
+        for field in ("intent_plan_id", "message_id"):
+            if field in owner and field not in state:
+                raise CommandAcceptanceError("input flattened alias has no lawful native phase field")
+    return state
+
+
+def _input_closed(value: object, required: set[str], optional: set[str] | None = None) -> Mapping[str, object]:
+    if not isinstance(value, Mapping) or not required.issubset(value) or set(value) - required - (optional or set()):
+        raise CommandAcceptanceError("input object has missing or forbidden fields")
+    if any(item is None for item in value.values()):
+        raise CommandAcceptanceError("input optional fields must be absent, not null")
+    return value
+
+
+def _input_wire(name: str, value: object) -> None:
+    try:
+        validate_contract(name, value)
+    except StructuralContractError as exc:
+        raise CommandAcceptanceError(f"input {name} shape is invalid: {exc}") from exc
+
+
+def _input_text(value: object) -> str:
+    if not isinstance(value, str) or not value:
+        raise CommandAcceptanceError("input field must be nonempty text")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise CommandAcceptanceError("input text has invalid Unicode") from exc
+    return value
+
+
+def _input_id(value: object) -> str:
+    text = _input_text(value)
+    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_.:-]*", text) is None:
+        raise CommandAcceptanceError("input field must be a native ID")
+    return text
+
+
+def _input_integer(value: object, minimum: int = 1, exact: int | None = None) -> int:
+    if type(value) is not int or value < minimum or exact is not None and value != exact:
+        raise CommandAcceptanceError("input generation/revision is unsupported")
+    return value
+
+
+def _input_digest(value: object) -> str:
+    if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+        raise CommandAcceptanceError("input content digest is malformed")
+    return value
+
+
+def _input_campaign_projection(owner: Mapping[str, object], campaign_id: str) -> None:
+    if "campaign_id" in owner and _input_id(owner["campaign_id"]) != _input_id(campaign_id):
+        raise CommandAcceptanceError("input envelope campaign projection differs from selected campaign")
+
+
+def validate_input_resolution(
+    *, resolution_id: str, resolution: Mapping[str, object],
+) -> Mapping[str, object]:
+    """Validate the native response owner before consuming its retained state."""
+    _input_id(resolution_id)
+    try:
+        validate_loaded_identity("runtime.resolution", (resolution_id,), resolution)
+    except NativeStorageError as exc:
+        raise CommandAcceptanceError("input Resolution native identity differs from route") from exc
+    state = resolution.get("state", resolution)
+    if not isinstance(state, Mapping):
+        raise CommandAcceptanceError("input Resolution state is malformed")
+    for carrier in (resolution, state):
+        if "resolution_id" in carrier and _input_id(carrier["resolution_id"]) != resolution_id:
+            raise CommandAcceptanceError("input Resolution identity projection differs")
+    for field, value in state.items():
+        if field in resolution and canonical_json(resolution[field]) != canonical_json(value):
+            raise CommandAcceptanceError("input Resolution flattened projection differs from state")
+    return state
+
+
+def validate_input_interaction(*, campaign_id: str, interaction: Mapping[str, object]) -> Mapping[str, object]:
+    """Validate the own-I variant without claiming I's historical authority.
+
+    Root/promise admission can validate I and route its dependencies; full source
+    closure additionally requires exact M/P/segment reads via validate_input_closure.
+    """
+    state = input_native_state(interaction, "runtime.interaction")
+    _input_wire("runtime-interaction-state", state)
+    _input_closed(state, {"schema_version", "campaign_id", "session_id", "input_message_id",
+                          "input_kind", "accepted_input_basis"},
+                  {"player_id", "intent_plan_id", "response_message_id", "response_target",
+                   "response_selection", "planning_phase", "accepted_resume_ref", "details",
+                   "host_invocation_ref", "authenticated_principal_ref"})
+    _input_integer(state["schema_version"], exact=1)
+    if state["campaign_id"] != _input_id(campaign_id):
+        raise CommandAcceptanceError("input belongs to another campaign")
+    for field in ("session_id", "input_message_id", "intent_plan_id", "response_message_id", "player_id"):
+        if field in state:
+            _input_id(state[field])
+    basis = _input_closed(state["accepted_input_basis"], {
+        "basis_generation", "repository_identity", "adapter_profile_id", "adapter_profile_generation",
+        "accepted_exchange_key", "host_invocation_ref", "principal", "representation", "authority_at_acceptance",
+    })
+    for field in ("basis_generation", "adapter_profile_generation"):
+        _input_integer(basis[field], exact=1)
+    for field in ("repository_identity", "adapter_profile_id", "accepted_exchange_key", "host_invocation_ref"):
+        _input_text(basis[field])
+    principal = _input_closed(basis["principal"], {"provider", "stable_account_id", "login_at_acceptance"})
+    if principal["provider"] != "github":
+        raise CommandAcceptanceError("input principal provider is unsupported")
+    _input_text(principal["stable_account_id"])
+    _input_text(principal["login_at_acceptance"])
+    representation = _input_closed(basis["representation"], {"kind", "digest_generation", "content_digest"})
+    if representation["kind"] != "accepted_text":
+        raise CommandAcceptanceError("input representation is unsupported")
+    _input_integer(representation["digest_generation"], exact=1)
+    _input_digest(representation["content_digest"])
+    authority = basis["authority_at_acceptance"]
+    if not isinstance(authority, Mapping):
+        raise CommandAcceptanceError("input authority shape is missing")
+    if authority.get("kind") == "multiplayer":
+        _input_closed(authority, {"kind", "player_id", "accepted_subject_ids", "campaign_authority_revision",
+                                  "player_revision", "route_evidence_revision"})
+        if state.get("player_id") != _input_id(authority["player_id"]):
+            raise CommandAcceptanceError("input Player projection differs")
+        _input_integer(authority["player_revision"], minimum=0)
+        for field in ("campaign_authority_revision", "route_evidence_revision"):
+            _input_text(authority[field])
+    elif authority.get("kind") == "creator_singleplayer":
+        _input_closed(authority, {"kind", "creator_history", "accepted_subject_ids"})
+        if "player_id" in state:
+            raise CommandAcceptanceError("creator input forbids Player")
+        history = _input_closed(authority["creator_history"], {"author_login", "initialization_revision", "parent_revision"})
+        for item in history.values():
+            _input_text(item)
+        if history["author_login"] != principal["login_at_acceptance"]:
+            raise CommandAcceptanceError("creator historical login differs")
+    else:
+        raise CommandAcceptanceError("input authority variant is unsupported")
+    subjects = authority["accepted_subject_ids"]
+    if not isinstance(subjects, (list, tuple)):
+        raise CommandAcceptanceError("input subjects must be an array")
+    checked = [_input_id(item) for item in subjects]
+    if checked != sorted(set(checked)):
+        raise CommandAcceptanceError("input subjects must be sorted unique")
+    if "host_invocation_ref" in state and state["host_invocation_ref"] != basis["host_invocation_ref"]:
+        raise CommandAcceptanceError("input invocation alias differs")
+    # Legacy free-form principal strings cannot express this closed principal.
+    if "authenticated_principal_ref" in state:
+        raise CommandAcceptanceError("legacy principal string is not an input basis projection")
+    kind = state["input_kind"]
+    if kind == "intent":
+        if "intent_plan_id" not in state or set(state) & {"response_target", "response_selection", "planning_phase", "accepted_resume_ref"}:
+            raise CommandAcceptanceError("intent phase requires P and forbids response fields")
+    elif kind in {"response", "response_and_intent"}:
+        target = _input_closed(state.get("response_target"), {"root_command_id", "resolution_id", "continuation_id",
+            "continuation_generation", "offer_kind", "offer_id", "responder_id"})
+        for field in ("root_command_id", "resolution_id", "continuation_id", "offer_id", "responder_id"):
+            _input_id(target[field])
+        _input_integer(target["continuation_generation"])
+        if target["offer_kind"] == "choice":
+            selection = _input_closed(state.get("response_selection"), {"kind", "option_id"})
+            _input_id(selection["option_id"])
+        elif target["offer_kind"] == "reaction":
+            selection = _input_closed(state.get("response_selection"), {"kind", "activity_id"})
+            _input_id(selection["activity_id"])
+        else:
+            raise CommandAcceptanceError("input offer kind is unsupported")
+        if selection["kind"] != target["offer_kind"]:
+            raise CommandAcceptanceError("input selection kind differs from target")
+        if target["responder_id"] not in checked:
+            raise CommandAcceptanceError("input historical subject set omits responder")
+        if kind == "response":
+            if set(state) & {"intent_plan_id", "planning_phase"}:
+                raise CommandAcceptanceError("pure response forbids Plan/phase")
+        else:
+            phase = state.get("planning_phase")
+            links = set(state) & {"intent_plan_id", "accepted_resume_ref"}
+            expected = {"awaiting_response": set(), "ready_to_plan": {"accepted_resume_ref"},
+                        "materialized": {"intent_plan_id", "accepted_resume_ref"}}
+            if not isinstance(phase, str) or phase not in expected or links != expected[phase]:
+                raise CommandAcceptanceError("mixed input phase links are incomplete or forbidden")
+        if "accepted_resume_ref" in state:
+            reference = _input_closed(state["accepted_resume_ref"], {"resolution_id", "segment_id"})
+            for item in reference.values():
+                _input_id(item)
+            if reference["resolution_id"] != target["resolution_id"]:
+                raise CommandAcceptanceError("input resume Resolution differs from target")
+    else:
+        raise CommandAcceptanceError("input kind is unsupported")
+    if "details" in state and not isinstance(state["details"], Mapping):
+        raise CommandAcceptanceError("input details must be an object")
+    return state
+
+
+def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object],
+                           message: Mapping[str, object], plan: Mapping[str, object] | None,
+                           accepted_response_segment: Mapping[str, object] | None) -> None:
+    """Validate deterministic native source closure, never authenticated authority.
+
+    A structurally matching retained marker is necessary, not proof of a native
+    consume edge. Protected acceptance must separately establish native issuance.
+    """
+    state = validate_input_interaction(campaign_id=campaign_id, interaction=interaction)
+    message_state = input_native_state(message, "runtime.message")
+    _input_campaign_projection(message, campaign_id)
+    _input_wire("runtime-message-state", message_state)
+    _input_closed(message_state, {"schema_version", "message_id", "interaction_id", "direction",
+        "input_basis_generation", "representation_kind", "payload_state", "content_digest"},
+        {"exact_text", "source_domain_ref", "semantic_event_refs"})
+    for field in ("schema_version", "input_basis_generation"):
+        _input_integer(message_state[field], exact=1)
+    if (message["id"] != state["input_message_id"] or message_state["message_id"] != message["id"]
+            or message_state["interaction_id"] != interaction["id"]):
+        raise CommandAcceptanceError("input I/M reciprocal identity differs")
+    if message_state["direction"] != "inbound" or message_state["representation_kind"] != "accepted_text":
+        raise CommandAcceptanceError("input Message must be inbound accepted text")
+    basis = state["accepted_input_basis"]
+    digest = basis["representation"]["content_digest"]
+    if _input_digest(message_state["content_digest"]) != digest:
+        raise CommandAcceptanceError("input I/M content digest differs")
+    payload_state = message_state["payload_state"]
+    if payload_state == "message.exact_retained":
+        text = _input_text(message_state.get("exact_text"))
+        if sha256(text.encode("utf-8")) != digest:
+            raise CommandAcceptanceError("input retained content digest differs")
+    elif payload_state == "message.compacted":
+        if "exact_text" in message_state or plan is None:
+            raise CommandAcceptanceError("input compacted content cannot supply unplanned meaning")
+    else:
+        raise CommandAcceptanceError("input Message payload state is unsupported")
+    for field in ("source_domain_ref",):
+        if field in message_state:
+            _input_id(message_state[field])
+    if "semantic_event_refs" in message_state:
+        refs = message_state["semantic_event_refs"]
+        if not isinstance(refs, (tuple, list)) or len(refs) != len({_input_id(item) for item in refs}):
+            raise CommandAcceptanceError("input semantic refs are malformed or duplicate")
+    reference = state.get("accepted_resume_ref")
+    if reference is None:
+        if accepted_response_segment is not None:
+            raise CommandAcceptanceError("input has no accepted response segment locator")
+    else:
+        segment = accepted_response_segment
+        if not isinstance(segment, Mapping) or segment.get("segment_id") != reference["segment_id"]:
+            raise CommandAcceptanceError("input exact accepted response segment is missing")
+        _input_wire("execution-segment", {key: value for key, value in segment.items() if key != "accepted_resume_input"})
+        sequence = _input_integer(segment.get("segment_sequence"))
+        if reference["segment_id"] != f'{reference["resolution_id"]}:segment:{sequence}' or segment.get("commit_state") != "committed":
+            raise CommandAcceptanceError("input response segment identity/commit differs")
+        marker = _input_closed(segment.get("accepted_resume_input"), {"schema_version", "resume_fingerprint_generation",
+            "resume_fingerprint", "response_interaction_id", "response_message_id", "target", "selection"})
+        for field in ("schema_version", "resume_fingerprint_generation"):
+            _input_integer(marker[field], exact=1)
+        for field in ("response_interaction_id", "response_message_id"):
+            _input_id(marker[field])
+        # Reuse the input owner's complete closed types before exact comparison;
+        # Python mapping equality alone equates True/1 and 1.0/1.
+        _input_wire("https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/target", marker["target"])
+        _input_wire("https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/selection", marker["selection"])
+        _input_integer(marker["target"]["continuation_generation"])
+        if (marker["response_interaction_id"] != interaction["id"] or marker["response_message_id"] != message["id"]
+                or canonical_json(marker["target"]) != canonical_json(state["response_target"])
+                or canonical_json(marker["selection"]) != canonical_json(state["response_selection"])):
+            raise CommandAcceptanceError("input response marker source links differ")
+        payload = {"response_interaction_id": interaction["id"], "response_message_id": message["id"],
+                   "input_kind": state["input_kind"], "accepted_input_basis": basis,
+                   "target": state["response_target"], "selection": state["response_selection"]}
+        if _input_digest(marker["resume_fingerprint"]) != sha256(b"HDM_ACCEPTED_RESUME_INPUT/1\n" + canonical_json(payload)):
+            raise CommandAcceptanceError("input response marker fingerprint differs")
+    if "intent_plan_id" not in state:
+        if plan is not None:
+            raise CommandAcceptanceError("input phase forbids Plan")
+        return
+    if plan is None:
+        raise CommandAcceptanceError("input required Plan is missing")
+    _input_campaign_projection(plan, campaign_id)
+    plan_state = validate_input_plan(plan)
+    _input_closed(plan_state, {"schema_version", "interaction_id", "clauses"}, {"details"})
+    _input_integer(plan_state["schema_version"], exact=1)
+    if plan["id"] != state["intent_plan_id"] or plan_state["interaction_id"] != interaction["id"]:
+        raise CommandAcceptanceError("input Plan reciprocity differs")
+    clauses = plan_state["clauses"]
+    if not isinstance(clauses, (tuple, list)) or not clauses:
+        raise CommandAcceptanceError("input Plan clauses are missing")
+    ids: set[str] = set()
+    for order, clause in enumerate(clauses, 1):
+        if not isinstance(clause, Mapping):
+            raise CommandAcceptanceError("input clause must be an object")
+        _input_integer(clause.get("schema_version"), exact=1)
+        clause_id = _input_id(clause.get("clause_id"))
+        if clause_id in ids or _input_integer(clause.get("order")) != order:
+            raise CommandAcceptanceError("input clause IDs/order are duplicate or noncanonical")
+        if "guard" in clause:
+            guard = clause["guard"]
+            if not isinstance(guard, Mapping) or guard.get("prior_clause_id") not in ids:
+                raise CommandAcceptanceError("input clause guard must name an earlier clause")
+        ids.add(clause_id)
+        if "command_id" in clause:
+            _input_id(clause["command_id"])
+        if state["input_kind"] == "response_and_intent" and order == 1:
+            _input_closed(clause, {"schema_version", "clause_kind", "clause_id", "order", "mapping_outcome",
+                                    "execution_state", "accepted_resume_ref"})
+            if (clause["clause_kind"] != "solicited_response" or clause_id != "clause.response"
+                    or clause["mapping_outcome"] != "exact" or clause["execution_state"] != "intent.executed"
+                    or canonical_json(clause["accepted_resume_ref"]) != canonical_json(reference)):
+                raise CommandAcceptanceError("input mixed response clause differs")
+        else:
+            if clause.get("clause_kind") != "intent" or "accepted_resume_ref" in clause:
+                raise CommandAcceptanceError("input ordinary clause must be intent")
+            if state["input_kind"] == "response_and_intent" and clause_id != f"clause.intent.{order - 1}":
+                raise CommandAcceptanceError("input mixed extra clause ID differs")
+    if state["input_kind"] == "response_and_intent" and len(clauses) < 2:
+        raise CommandAcceptanceError("input mixed Plan needs real extra meaning")
+    if payload_state == "message.compacted":
+        for clause in clauses:
+            if clause["clause_kind"] == "solicited_response":
+                continue
+            if not clause.get("normalized_semantics") or clause.get("material_exact_text_refs"):
+                raise CommandAcceptanceError("input compacted Message lacks sufficient material semantic content/exact owner")
+
+
+def validate_input_plan(plan: Mapping[str, object]) -> Mapping[str, object]:
+    """Validate complete owner-local units before a Plan becomes a routing root."""
+    state = input_native_state(plan, "runtime.intent_plan")
+    _input_wire("runtime-intent-plan-state", state)
+    _input_id(state["interaction_id"])
+    seen: set[str] = set()
+    for order, clause in enumerate(state["clauses"], 1):
+        identity = _input_id(clause["clause_id"])
+        if identity in seen or _input_integer(clause["order"]) != order:
+            raise CommandAcceptanceError("input Plan has duplicate/noncanonical units")
+        if "guard" in clause and clause["guard"]["prior_clause_id"] not in seen:
+            raise CommandAcceptanceError("input Plan guard does not name an earlier unit")
+        if "command_id" in clause:
+            _input_id(clause["command_id"])
+            if clause["mapping_outcome"] not in {"exact", "composed"} or (
+                "dependency_kind" in clause and clause["execution_state"] == "intent.pending"
+            ):
+                raise CommandAcceptanceError("input nonexecutable/held clause cannot own a command")
+        seen.add(identity)
+    return state
 
 
 class NativeOrderingError(ValueError):

@@ -63,7 +63,7 @@ class NativeInformationSchemaTests(unittest.TestCase):
         )
         self.assertEqual(
             schemas["runtime-message-state.schema.json"]["required"],
-            ["message_id", "interaction_id", "direction", "recipient_player_id", "payload_state", "content_digest"],
+            ["schema_version", "message_id", "interaction_id", "direction", "payload_state", "content_digest"],
         )
 
     def test_normalizer_output_satisfies_strict_draft_2020_12_result_schema(self) -> None:

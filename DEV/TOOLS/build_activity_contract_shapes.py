@@ -18,7 +18,8 @@ from activity_primitive_contracts import load_activity_primitive_contracts
 DESTINATION = ROOT / "GAME/TOOLS/activity_contract_shapes.json"
 BASE = "https://hedgelion.invalid/schemas/"
 COMPILED_VALUES = BASE + "compiled-activity-values.schema.json"
-ROOTS = ("spell-native-profile-values", "mechanical-surfaces", "runtime-command-state", "runtime-resolution-state",
+ROOTS = ("runtime-interaction-state", "runtime-message-state", "runtime-intent-plan-state", "intent-clause",
+         "spell-native-profile-values", "mechanical-surfaces", "runtime-command-state", "runtime-resolution-state",
          "resolution-receipt", "execution-segment", "activity-parameter-spec", "catalog-definition",
          "roll-result", "activity-primitive-values", "runtime-mechanical-event-state",
           "runtime-procedure-state", "runtime-continuation-state", "activity-compiler-declaration")

@@ -340,6 +340,7 @@ def _normalize_emission(value: object) -> dict[str, object]:
             )
 
     message = {
+        "schema_version": 1,
         "message_id": message_id,
         "interaction_id": interaction_id,
         "direction": "outbound",

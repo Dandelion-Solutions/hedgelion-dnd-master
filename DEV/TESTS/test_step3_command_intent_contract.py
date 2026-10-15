@@ -91,11 +91,12 @@ def direct_receipt(status="COMPLETED", pending_refs=None, failure_code=None):
 class Step3CommandIntentContractTest(unittest.TestCase):
     def test_intent_plan_allows_partial_completion_without_transaction_authority(self):
         value = {
+            "schema_version": 1,
             "interaction_id": "turn-000042",
             "clauses": [
-                {"clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
-                {"clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.executed"},
-                {"clause_id": "c3", "order": 3, "mapping_outcome": "exact", "execution_state": "intent.failed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c3", "order": 3, "mapping_outcome": "exact", "execution_state": "intent.failed"},
             ],
         }
         validate("runtime-intent-plan-state.schema.json", value)

@@ -49,6 +49,8 @@ class Step3ExecutionValueSchemasTest(unittest.TestCase):
 
     def test_intent_guard_is_one_bounded_forward_reference(self):
         valid = {
+            "schema_version": 1,
+            "clause_kind": "intent",
             "clause_id": "clause-02",
             "order": 2,
             "mapping_outcome": "exact",

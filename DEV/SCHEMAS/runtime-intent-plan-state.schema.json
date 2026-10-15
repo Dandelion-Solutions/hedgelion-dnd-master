@@ -4,9 +4,10 @@
   "title": "HDM runtime.intent_plan state",
   "type": "object",
   "additionalProperties": false,
-  "required": ["interaction_id", "clauses"],
+  "required": ["schema_version", "interaction_id", "clauses"],
   "properties": {
-    "interaction_id": {"type": "string", "minLength": 1},
+    "schema_version": {"type": "integer", "const": 1},
+    "interaction_id": {"$ref": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/id"},
     "clauses": {
       "type": "array",
       "minItems": 1,
@@ -16,10 +17,11 @@
   },
   "examples": [
     {
+      "schema_version": 1,
       "interaction_id": "turn-000042",
       "clauses": [
-        {"clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
-        {"clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.failed"}
+        {"schema_version": 1, "clause_kind": "intent", "clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+        {"schema_version": 1, "clause_kind": "intent", "clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.failed"}
       ]
     }
   ]

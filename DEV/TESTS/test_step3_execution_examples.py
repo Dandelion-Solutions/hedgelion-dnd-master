@@ -147,11 +147,12 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_D_intent_plan_represents_partial_completion(self):
         validate("runtime-intent-plan-state.schema.json", {
+            "schema_version": 1,
             "interaction_id": "turn-1",
             "clauses": [
-                {"clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
-                {"clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.executed"},
-                {"clause_id": "c3", "order": 3, "mapping_outcome": "exact", "execution_state": "intent.failed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c1", "order": 1, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c2", "order": 2, "mapping_outcome": "exact", "execution_state": "intent.executed"},
+                {"schema_version": 1, "clause_kind": "intent", "clause_id": "c3", "order": 3, "mapping_outcome": "exact", "execution_state": "intent.failed"},
             ],
         })
 
@@ -194,6 +195,8 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_F_ambiguous_target_can_remain_clarification_without_command(self):
         validate("intent-clause.schema.json", {
+            "schema_version": 1,
+            "clause_kind": "intent",
             "clause_id": "c1",
             "order": 1,
             "mapping_outcome": "clarification_required",
