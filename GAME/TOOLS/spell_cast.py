@@ -10,8 +10,8 @@ from . import activity_contracts as contracts
 from . import mechanical_context, mechanical_sources
 from .current_owner import CurrentOwnerStatus, NativeOwnerRef
 
-# framework_module_version: 1.0.3
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
+# framework_module_version: 1.0.4
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.4"
 
 _CLASS_ID: Final[str] = "class.sorcerer"
 _ADVANCEMENT_ID: Final[str] = "advancement.sorcerer.mvp_1"
@@ -215,6 +215,15 @@ def _validate_membership_frame(
         NativeOwnerRef("runtime.command", (context.execution_ref.command_id,)),
         NativeOwnerRef("runtime.resolution", (context.execution_ref.resolution_id,)),
     }
+    from .runtime_execution import _bound_input_origin, input_source_owner_refs
+
+    observation = membership.p0_observation
+    try:
+        _bound_input_origin(context.accepted_command, observation)
+        expected_refs.update(input_source_owner_refs(context.accepted_command, observation,
+            authority_sources=observation.operation_token.authority_sources))
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        raise contracts.NativePreparationHold("AUTHORITY_UNAVAILABLE", context.execution_ref, ()) from error
     for family, coverage in coverage_by_family.items():
         if not isinstance(coverage.files, tuple):
             _hold(context)

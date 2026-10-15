@@ -277,6 +277,7 @@ class HouseRulesMechanicalBoundaryContractTests(unittest.TestCase):
                 self.assertIn(activity_id, facts[accepted_fact["fact_id"]]["permitted_consumer_ids"])
 
             resolution = {
+                "schema_version": 1,
                 "root_command_id": f"cmd-{index}", "initiating_command_id": f"cmd-{index}",
                 "activity_id": activity_id, "actor_id": "actor-1",
                 "parameter_bindings": parameter_bindings,

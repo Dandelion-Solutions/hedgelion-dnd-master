@@ -34,8 +34,8 @@ from .ruleset_package import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
 _ID: Final[re.Pattern[str]] = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _ROLL_POLICY_ID: Final[str] = "calculation.roll_advantage_srd521"
 _AC_POLICY_ID: Final[str] = "calculation.armor_class_srd521"
@@ -3781,7 +3781,7 @@ def _compile_activity_definition(
             raise ActivityRuntimeError(f"{primitive_id} has unknown arguments")
 
         compiled_args: dict[str, object] = {}
-        step_reads: list[str] = []
+        step_reads: list[str] = ["infrastructure:infrastructure.accepted_input_origin"]
         children: list[contracts.CompiledInstruction] = []
         child_scopes = dict(scopes)
         symbols = declaration["symbols"] if declaration is not None else {}
@@ -4562,8 +4562,8 @@ def admit_activity_catalog(
     mode_policy_profile_id: str,
 ) -> contracts.AdmittedActivityCatalog:
     """Validate exact sources, freeze package bytes and issue a conformance catalog."""
-    if type(compiler_generation) is not int or compiler_generation < 1:
-        raise ActivityRuntimeError("compiler_generation must be a positive integer")
+    if type(compiler_generation) is not int or compiler_generation != 2:
+        raise ActivityRuntimeError("compiler_generation must be exactly 2")
     mode_policy_profile_id = _require_id(
         mode_policy_profile_id, "mode_policy_profile_id"
     )
@@ -4894,6 +4894,8 @@ def compile_activity(
         or catalog.catalog_context._compiler_contract_source is None
     ):
         raise ActivityRuntimeError("Activity catalog is not compiler-issued")
+    if type(catalog.compiler_generation) is not int or catalog.compiler_generation != 2:
+        raise ActivityRuntimeError("compiler_generation must be exactly 2")
     activity_id = _require_id(activity_id, "activity_id")
     definition = catalog.frozen_definitions.get(activity_id)
     if (

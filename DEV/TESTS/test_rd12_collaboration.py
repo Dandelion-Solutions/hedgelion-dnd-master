@@ -1080,6 +1080,7 @@ def _ordered_resolution(
 ) -> dict[str, object]:
     resolution: dict[str, object] = {
         "kind": "runtime.resolution",
+        "schema_version": 1,
         "id": "resolution-1",
         "campaign_id": CAMPAIGN_ID,
         "root_command_id": "command-1",

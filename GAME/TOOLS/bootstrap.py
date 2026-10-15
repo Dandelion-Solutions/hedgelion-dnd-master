@@ -24,13 +24,14 @@ if TYPE_CHECKING:
     from .hot_store import HotOwnerStorePort
     from .policy_basis import RepositoryPort
     from .runtime_host import (
+        AcceptedInputCapability,
         CampaignPublicationTransport,
         RuntimeHost,
         SelectedLiveTransport,
     )
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
 
 _SHA1_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -1324,6 +1325,7 @@ def compose_selected_runtime_host(
     *,
     hot_owner_store: HotOwnerStorePort,
     initial_publication: InitialCampaignPublicationResult | None = None,
+    accepted_input_capability: AcceptedInputCapability | None = None,
 ) -> RuntimeHost:
     """Compose one host only after an explicit existing selection or accepted creation."""
 
@@ -1368,6 +1370,7 @@ def compose_selected_runtime_host(
         selected_live_transport,
         campaign_publication_transport,
         hot_owner_store=hot_owner_store,
+        accepted_input_capability=accepted_input_capability,
     )
 
 

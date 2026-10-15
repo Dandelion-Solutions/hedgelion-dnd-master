@@ -7,9 +7,12 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import json
 import os
+import tempfile
 import unittest
 from dataclasses import fields, replace
+from pathlib import Path
 
 
 class InstalledMechanicalReadTests(unittest.TestCase):
@@ -40,8 +43,9 @@ class PinnedMechanicalReadTests(unittest.TestCase):
             ACTOR_ID,
             CAMPAIGN_ID,
             ActorRepository,
+            PublicationTransport,
+            SelectedLive,
             _actor,
-            _selected_host,
         )
         self.assertIsNotNone(importlib.util.find_spec("GAME.TOOLS.mechanical_context"),
                              "SP03 compiled-read consumer module is missing")
@@ -80,19 +84,42 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         proposal = _proposal()
         proposal["action_request"]["actor_id"] = self.owner.identity[0]
         proposal["action_request"]["target_ids"] = []
+        from DEV.TESTS.test_sp03_authenticated_input import (
+            TrustedInputAdapterFixture,
+            trusted_input_source_records,
+        )
+        from GAME.TOOLS.bootstrap import (
+            CampaignSelection,
+            compose_selected_runtime_host,
+        )
+
+        self.repository = Repository()
+        records, mapping = trusted_input_source_records(proposal,
+            repository_identity=self.repository.repository_identity(), campaign_id=CAMPAIGN_ID)
+        self.repository.native_records.update(records)
+        temporary = tempfile.TemporaryDirectory(prefix="s2-context-", dir="/tmp/hdm-dev/spell-recovery")
+        self.addCleanup(temporary.cleanup)
+        mapping_path = Path(temporary.name) / "exchange.json"
+        mapping_path.write_text(json.dumps(mapping), encoding="utf-8")
+        self.store = NativeHotStore(":memory:")
+        self.addCleanup(self.store.close)
+        self.host = compose_selected_runtime_host(CampaignSelection.existing(CAMPAIGN_ID),
+            self.repository, SelectedLive(), PublicationTransport(), hot_owner_store=self.store,
+            accepted_input_capability=TrustedInputAdapterFixture(mapping_path))
         self.accepted = accept_command(
             _interpreter_result(),
             self.catalog.catalog_context,
             {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
             proposal,
+            input_observation=self.host._current_owner._observe_command_input(proposal),
         )
-        self.repository = Repository()
         command_record = {
             "kind": "runtime.command",
             "id": self.accepted["command_id"],
             **self.accepted,
         }
         resolution = {
+            "schema_version": 1,
             "root_command_id": self.accepted["command_id"],
             "initiating_command_id": self.accepted["command_id"],
             "activity_id": self.compiled.activity_id,
@@ -129,13 +156,11 @@ class PinnedMechanicalReadTests(unittest.TestCase):
                 ).relative_path: resolution_record,
             }
         )
-        self.store = NativeHotStore(":memory:")
-        self.addCleanup(self.store.close)
-        self.host, _source = _selected_host(
-            self.store, repository=self.repository
-        )
-        self.session = self.host._current_owner.begin(self.host._begin_operation())
+        self.input_observation = self.host._current_owner._observe_command_input(
+            self.accepted, required_owner_refs=(NativeOwnerRef("runtime.command", (self.accepted["command_id"],)),))
+        self.session = self.input_observation.operation_token.session
         self.roles = {"actor": self.owner}
+        self.repository.path_reads.clear()
 
     def acquire(self, **changes):
         arguments = {"consumer_id": self.consumer, "owner_session": self.session,
@@ -159,6 +184,7 @@ class PinnedMechanicalReadTests(unittest.TestCase):
 
         request = accepted["action_request"]
         resolution = {
+            "schema_version": 1,
             "root_command_id": accepted["command_id"],
             "initiating_command_id": accepted["command_id"],
             "activity_id": self.compiled.activity_id,
@@ -213,13 +239,14 @@ class PinnedMechanicalReadTests(unittest.TestCase):
             {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
             proposal,
             adjudication_basis=basis,
+            input_observation=self.host._current_owner._observe_command_input(proposal),
         )
         self._store_root_source(self.accepted)
         return self.preparation(adjudication_basis=basis)
 
     def test_exact_read_plan_is_retained_from_real_compiler(self):
         self.assertEqual(self.mechanical.compiled_read_plan(self.compiled, self.consumer),
-                         ("selector:check.roll",))
+                         ("infrastructure:infrastructure.accepted_input_origin", "selector:check.roll"))
 
     def test_forged_or_copied_compiled_handle_rejects(self):
         for forged in (copy.copy(self.compiled), replace(self.compiled)):
@@ -243,7 +270,7 @@ class PinnedMechanicalReadTests(unittest.TestCase):
         first = self.acquire()
         self.repository.actor["state_revision"] += 1
         expanded = self.session.require((self.other,))
-        self.assertEqual(set(expanded.key_union), {self.owner, self.other})
+        self.assertEqual(set(expanded.key_union), set(first.key_union) | {self.other})
         self.assertEqual(expanded.require(self.owner).generation, 5)
         self.assertFalse(self.session.revalidate(first))
         self.assertTrue(self.session.revalidate(expanded))

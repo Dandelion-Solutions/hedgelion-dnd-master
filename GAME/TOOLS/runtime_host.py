@@ -21,6 +21,7 @@ from types import MappingProxyType
 from typing import TYPE_CHECKING, Final, NoReturn, Protocol
 
 from .current_owner import (
+    CurrentOwnerObservation,
     CurrentOwnerReadSession,
     CurrentOwnerStatus,
     NativeOwnerRef,
@@ -73,8 +74,8 @@ if TYPE_CHECKING:
         NativeSemanticEvent,
     )
 
-# framework_module_version: 1.0.18
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.18"
+# framework_module_version: 1.0.19
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -150,6 +151,33 @@ class CampaignPublicationTransport(Protocol):
 
 class RuntimeHostError(ValueError):
     """Raised when a campaign-bound runtime operation cannot be admitted."""
+
+
+class InputAuthorityUnavailable(RuntimeHostError):
+    """Existing scoped hold before protected preparation, costs or RNG."""
+
+    status = "AUTHORITY_UNAVAILABLE"
+
+
+class AcceptedInputCapability(Protocol):
+    """Constructor-bound infrastructure contract, not deployed issuer proof."""
+
+    adapter_profile_id: str
+    adapter_profile_generation: int
+
+    def lookup_exchange(
+        self, *, repository_identity: str, campaign_id: str,
+        adapter_profile_id: str, adapter_profile_generation: int,
+        accepted_exchange_key: str,
+    ) -> str | None: ...
+
+    def accepted_representation(
+        self, *, repository_identity: str, campaign_id: str,
+        adapter_profile_id: str, adapter_profile_generation: int,
+        accepted_exchange_key: str, host_invocation_ref: str,
+    ) -> tuple[object, str]: ...
+
+    def current_principal(self, *, repository_identity: str, campaign_id: str) -> object: ...
 
 
 class _PublicationRevalidationFailure(Exception):
@@ -502,6 +530,21 @@ class _OperationBasis:
     pinned_campaign: PinnedCampaign
     selected_live: LiveRouting | None
     host_token: object
+
+
+@dataclass(slots=True)
+class _InputSourceOperation:
+    """One actual Host/session lifecycle; never a serialized authority verdict."""
+
+    host: RuntimeHost
+    basis: _OperationBasis
+    session: CurrentOwnerReadSession | None = None
+    authority_sources: Mapping[str, object] | None = None
+    session_configuration: tuple[object, ...] | None = None
+
+    @property
+    def host_token(self) -> object:
+        return self.basis.host_token
 
 
 def _require_nonempty_campaign_id(value: object) -> str:
@@ -1677,6 +1720,310 @@ class CurrentOwnerView(_BoundService):
 
     __slots__ = ()
 
+    def _input_session_configuration(self, operation: _InputSourceOperation) -> tuple[object, ...]:
+        """Snapshot only the issued data plane, not the expanding semantic union."""
+        session = operation.session
+        pin = session._pinned_campaign
+        live = session._selected_live
+        return (id(session), id(operation.basis), session._campaign_id, id(session.operation_token),
+            id(pin), pin.campaign_id, pin.revision, pin.tree_sha, id(live),
+            None if live is None else _operation_digest(live.as_mapping()),
+            id(session._hot_store), id(session._reader), id(session._source_basis_reader), id(session._live_reader),
+            id(self._host._repository), id(self._host._live_transport), id(self._host._hot_store),
+            id(self._host._accepted_input_capability))
+
+    def _observe_command_input(
+        self, command: Mapping[str, object], *,
+        required_owner_refs: tuple[NativeOwnerRef, ...] = (),
+        current_authority: bool = True,
+    ) -> CurrentOwnerObservation:
+        """Read-only TC/native-source preparation, never native input issue.
+
+        The optional adapter is fixed at infrastructure composition. Every union
+        expansion re-reads the full accumulated set through the existing P0 owner
+        session, including admitted HOT and exact selected LIVE sources.
+        ``current_authority=False`` requests historical source/read validation
+        only. It never issues a permission bit: protected command acceptance and
+        preparation independently require fresh current control again.
+        """
+        if type(current_authority) is not bool:
+            raise RuntimeHostError("input validation purpose must be explicit")
+        if self._host._accepted_input_capability is None:
+            raise InputAuthorityUnavailable("accepted-input issuer is unavailable")
+        operation = _InputSourceOperation(self._host, self._host._begin_operation())
+        session = CurrentOwnerReadSession(
+            campaign_id=self._host._campaign_id, operation_token=operation,
+            pinned_campaign=operation.basis.pinned_campaign, selected_live=operation.basis.selected_live,
+            hot_store=self._host._hot_store, reader=self._host._read_current_owner_path,
+            source_basis_reader=self._host._read_current_owner_basis,
+            live_reader=self._host._read_current_owner_live,
+        )
+        operation.session = session
+        operation.session_configuration = self._input_session_configuration(operation)
+        try:
+            interaction_ref = NativeOwnerRef("runtime.interaction", (command["interaction_id"],))
+            observation = session.require((interaction_ref, *required_owner_refs))
+            interaction = self._input_payload(observation, interaction_ref)
+            # Lookup the accepted mapping before consulting the acting principal.
+            principal = self._input_adapter_principal(interaction)
+            authority = self._input_current_authority_sources(operation, principal)
+            operation.authority_sources = _freeze_json(authority)
+            refs = self._input_required_refs(command, observation, authority)
+            observation = session.require(tuple(refs))
+            self._validate_input_player_route(observation, authority)
+            # The mixed marker belongs to its exact native R, not a copied DTO.
+            self._input_origin(command, observation)
+            if current_authority:
+                self._input_current_control(command, observation, principal, authority)
+            self._validate_command_input_observation(observation, command, current_authority=current_authority)
+            return observation
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            if isinstance(exc, RuntimeHostError):
+                raise
+            raise InputAuthorityUnavailable("native input source/authority closure is unavailable") from exc
+
+    @staticmethod
+    def _input_payload(observation: CurrentOwnerObservation, ref: NativeOwnerRef) -> Mapping[str, object]:
+        read = observation.require(ref)
+        if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
+            raise InputAuthorityUnavailable(f"exact input source unavailable: {ref.family_key}/{ref.identity}")
+        return read.payload
+
+    def _input_adapter_principal(self, interaction: Mapping[str, object]) -> object:
+        from .access_control import resolve_principal
+        from .runtime_execution import validate_input_interaction
+
+        adapter = self._host._accepted_input_capability
+        if adapter is None:
+            raise InputAuthorityUnavailable("accepted-input issuer is unavailable")
+        state = validate_input_interaction(campaign_id=self._host._campaign_id, interaction=interaction)
+        basis = state["accepted_input_basis"]
+        repository_identity = self._host._repository.repository_identity()
+        if (basis["repository_identity"] != repository_identity
+                or basis["adapter_profile_id"] != adapter.adapter_profile_id
+                or basis["adapter_profile_generation"] != adapter.adapter_profile_generation):
+            raise InputAuthorityUnavailable("input repository/profile differs from trusted composition")
+        key = {
+            "repository_identity": repository_identity, "campaign_id": self._host._campaign_id,
+            "adapter_profile_id": adapter.adapter_profile_id,
+            "adapter_profile_generation": adapter.adapter_profile_generation,
+            "accepted_exchange_key": basis["accepted_exchange_key"],
+        }
+        if adapter.lookup_exchange(**key) != interaction["id"]:
+            raise InputAuthorityUnavailable("input exchange mapping is missing or conflicts")
+        accepted_principal, text = adapter.accepted_representation(**key, host_invocation_ref=basis["host_invocation_ref"])
+        accepted_principal = resolve_principal(accepted_principal)
+        historical = basis["principal"]
+        if (accepted_principal.provider != historical["provider"]
+                or accepted_principal.stable_account_id != historical["stable_account_id"]
+                or accepted_principal.login != historical["login_at_acceptance"]):
+            raise InputAuthorityUnavailable("accepted account/representation mapping conflicts with native input")
+        if not isinstance(text, str) or not text or hashlib.sha256(text.encode("utf-8")).hexdigest() != basis["representation"]["content_digest"]:
+            raise InputAuthorityUnavailable("accepted representation/invocation differs from native input")
+        return resolve_principal(adapter.current_principal(
+            repository_identity=repository_identity, campaign_id=self._host._campaign_id,
+        ))
+
+    def _input_current_authority_sources(self, operation: _InputSourceOperation, principal: object) -> dict[str, object]:
+        from .access_control import PrincipalPlayerRoute
+
+        pin = self._host._begin_operation().pinned_campaign
+        manifest = self._host._repository.read_exact_path(pin, "MANIFEST.yaml")
+        if not isinstance(manifest, Mapping) or manifest.get("campaign_id") != self._host._campaign_id:
+            raise InputAuthorityUnavailable("current campaign access source is missing or foreign")
+        mode = manifest.get("mode")
+        if mode == "singleplayer":
+            return {"campaign_id": self._host._campaign_id, "mode": mode}
+        if mode != "multiplayer":
+            raise InputAuthorityUnavailable("current campaign access mode is unavailable")
+        raw = self._host._repository.read_exact_path(pin, "STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml")
+        if not isinstance(raw, Mapping) or type(raw.get("schema_version")) is not int:
+            raise InputAuthorityUnavailable("complete current account route is unavailable")
+        route = PrincipalPlayerRoute.from_mapping(raw)
+        if route.campaign_id != self._host._campaign_id:
+            raise InputAuthorityUnavailable("current account route has foreign campaign scope")
+        players = manifest.get("players")
+        ids = players.get("player_ids") if isinstance(players, Mapping) else None
+        if (not isinstance(ids, (list, tuple)) or any(not isinstance(item, str) or not item for item in ids)
+                or len(ids) != len(set(ids))):
+            raise InputAuthorityUnavailable("campaign PLAYER membership is incomplete")
+        nominated = {identity for entry in route.entries for identity in entry.candidate_player_ids}
+        if nominated != set(ids):
+            raise InputAuthorityUnavailable("account route omits or invents a campaign PLAYER")
+        entry = route.for_account(principal.stable_account_id)
+        if entry is None:
+            raise InputAuthorityUnavailable("current principal has no native account route")
+        # Preserve every finite nomination until exact bodies prove the complete
+        # account association. The executor helper alone performs reduction.
+        return {"campaign_id": self._host._campaign_id, "mode": mode,
+            "route": route.as_mapping()}
+
+    def _input_player_state(self, observation: CurrentOwnerObservation, player_id: str) -> Mapping[str, object]:
+        from .runtime_execution import _input_wire
+
+        owner = self._input_payload(observation, NativeOwnerRef("world.player", (player_id,)))
+        if (owner.get("kind") != "world.player" or owner.get("id") != player_id
+                or type(owner.get("schema_version")) is not int or owner["schema_version"] != 2
+                or owner.get("campaign_id", self._host._campaign_id) != self._host._campaign_id):
+            raise InputAuthorityUnavailable("native Player envelope is invalid")
+        native = owner.get("state")
+        _input_wire("world-player-state", native)
+        if native["player_id"] != player_id:
+            raise InputAuthorityUnavailable("native Player state/envelope identity differs")
+        for field in native:
+            if field in owner and _operation_digest(owner[field]) != _operation_digest(native[field]):
+                raise InputAuthorityUnavailable("native Player flattened alias differs")
+        return native
+
+    def _validate_input_player_route(self, observation: CurrentOwnerObservation, authority: Mapping[str, object]) -> None:
+        from .access_control import PlayerRecord, PrincipalPlayerRoute
+
+        if authority["mode"] == "singleplayer":
+            return
+        route = PrincipalPlayerRoute.from_mapping(authority["route"])
+        for entry in route.entries:
+            for player_id in entry.candidate_player_ids:
+                player = PlayerRecord.from_mapping(self._input_player_state(observation, player_id))
+                if player.stable_account_id != entry.stable_account_id:
+                    raise InputAuthorityUnavailable("complete account route differs from native Player binding")
+
+    def _input_required_refs(
+        self, command: Mapping[str, object], observation: CurrentOwnerObservation,
+        authority: Mapping[str, object],
+    ) -> set[NativeOwnerRef]:
+        from .runtime_execution import input_source_owner_refs
+
+        return set(input_source_owner_refs(command, observation, authority_sources=authority))
+
+    @staticmethod
+    def _input_command_subject(command: Mapping[str, object]) -> str:
+        request = command.get("action_request")
+        if command.get("command_kind") == "transition":
+            from .runtime_execution import direct_input_contract
+
+            return direct_input_contract(command)[0]
+        if command.get("command_kind", "action") != "action" or not isinstance(request, Mapping):
+            raise InputAuthorityUnavailable("command has no admitted source/control profile")
+        return _nonempty_string(request.get("actor_id"), "command controlled subject")
+
+    def _input_origin(self, command: Mapping[str, object], observation: CurrentOwnerObservation) -> Mapping[str, object]:
+        from .runtime_execution import (
+            accepted_input_origin,
+            input_native_state,
+            validate_input_resolution,
+        )
+
+        interaction = self._input_payload(observation, NativeOwnerRef("runtime.interaction", (command["interaction_id"],)))
+        state = input_native_state(interaction, "runtime.interaction")
+        message = self._input_payload(observation, NativeOwnerRef("runtime.message", (state["input_message_id"],)))
+        plan = self._input_payload(observation, NativeOwnerRef("runtime.intent_plan", (command["intent_plan_id"],)))
+        reference = state.get("accepted_resume_ref")
+        segment = None
+        if isinstance(reference, Mapping):
+            owner = self._input_payload(observation, NativeOwnerRef("runtime.resolution", (reference["resolution_id"],)))
+            native = validate_input_resolution(resolution_id=reference["resolution_id"], resolution=owner)
+            if "campaign_id" in owner and owner["campaign_id"] != self._host._campaign_id:
+                raise InputAuthorityUnavailable("mixed prior response has a foreign campaign projection")
+            if native.get("root_command_id") != state["response_target"]["root_command_id"]:
+                raise InputAuthorityUnavailable("mixed prior response has a foreign root")
+            matches = [item for item in native.get("segments", ()) if isinstance(item, Mapping) and item.get("segment_id") == reference["segment_id"]]
+            if len(matches) != 1:
+                raise InputAuthorityUnavailable("mixed prior response marker is missing or ambiguous")
+            segment = matches[0]
+        origin = accepted_input_origin(campaign_id=self._host._campaign_id, interaction=interaction,
+            message=message, plan=plan, clause_id=command["clause_id"], accepted_response_segment=segment)
+        clauses = input_native_state(plan, "runtime.intent_plan")["clauses"]
+        clause = next(item for item in clauses if item["clause_id"] == command["clause_id"])
+        if "command_id" in clause and clause["command_id"] != command["command_id"]:
+            raise InputAuthorityUnavailable("native clause/command reciprocity differs")
+        return origin
+
+    def _input_current_control(self, command, observation, principal, authority) -> None:
+        from .access_control import authorize_operation, resolve_player
+        from .runtime_execution import input_native_state
+
+        interaction = self._input_payload(observation, NativeOwnerRef("runtime.interaction", (command["interaction_id"],)))
+        state = input_native_state(interaction, "runtime.interaction")
+        origin = state["accepted_input_basis"]
+        if principal.stable_account_id != origin["principal"]["stable_account_id"]:
+            raise InputAuthorityUnavailable("current executor has no native voluntary-input mapping")
+        subject = self._input_command_subject(command)
+        if state["input_kind"] == "intent" and subject not in origin["authority_at_acceptance"]["accepted_subject_ids"]:
+            raise InputAuthorityUnavailable("historical input did not authorize the command subject")
+        if authority["mode"] == "singleplayer":
+            history_observation = self._host.history.observe_first_initialization_history()
+            evidence = history_observation.evidence
+            decision = authorize_operation(principal, operation="creator_write", creator_provenance=evidence,
+                campaign_id=self._host._campaign_id)
+            if not decision.authorized:
+                raise InputAuthorityUnavailable("creator.uncertain")
+            historical = origin["authority_at_acceptance"]
+            if historical["kind"] == "creator_singleplayer":
+                actual = {"author_login": evidence.author_login,
+                    "initialization_revision": evidence.initialization_revision,
+                    "parent_revision": evidence.parent_revision}
+                if _operation_digest(actual) != _operation_digest(historical["creator_history"]):
+                    raise InputAuthorityUnavailable("creator historical initialization source differs")
+            return
+
+        def load_player(player_id):
+            return self._input_player_state(observation, player_id)
+
+        resolution = resolve_player(principal, authority["route"], load_player, campaign_id=self._host._campaign_id)
+        decision = authorize_operation(principal, resolution, operation="gameplay", campaign_id=self._host._campaign_id)
+        if not decision.authorized or resolution.player is None or subject not in resolution.player.controlled_pc_ids:
+            raise InputAuthorityUnavailable("current Player purpose/control is not authorized")
+
+    def _validate_command_input_observation(
+        self, observation: CurrentOwnerObservation, command: Mapping[str, object],
+        *, current_authority: bool = True,
+    ) -> Mapping[str, object]:
+        if type(current_authority) is not bool:
+            raise RuntimeHostError("input validation purpose must be explicit")
+        try:
+            operation = observation.operation_token
+            if (type(observation) is not CurrentOwnerObservation or type(operation) is not _InputSourceOperation
+                    or operation.host is not self._host or operation.host_token is not self._host._basis_token
+                    or type(operation.session) is not CurrentOwnerReadSession
+                    or operation.session.observation is not observation
+                    or operation.session.operation_token is not operation
+                    or getattr(operation.session._reader, "__self__", None) is not self._host
+                    or getattr(operation.session._reader, "__func__", None) is not RuntimeHost._read_current_owner_path
+                    or getattr(operation.session._source_basis_reader, "__self__", None) is not self._host
+                    or getattr(operation.session._source_basis_reader, "__func__", None) is not RuntimeHost._read_current_owner_basis
+                    or getattr(operation.session._live_reader, "__self__", None) is not self._host
+                    or getattr(operation.session._live_reader, "__func__", None) is not RuntimeHost._read_current_owner_live
+                    or operation.session._hot_store is not self._host._hot_store
+                    or operation.session._pinned_campaign is not operation.basis.pinned_campaign
+                    or operation.session._selected_live is not operation.basis.selected_live
+                    or self._input_session_configuration(operation) != operation.session_configuration):
+                raise InputAuthorityUnavailable("input observation is not this Host's exact current source session")
+            session = operation.session
+            if not session.revalidate(observation):
+                raise InputAuthorityUnavailable("REVALIDATION_REQUIRED: input owner source moved")
+            interaction = self._input_payload(observation, NativeOwnerRef("runtime.interaction", (command["interaction_id"],)))
+            principal = self._input_adapter_principal(interaction)
+            authority = self._input_current_authority_sources(operation, principal)
+            if _operation_digest(authority) != _operation_digest(operation.authority_sources):
+                raise InputAuthorityUnavailable("REVALIDATION_REQUIRED: current authority source moved")
+            if not self._input_required_refs(command, observation, authority) <= set(observation.key_union):
+                raise InputAuthorityUnavailable("input observation omits required native source owners")
+            self._validate_input_player_route(observation, authority)
+            origin = self._input_origin(command, observation)
+            if current_authority and command.get("command_kind") == "transition":
+                from .runtime_execution import validate_direct_input_sources
+
+                validate_direct_input_sources(command, observation)
+            if current_authority:
+                self._input_current_control(command, observation, principal, authority)
+            if not session.revalidate(observation):
+                raise InputAuthorityUnavailable("REVALIDATION_REQUIRED: input source changed during authority validation")
+            return origin
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            if isinstance(exc, RuntimeHostError):
+                raise
+            raise InputAuthorityUnavailable("native input source/authority revalidation failed") from exc
+
     def begin(self, basis: _OperationBasis) -> CurrentOwnerReadSession:
         operation = self._host._operation_basis(basis)
         return CurrentOwnerReadSession(
@@ -1774,20 +2121,6 @@ class CurrentOwnerView(_BoundService):
             raise contracts.NativePreparationHold(
                 "AUTHORITY_UNAVAILABLE", execution_ref, ()
             )
-        try:
-            validate_execution_proposal(
-                accepted_command,
-                catalog.catalog_context,
-                {
-                    "definition_id": compiled.activity_id,
-                    "kind": "definition.activity",
-                },
-            )
-        except (CommandAcceptanceError, KeyError, TypeError, ValueError) as error:
-            raise contracts.NativePreparationHold(
-                "AUTHORITY_UNAVAILABLE", execution_ref, ()
-            ) from error
-
         if adjudication_basis is None:
             if request.get("parameter_bindings", {}) or accepted_command.get(
                 "invocation_facts"
@@ -1857,9 +2190,15 @@ class CurrentOwnerView(_BoundService):
         resolution_ref = NativeOwnerRef(
             "runtime.resolution", (root_resolution_id,)
         )
-        observation = session.require(
-            (command_ref, resolution_ref, *role_bindings.values())
-        )
+        try:
+            observation = self._observe_command_input(accepted_command,
+                required_owner_refs=(command_ref, resolution_ref, *role_bindings.values()))
+            session = observation.operation_token.session
+            validate_execution_proposal(accepted_command, catalog.catalog_context,
+                {"definition_id": compiled.activity_id, "kind": "definition.activity"},
+                input_observation=observation)
+        except (RuntimeHostError, CommandAcceptanceError, KeyError, TypeError, ValueError) as error:
+            raise contracts.NativePreparationHold("AUTHORITY_UNAVAILABLE", execution_ref, ()) from error
         for owner_ref in observation.key_union:
             read = observation.require(owner_ref)
             if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
@@ -2524,6 +2863,7 @@ class RuntimeHost:
     """
 
     __slots__ = (
+        "_accepted_input_capability",
         "_actor_continuity",
         "_basis_token",
         "_campaign_id",
@@ -2546,8 +2886,18 @@ class RuntimeHost:
         selected_live_transport: SelectedLiveTransport,
         campaign_publication_transport: CampaignPublicationTransport | None = None,
         hot_owner_store: HotOwnerStorePort | None = None,
+        *,
+        accepted_input_capability: AcceptedInputCapability | None = None,
     ) -> None:
         campaign_id = _require_nonempty_campaign_id(selected_campaign_id)
+        if accepted_input_capability is not None:
+            _require_operations(accepted_input_capability,
+                ("lookup_exchange", "accepted_representation", "current_principal"),
+                "accepted-input infrastructure capability")
+            _nonempty_string(accepted_input_capability.adapter_profile_id, "input adapter profile")
+            if type(accepted_input_capability.adapter_profile_generation) is not int or accepted_input_capability.adapter_profile_generation < 1:
+                raise RuntimeHostError("input adapter profile generation is invalid")
+        object.__setattr__(self, "_accepted_input_capability", accepted_input_capability)
         _require_operations(
             authenticated_repository_port,
             _REPOSITORY_OPERATIONS,
@@ -2697,6 +3047,8 @@ def compose_runtime_host(
     selected_live_transport: SelectedLiveTransport,
     campaign_publication_transport: CampaignPublicationTransport | None = None,
     hot_owner_store: HotOwnerStorePort | None = None,
+    *,
+    accepted_input_capability: AcceptedInputCapability | None = None,
 ) -> RuntimeHost:
     """Compose one immutable, campaign-bound ephemeral runtime root."""
 
@@ -2706,6 +3058,7 @@ def compose_runtime_host(
         selected_live_transport,
         campaign_publication_transport,
         hot_owner_store,
+        accepted_input_capability=accepted_input_capability,
     )
 
 

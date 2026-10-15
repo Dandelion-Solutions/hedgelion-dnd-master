@@ -524,7 +524,7 @@ def _compose(
 
 class RuntimeHostCompositionTests(unittest.TestCase):
     def test_new_runtime_host_starts_at_current_engine_module_line(self) -> None:
-        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.18")
+        self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.19")
 
     def test_composition_binds_one_campaign_and_creates_sibling_services(self) -> None:
         host, _repository, _live = _compose()
@@ -1222,6 +1222,7 @@ class InstalledRootPreparationCompositionTests(unittest.TestCase):
             _interpreter_result,
             _proposal,
         )
+        from DEV.TESTS.test_sp03_authenticated_input import seed_trusted_input_sources
         from DEV.TESTS.test_sp03_native_membership import (
             ACTOR_ID,
             CAMPAIGN_ID,
@@ -1229,8 +1230,15 @@ class InstalledRootPreparationCompositionTests(unittest.TestCase):
             _actor_record,
             _write_routed,
         )
-        from DEV.TESTS.test_w05_t06_p0_actor_producer import _selected_host
+        from DEV.TESTS.test_w05_t06_p0_actor_producer import (
+            PublicationTransport,
+            SelectedLive,
+        )
         from GAME.TOOLS.activity_runtime import compile_activity
+        from GAME.TOOLS.bootstrap import (
+            CampaignSelection,
+            compose_selected_runtime_host,
+        )
         from GAME.TOOLS.hot_store import NativeHotStore
         from GAME.TOOLS.native_storage import route_native_record
         from GAME.TOOLS.runtime_execution import accept_command
@@ -1263,16 +1271,21 @@ class InstalledRootPreparationCompositionTests(unittest.TestCase):
             proposal = _proposal(compiled.activity_id)
             proposal["action_request"]["actor_id"] = ACTOR_ID
             proposal["action_request"]["target_ids"] = []
-            accepted = accept_command(
-                _interpreter_result(),
-                catalog.catalog_context,
-                {
-                    "definition_id": compiled.activity_id,
-                    "kind": "definition.activity",
-                },
-                proposal,
-            )
+            adapter, input_paths = seed_trusted_input_sources(repository, proposal, Path(temporary) / "exchange.json")
+
+            def selected_host(store):
+                return compose_selected_runtime_host(CampaignSelection.existing(CAMPAIGN_ID),
+                    repository, SelectedLive(), PublicationTransport(), hot_owner_store=store,
+                    accepted_input_capability=adapter)
+
+            with NativeHotStore(":memory:") as acceptance_store:
+                acceptance_host = selected_host(acceptance_store)
+                observation = acceptance_host._current_owner._observe_command_input(proposal)
+                accepted = accept_command(_interpreter_result(), catalog.catalog_context,
+                    {"definition_id": compiled.activity_id, "kind": "definition.activity"}, proposal,
+                    input_observation=observation)
             resolution = {
+                "schema_version": 1,
                 "root_command_id": accepted["command_id"],
                 "initiating_command_id": accepted["command_id"],
                 "activity_id": compiled.activity_id,
@@ -1316,7 +1329,7 @@ class InstalledRootPreparationCompositionTests(unittest.TestCase):
             initial_write_counts = (repository.write_calls, repository.commit_calls)
 
             with NativeHotStore(":memory:") as store:
-                host, _source = _selected_host(store, repository=repository)
+                host = selected_host(store)
                 import inspect
 
                 self.assertEqual(
@@ -1353,6 +1366,7 @@ class InstalledRootPreparationCompositionTests(unittest.TestCase):
                 ).relative_path
                 allowed_reads = {
                     "MANIFEST.yaml",
+                    *input_paths,
                     command_path,
                     resolution_path,
                     actor_path,

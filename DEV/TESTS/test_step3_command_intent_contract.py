@@ -1,12 +1,13 @@
 import json
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from jsonschema import Draft202012Validator, ValidationError
 from referencing import Registry, Resource
 
+from DEV.TESTS.test_rd05_runtime_execution import SourceCommandFixture
 from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
-from GAME.TOOLS.runtime_execution import CatalogGap, accept_command
+from GAME.TOOLS.runtime_execution import CatalogGap
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -30,39 +31,67 @@ def validate(name, value):
 
 
 def action_command():
-    command = accept_command(
+    source = SourceCommandFixture()
+    command = source.accept_from_sources(
         {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "make a check"},
         _bind_context(),
         {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         {"command_id": "turn-000042-cmd-01", "interaction_id": "turn-000042", "intent_plan_id": "turn-000042-plan", "clause_id": "c1", "action_request": {"activity_id": "activity.check.generic", "actor_id": "actor-0001", "target_ids": ["actor-0002"]}, "root_resolution_id": "resolution-0000001"},
     )
+    source.doCleanups()
     if isinstance(command, CatalogGap):
         raise AssertionError("fixture candidate unexpectedly returned a catalog gap")
     return command
 
 
 def transition_command(disposition="command.accepted"):
-    return {
-        "schema_version": 3,
+    """Retained schema/codec fixture; no native admission or installed profile proof."""
+    from DEV.TESTS.test_sp03_authenticated_input import trusted_input_source_records
+    from GAME.TOOLS.runtime_execution import (
+        accepted_input_origin,
+        command_input_fingerprint,
+    )
+
+    context = _bind_context()
+    command = {
+        "schema_version": 4,
         "command_id": "turn-1-cmd-01",
         "interaction_id": "turn-1",
         "intent_plan_id": "turn-1-plan",
         "clause_id": "c1",
         "command_kind": "transition",
-        "catalog_context_fingerprint": "ctx",
-        "input_fingerprint": "fp",
+        "catalog_context_fingerprint": context.fingerprint,
+        "catalog_context": context.to_dict(),
+        "input_fingerprint_generation": 3,
         "disposition": disposition,
         "invocation_facts": [],
         "transition_request": {
             "transition_kind": "transition.location_change",
-            "payload": {"target_id": "actor-1", "destination_id": "location-2"},
+            "payload": {"transition_kind": "transition.location_change",
+                "profile_id": "location_change.outside_procedure", "idempotency_key": "move-1",
+                "catalog_generation": 2, "actor_id": "actor-1", "actor_revision": 1,
+                "destination_location_id": "location-2", "destination_location_revision": 1,
+                "movement_cost": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"},
         },
+        "transition_binding": {"profile_id": "location_change.outside_procedure", "profile_generation": 1,
+            "payload_schema_id": "https://hedgelion.invalid/schemas/gameplay-spine-transition-request.schema.json#/$defs/outsideProcedureMovement",
+            "payload_schema_version": 1},
         "pending_child_invocations": [],
     }
+    records, _mapping = trusted_input_source_records(
+        dict(command, action_request={"actor_id": "actor-1"}),
+        repository_identity="github.com/example/campaigns", campaign_id="campaign-frostfall")
+    sources = {record.get("kind"): record for record in records.values()}
+    origin = accepted_input_origin(campaign_id="campaign-frostfall",
+        interaction=sources["runtime.interaction"], message=sources["runtime.message"],
+        plan=sources["runtime.intent_plan"], clause_id=command["clause_id"])
+    command["input_fingerprint"] = command_input_fingerprint(command, origin=origin)
+    return command
 
 
 def committed_transition_segment(pending=None):
     return {
+        "schema_version": 1,
         "segment_id": "turn-1-cmd-01:segment:1",
         "segment_sequence": 1,
         "commit_state": "committed",

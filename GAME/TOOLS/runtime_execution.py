@@ -18,6 +18,7 @@ from .catalog_runtime import (
     sha256,
     validate_executable_binding,
 )
+from .current_owner import CurrentOwnerObservation, CurrentOwnerStatus, NativeOwnerRef
 from .native_storage import (
     IdentityMismatch,
     NativeStorageError,
@@ -35,11 +36,11 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.9
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.9"
-RUNTIME_COMMAND_SCHEMA_VERSION: Final = 3
+# framework_module_version: 1.0.10
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+RUNTIME_COMMAND_SCHEMA_VERSION: Final = 4
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
-RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 2
+RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 3
 INTERPRETER_RESULT_FIELDS: Final = frozenset(
     {"kind", "purpose", "bundle_id", "source_generation", "intent"}
 )
@@ -76,21 +77,8 @@ COMMAND_STATE_FIELDS: Final = frozenset(
         "candidate_binding",
     }
 )
-ACCEPTED_INPUT_FIELDS: Final = frozenset(
-    {
-        "command_kind",
-        "catalog_context_fingerprint",
-        "invocation_facts",
-        "action_request",
-        "interpreter_result",
-        "interpreter_result_fingerprint_generation",
-        "interpreter_result_fingerprint",
-        "catalog_context",
-        "candidate_binding",
-    }
-)
 _INTERPRETER_RESULT_DOMAIN: Final = b"HDM_INTERPRETER_RESULT/1\n"
-_RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/2\n"
+_RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/3\n"
 _SHA256_HEX: Final = frozenset("0123456789abcdef")
 
 
@@ -194,6 +182,7 @@ def validate_input_resolution(
     state = resolution.get("state", resolution)
     if not isinstance(state, Mapping):
         raise CommandAcceptanceError("input Resolution state is malformed")
+    _input_integer(state.get("schema_version"), exact=1)
     for carrier in (resolution, state):
         if "resolution_id" in carrier and _input_id(carrier["resolution_id"]) != resolution_id:
             raise CommandAcceptanceError("input Resolution identity projection differs")
@@ -467,6 +456,466 @@ def validate_input_plan(plan: Mapping[str, object]) -> Mapping[str, object]:
     return state
 
 
+def accepted_input_origin(
+    *, campaign_id: str, interaction: Mapping[str, object],
+    message: Mapping[str, object], plan: Mapping[str, object], clause_id: str,
+    accepted_response_segment: Mapping[str, object] | None = None,
+) -> Mapping[str, object]:
+    """Derive historical provenance from exact native sources, not a shadow DTO.
+
+    This pure validator does not issue authentication or current write authority.
+    """
+    validate_input_closure(
+        campaign_id=campaign_id, interaction=interaction, message=message,
+        plan=plan, accepted_response_segment=accepted_response_segment,
+    )
+    state = input_native_state(interaction, "runtime.interaction")
+    if state["input_kind"] not in {"intent", "response_and_intent"}:
+        raise CommandAcceptanceError("pure response cannot anchor an ordinary command")
+    if state["input_kind"] == "response_and_intent" and state["planning_phase"] != "materialized":
+        raise CommandAcceptanceError("mixed command requires materialized native input")
+    clauses = input_native_state(plan, "runtime.intent_plan")["clauses"]
+    matches = [clause for clause in clauses if clause["clause_id"] == clause_id]
+    if len(matches) != 1 or matches[0]["clause_kind"] != "intent":
+        raise CommandAcceptanceError("command requires exactly one genuine intent clause")
+    clause = matches[0]
+    if clause.get("collaboration_semantic_class") in {"OOC_COORDINATION", "DIEGETIC_COMMUNICATION", "CONTROL_SIGNAL"}:
+        raise CommandAcceptanceError("nonexecuting material unit cannot anchor a command")
+    if clause["mapping_outcome"] not in {"exact", "composed"} or (
+        "dependency_kind" in clause and clause["execution_state"] == "intent.pending"
+    ):
+        raise CommandAcceptanceError("nonexecutable or held clause cannot anchor a command")
+    origin = {
+        "interaction_id": interaction["id"], "intent_plan_id": plan["id"],
+        "clause_id": clause_id, "input_kind": state["input_kind"],
+        "accepted_input_basis": _thaw(state["accepted_input_basis"]),
+    }
+    if state["input_kind"] == "response_and_intent":
+        origin["accepted_resume_ref"] = _thaw(state["accepted_resume_ref"])
+    return origin
+
+
+def command_input_fingerprint(command: Mapping[str, object], *, origin: Mapping[str, object]) -> str:
+    """Codec3 over the complete validated variant and native-source origin.
+
+    This exact-identity calculation is not an issuer. Native origin/current
+    authority must be validated independently even if a plain hash is recomputed.
+    """
+    kind = command.get("command_kind")
+    variants = {
+        "action": {"action_request", "interpreter_result", "interpreter_result_fingerprint_generation",
+            "interpreter_result_fingerprint", "candidate_binding"},
+        "transition": {"transition_request", "transition_binding"},
+    }
+    if not isinstance(kind, str) or kind not in variants:
+        raise CommandAcceptanceError("command kind is unsupported")
+    forbidden = variants["transition" if kind == "action" else "action"]
+    if set(command) & forbidden:
+        raise CommandAcceptanceError("command has fields forbidden for its variant")
+    if kind == "transition" and "root_resolution_id" in command:
+        raise CommandAcceptanceError("direct command cannot manufacture a root Resolution")
+    if kind == "action" and set(command) & {"direct_transition_segments", "direct_transition_receipt"}:
+        raise CommandAcceptanceError("action cannot own direct segments/receipt")
+    required = {"command_kind", "catalog_context_fingerprint", "catalog_context", "invocation_facts"} | variants[kind]
+    if not required <= set(command):
+        raise CommandAcceptanceError("command is missing immutable input material")
+    origin_fields = {"interaction_id", "intent_plan_id", "clause_id", "input_kind", "accepted_input_basis"}
+    if origin.get("input_kind") == "response_and_intent":
+        origin_fields.add("accepted_resume_ref")
+    elif origin.get("input_kind") != "intent":
+        raise CommandAcceptanceError("command origin must be intent or materialized mixed input")
+    _input_closed(origin, origin_fields)
+    for field in ("interaction_id", "intent_plan_id", "clause_id"):
+        _input_id(origin[field])
+        if field in command and command[field] != origin[field]:
+            raise CommandAcceptanceError("command identity differs from native input origin")
+    material = {key: _thaw(command[key]) for key in required}
+    material["accepted_input_origin"] = _thaw(origin)
+    try:
+        return sha256(_RUNTIME_COMMAND_INPUT_DOMAIN + canonical_json(material))
+    except (TypeError, ValueError, UnicodeError) as exc:
+        raise CommandAcceptanceError("command input is not canonical JSON/UTF-8") from exc
+
+
+def input_source_owner_refs(
+    command: Mapping[str, object], observation: CurrentOwnerObservation, *,
+    authority_sources: Mapping[str, object],
+) -> frozenset[NativeOwnerRef]:
+    """Derive infrastructure refs, without granting any MechanicalContext read.
+
+    Each independent consumer recomputes this set from native I and the verified
+    current account nomination; no asserted union or session-record lease is an
+    authority source. Effects/Assets remain their own complete membership join.
+    """
+    interaction_ref = NativeOwnerRef("runtime.interaction", (command["interaction_id"],))
+    read = observation.require(interaction_ref)
+    if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
+        raise CommandAcceptanceError("required native input source is unavailable")
+    state = input_native_state(read.payload, "runtime.interaction")
+    refs = {interaction_ref, NativeOwnerRef("runtime.message", (state["input_message_id"],)),
+        NativeOwnerRef("runtime.intent_plan", (command["intent_plan_id"],))}
+    reference = state.get("accepted_resume_ref")
+    if isinstance(reference, Mapping):
+        refs.add(NativeOwnerRef("runtime.resolution", (reference["resolution_id"],)))
+    if authority_sources["mode"] == "multiplayer":
+        for entry in authority_sources["route"]["entries"]:
+            refs.update(NativeOwnerRef("world.player", (identity,)) for identity in entry["candidate_player_ids"])
+    if command.get("command_kind", "action") == "transition":
+        refs.update(direct_input_contract(command)[1])
+    else:
+        request = _require_mapping(command.get("action_request"), "action request")
+        refs.add(NativeOwnerRef("world.actor", (_input_id(request.get("actor_id")),)))
+    return frozenset(refs)
+
+
+def direct_input_contract(command: Mapping[str, object], context: BoundCatalogContext | None = None
+                          ) -> tuple[str, frozenset[NativeOwnerRef]]:
+    """Resolve a finite native profile from the installed inventory, never an Activity.
+
+    The source-owned payload schema and profile must agree exactly. These reads
+    prepare a native edge; they neither apply a mutation nor certify its result.
+    """
+    from .catalog_runtime import load_activity_compiler_contract_source
+
+    try:
+        source = load_activity_compiler_contract_source()
+        if context is not None and (not context._is_admitted()
+                or not source.inventory_matches(_thaw(context.basis["engine_contract_inventory"]))):
+            raise CommandAcceptanceError("direct profile inventory differs from admitted context")
+        members = source.compiler_contracts["families"]["schema_contract"]
+        request = _require_exact_fields(command.get("transition_request"),
+            frozenset({"transition_kind", "payload"}), "transition request")
+        binding = _require_exact_fields(command.get("transition_binding"),
+            frozenset({"profile_id", "profile_generation", "payload_schema_id", "payload_schema_version"}),
+            "transition binding")
+        for field in ("profile_generation", "payload_schema_version"):
+            _input_integer(binding[field], exact=1)
+        payload = _require_mapping(request["payload"], "native transition payload")
+        matches = [profile for profile in members["gameplay_spine_seed"]["transition_profiles"]
+            if profile["profile_id"] == binding["profile_id"]]
+        if len(matches) != 1:
+            raise CommandAcceptanceError("direct native profile is unavailable or ambiguous")
+        profile = matches[0]
+        if (profile["transition_kind"] != request["transition_kind"]
+                or payload.get("profile_id") != profile["profile_id"]
+                or payload.get("transition_kind") != request["transition_kind"]
+                or binding["payload_schema_id"] != profile["request_schema"]):
+            raise CommandAcceptanceError("direct payload/kind/schema differs from admitted native profile")
+        schema = members["gameplay_spine_transition_request_schema"]
+        schema_id, fragment = profile["request_schema"].split("#", 1)
+        if schema_id != schema["$id"] or not fragment.startswith("/$defs/"):
+            raise CommandAcceptanceError("native payload schema is not an admitted inventory member")
+        # The installed structural validator consumes this same exact DEV schema.
+        _input_wire(profile["request_schema"], payload)
+        refs: set[NativeOwnerRef] = set()
+        if profile["profile_id"] in {"location_change.procedure_movement", "location_change.outside_procedure"}:
+            subject = _input_id(payload["actor_id"])
+            refs.update({NativeOwnerRef("world.actor", (subject,)),
+                NativeOwnerRef("world.location", (_input_id(payload["destination_location_id"]),))})
+            if "procedure_id" in payload:
+                refs.add(NativeOwnerRef("runtime.procedure", (_input_id(payload["procedure_id"]),)))
+        elif profile["profile_id"] == "asset.equip":
+            subject = _input_id(payload["owner_actor_id"])
+            refs.update({NativeOwnerRef("world.actor", (subject,)),
+                NativeOwnerRef("world.asset", (_input_id(payload["asset_id"]),))})
+        elif profile["profile_id"] == "asset.transfer":
+            # A non-Actor placement has no voluntary controller mapping in this
+            # finite profile. Do not infer an actor from an arbitrary container.
+            subject = _input_id(payload["from_placement"].get("owner_actor_id"))
+            refs.update({NativeOwnerRef("world.actor", (subject,)),
+                NativeOwnerRef("world.asset", (_input_id(payload["asset_id"]),))})
+            for placement in (payload["from_placement"], payload["to_placement"]):
+                for field, family in (("owner_actor_id", "world.actor"),
+                                      ("container_asset_id", "world.asset"), ("location_id", "world.location")):
+                    if field in placement:
+                        refs.add(NativeOwnerRef(family, (_input_id(placement[field]),)))
+        else:
+            raise CommandAcceptanceError("profile has no admitted direct transition/control mapping")
+        return subject, frozenset(refs)
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        if isinstance(exc, CommandAcceptanceError):
+            raise
+        raise CommandAcceptanceError("admitted native transition contract is unavailable") from exc
+
+
+def validate_direct_input_sources(command: Mapping[str, object], observation: CurrentOwnerObservation) -> str:
+    """Check selected native identities/revisions without accepting native effects."""
+    subject, refs = direct_input_contract(command)
+    payload = command["transition_request"]["payload"]
+    revision_fields = {"world.actor": "actor_revision", "world.asset": "asset_revision",
+        "runtime.procedure": "procedure_revision", "world.location": "destination_location_revision"}
+    for ref in refs:
+        read = observation.require(ref)
+        if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
+            raise CommandAcceptanceError("direct native source is unavailable")
+        native = read.payload
+        if native.get("kind") != ref.family_key or native.get("id") != ref.identity[0]:
+            raise CommandAcceptanceError("direct native source envelope differs")
+        field = revision_fields[ref.family_key]
+        identity_field = {"world.actor": "actor_id", "world.asset": "asset_id",
+            "runtime.procedure": "procedure_id", "world.location": "destination_location_id"}[ref.family_key]
+        if payload.get(identity_field) == ref.identity[0] and field in payload:
+            revision = native.get("state_revision", native.get("revision"))
+            _input_integer(revision, minimum=0)
+            if revision != payload[field]:
+                raise CommandAcceptanceError("REVALIDATION_REQUIRED: direct native revision differs")
+        if ref.family_key == "world.asset" and ref.identity[0] == payload.get("asset_id"):
+            state = _require_mapping(native.get("state"), "native Asset state")
+            if state.get("owner_actor_id") != subject:
+                raise CommandAcceptanceError("direct Asset source has no exact controlled owner")
+    return subject
+
+
+def execution_identity(
+    command: Mapping[str, object], *, execution_owner_kind: str,
+    execution_owner_id: str, segment: Mapping[str, object],
+) -> Mapping[str, object]:
+    """Project an actual K/R owner edge without inventing a Resolution or event.
+
+    Native R/root/child reciprocity and eventless profile eligibility are checked
+    by the owning acceptance boundary, never inferred from this projection/hash.
+    """
+    command_id = _input_id(command.get("command_id"))
+    if type(command.get("input_fingerprint_generation")) is not int or command["input_fingerprint_generation"] != 3:
+        raise CommandAcceptanceError("execution identity requires command input generation3")
+    fingerprint = _input_digest(command.get("input_fingerprint"))
+    owner_id = _input_id(execution_owner_id)
+    kind = command.get("command_kind")
+    if kind == "transition":
+        if execution_owner_kind != "runtime.command" or owner_id != command_id or "root_resolution_id" in command:
+            raise CommandAcceptanceError("direct execution owner must be the actual command")
+    elif kind == "action":
+        _input_id(command.get("root_resolution_id"))
+        if execution_owner_kind != "runtime.resolution":
+            raise CommandAcceptanceError("action execution owner must be a real Resolution")
+    else:
+        raise CommandAcceptanceError("execution command kind is unsupported")
+    sequence = _input_integer(segment.get("segment_sequence"))
+    segment_id = _input_id(segment.get("segment_id"))
+    if segment_id != f"{owner_id}:segment:{sequence}":
+        raise CommandAcceptanceError("execution segment identity differs from native owner")
+    events = segment.get("event_ids")
+    if not isinstance(events, (list, tuple)):
+        raise CommandAcceptanceError("execution event_ids must be an exact native set")
+    event_ids = [_input_id(event_id) for event_id in events]
+    if len(event_ids) != len(set(event_ids)):
+        raise CommandAcceptanceError("execution event_ids are duplicate")
+    return {"identity_generation": 1, "command_id": command_id,
+        "input_fingerprint_generation": 3, "input_fingerprint": fingerprint,
+        "execution_owner_kind": execution_owner_kind, "execution_owner_id": owner_id,
+        "segment_id": segment_id, "event_ids": event_ids}
+
+
+def _validate_execution_owner_edge(*, owner_kind: str, owner_id: str,
+        owner: Mapping[str, object], segment: Mapping[str, object], receipt: Mapping[str, object]) -> Mapping[str, object]:
+    """Validate a retained native edge, including cumulative receipt membership.
+
+    This is shared by serialized identity consumers and the independent native
+    envelope checker. It validates evidence; it does not establish an edge.
+    """
+    _input_wire("execution-segment", segment)
+    _input_integer(segment.get("schema_version"), exact=1)
+    _input_wire("resolution-receipt", receipt)
+    if owner_kind == "runtime.resolution":
+        if "state" in owner or "kind" in owner or "id" in owner:
+            state = validate_input_resolution(resolution_id=owner_id, resolution=owner)
+            if state is owner:
+                state = {key: value for key, value in owner.items()
+                    if key not in {"kind", "id", "campaign_id", "revision", "state_revision"}}
+        else:
+            state = dict(owner)
+        state = dict(state)
+        if "resolution_id" in state and state.pop("resolution_id") != owner_id:
+            raise CommandAcceptanceError("execution Resolution identity differs from its owner")
+        _input_wire("runtime-resolution-state", state)
+        _input_integer(state.get("schema_version"), exact=1)
+        segments = state["segments"]
+    elif owner_kind == "runtime.command":
+        _input_wire("runtime-command-state", owner)
+        if owner.get("command_id") != owner_id or owner.get("command_kind") != "transition":
+            raise CommandAcceptanceError("direct edge has a foreign native command owner")
+        state = owner
+        segments = owner.get("direct_transition_segments", ())
+        if canonical_json(_thaw(owner.get("direct_transition_receipt"))) != canonical_json(_thaw(receipt)):
+            raise CommandAcceptanceError("direct receipt differs from its actual native command")
+    else:
+        raise CommandAcceptanceError("execution owner kind is unsupported")
+    if not isinstance(segments, (list, tuple)) or not segments:
+        raise CommandAcceptanceError("execution owner has no committed segments")
+    by_id: dict[str, Mapping[str, object]] = {}
+    previous_sequence = 0
+    for embedded in segments:
+        _input_wire("execution-segment", embedded)
+        _input_integer(embedded.get("schema_version"), exact=1)
+        sequence = _input_integer(embedded.get("segment_sequence"))
+        expected_id = f"{owner_id}:segment:{sequence}"
+        if (sequence <= previous_sequence or embedded["segment_id"] != expected_id
+                or owner_kind == "runtime.command" and sequence != previous_sequence + 1):
+            raise CommandAcceptanceError("native owner segment identity/order differs")
+        previous_sequence = sequence
+        previous_ordinal = 0
+        for event_id in embedded["event_ids"]:
+            prefix = expected_id + ":event:"
+            suffix = event_id.removeprefix(prefix)
+            if (not event_id.startswith(prefix) or not suffix.isascii() or not suffix.isdecimal()
+                    or str(int(suffix)) != suffix or int(suffix) <= previous_ordinal):
+                raise CommandAcceptanceError("native segment event identity/order differs")
+            previous_ordinal = int(suffix)
+        by_id[expected_id] = embedded
+    if owner_kind == "runtime.resolution" and state["next_segment_sequence"] <= previous_sequence:
+        raise CommandAcceptanceError("Resolution next segment does not follow its committed closure")
+    selected = by_id.get(segment["segment_id"])
+    if selected is None or canonical_json(_thaw(selected)) != canonical_json(_thaw(segment)):
+        raise CommandAcceptanceError("selected segment differs from its actual native owner embedding")
+    refs = receipt["segment_refs"]
+    if (receipt["execution_owner_id"] != owner_id or segment["segment_id"] not in refs
+            or any(ref not in by_id for ref in refs)
+            or list(refs) != [ref for ref in by_id if ref in refs]):
+        raise CommandAcceptanceError("native receipt owner/segment closure differs")
+    covered = [by_id[ref] for ref in refs]
+    expected_events = [event_id for item in covered for event_id in item["event_ids"]]
+    if (list(receipt["event_ids"]) != expected_events
+            or receipt["status"] != covered[-1]["resulting_execution_state"]
+            or canonical_json(_thaw(receipt["exports"])) != canonical_json(_thaw(covered[-1]["receipt_exports"]))):
+        raise CommandAcceptanceError("native receipt result/event/export evidence differs")
+    child_refs = {ref for item in covered for child in item["pending_child_invocations"]
+        for ref in (child["firing_key"], child.get("child_resolution_id")) if ref is not None}
+    if not set(receipt["pending_child_refs"]) <= child_refs:
+        raise CommandAcceptanceError("native receipt has a foreign pending child")
+    return state
+
+
+def _validate_action_resolution_binding(command: Mapping[str, object], owner_id: str,
+                                        resolution: Mapping[str, object]) -> None:
+    if resolution.get("root_command_id") != command["command_id"]:
+        raise CommandAcceptanceError("execution Resolution has a foreign root command")
+    if owner_id == command.get("root_resolution_id"):
+        if resolution.get("initiating_command_id") != command["command_id"]:
+            raise CommandAcceptanceError("root Resolution lacks reciprocal command identity")
+        request = command["action_request"]
+        for field, default in (("activity_id", None), ("actor_id", None), ("source_id", None),
+                               ("target_ids", []), ("parameter_bindings", {})):
+            if canonical_json(_thaw(resolution.get(field, default))) != canonical_json(_thaw(request.get(field, default))):
+                raise CommandAcceptanceError("root Resolution differs from its accepted action request")
+    else:
+        matches = [child for child in command["pending_child_invocations"] if child.get("child_resolution_id") == owner_id]
+        if (len(matches) != 1 or "initiating_command_id" in resolution
+                or matches[0]["firing_key"] != resolution.get("causal_invocation_key")
+                or matches[0]["activity_id"] != resolution["activity_id"]
+                or matches[0]["root_command_id"] != command["command_id"]
+                or "procedure_id" in matches[0] and matches[0]["procedure_id"] != resolution.get("procedure_id")):
+            raise CommandAcceptanceError("child Resolution lacks its exact native command invocation mapping")
+    lock = command["catalog_context"]["basis"]["ruleset_lock"]
+    if (resolution["catalog_context_fingerprint_generation"] != command["catalog_context"]["catalog_context_fingerprint_generation"]
+            or resolution["catalog_context_fingerprint"] != command["catalog_context_fingerprint"]
+            or resolution["ruleset_set_digest_generation"] != lock["ruleset_set_digest_generation"]
+            or resolution["ruleset_set_sha256"] != lock["ruleset_set_sha256"]
+            or owner_id == command["root_resolution_id"] and resolution["invocation_facts"] != command["invocation_facts"]):
+        raise CommandAcceptanceError("Resolution accepted catalog/fact basis differs")
+
+
+def execution_result_identity(command: Mapping[str, object], result: Mapping[str, object]) -> Mapping[str, object]:
+    """Check the serialized native edge's reciprocal evidence and project it once."""
+    _input_wire("runtime-command-state", command)
+    _input_integer(command.get("schema_version"), exact=4)
+    _input_integer(command.get("input_fingerprint_generation"), exact=3)
+    kind = command.get("command_kind")
+    owner_kind = "runtime.command" if kind == "transition" else "runtime.resolution"
+    owner_id = _input_id(result.get("execution_owner_id"))
+    segment = _require_mapping(result.get("segment"), "execution segment")
+    receipt = _require_mapping(result.get("receipt"), "execution receipt")
+    identity = execution_identity(command, execution_owner_kind=owner_kind,
+        execution_owner_id=owner_id, segment=segment)
+    if (result.get("accepted_command_id") != identity["command_id"]
+            or result.get("accepted_input_fingerprint") != identity["input_fingerprint"]):
+        raise CommandAcceptanceError("execution differs from accepted command identity")
+    if kind == "action":
+        if result.get("resolution_id") != owner_id:
+            raise CommandAcceptanceError("action result has no actual Resolution identity")
+        resolution = _validate_execution_owner_edge(owner_kind=owner_kind, owner_id=owner_id,
+            owner=_require_mapping(result.get("resolution"), "execution Resolution"), segment=segment, receipt=receipt)
+        _validate_action_resolution_binding(command, owner_id, resolution)
+        if result.get("status") != resolution["status"]:
+            raise CommandAcceptanceError("execution result status differs from its current Resolution")
+    elif kind == "transition":
+        if "resolution_id" in result or "resolution" in result:
+            raise CommandAcceptanceError("direct result forbids a synthetic Resolution identity")
+        _validate_execution_owner_edge(owner_kind=owner_kind, owner_id=owner_id,
+            owner=command, segment=segment, receipt=receipt)
+        if result.get("status") != receipt["status"]:
+            raise CommandAcceptanceError("direct result status differs from its native receipt")
+    receipt_events = receipt.get("event_ids", ())
+    if (receipt.get("execution_owner_id") != owner_id
+            or segment["segment_id"] not in receipt.get("segment_refs", ())
+            or not isinstance(receipt_events, (list, tuple))
+            or len(set(receipt_events)) != len(receipt_events)
+            or not set(identity["event_ids"]) <= set(receipt_events)):
+        raise CommandAcceptanceError("native receipt differs from execution owner/segment/events")
+    if "execution_identity" in result and canonical_json(_thaw(result["execution_identity"])) != canonical_json(identity):
+        raise CommandAcceptanceError("execution identity projection differs from native edge")
+    event_ids = identity["event_ids"]
+    events = result["events"] if "events" in result else ([result["event"]] if "event" in result else [])
+    if not isinstance(events, (list, tuple)) or len(events) != len(event_ids):
+        raise CommandAcceptanceError("execution event evidence differs from native segment")
+    # Every supplied carrier participates. Exact canonical equality also rejects
+    # Python-equal aliases such as bool/int or int/float before schema validation.
+    # The existing loop then validates both equal carriers as the same sole event.
+    if "event" in result and (len(events) != 1 or not isinstance(result["event"], Mapping)
+            or canonical_json(_thaw(result["event"])) != canonical_json(_thaw(events[0]))):
+        raise CommandAcceptanceError("singular event differs from the sole plural event")
+    previous_ordinal = 0
+    for event_id, event in zip(event_ids, events):
+        if not isinstance(event, Mapping):
+            raise CommandAcceptanceError("native event evidence is not an object")
+        if "event_id" in event and event["event_id"] != event_id:
+            raise CommandAcceptanceError("native event alias differs from its exact identity")
+        event_state = event.get("state", event)
+        if not isinstance(event_state, Mapping):
+            raise CommandAcceptanceError("native event state is not an object")
+        if "kind" in event or "id" in event:
+            try:
+                validate_loaded_identity("runtime.mechanical_event", (event_id,), event)
+            except NativeStorageError as exc:
+                raise CommandAcceptanceError("native event envelope differs from its exact identity") from exc
+        if event_state is not event:
+            for field in event_state:
+                if field in event and canonical_json(_thaw(event[field])) != canonical_json(_thaw(event_state[field])):
+                    raise CommandAcceptanceError("native event flattened alias differs")
+        excluded = {"event_id"} if event_state is not event else {"event_id", "kind", "id", "campaign_id", "revision", "state_revision"}
+        _input_wire("runtime-mechanical-event-state", {key: value for key, value in event_state.items() if key not in excluded})
+        event = event_state
+        if (not isinstance(event, Mapping)
+                or type(event.get("event_ordinal")) is not int
+                or event["event_ordinal"] <= previous_ordinal
+                or event_id != f'{segment["segment_id"]}:event:{event["event_ordinal"]}'
+                or event.get("segment_id") != segment["segment_id"]
+                or event.get("root_command_id") != identity["command_id"] or event.get("causal_ref") != owner_id
+                or event.get("event_id", event_id) != event_id):
+            raise CommandAcceptanceError("native event identity/causal linkage differs")
+        previous_ordinal = event["event_ordinal"]
+    if "event_id" in result and (len(event_ids) != 1 or result["event_id"] != event_ids[0]):
+        raise CommandAcceptanceError("singular event alias differs from native event set")
+    return identity
+
+
+def command_policy_basis(command: Mapping[str, object]) -> Mapping[str, object]:
+    """Closed variant projection of already accepted policies, never re-resolution."""
+    if command.get("command_kind") == "action":
+        request = _require_mapping(command.get("action_request"), "accepted action request")
+        parameters = request.get("parameter_bindings", {})
+        variant = {"action_request": _thaw(request)}
+    elif command.get("command_kind") == "transition":
+        parameters = {}
+        variant = {key: _thaw(command[key]) for key in ("transition_request", "transition_binding")}
+    else:
+        raise CommandAcceptanceError("policy command variant is unsupported")
+    try:
+        _parameters, facts, refs = validate_frozen_adjudication_basis(parameters, command["invocation_facts"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise CommandAcceptanceError("accepted policy basis is incomplete") from exc
+    return {**variant, "invocation_facts": _thaw(facts), "policy_refs": list(refs)}
+
+
 class NativeOrderingError(ValueError):
     """Raised when a native ordered-owner proof cannot be established."""
 
@@ -632,6 +1081,7 @@ _ORDERING_ENVELOPE_FIELDS: Final[frozenset[str]] = frozenset(
 )
 _ORDERING_RESOLUTION_FIELDS: Final[frozenset[str]] = frozenset(
     {
+        "schema_version",
         "root_command_id",
         "initiating_command_id",
         "causal_invocation_key",
@@ -891,6 +1341,7 @@ def _ordering_pending_child(value: object, label: str) -> None:
 def _ordering_segment(value: object, label: str) -> None:
     segment = _ordering_mapping(value, label)
     required = {
+        "schema_version",
         "segment_id",
         "segment_sequence",
         "commit_state",
@@ -903,6 +1354,8 @@ def _ordering_segment(value: object, label: str) -> None:
     allowed = required | {"continuation_id"}
     if set(segment) - allowed or not required.issubset(segment):
         raise NativeOrderingError(f"{label} has unexpected or missing fields")
+    if type(segment["schema_version"]) is not int or segment["schema_version"] != 1:
+        raise NativeOrderingError(f"{label} schema_version must be exactly 1")
     _ordering_id(segment["segment_id"], f"{label} segment_id")
     _ordering_integer(
         segment["segment_sequence"], f"{label} segment_sequence", minimum=1
@@ -955,6 +1408,8 @@ def _ordering_pending_response_schema(value: object, label: str) -> None:
 
 
 def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
+    if type(payload.get("schema_version")) is not int or payload["schema_version"] != 1:
+        raise NativeOrderingError("resolution schema_version must be exactly 1")
     for field in (
         "root_command_id",
         "initiating_command_id",
@@ -1469,9 +1924,64 @@ def _interpreter_result_fingerprint(interpreter_result: Mapping[str, str]) -> st
     return sha256(_INTERPRETER_RESULT_DOMAIN + canonical_json(dict(interpreter_result)))
 
 
-def _input_fingerprint(command: Mapping[str, object]) -> str:
-    material = {key: _thaw(command[key]) for key in ACCEPTED_INPUT_FIELDS}
-    return sha256(_RUNTIME_COMMAND_INPUT_DOMAIN + canonical_json(material))
+def _bound_input_origin(command: Mapping[str, object], observation: CurrentOwnerObservation,
+                        *, current_authority: bool = True) -> Mapping[str, object]:
+    """Check the real composition/source session; no flag or seal grants auth."""
+    from .runtime_host import RuntimeHost, RuntimeHostError, _InputSourceOperation
+
+    if type(observation) is not CurrentOwnerObservation:
+        raise CommandAcceptanceError("input observation must come from the bound Host source session")
+    operation = observation.operation_token
+    if type(operation) is not _InputSourceOperation or type(operation.host) is not RuntimeHost:
+        raise CommandAcceptanceError("input observation is not a bound Host input operation")
+    try:
+        return operation.host._current_owner._validate_command_input_observation(
+            observation, command, current_authority=current_authority)
+    except RuntimeHostError as exc:
+        raise CommandAcceptanceError(str(exc)) from exc
+
+
+def native_command_state(
+    owner: Mapping[str, object], *, command_id: str, campaign_id: str,
+) -> Mapping[str, object]:
+    """Envelope-first command source parsing, including exact flattened aliases."""
+    if (owner.get("kind") != "runtime.command" or owner.get("id") != command_id
+            or owner.get("campaign_id", campaign_id) != campaign_id):
+        raise CommandAcceptanceError("native command envelope is foreign or incomplete")
+    if "state" in owner:
+        state = _require_mapping(owner["state"], "native command state")
+        for field, value in state.items():
+            if field in owner and canonical_json(owner[field]) != canonical_json(value):
+                raise CommandAcceptanceError("native command flattened alias differs")
+    else:
+        state = {key: value for key, value in owner.items()
+            if key not in {"kind", "id", "campaign_id", "revision", "state_revision"}}
+    if state.get("command_id") != command_id:
+        raise CommandAcceptanceError("native command state identity differs from its envelope")
+    _input_integer(state.get("schema_version"), exact=4)
+    _input_integer(state.get("input_fingerprint_generation"), exact=3)
+    _input_wire("runtime-command-state", state)
+    return state
+
+
+def _validate_native_command_projection(command: Mapping[str, object], observation: CurrentOwnerObservation) -> None:
+    try:
+        read = observation.require(NativeOwnerRef("runtime.command", (command["command_id"],)))
+        if read.status is not CurrentOwnerStatus.RESOLVED or read.payload is None:
+            raise CommandAcceptanceError("native accepted command source is unavailable")
+        campaign_id = observation.operation_token.host._campaign_id
+        native = native_command_state(read.payload, command_id=command["command_id"], campaign_id=campaign_id)
+        if canonical_json(_thaw(native)) != canonical_json(_thaw(command)):
+            raise CommandAcceptanceError("execution proposal differs from the actual native accepted command")
+        plan_read = observation.require(NativeOwnerRef("runtime.intent_plan", (command["intent_plan_id"],)))
+        clauses = input_native_state(plan_read.payload, "runtime.intent_plan")["clauses"]
+        matches = [clause for clause in clauses if clause["clause_id"] == command["clause_id"]]
+        if len(matches) != 1 or matches[0].get("command_id") != command["command_id"]:
+            raise CommandAcceptanceError("native accepted command lacks reciprocal clause linkage")
+    except (AttributeError, KeyError, TypeError, ValueError) as exc:
+        if isinstance(exc, CommandAcceptanceError):
+            raise
+        raise CommandAcceptanceError("native accepted command/Plan source closure is incomplete") from exc
 
 
 def _require_admitted_context(context: object) -> BoundCatalogContext:
@@ -1488,10 +1998,28 @@ def accept_command(
     candidate: object,
     command_proposal: object,
     *,
+    input_observation: CurrentOwnerObservation,
     adjudication_basis: AcceptedAdjudicationBasis | None = None,
 ) -> dict[str, object] | CatalogGap:
     """Return a schema-shaped accepted command or typed catalog-gap evidence."""
 
+    origin = _bound_input_origin(_require_mapping(command_proposal, "command proposal"), input_observation)
+    if command_proposal.get("command_kind") == "transition":
+        if interpreter_result is not None or candidate is not None or adjudication_basis is not None:
+            raise CommandAcceptanceError("direct transition forbids action interpreter/candidate/adjudication")
+        admitted_context = _require_admitted_context(context)
+        proposal = _require_exact_fields(command_proposal, frozenset({
+            "command_id", "interaction_id", "intent_plan_id", "clause_id", "command_kind",
+            "transition_request", "transition_binding"}), "direct command proposal")
+        direct_input_contract(proposal, admitted_context)
+        command = {**_thaw(proposal), "schema_version": RUNTIME_COMMAND_SCHEMA_VERSION,
+            "catalog_context_fingerprint": admitted_context.fingerprint,
+            "catalog_context": admitted_context.to_dict(),
+            "input_fingerprint_generation": RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION,
+            "disposition": "command.accepted", "invocation_facts": [], "pending_child_invocations": []}
+        command["input_fingerprint"] = command_input_fingerprint(command, origin=origin)
+        _input_wire("runtime-command-state", command)
+        return command
     typed_result = _typed_interpreter_result(interpreter_result)
     admitted_context = _require_admitted_context(context)
     candidate_id, _candidate_kind = _candidate_identity(candidate)
@@ -1570,7 +2098,7 @@ def accept_command(
         "catalog_context": admitted_context.to_dict(),
         "candidate_binding": _thaw(binding),
     }
-    command["input_fingerprint"] = _input_fingerprint(command)
+    command["input_fingerprint"] = command_input_fingerprint(command, origin=origin)
     return command
 
 
@@ -1578,12 +2106,49 @@ def validate_execution_proposal(
     accepted_command: object,
     context: BoundCatalogContext,
     candidate: object,
+    *,
+    input_observation: CurrentOwnerObservation,
+) -> None:
+    """Validate a prospective protected edge with fresh source/control authority."""
+    _validate_execution_proposal(accepted_command, context, candidate,
+        input_observation=input_observation, current_authority=True)
+
+
+def _validate_execution_proposal(
+    accepted_command: object,
+    context: BoundCatalogContext,
+    candidate: object,
+    *,
+    input_observation: CurrentOwnerObservation,
+    current_authority: bool,
 ) -> None:
     """Verify a serialized command's exact basis and recomputed acceptance fingerprints."""
 
+    raw = _require_mapping(accepted_command, "accepted command")
+    if raw.get("command_kind") == "transition":
+        command = raw
+        _input_wire("runtime-command-state", command)
+        origin = _bound_input_origin(command, input_observation, current_authority=current_authority)
+        _validate_native_command_projection(command, input_observation)
+        admitted_context = _require_admitted_context(context)
+        if candidate is not None:
+            raise CommandAcceptanceError("direct transition forbids an action candidate")
+        direct_input_contract(command, admitted_context)
+        if (command["catalog_context"] != admitted_context.to_dict()
+                or command["catalog_context_fingerprint"] != admitted_context.fingerprint):
+            raise CommandAcceptanceError("direct context differs from admitted basis")
+        if command["invocation_facts"]:
+            raise CommandAcceptanceError("native direct profile admits no invocation facts")
+        if command["input_fingerprint"] != command_input_fingerprint(command, origin=origin):
+            raise CommandAcceptanceError("input fingerprint differs from accepted direct command")
+        if command["disposition"] == "command.settled" and not command.get("direct_transition_receipt"):
+            raise CommandAcceptanceError("settled direct command has no native result receipt")
+        return
     command = _require_exact_fields(
         accepted_command, COMMAND_STATE_FIELDS, "accepted command"
     )
+    origin = _bound_input_origin(command, input_observation, current_authority=current_authority)
+    _validate_native_command_projection(command, input_observation)
     admitted_context = _require_admitted_context(context)
     if command["schema_version"] != RUNTIME_COMMAND_SCHEMA_VERSION:
         raise CommandAcceptanceError("unsupported runtime command schema version")
@@ -1673,5 +2238,5 @@ def validate_execution_proposal(
         candidate_id,
     )
     _require_sha256(command["input_fingerprint"], "accepted command input fingerprint")
-    if command["input_fingerprint"] != _input_fingerprint(command):
+    if command["input_fingerprint"] != command_input_fingerprint(command, origin=origin):
         raise CommandAcceptanceError("input fingerprint differs from accepted command")

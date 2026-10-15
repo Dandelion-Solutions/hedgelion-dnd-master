@@ -40,6 +40,7 @@ def roll(value=17):
 
 def resolution():
     return {
+        "schema_version": 1,
         "root_command_id": "turn-000042-cmd-01",
         "initiating_command_id": "turn-000042-cmd-01",
         "activity_id": "activity.attack.basic",
@@ -57,6 +58,7 @@ def resolution():
         "prior_step_exports": {"attack_roll": 17},
         "child_resolution_ids": [],
         "segments": [{
+            "schema_version": 1,
             "segment_id": "resolution-0000001:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
@@ -153,6 +155,7 @@ class Step3ExecutionOwnerContractTest(unittest.TestCase):
 
     def test_child_resolution_without_initiating_command_needs_causal_key(self):
         child = {
+            "schema_version": 1,
             "root_command_id": "cmd",
             "activity_id": "activity.followup",
             "actor_id": "actor-0001",

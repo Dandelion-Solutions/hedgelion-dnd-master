@@ -218,6 +218,7 @@ def _selected_host(
     *,
     repository: ActorRepository | None = None,
     live: SelectedLive | None = None,
+    accepted_input_capability: object | None = None,
 ):
     source = repository or ActorRepository()
     host = compose_selected_runtime_host(
@@ -226,6 +227,7 @@ def _selected_host(
         live or SelectedLive(),
         PublicationTransport(),
         hot_owner_store=store,
+        accepted_input_capability=accepted_input_capability,
     )
     return host, source
 
@@ -236,14 +238,17 @@ def _actor_phase(
     *,
     proposal: str | None = None,
     turn_id: str = "turn-actor-1",
+    frontier_id: str | None = None,
 ) -> tuple[dict[str, Any], object]:
-    source_revision = host._repository.revision
+    source_revision = (host._repository.pin_campaign(CAMPAIGN_ID).revision
+        if frontier_id is None else frontier_id)
+    subject_id = actor["id"]
     envelope = turn_runtime.start_turn(turn_id, source_revision, 120)
     request: dict[str, object] = {
         "profile_id": "profile.actor",
         "role": "ACTOR",
         "purpose": "assess",
-        "subject_id": ACTOR_ID,
+        "subject_id": subject_id,
         "recipient_id": PLAYER_ID,
         "campaign_id": CAMPAIGN_ID,
         "allowed_channels": ["CURRENT_SCOPE"],
@@ -260,10 +265,10 @@ def _actor_phase(
             "rank": 0,
             "role": "ACTOR",
             "purpose": "assess",
-            "subject_id": ACTOR_ID,
+            "subject_id": subject_id,
             "recipient_id": PLAYER_ID,
             "owner_family": "world.actor",
-            "owner_identity": [ACTOR_ID],
+            "owner_identity": [subject_id],
             "dependencies": [],
         }
     ]
@@ -276,7 +281,7 @@ def _actor_phase(
         request,
         candidates,
         ("actor_proposal",),
-        subject_id=ACTOR_ID,
+        subject_id=subject_id,
         recipient_id=PLAYER_ID,
     )
     turn_runtime.accept_phase_result(
@@ -286,7 +291,7 @@ def _actor_phase(
             "purpose": "assess",
             "bundle_id": binding["bundle_id"],
             "source_generation": source_revision,
-            "subject_id": ACTOR_ID,
+            "subject_id": subject_id,
             "proposal": _phase_proposal(actor) if proposal is None else proposal,
         },
     )

@@ -54,6 +54,16 @@ ENGINE_CONTRACT_SOURCE_GROUPS = {
         ("portable_value_routes", "DEV/CATALOG/portable-value-routes.json"),
     ),
     "schema_contract": (
+        ("runtime_command_state_schema", "DEV/SCHEMAS/runtime-command-state.schema.json"),
+        ("runtime_interaction_state_schema", "DEV/SCHEMAS/runtime-interaction-state.schema.json"),
+        ("runtime_message_state_schema", "DEV/SCHEMAS/runtime-message-state.schema.json"),
+        ("runtime_intent_plan_state_schema", "DEV/SCHEMAS/runtime-intent-plan-state.schema.json"),
+        ("intent_clause_schema", "DEV/SCHEMAS/intent-clause.schema.json"),
+        ("world_player_state_schema", "DEV/SCHEMAS/world-player-state.schema.json"),
+        ("execution_segment_schema", "DEV/SCHEMAS/execution-segment.schema.json"),
+        ("transition_request_schema", "DEV/SCHEMAS/transition-request.schema.json"),
+        ("gameplay_spine_transition_request_schema", "DEV/SCHEMAS/gameplay-spine-transition-request.schema.json"),
+        ("gameplay_spine_seed", "GAME/RULES/packages/hdm.rules.dnd2024-srd52-core/gameplay-spine-seed.json"),
         (
             "ruleset_package_manifest_schema",
             "DEV/SCHEMAS/ruleset-package-manifest.schema.json",
@@ -313,7 +323,7 @@ def _path_neutral_compiler_value(value: Any, *, field_name: str = "") -> Any:
             _path_neutral_compiler_value(item, field_name=field_name) for item in value
         ]
     if isinstance(value, str):
-        if field_name in {"schema_ref", "portable_realization_owner"}:
+        if field_name in {"schema_ref", "portable_realization_owner", "request_schema", "result_schema", "state_schema", "event_schema"}:
             prefix, separator, fragment = value.partition("#")
             if prefix.startswith("DEV/SCHEMAS/"):
                 schema_id = f"https://hedgelion.invalid/schemas/{Path(prefix).name}"

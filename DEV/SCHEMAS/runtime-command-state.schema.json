@@ -7,23 +7,24 @@
   "required": [
     "schema_version", "command_id", "interaction_id", "intent_plan_id", "clause_id",
     "command_kind", "catalog_context_fingerprint", "input_fingerprint", "disposition",
-    "invocation_facts", "pending_child_invocations"
+    "invocation_facts", "pending_child_invocations", "catalog_context", "input_fingerprint_generation"
   ],
   "properties": {
-    "schema_version": {"const": 3},
+    "schema_version": {"type": "integer", "const": 4},
     "command_id": {"type": "string", "minLength": 1},
     "interaction_id": {"type": "string", "minLength": 1},
     "intent_plan_id": {"type": "string", "minLength": 1},
     "clause_id": {"type": "string", "minLength": 1},
     "command_kind": {"enum": ["action", "transition"]},
     "catalog_context_fingerprint": {"type": "string", "minLength": 1},
-    "input_fingerprint_generation": {"const": 2},
-    "input_fingerprint": {"type": "string", "minLength": 1},
+    "input_fingerprint_generation": {"type": "integer", "const": 3},
+    "input_fingerprint": {"$ref": "#/$defs/sha256"},
     "disposition": {"enum": ["command.accepted", "command.settled"]},
     "invocation_facts": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/invocation-fact.schema.json"}},
     "action_request": {"$ref": "https://hedgelion.invalid/schemas/action-request.schema.json"},
     "root_resolution_id": {"type": "string", "minLength": 1},
     "transition_request": {"$ref": "https://hedgelion.invalid/schemas/transition-request.schema.json"},
+    "transition_binding": {"$ref": "#/$defs/transitionBinding"},
     "direct_transition_segments": {"type": "array", "minItems": 1, "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}},
     "direct_transition_receipt": {"$ref": "https://hedgelion.invalid/schemas/resolution-receipt.schema.json"},
     "pending_child_invocations": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}},
@@ -35,6 +36,16 @@
     "details": {"type": "object"}
   },
   "$defs": {
+    "transitionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile_id", "profile_generation", "payload_schema_id", "payload_schema_version"],
+      "properties": {
+        "profile_id": {"$ref": "#/$defs/id"},
+        "profile_generation": {"type": "integer", "minimum": 1},
+        "payload_schema_id": {"type": "string", "minLength": 1},
+        "payload_schema_version": {"type": "integer", "minimum": 1}
+      }
+    },
     "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "candidateBinding": {
@@ -59,7 +70,7 @@
   "allOf": [
     {
       "if": {"properties": {"command_kind": {"const": "action"}}, "required": ["command_kind"]},
-      "then": {"required": ["action_request", "root_resolution_id"], "not": {"anyOf": [{"required": ["transition_request"]}, {"required": ["direct_transition_segments"]}, {"required": ["direct_transition_receipt"]}]}}
+      "then": {"required": ["action_request", "root_resolution_id"], "not": {"anyOf": [{"required": ["transition_request"]}, {"required": ["transition_binding"]}, {"required": ["direct_transition_segments"]}, {"required": ["direct_transition_receipt"]}]}}
     },
     {
       "if": {"properties": {"command_kind": {"const": "action"}}, "required": ["command_kind"]},
@@ -67,7 +78,7 @@
     },
     {
       "if": {"properties": {"command_kind": {"const": "transition"}}, "required": ["command_kind"]},
-      "then": {"required": ["transition_request"], "not": {"anyOf": [{"required": ["action_request"]}, {"required": ["root_resolution_id"]}]}}
+      "then": {"required": ["transition_request", "transition_binding"], "not": {"anyOf": [{"required": ["action_request"]}, {"required": ["root_resolution_id"]}, {"required": ["interpreter_result"]}, {"required": ["interpreter_result_fingerprint_generation"]}, {"required": ["interpreter_result_fingerprint"]}, {"required": ["candidate_binding"]}]}}
     },
     {
       "if": {"properties": {"disposition": {"const": "command.settled"}}, "required": ["disposition"]},

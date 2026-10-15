@@ -41,8 +41,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.12
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.12"
+# framework_module_version: 1.0.13
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.13"
 PROFILE_CONTRACT_GENERATION: Final = 1
 NativeId = NewType("NativeId", str)
 Generation = NewType("Generation", int)
@@ -529,10 +529,12 @@ def _root_preparation_fields_are_valid(
     *,
     issuer: object,
     observation: CurrentOwnerObservation,
+    validate_current_input: bool = True,
 ) -> bool:
     try:
         from .runtime_execution import (
             CommandAcceptanceError,
+            input_source_owner_refs,
             validate_execution_proposal,
         )
         from .runtime_host import CurrentOwnerView
@@ -585,6 +587,8 @@ def _root_preparation_fields_are_valid(
         ):
             return False
         expected_refs = set(expected_roles.values()) | {command_ref, resolution_ref}
+        expected_refs.update(input_source_owner_refs(value.accepted_command, observation,
+            authority_sources=operation.authority_sources))
         if (
             set(observation.key_union) != expected_refs
             or not expected_refs <= set(session._requested.values())
@@ -623,12 +627,14 @@ def _root_preparation_fields_are_valid(
             "definition_id": value.compiled.activity_id,
             "kind": "definition.activity",
         }
-        try:
-            validate_execution_proposal(
-                command_state, value.catalog.catalog_context, candidate
-            )
-        except (CommandAcceptanceError, KeyError, TypeError, ValueError):
-            return False
+        if validate_current_input:
+            try:
+                validate_execution_proposal(
+                    command_state, value.catalog.catalog_context, candidate,
+                    input_observation=observation,
+                )
+            except (CommandAcceptanceError, KeyError, TypeError, ValueError):
+                return False
         if (
             command_state.get("command_kind") != "action"
             or command_state.get("disposition") != "command.accepted"
@@ -813,7 +819,8 @@ def _preparation_context_is_issued(value: object) -> bool:
     try:
         return (
             _root_preparation_fields_are_valid(
-                value, issuer=issue.issuer, observation=issue.observation
+                value, issuer=issue.issuer, observation=issue.observation,
+                validate_current_input=False,
             )
             and value.owner_session.operation_token is issue.operation_token
             and _preparation_session_snapshot(value.owner_session)
@@ -1861,7 +1868,19 @@ def _validate_native_execution_envelope(value: Mapping[str, object]) -> None:
     segment_id = segment["segment_id"]
     event_id = value["event_id"]
     segment_event_ids = tuple(segment["event_ids"])
-    receipt_event_ids = tuple(receipt["event_ids"])
+    from .runtime_execution import _validate_execution_owner_edge, execution_identity
+
+    try:
+        _validate_execution_owner_edge(owner_kind="runtime.resolution", owner_id=resolution_id,
+            owner=resolution, segment=segment, receipt=receipt)
+    except ValueError as exc:
+        raise ActivityContractError(str(exc)) from exc
+
+    expected_identity = execution_identity({"command_id": command_id, "command_kind": "action",
+        "root_resolution_id": resolution_id, "input_fingerprint_generation": 3, "input_fingerprint": fingerprint},
+        execution_owner_kind="runtime.resolution", execution_owner_id=resolution_id, segment=segment)
+    if _thaw(value["execution_identity"]) != expected_identity:
+        raise ActivityContractError("execution identity differs from its native owner edge")
     event_ordinals: list[int] = []
     event_prefix = f"{segment_id}:event:"
     for member_event_id in segment_event_ids:
@@ -1886,7 +1905,6 @@ def _validate_native_execution_envelope(value: Mapping[str, object]) -> None:
         value["execution_owner_id"] != resolution_id
         or resolution["root_command_id"] != command_id
         or resolution["status"] != value["status"]
-        or segment["resulting_execution_state"] != receipt["status"]
         or event["root_command_id"] != command_id
         or event["causal_ref"] != resolution_id
         or event["segment_id"] != segment_id
@@ -1895,8 +1913,6 @@ def _validate_native_execution_envelope(value: Mapping[str, object]) -> None:
         or not segment_event_ids
         or event_ordinals != sorted(event_ordinals)
         or len(event_ordinals) != len(set(event_ordinals))
-        or receipt_event_ids != segment_event_ids
-        or tuple(receipt["segment_refs"]) != (segment_id,)
         or receipt["execution_owner_id"] != resolution_id
         or len(resolution_segments) != 1
         or resolution_segments[0] != segment

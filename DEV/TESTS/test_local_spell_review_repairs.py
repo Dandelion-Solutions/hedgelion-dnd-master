@@ -179,6 +179,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
 
     def test_native_establishment_uses_actual_execution_envelope_for_established_and_replay(self):
         from DEV.TESTS.test_rd05_runtime_execution import (
+            SourceCommandFixture,
             _candidate,
             _interpreter_result,
             _proposal,
@@ -188,11 +189,10 @@ class FrozenReviewRepairTests(unittest.TestCase):
             ExecutionStore,
             FixedRng,
             close_resolution,
-            execute_segment,
         )
-        from GAME.TOOLS.runtime_execution import accept_command
-
-        accepted = accept_command(
+        source = SourceCommandFixture()
+        self.addCleanup(source.doCleanups)
+        accepted = source.accept_from_sources(
             _interpreter_result(), _bind_context(), _candidate(), _proposal()
         )
         resolution = {
@@ -241,7 +241,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
             "participant_resources": {},
         }
         store = ExecutionStore()
-        execution = execute_segment(
+        execution = source.execute_from_sources(
             accepted,
             resolution,
             rng=FixedRng([17]),
@@ -250,7 +250,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
             continuation_state=continuation,
             store=store,
         )
-        replay = execute_segment(
+        replay = source.execute_from_sources(
             accepted,
             resolution,
             rng=FixedRng([3]),
@@ -267,7 +267,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
             actor_id="actor-2",
             causal_invocation_key="resolution-1:segment:1:event:1",
         )
-        child_execution = execute_segment(
+        child_execution = source.execute_from_sources(
             accepted,
             child_resolution,
             event_payload={"followup": True},
@@ -347,6 +347,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
         multi_event["segment"]["event_ids"].append(second_event_id)
         multi_event["receipt"]["event_ids"].append(second_event_id)
         multi_event["resolution"]["segments"][-1]["event_ids"].append(second_event_id)
+        multi_event["execution_identity"]["event_ids"].append(second_event_id)
         multi_established = establish("ESTABLISHED", multi_event)
         self.assertEqual(
             tuple(multi_established.accepted_execution["segment"]["event_ids"]),
@@ -371,6 +372,7 @@ class FrozenReviewRepairTests(unittest.TestCase):
         for invalid in (
             accepted,
             dict(execution, unauthorized_extra=True),
+            dict(execution, execution_identity=dict(execution["execution_identity"], execution_owner_id="foreign")),
             dict(execution, accepted_command_id="command.foreign"),
             dict(execution, receipt=dict(execution["receipt"], event_ids=[])),
             dict(execution, receipt=dict(execution["receipt"], status="COMPLETED")),

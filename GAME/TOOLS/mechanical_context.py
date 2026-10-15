@@ -30,8 +30,8 @@ from .policy_basis import (
 )
 from .runtime_execution import CommandAcceptanceError, validate_execution_proposal
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.7"
 _DAMAGE_CONTRIBUTION_TYPES: Final[Mapping[str, str]] = MappingProxyType(
     {
         "rule.add_flat": "ADJUSTMENT",
@@ -89,7 +89,8 @@ def _roles(
 
 
 def _accepted_command(
-    compiled: contracts.CompiledActivity, command: Mapping[str, object]
+    compiled: contracts.CompiledActivity, command: Mapping[str, object],
+    input_observation: CurrentOwnerObservation,
 ) -> Mapping[str, object]:
     lineage = contracts._compiler_value_lineage(compiled, kind="compiled")
     if lineage is None:
@@ -98,7 +99,7 @@ def _accepted_command(
         value = _thaw(command)
         binding = value["candidate_binding"]
         candidate = {"definition_id": binding["definition_id"], "kind": binding["kind"]}
-        validate_execution_proposal(value, lineage[0], candidate)
+        validate_execution_proposal(value, lineage[0], candidate, input_observation=input_observation)
     except (CommandAcceptanceError, KeyError, TypeError, ValueError) as error:
         raise MechanicalContextError("accepted command does not retain its exact input basis") from error
     return value
@@ -134,16 +135,15 @@ def acquire_observation(
     """
     instruction = _instruction(compiled, consumer_id)
     owners = _roles(compiled, role_bindings)
-    command = _accepted_command(compiled, accepted_command)
-    request = command["action_request"]
+    if not isinstance(owner_session, CurrentOwnerReadSession):
+        raise MechanicalContextError("read plan requires a native owner session")
+    request = accepted_command["action_request"]
     if request["activity_id"] != compiled.activity_id:
         raise MechanicalContextError("root acquisition Activity differs from accepted command")
     actor = role_bindings.get("actor")
     if actor is not None and actor.identity != (request["actor_id"],):
         raise MechanicalContextError("root Actor read binding differs from accepted command")
-    if not isinstance(owner_session, CurrentOwnerReadSession):
-        raise MechanicalContextError("read plan requires a native owner session")
-    execution_ref = contracts.ExecutionRef(command["command_id"], command["root_resolution_id"])
+    execution_ref = contracts.ExecutionRef(accepted_command["command_id"], accepted_command["root_resolution_id"])
     for reference in instruction.read_contract_refs:
         kind, _, identity = reference.partition(":")
         if kind == "domain_owner" and identity not in {
@@ -151,10 +151,11 @@ def acquire_observation(
             *(owner.family_key for owner in owners),
         }:
             raise contracts.NativePreparationHold("AUTHORITY_UNAVAILABLE", execution_ref, ())
-        if kind == "infrastructure":
+        if kind == "infrastructure" and identity != "infrastructure.accepted_input_origin":
             raise contracts.NativePreparationHold("AUTHORITY_UNAVAILABLE", execution_ref, ())
     return_observation = owner_session.require(owners)
     _resolved(return_observation, execution_ref)
+    _accepted_command(compiled, accepted_command, return_observation)
     return return_observation
 
 
@@ -224,7 +225,10 @@ def context_cache_identity(context: contracts.NativePreparationContext) -> tuple
     context = replace(context)
     _instruction(context.compiled, context.consumer_id)
     _roles(context.compiled, context.role_bindings)
-    command = _accepted_command(context.compiled, context.accepted_command)
+    if not context.owner_session.revalidate(context.observation):
+        raise contracts.NativePreparationHold("REVALIDATION_REQUIRED", context.execution_ref, ())
+    _resolved(context.observation, context.execution_ref)
+    command = _accepted_command(context.compiled, context.accepted_command, context.observation)
     if context.execution_ref.resolution_id == command["root_resolution_id"]:
         request = command["action_request"]
         if request["activity_id"] != context.compiled.activity_id:
@@ -269,6 +273,7 @@ def context_cache_identity(context: contracts.NativePreparationContext) -> tuple
         context.execution_ref.command_id, context.execution_ref.resolution_id,
         tuple((role, owner.family_key, owner.identity) for role, owner in sorted(context.role_bindings.items())),
         native_basis, _value_identity(context.accepted_command), _value_identity(context.resolution),
+        _value_identity(context.observation.operation_token.authority_sources),
         context.accepted_fact_refs, context.policy_refs,
         tuple((reference.execution_ref.command_id, reference.execution_ref.resolution_id,
                reference.request_id, reference.occurrence_id, reference.generation)

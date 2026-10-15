@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
 
@@ -59,20 +60,34 @@ def _validate_owner_publication(
 
 
 def _accepted_command() -> dict[str, object]:
-    return {
+    from DEV.TESTS.test_rd05_runtime_execution import _candidate, _interpreter_result
+    from DEV.TESTS.test_rd07_recovery import (
+        FakeAccess,
+        FakeApplicability,
+        FakeRepository,
+    )
+    from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
+    from DEV.TESTS.test_sp03_authenticated_input import trusted_command_source
+    from GAME.TOOLS.policy_basis import (
+        AcceptedAdjudicationBasis,
+        PolicyBasisResolver,
+        PolicySelection,
+    )
+    from GAME.TOOLS.runtime_execution import accept_command
+
+    context = _bind_context()
+    policy = PolicyBasisResolver(FakeRepository(), FakeAccess(), FakeApplicability()).resolve(
+        "campaign-1", PolicySelection("policy.social_leverage", "activity.check.generic"),
+        catalog_context=context)
+    proposal = {
         "command_id": "command-000001",
-        "input_fingerprint": "a" * 64,
-        "catalog_context_fingerprint": "b" * 64,
-        "catalog_context": {
-            "catalog_generation": 2,
-            "catalog_context_fingerprint_generation": 1,
-            "catalog_context_fingerprint": "b" * 64,
-            "ruleset_set_digest_generation": 1,
-            "ruleset_set_sha256": "c" * 64,
-        },
+        "interaction_id": "interaction-000001",
+        "intent_plan_id": "plan-000001",
+        "clause_id": "clause-1",
         "action_request": {
             "activity_id": "activity.check.generic",
             "actor_id": "actor-1",
+            "target_ids": [],
             "parameter_bindings": {
                 "dc": {
                     "source_class": "INVOCATION_ADJUDICATED",
@@ -84,36 +99,31 @@ def _accepted_command() -> dict[str, object]:
                 }
             },
         },
-        "invocation_facts": [],
-        "disposition": "command.accepted",
         "root_resolution_id": "resolution-000001",
     }
+    basis = AcceptedAdjudicationBasis(
+        parameter_bindings=proposal["action_request"]["parameter_bindings"],
+        invocation_facts=(), verified_policies=(policy,))
+    with trusted_command_source(proposal) as (host, _records):
+        return accept_command(_interpreter_result(), context, _candidate(), proposal,
+            input_observation=host._current_owner._observe_command_input(proposal),
+            adjudication_basis=basis)
 
 
 def _execution() -> dict[str, object]:
-    return {
-        "accepted_command_id": "command-000001",
-        "accepted_input_fingerprint": "a" * 64,
-        "execution_owner_id": "resolution-000001",
-        "resolution_id": "resolution-000001",
-        "segment": {
-            "segment_id": "resolution-000001:segment:1",
-            "segment_sequence": 1,
-            "commit_state": "committed",
-        },
-        "event": {
-            "segment_id": "resolution-000001:segment:1",
-            "event_ordinal": 1,
-            "event_id": "resolution-000001:segment:1:event:1",
-        },
-        "event_id": "resolution-000001:segment:1:event:1",
-        "roll_result": {
-            "roll_id": "resolution-000001:roll:1",
-            "request_id": "resolution-000001:roll:1",
-            "raw_values": [17],
-            "provenance_ref": "resolution-000001:rng:1",
-        },
-    }
+    from DEV.TESTS.test_rd05_runtime_execution import _resolution_source
+    from DEV.TESTS.test_sp03_authenticated_input import trusted_command_source
+    from GAME.TOOLS.current_owner import NativeOwnerRef
+    from GAME.TOOLS.mechanics import ExecutionStore, FixedRng, execute_segment
+
+    command = _accepted_command()
+    with trusted_command_source(command) as (host, records):
+        ref = NativeOwnerRef("runtime.command", (command["command_id"],))
+        records[route_native_record(ref.family_key, ref.identity).relative_path] = {
+            "kind": ref.family_key, "id": command["command_id"], **deepcopy(command)}
+        observation = host._current_owner._observe_command_input(command, required_owner_refs=(ref,))
+        return execute_segment(command, _resolution_source(command), input_observation=observation,
+            rng=FixedRng([17]), event_payload={"result": 17}, store=ExecutionStore())
 
 
 def _command_operation() -> RoutedSerializedOperation:
@@ -384,9 +394,9 @@ class PublicationPlanTests(unittest.TestCase):
         attempt = _attempt()
 
         self.assertEqual(attempt.accepted_identity.command_id, "command-000001")
-        self.assertEqual(attempt.accepted_identity.input_fingerprint, "a" * 64)
+        self.assertEqual(attempt.accepted_identity.input_fingerprint, _accepted_command()["input_fingerprint"])
         self.assertEqual(attempt.fixed_rng_values, (17,))
-        self.assertEqual(attempt.catalog_basis["catalog_generation"], 2)
+        self.assertEqual(attempt.catalog_basis["basis"]["catalog_generation"], 2)
         self.assertEqual(attempt.policy_basis["policy_refs"], (f"policy.social_leverage@{H}",))
 
     def test_frozen_attempt_cannot_be_mutated_through_nested_inputs(self) -> None:
@@ -395,7 +405,7 @@ class PublicationPlanTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             attempt.path_operations[_command_operation().relative_path]["command_id"] = "other"  # type: ignore[index]
         with self.assertRaises(TypeError):
-            attempt.catalog_basis["catalog_generation"] = 3  # type: ignore[index]
+            attempt.catalog_basis["basis"]["catalog_generation"] = 3  # type: ignore[index]
 
     def test_campaign_publication_has_no_storage_or_repository_spanning_transaction(self) -> None:
         with self.assertRaisesRegex(PublicationContractError, "storage"):
@@ -888,6 +898,232 @@ class PublicationOutcomeTests(unittest.TestCase):
 
 
 class ExecutionDurabilityJoinTests(unittest.TestCase):
+    def _event_carrier_consumers(self, command):
+        from GAME.TOOLS.recovery import validate_recovered_basis
+        from GAME.TOOLS.runtime_execution import command_policy_basis
+
+        promise = freeze_save_promise(evaluate_durability(campaign_id="campaign-000001",
+            scope="accepted_execution", dirty_roots=("runtime.command:" + command["command_id"],),
+            currentness_evidence={"head_sha": H}), owner_generations={})
+        return {
+            "publication": lambda value: publication_module._accepted_identity(command, value),
+            "join": lambda value: join_execution_durability(command, value, promise,
+                routed_operation=route_serialized_operation("runtime.command", command["command_id"], command)),
+            "recovery": lambda value: validate_recovered_basis(command, value,
+                catalog_basis=command["catalog_context"], policy_basis=command_policy_basis(command)),
+        }
+
+    def test_review_r3_producer_event_carrier_forms_and_actual_cold_dual_are_preserved(self):
+        from DEV.TESTS.test_rd07_recovery import FakeRepository
+        from GAME.TOOLS.recovery import _hydrate_execution_result
+
+        command, singular = _accepted_command(), _execution()
+        dual = dict(deepcopy(singular), events=[deepcopy(singular["event"])])
+        plural = deepcopy(dual)
+        plural.pop("event")
+        plural.pop("event_id")
+        repository = FakeRepository()
+        event_id = singular["event_id"]
+        repository.files[route_native_record("runtime.mechanical_event", (event_id,)).relative_path] = {
+            "kind": "runtime.mechanical_event", "id": event_id, **deepcopy(singular["event"])}
+        cold = _hydrate_execution_result(repository, repository.pin_campaign("campaign-1"),
+            command, singular["resolution"])
+        self.assertEqual(cold["events"], [cold["event"]])
+        self.assertEqual(cold["event_id"], event_id)
+        consumers = self._event_carrier_consumers(command)
+        for label, value in (("singular producer", singular), ("plural only", plural),
+                             ("equal dual", dual), ("actual cold dual producer", cold)):
+            for name, consumer in consumers.items():
+                with self.subTest(form=label, boundary=name):
+                    recovered_or_joined = consumer(value)
+                    if name == "recovery":
+                        self.assertEqual(recovered_or_joined.execution, value)
+                        self.assertEqual(recovered_or_joined.execution_identity, singular["execution_identity"])
+
+    def test_review_r3_conflicting_or_malformed_event_carriers_reject_at_all_consumers(self):
+        command, result = _accepted_command(), _execution()
+        dual = dict(deepcopy(result), events=[deepcopy(result["event"])])
+        consumers = self._event_carrier_consumers(command)
+        for consumer in consumers.values():
+            consumer(dual)
+        for label, mutate in (
+            ("review forged singular", lambda r: r.update(event={"event_kind": "forged",
+                "segment_id": "foreign", "event_ordinal": True})),
+            ("null singular", lambda r: r.update(event=None)),
+            ("empty singular", lambda r: r.update(event={})),
+            ("list singular", lambda r: r.update(event=[])),
+            ("bool ordinal alias", lambda r: r["event"].update(event_ordinal=True)),
+            ("float ordinal alias", lambda r: r["event"].update(event_ordinal=1.0)),
+            ("Python equal payload differs canonically", lambda r: r["event"]["payload"].update(result=17.0)),
+            ("null plural must not fall back", lambda r: r.update(events=None)),
+            ("empty plural must not fall back", lambda r: r.update(events=[])),
+            ("object plural", lambda r: r.update(events={})),
+            ("null plural member", lambda r: r.update(events=[None])),
+            ("null singular ID", lambda r: r.update(event_id=None)),
+            ("foreign singular ID", lambda r: r.update(event_id="foreign")),
+        ):
+            wrong = deepcopy(dual)
+            mutate(wrong)
+            self.assertEqual(wrong["execution_identity"], result["execution_identity"])
+            for name, consumer in consumers.items():
+                with self.subTest(case=label, boundary=name), self.assertRaises(ValueError):
+                    consumer(wrong)
+
+    def test_review_r3_plural_batch_cannot_acquire_an_ambiguous_singular_alias(self):
+        command, result = _accepted_command(), _execution()
+        # Retained multi-event contract witness derived from the real producer's
+        # complete edge; not a claim that mechanics emits a second native event.
+        first = deepcopy(result.pop("event"))
+        result.pop("event_id")
+        later = dict(deepcopy(first), event_ordinal=3)
+        later_id = result["segment"]["segment_id"] + ":event:3"
+        result["events"] = [first, later]
+        result["segment"]["event_ids"].append(later_id)
+        result["resolution"]["segments"][-1]["event_ids"].append(later_id)
+        result["receipt"]["event_ids"].append(later_id)
+        result["execution_identity"]["event_ids"].append(later_id)
+        for name, consumer in self._event_carrier_consumers(command).items():
+            with self.subTest(form="plural batch", boundary=name):
+                consumer(result)
+            with self.subTest(form="ambiguous singular", boundary=name), self.assertRaises(ValueError):
+                consumer(dict(result, event=deepcopy(first)))
+
+    def test_review_f3_cumulative_receipts_and_exact_child_mapping_use_producer_edges(self):
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            SourceCommandFixture,
+            _candidate,
+            _interpreter_result,
+            _proposal,
+            _resolution_source,
+        )
+        from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
+        from GAME.TOOLS.mechanics import ExecutionStore
+        from GAME.TOOLS.publication import _accepted_identity
+        from GAME.TOOLS.recovery import validate_recovered_basis
+        from GAME.TOOLS.runtime_execution import command_policy_basis
+
+        source = SourceCommandFixture()
+        self.addCleanup(source.doCleanups)
+        command = source.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        store = ExecutionStore()
+        first = source.execute_from_sources(command, _resolution_source(command), event_payload={"result": 1}, store=store)
+        second = source.execute_from_sources(command, first["resolution"], event_payload={"result": 2}, store=store)
+        cumulative = deepcopy(second)
+        cumulative["receipt"]["segment_refs"] = [first["segment"]["segment_id"], second["segment"]["segment_id"]]
+        cumulative["receipt"]["event_ids"] = first["segment"]["event_ids"] + second["segment"]["event_ids"]
+        promise = freeze_save_promise(evaluate_durability(campaign_id="campaign-000001", scope="accepted_execution",
+            dirty_roots=("runtime.command:" + command["command_id"],), currentness_evidence={"head_sha": H}),
+            owner_generations={})
+
+        def consume(value):
+            identity = _accepted_identity(command, value)[0].to_dict()
+            joined = join_execution_durability(command, value, promise,
+                routed_operation=route_serialized_operation("runtime.command", command["command_id"], command))
+            recovered = validate_recovered_basis(command, value, catalog_basis=command["catalog_context"],
+                policy_basis=command_policy_basis(command))
+            self.assertEqual(identity, joined.to_dict()["execution_identity"])
+            self.assertEqual(identity, recovered.execution_identity)
+
+        consume(cumulative)
+        bad = deepcopy(cumulative)
+        bad["receipt"]["event_ids"] = second["segment"]["event_ids"]
+        with self.assertRaises(ValueError):
+            consume(bad)
+        command = deepcopy(command)
+        command["pending_child_invocations"] = [{"firing_key": first["event_id"] + ":binding.child",
+            "root_command_id": command["command_id"], "activity_id": "activity.check.generic",
+            "child_resolution_id": "resolution-child", "trigger_ref": first["event_id"], "reason": "mandatory_followup"}]
+        source.retain_lifecycle(command)
+        child_state = _resolution_source(command, resolution_id="resolution-child",
+            causal_invocation_key=command["pending_child_invocations"][0]["firing_key"])
+        child_state.pop("initiating_command_id")
+        child = source.execute_from_sources(command, child_state, event_payload={}, store=store)
+        consume(child)
+        forged_state = dict(child_state, resolution_id="foreign-child", causal_invocation_key="invented-cause")
+        forged = source.execute_from_sources(command, forged_state, event_payload={}, store=store)
+        for name, consumer in (
+            ("publication", lambda: _accepted_identity(command, forged)),
+            ("durability", lambda: join_execution_durability(command, forged, promise,
+                routed_operation=route_serialized_operation("runtime.command", command["command_id"], command))),
+            ("recovery", lambda: validate_recovered_basis(command, forged,
+                catalog_basis=command["catalog_context"], policy_basis=command_policy_basis(command))),
+        ):
+            with self.subTest(boundary=name), self.assertRaises(ValueError):
+                consumer()
+
+    def test_review_f3_producer_result_rejects_corrupt_owner_edge_at_all_consumers(self):
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            SourceCommandFixture,
+            _candidate,
+            _interpreter_result,
+            _proposal,
+            _resolution_source,
+        )
+        from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
+        from GAME.TOOLS.mechanics import ExecutionStore
+        from GAME.TOOLS.publication import _accepted_identity
+        from GAME.TOOLS.recovery import validate_recovered_basis
+        from GAME.TOOLS.runtime_execution import command_policy_basis
+
+        source = SourceCommandFixture()
+        self.addCleanup(source.doCleanups)
+        command = source.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        result = source.execute_from_sources(command, _resolution_source(command), event_payload={}, store=ExecutionStore())
+        promise = freeze_save_promise(evaluate_durability(campaign_id="campaign-000001", scope="accepted_execution",
+            dirty_roots=("runtime.command:" + command["command_id"],), currentness_evidence={"head_sha": H}),
+            owner_generations={})
+        consumers = {
+            "publication": lambda value: _accepted_identity(command, value),
+            "durability": lambda value: join_execution_durability(command, value, promise,
+                routed_operation=route_serialized_operation("runtime.command", command["command_id"], command)),
+            "recovery": lambda value: validate_recovered_basis(command, value,
+                catalog_basis=command["catalog_context"], policy_basis=command_policy_basis(command)),
+        }
+        for consumer in consumers.values():
+            consumer(result)
+        validate_recovered_basis(command, result, catalog_basis=command["catalog_context"],
+            policy_basis=command_policy_basis(command), resolution=result["resolution"])
+        with self.assertRaises(ValueError):
+            validate_recovered_basis(command, result, catalog_basis=command["catalog_context"],
+                policy_basis=command_policy_basis(command), resolution=dict(result["resolution"], schema_version=999))
+        for label, mutate in (
+            ("foreign native R", lambda r: r["resolution"].update(resolution_id="foreign")),
+            ("prospective segment", lambda r: r["segment"].update(commit_state="prospective")),
+            ("missing embedded segment", lambda r: r["resolution"].update(segments=[])),
+            ("unsupported segment schema", lambda r: r["segment"].update(schema_version=999)),
+            ("unsupported R schema", lambda r: r["resolution"].update(schema_version=999)),
+            ("unsupported receipt shape", lambda r: r["receipt"].update(schema_version=999)),
+            ("foreign receipt segment", lambda r: r["receipt"].update(segment_refs=["foreign:segment:1"])),
+            ("different embedded segment", lambda r: r["resolution"]["segments"][0].update(receipt_exports={"invented": 1})),
+        ):
+            wrong = deepcopy(result)
+            mutate(wrong)
+            self.assertEqual(wrong["execution_identity"], result["execution_identity"])
+            for name, consumer in consumers.items():
+                with self.subTest(case=label, boundary=name), self.assertRaises(ValueError):
+                    consumer(wrong)
+
+    def test_join_rejects_stale_command_schema_and_mixed_variant_before_identity_escape(self):
+        command = _accepted_command()
+        promise = freeze_save_promise(evaluate_durability(campaign_id="campaign-000001",
+            scope="accepted_execution", dirty_roots=("runtime.command:command-000001",),
+            currentness_evidence={"head_sha": H}), owner_generations={})
+        for wrong in (dict(command, schema_version=3), dict(command, schema_version=True),
+                      dict(command, input_fingerprint_generation=2),
+                      dict(command, transition_request={})):
+            with self.subTest(command=wrong), self.assertRaises(DurabilityContractError):
+                join_execution_durability(wrong, _execution(), promise,
+                    routed_operation=route_serialized_operation("runtime.command", "command-000001", wrong))
+
+    def test_exact_join_policy_projection_recovers_without_flattened_revision_alias(self):
+        from GAME.TOOLS.recovery import validate_recovered_basis
+
+        joined = _execution_join()
+        recovered = validate_recovered_basis(_accepted_command(), _execution(),
+            catalog_basis=joined.to_dict()["catalog_basis"], policy_basis=joined.to_dict()["policy_basis"])
+        self.assertEqual(recovered.execution_identity, joined.to_dict()["execution_identity"])
+        self.assertEqual(recovered.fixed_rng_values, (17,))
+
     def test_join_keeps_accepted_identity_fixed_rng_catalog_and_policy_basis(self) -> None:
         evaluation = evaluate_durability(
             campaign_id="campaign-000001",
@@ -898,10 +1134,10 @@ class ExecutionDurabilityJoinTests(unittest.TestCase):
         promise = freeze_save_promise(evaluation, owner_generations={})
         joined = _execution_join()
 
-        self.assertEqual(joined.command_id, "command-000001")
-        self.assertEqual(joined.input_fingerprint, "a" * 64)
+        self.assertEqual(joined.execution_identity["command_id"], "command-000001")
+        self.assertEqual(joined.execution_identity["input_fingerprint"], _accepted_command()["input_fingerprint"])
         self.assertEqual(joined.fixed_rng_values, (17,))
-        self.assertEqual(joined.catalog_basis["catalog_generation"], 2)
+        self.assertEqual(joined.catalog_basis["basis"]["catalog_generation"], 2)
         self.assertEqual(joined.policy_basis_refs, (f"policy.social_leverage@{H}",))
         self.assertTrue(is_execution_durability_join(joined))
         self.assertEqual(joined.accepted_command["command_id"], "command-000001")

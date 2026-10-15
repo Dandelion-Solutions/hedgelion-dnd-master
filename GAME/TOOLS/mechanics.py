@@ -18,9 +18,16 @@ from dataclasses import dataclass
 from threading import RLock
 from typing import Final, Protocol
 
+from .current_owner import CurrentOwnerObservation
+from .runtime_execution import (
+    _bound_input_origin,
+    _validate_native_command_projection,
+    command_input_fingerprint,
+    execution_identity,
+)
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 _DIGEST_GENERATION: Final = 1
 _ID_PATTERN: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _EVENT_KIND_PATTERN: Final = re.compile(r"^event\.[a-z][a-z0-9_.]*$")
@@ -43,20 +50,6 @@ _ROLL_FIELDS: Final = frozenset(
     {"roll_id", "request_id", "expression", "raw_values", "source_kind", "provenance_ref"}
 )
 _ROLL_SOURCES: Final = frozenset({"rng.system", "rng.player", "rng.external"})
-_ACCEPTED_INPUT_FIELDS: Final = frozenset(
-    {
-        "command_kind",
-        "catalog_context_fingerprint",
-        "invocation_facts",
-        "action_request",
-        "interpreter_result",
-        "interpreter_result_fingerprint_generation",
-        "interpreter_result_fingerprint",
-        "catalog_context",
-        "candidate_binding",
-    }
-)
-_RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/2\n"
 _FORBIDDEN_RESOLUTION_FIELDS: Final = frozenset(
     {
         "world_state",
@@ -237,6 +230,7 @@ def execute_segment(
     accepted_command: Mapping[str, object],
     resolution: Mapping[str, object],
     *,
+    input_observation: CurrentOwnerObservation,
     target_segment_id: str | None = None,
     rng: RngProvider | None = None,
     roll_request: Mapping[str, object] | None = None,
@@ -257,7 +251,9 @@ def execute_segment(
     already committed segment; otherwise the resolution's next segment is
     advanced.
     """
-    command_id, input_fingerprint, root_resolution_id = _accepted_identity(accepted_command)
+    command_id, input_fingerprint, root_resolution_id = _accepted_identity(accepted_command, input_observation)
+    if accepted_command.get("command_kind") != "action":
+        raise ExecutionContractError("direct native establishment requires its admitted native builder")
     checked_resolution = _mapping_copy(resolution, "resolution")
     _reject_fields(checked_resolution, _FORBIDDEN_RESOLUTION_FIELDS, "resolution")
     resolution_id = _require_id(
@@ -352,6 +348,8 @@ def execute_segment(
             existing,
         )
 
+    # Stored retry above validates historical input without granting fresh agency.
+    _bound_input_origin(accepted_command, input_observation)
     checkpoint = rng._checkpoint() if isinstance(rng, FixedRng) else None
     try:
         roll_result = fixed_roll
@@ -372,6 +370,7 @@ def execute_segment(
         if procedure_id is not None:
             event["procedure_id"] = procedure_id
         segment: dict[str, object] = {
+            "schema_version": 1,
             "segment_id": segment_id,
             "segment_sequence": sequence,
             "commit_state": "committed",
@@ -399,6 +398,8 @@ def execute_segment(
             "event": event,
             "event_id": event_id,
             "receipt": receipt,
+            "execution_identity": execution_identity(accepted_command,
+                execution_owner_kind="runtime.resolution", execution_owner_id=resolution_id, segment=segment),
         }
         if roll_result is not None:
             result["roll_result"] = roll_result
@@ -429,6 +430,7 @@ def resolve_mechanic(
     accepted_command: Mapping[str, object],
     resolution: Mapping[str, object],
     *,
+    input_observation: CurrentOwnerObservation,
     rng: RngProvider | None = None,
     roll_request: Mapping[str, object] | None = None,
     event_kind: str = "event.execution.committed",
@@ -442,6 +444,7 @@ def resolve_mechanic(
     return execute_segment(
         accepted_command,
         resolution,
+        input_observation=input_observation,
         rng=rng,
         roll_request=roll_request,
         event_kind=event_kind,
@@ -457,6 +460,7 @@ def resume_accepted_execution(
     accepted_command: Mapping[str, object],
     resolution: Mapping[str, object],
     *,
+    input_observation: CurrentOwnerObservation,
     target_segment_id: str | None = None,
     rng: RngProvider | None = None,
     roll_request: Mapping[str, object] | None = None,
@@ -475,6 +479,7 @@ def resume_accepted_execution(
     return execute_segment(
         accepted_command,
         resolution,
+        input_observation=input_observation,
         target_segment_id=target_segment_id,
         rng=rng,
         roll_request=roll_request,
@@ -519,19 +524,26 @@ def close_resolution(
     return closed
 
 
-def _accepted_identity(value: Mapping[str, object]) -> tuple[str, str, str]:
+def _accepted_identity(value: Mapping[str, object], observation: CurrentOwnerObservation) -> tuple[str, str, str]:
     command = _require_mapping(value, "accepted command")
     command_id = _require_id(command.get("command_id"), "accepted command command_id")
     fingerprint = command.get("input_fingerprint")
     if not isinstance(fingerprint, str) or _SHA256_PATTERN.fullmatch(fingerprint) is None:
         raise ExecutionContractError("accepted command input_fingerprint must be a SHA-256 digest")
-    if not _ACCEPTED_INPUT_FIELDS.issubset(command):
-        raise ExecutionContractError("accepted command is missing input fingerprint basis")
-    expected_fingerprint = _accepted_input_fingerprint(command)
+    if type(command.get("input_fingerprint_generation")) is not int or command["input_fingerprint_generation"] != 3:
+        raise ExecutionContractError("accepted command requires input fingerprint generation3")
+    try:
+        origin = _bound_input_origin(command, observation, current_authority=False)
+        _validate_native_command_projection(command, observation)
+        expected_fingerprint = command_input_fingerprint(command, origin=origin)
+    except (KeyError, TypeError, ValueError) as error:
+        raise ExecutionContractError("accepted command has no exact native input source basis") from error
     if fingerprint != expected_fingerprint:
         raise ExecutionConflict("accepted command input fingerprint differs from basis")
     if command.get("disposition") not in {"command.accepted", "command.settled"}:
         raise ExecutionContractError("accepted command has no executable disposition")
+    if command.get("command_kind") == "transition":
+        return command_id, fingerprint, command_id
     action_request = _require_mapping(command.get("action_request"), "accepted command action_request")
     _require_id(action_request.get("activity_id"), "accepted command action_request activity_id")
     _require_id(action_request.get("actor_id"), "accepted command action_request actor_id")
@@ -894,6 +906,7 @@ def _resolution_with_segment(
     resolution: Mapping[str, object], segment: Mapping[str, object], roll_result: Mapping[str, object] | None
 ) -> dict[str, object]:
     result = _mapping_copy(resolution, "resolution")
+    result["schema_version"] = 1
     segments = result.get("segments", [])
     if not isinstance(segments, Sequence) or isinstance(segments, (str, bytes)):
         raise ExecutionContractError("resolution segments must be an array")
@@ -953,14 +966,6 @@ def _existing_roll_result(
         if candidate["request_id"] == request["request_id"]:
             return candidate
     return None
-
-
-def _accepted_input_fingerprint(command: Mapping[str, object]) -> str:
-    material = {key: _json_copy(command[key], f"accepted command {key}") for key in _ACCEPTED_INPUT_FIELDS}
-    encoded = json.dumps(
-        material, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False
-    ).encode("utf-8")
-    return hashlib.sha256(_RUNTIME_COMMAND_INPUT_DOMAIN + encoded).hexdigest()
 
 
 def _digest(value: Mapping[str, object]) -> str:

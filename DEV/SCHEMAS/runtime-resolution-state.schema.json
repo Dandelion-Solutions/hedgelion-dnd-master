@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "root_command_id", "activity_id", "actor_id",
     "ruleset_set_digest_generation", "ruleset_set_sha256",
     "catalog_context_fingerprint_generation", "catalog_context_fingerprint", "status",
@@ -12,6 +13,7 @@
     "prior_step_exports", "child_resolution_ids", "segments"
   ],
   "properties": {
+    "schema_version": {"const": 1},
     "root_command_id": {"type": "string", "minLength": 1},
     "initiating_command_id": {"type": "string", "minLength": 1},
     "causal_invocation_key": {"type": "string", "minLength": 1},
@@ -124,6 +126,7 @@
   },
   "examples": [
     {
+      "schema_version": 1,
       "root_command_id": "turn-000042-cmd-01",
       "initiating_command_id": "turn-000042-cmd-01",
       "activity_id": "activity.attack.basic",

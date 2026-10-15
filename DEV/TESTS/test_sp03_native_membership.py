@@ -176,6 +176,8 @@ def _write_routed(
     from GAME.TOOLS.native_storage import route_native_record
 
     route = route_native_record(family, (record["id"],))
+    if family == "runtime.resolution":
+        record.setdefault("schema_version", 1)
     repository.write(route.relative_path, record)
 
 
@@ -187,7 +189,7 @@ def _actor_record() -> dict[str, object]:
     return actor
 
 
-def _accepted_command(catalog, compiled):
+def _accepted_command(catalog, compiled, host):
     from DEV.TESTS.test_rd05_runtime_execution import _interpreter_result, _proposal
     from GAME.TOOLS.runtime_execution import accept_command
 
@@ -199,11 +201,22 @@ def _accepted_command(catalog, compiled):
         catalog.catalog_context,
         {"definition_id": compiled.activity_id, "kind": "definition.activity"},
         proposal,
+        input_observation=host._current_owner._observe_command_input(proposal),
     )
 
 
 def _context(catalog, compiled, host):
-    accepted = _accepted_command(catalog, compiled)
+    from DEV.TESTS.test_rd05_runtime_execution import _proposal
+    from DEV.TESTS.test_sp03_authenticated_input import seed_trusted_input_sources
+    from GAME.TOOLS.runtime_host import compose_runtime_host
+
+    proposal = _proposal(compiled.activity_id)
+    proposal["action_request"].update(actor_id=ACTOR_ID, target_ids=[])
+    adapter, _ = seed_trusted_input_sources(host._repository, proposal,
+        host._repository.root.parent / "accepted-exchange.json")
+    host = compose_runtime_host(CAMPAIGN_ID, host._repository, host._live_transport,
+        host._publication_transport, hot_owner_store=host._hot_store, accepted_input_capability=adapter)
+    accepted = _accepted_command(catalog, compiled, host)
     resolution = {
         "root_command_id": accepted["command_id"],
         "initiating_command_id": accepted["command_id"],
@@ -268,6 +281,49 @@ class PinnedMembershipTests(unittest.TestCase):
 
         cls.catalog = authentic_generic_catalog()
         cls.compiled = compile_activity(cls.catalog, "activity.check.generic")
+
+    def test_review_f2_complete_route_is_shared_by_root_and_membership_checks(self):
+        from GAME.TOOLS import activity_contracts, mechanical_sources
+        from GAME.TOOLS.current_owner import NativeOwnerRef
+        from GAME.TOOLS.hot_store import NativeHotStore
+        from GAME.TOOLS.native_storage import route_native_record
+
+        with tempfile.TemporaryDirectory(prefix="sp03-complete-route-") as temporary:
+            repository = self._repository(Path(temporary) / "campaign.git")
+            with NativeHotStore(":memory:") as store:
+                _host, initial = self._host_context(repository, store)
+                host = initial.observation.operation_token.host
+                pin = repository.pin_campaign(CAMPAIGN_ID)
+                player = repository.read_exact_path(pin, route_native_record("world.player", ("player-1",)).relative_path)
+                other = deepcopy(player)
+                other["id"] = other["state"]["player_id"] = "player-2"
+                other["state"]["github_binding"]["user_id"] = "999"
+                other["state"]["controlled_pc_ids"] = []
+                _write_routed(repository, "world.player", other)
+                manifest = repository.read_exact_path(pin, "MANIFEST.yaml")
+                manifest["players"]["player_ids"].append("player-2")
+                repository.write("MANIFEST.yaml", manifest)
+                route = repository.read_exact_path(pin, "STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml")
+                route["entries"].append({"stable_account_id": "999", "candidate_player_ids": ["player-2"]})
+                repository.write("STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml", route)
+                repository.commit("retain complete two-account source nomination")
+
+                def prepare():
+                    return host._current_owner._prepare_root_context(self.catalog, self.compiled,
+                        command_id=initial.accepted_command["command_id"], consumer_id=initial.consumer_id)
+
+                context = prepare()
+                member = mechanical_sources.prepare_membership(context)
+                other_ref = NativeOwnerRef("world.player", ("player-2",))
+                self.assertIn(other_ref, context.observation.key_union)
+                self.assertIn(other_ref, member.p0_observation.key_union)
+                self.assertTrue(mechanical_sources.revalidate_membership(member, context))
+                other["state"]["github_binding"]["user_id"] = "123"
+                _write_routed(repository, "world.player", other)
+                repository.commit("misbucket duplicate binding under foreign account")
+                self.assertFalse(mechanical_sources.revalidate_membership(member, context))
+                with self.assertRaises(activity_contracts.NativePreparationHold):
+                    prepare()
 
     def test_real_installed_compiler_discovers_records_omitted_from_indexes(self):
         from DEV.TESTS.test_w05_t06_p0_actor_producer import _selected_host
@@ -583,7 +639,34 @@ class PinnedMembershipTests(unittest.TestCase):
         from DEV.TESTS.test_w05_t06_p0_actor_producer import _selected_host
 
         host, _ = _selected_host(store, repository=repository, live=live)
-        return host, _context(self.catalog, self.compiled, host)
+        context = _context(self.catalog, self.compiled, host)
+        return context.observation.operation_token.host, context
+
+    def test_native_hot_actor_with_expanded_input_union_keeps_pinned_family_coverage(self):
+        from DEV.TESTS.test_w05_t06_p0_actor_producer import _actor_phase
+        from GAME.TOOLS import mechanical_sources
+        from GAME.TOOLS.current_owner import CurrentOwnerSource, NativeOwnerRef
+        from GAME.TOOLS.hot_store import NativeHotStore
+
+        with tempfile.TemporaryDirectory(prefix="sp03-membership-hot-actor-") as temporary:
+            repository = self._repository(Path(temporary) / "campaign.git")
+            with NativeHotStore(":memory:") as store:
+                host, context = self._host_context(repository, store)
+                envelope, phase = _actor_phase(host, _actor_record(),
+                    frontier_id="revision." + repository.pin_campaign(CAMPAIGN_ID).revision)
+                established = host.actor_continuity.establish_from_phase(envelope, phase)
+                self.assertEqual(established.status.value, "ESTABLISHED")
+                context = host._current_owner._prepare_root_context(self.catalog, self.compiled,
+                    command_id=context.execution_ref.command_id, consumer_id=self.compiled.instructions[0].consumer_id)
+                observation = mechanical_sources.prepare_membership(context)
+                self.assertIs(observation.p0_observation.require(
+                    NativeOwnerRef("world.actor", (ACTOR_ID,))).source, CurrentOwnerSource.ACCEPTED_HOT)
+                self.assertIn(NativeOwnerRef("runtime.interaction", (context.accepted_command["interaction_id"],)),
+                    observation.p0_observation.key_union)
+                for ref in observation.p0_observation.key_union:
+                    if ref.family_key in {"world.effect", "world.asset"}:
+                        self.assertIs(observation.p0_observation.require(ref).source,
+                            CurrentOwnerSource.PINNED_CAMPAIGN)
 
     def test_absent_record_subtrees_are_proven_empty_and_issued(self):
         from GAME.TOOLS import mechanical_sources

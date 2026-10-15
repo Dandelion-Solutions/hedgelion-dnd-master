@@ -15,6 +15,9 @@
     "damage_input_bindings": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/$defs/damageInputBinding"}}
   },
   "$defs": {
+    "acceptedInputOriginInfrastructure": {
+      "const": {"contract_id": "infrastructure.accepted_input_origin", "contract_generation": 1}
+    },
     "damageInputBinding": {
       "type": "object",
       "additionalProperties": false,

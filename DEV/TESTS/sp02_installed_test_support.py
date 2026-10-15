@@ -63,5 +63,5 @@ def authentic_generic_catalog():
             "package_content_sha256": lock["packages"][0]["content_sha256"]} for identity in identities],
     }
     return activity_runtime.admit_activity_catalog(request, package_snapshots=snapshots,
-        engine_contract_inventory_source=source, natural_owner_sources={}, compiler_generation=1,
+        engine_contract_inventory_source=source, natural_owner_sources={}, compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521")

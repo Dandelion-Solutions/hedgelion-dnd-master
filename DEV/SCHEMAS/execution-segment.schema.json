@@ -5,10 +5,12 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "segment_id", "segment_sequence", "commit_state", "resulting_execution_state", "event_ids",
     "pending_child_invocations", "receipt_exports", "affected_revision_refs"
   ],
   "properties": {
+    "schema_version": {"const": 1},
     "segment_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
     "segment_sequence": {"type": "integer", "minimum": 1},
     "commit_state": {"const": "committed"},
@@ -45,6 +47,7 @@
   },
   "examples": [
     {
+      "schema_version": 1,
       "segment_id": "resolution-0000001:segment:1",
       "segment_sequence": 1,
       "commit_state": "committed",

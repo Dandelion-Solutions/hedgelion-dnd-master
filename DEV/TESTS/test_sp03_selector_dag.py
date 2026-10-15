@@ -367,18 +367,14 @@ def _evaluate(context):
 with tempfile.TemporaryDirectory(prefix="sp03-selector-dag-") as temporary:
     repository = _native_fixture(Path(temporary) / "campaign.git", health=True)
     with NativeHotStore(":memory:") as store:
-        host, _source = _selected_host(store, repository=repository)
         if set(compiled.role_contracts) != {"actor", "target"}:
             raise AssertionError("fixture roles must be source-bindable actor/target only")
         proposal = _proposal(compiled.activity_id)
         proposal["action_request"]["actor_id"] = ACTOR_ID
         proposal["action_request"]["target_ids"] = ["actor.target"]
-        accepted = accept_command(
-            _interpreter_result(),
-            catalog.catalog_context,
-            {"definition_id": compiled.activity_id, "kind": "definition.activity"},
-            proposal,
-        )
+        from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+        accepted, input_adapter = prepare_trusted_git_command(repository, proposal, catalog.catalog_context)
+        host, _source = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
         _seed_native_root(repository, accepted, compiled)
         root_consumer = compiled.instructions[0].consumer_id
         child_consumer = compiled.instructions[1].children[0].consumer_id
@@ -457,9 +453,12 @@ with tempfile.TemporaryDirectory(prefix="sp03-selector-dag-") as temporary:
         else:
             raise AssertionError("caller-created child Resolution acquired issuance")
     missing_repository = _native_fixture(Path(temporary) / "campaign-missing.git", health=False)
+    missing_accepted, missing_adapter = prepare_trusted_git_command(missing_repository, proposal, catalog.catalog_context)
+    assert missing_accepted == accepted
     _seed_native_root(missing_repository, accepted, compiled)
     with NativeHotStore(":memory:") as missing_store:
-        missing_host, _source = _selected_host(missing_store, repository=missing_repository)
+        missing_host, _source = _selected_host(missing_store, repository=missing_repository,
+            accepted_input_capability=missing_adapter)
         missing_context = missing_host._current_owner._prepare_root_context(
             catalog, compiled, command_id=accepted["command_id"],
             consumer_id=root_consumer,

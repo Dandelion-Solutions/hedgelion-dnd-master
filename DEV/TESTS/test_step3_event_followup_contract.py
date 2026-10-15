@@ -51,6 +51,7 @@ class Step3EventFollowupContractTest(unittest.TestCase):
 
     def test_committed_segment_can_atomically_carry_mandatory_followup(self):
         segment = {
+            "schema_version": 1,
             "segment_id": "event-00000001:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",

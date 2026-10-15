@@ -388,7 +388,7 @@ def _actual_check_catalog(
         package_snapshots=_package_snapshots(),
         engine_contract_inventory_source=source,
         natural_owner_sources=_natural_owner_sources(request),
-        compiler_generation=1,
+        compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521",
     )
 
@@ -688,6 +688,12 @@ def test_real_source_binder_compiler_and_accept_command_route(
     script = """
 import json
 from pathlib import Path
+import os, sys, types
+game = types.ModuleType("GAME")
+game.__path__ = [str(Path.cwd())]
+sys.modules["GAME"] = game
+sys.path.append(sys.argv[1])
+os.environ["HDM_INSTALLED_STRUCTURAL_TEST"] = str(Path.cwd())
 from TOOLS.activity_runtime import admit_activity_catalog, compile_activity
 from TOOLS.catalog_runtime import load_activity_compiler_contract_source, _thaw
 from TOOLS.ruleset_package import build_resolved_lock, load_json_bytes
@@ -744,11 +750,13 @@ catalog = admit_activity_catalog(
     package_snapshots=snapshots,
     engine_contract_inventory_source=source,
     natural_owner_sources={},
-    compiler_generation=1,
+    compiler_generation=2,
     mode_policy_profile_id="execution.spell_cast.srd521",
 )
 compiled = compile_activity(catalog, activity_id)
-accepted = accept_command(
+from DEV.TESTS.test_rd05_runtime_execution import SourceCommandFixture
+input_source = SourceCommandFixture()
+accepted = input_source.accept_from_sources(
     {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-sp02",
      "source_generation": "frontier-sp02", "intent": "use Innate Sorcery"},
     catalog.catalog_context,
@@ -758,12 +766,14 @@ accepted = accept_command(
      "action_request": {"activity_id": activity_id, "actor_id": "actor.sp02"},
      "root_resolution_id": "resolution.sp02"},
 )
+input_source.doCleanups()
 assert compiled.activity_id == activity_id
 assert accepted["action_request"]["activity_id"] == activity_id
 print(json.dumps({"runtime_root": str(source.runtime_root), "activity_id": compiled.activity_id,
                   "instruction_count": len(compiled.instructions), "accepted_command_id": accepted["command_id"]}))
 """
-    result = _run_installed_runtime_probe(installed_runtime_root, script)
+    result = _run_installed_runtime_probe(installed_runtime_root,
+        script.replace("from TOOLS.", "from GAME.TOOLS."), str(ROOT))
     assert result.returncode == 0, result.stderr or result.stdout
     evidence = json.loads(result.stdout)
     assert evidence["runtime_root"] == str(installed_runtime_root.resolve())
@@ -860,7 +870,7 @@ def test_dormant_primitive_source_is_retained_but_never_compiled(
         package_snapshots=_package_snapshots(),
         engine_contract_inventory_source=source,
         natural_owner_sources=natural_sources,
-        compiler_generation=1,
+        compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521",
     )
 
@@ -995,7 +1005,7 @@ def test_card_lookup_is_narrowed_by_actual_actor_availability_source(
         package_snapshots=_package_snapshots(),
         engine_contract_inventory_source=source,
         natural_owner_sources=natural_sources,
-        compiler_generation=1,
+        compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521",
     )
     compiled_before = dict(catalog.compiled_activities)
@@ -1129,7 +1139,7 @@ def test_missing_transitive_definition_edge_and_cycle_reject_cold_catalog(
             package_snapshots=snapshots,
             engine_contract_inventory_source=source,
             natural_owner_sources=missing_sources,
-            compiler_generation=1,
+            compiler_generation=2,
             mode_policy_profile_id="execution.spell_cast.srd521",
         )
 
@@ -1167,7 +1177,7 @@ def test_missing_transitive_definition_edge_and_cycle_reject_cold_catalog(
             package_snapshots=snapshots,
             engine_contract_inventory_source=source,
             natural_owner_sources=cycle_sources,
-            compiler_generation=1,
+            compiler_generation=2,
             mode_policy_profile_id="execution.spell_cast.srd521",
         )
 
@@ -1233,7 +1243,7 @@ def test_selected_profile_registration_does_not_admit_an_occurrence(
         package_snapshots=_package_snapshots(),
         engine_contract_inventory_source=source,
         natural_owner_sources=natural_sources,
-        compiler_generation=1,
+        compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521",
     )
 
@@ -1296,7 +1306,7 @@ request = {
 catalog = admit_activity_catalog(
     request, package_snapshots=snapshots,
     engine_contract_inventory_source=source, natural_owner_sources={},
-    compiler_generation=1, mode_policy_profile_id="execution.spell_cast.srd521",
+    compiler_generation=2, mode_policy_profile_id="execution.spell_cast.srd521",
 )
 compiled = compile_activity(catalog, activity_id)
 member = package_root / "character-mvp-seed.json"
@@ -1315,7 +1325,7 @@ try:
     admit_activity_catalog(
         request, package_snapshots=snapshots,
         engine_contract_inventory_source=source, natural_owner_sources={},
-        compiler_generation=1, mode_policy_profile_id="execution.spell_cast.srd521",
+        compiler_generation=2, mode_policy_profile_id="execution.spell_cast.srd521",
     )
 except ActivityRuntimeError as error:
     assert "catalog source binding failed" in str(error), str(error)
@@ -1393,7 +1403,7 @@ def test_compiled_cache_identity_separates_every_typed_source_axis(
         "catalog_context_fingerprint_generation": 1,
         "catalog_context_fingerprint": "c" * 64,
         "engine_contract_inventory_sha256": "d" * 64,
-        "compiler_generation": 1,
+        "compiler_generation": 2,
         "mode_policy_profile_id": "execution.spell_cast.srd521",
     }
     baseline = key_builder(identity)
@@ -1406,7 +1416,7 @@ def test_compiled_cache_identity_separates_every_typed_source_axis(
         "catalog_context_fingerprint_generation": 2,
         "catalog_context_fingerprint": "0" * 64,
         "engine_contract_inventory_sha256": "1" * 64,
-        "compiler_generation": 2,
+        "compiler_generation": 3,
         "mode_policy_profile_id": "execution.spell_cast.ritual",
     }
     for field_name, changed_value in changed_axes.items():
@@ -1534,7 +1544,7 @@ def _recipe_catalog(installed_root, record, dependencies=None):
     return runtime.admit_activity_catalog(
         request, package_snapshots=snapshots,
         engine_contract_inventory_source=source, natural_owner_sources=sources,
-        compiler_generation=1, mode_policy_profile_id="execution.spell_cast.srd521",
+        compiler_generation=2, mode_policy_profile_id="execution.spell_cast.srd521",
     )
 
 
@@ -1658,7 +1668,7 @@ for row in records:
     members[evidence["route"]] = raw
 request = {"basis":{"catalog_generation":2,"engine_version":"1.0-alpha","engine_contract_inventory":_thaw(source.engine_contract_inventory),"engine_contract_inventory_sha256":source.engine_contract_inventory["inventory_sha256"],"ruleset_lock":lock,"campaign_definition_frontier":frontier,"natural_owner_evidence":evidence_rows},"definition_dependencies":[{"source_type":"ruleset_package","definition_id":key,"kind":kind,"package_id":package_id,"package_content_sha256":lock["packages"][0]["content_sha256"]} for key,kind in dependency_kinds.items()] + [{"source_type":"natural_owner",**{key:value for key,value in evidence.items() if key != "content_sha256"},"evidence_sha256":sha256(NATURAL_OWNER_EVIDENCE_DOMAIN+canonical_json(evidence))} for evidence in evidence_rows]}
 sources = {"campaign":{"selected_frontier":frontier,"members":evidence_rows,"immutable_member_bytes":members}}
-catalog = admit_activity_catalog(request, package_snapshots=snapshots,engine_contract_inventory_source=source,natural_owner_sources=sources,compiler_generation=1,mode_policy_profile_id="execution.spell_cast.srd521")
+catalog = admit_activity_catalog(request, package_snapshots=snapshots,engine_contract_inventory_source=source,natural_owner_sources=sources,compiler_generation=2,mode_policy_profile_id="execution.spell_cast.srd521")
 compiled = compile_activity(catalog,identity)
 '''
 
@@ -1790,7 +1800,7 @@ def test_tactical_mind_explicit_owner_template_preserves_fixed_prior_and_success
     request, snapshots = _installed_package_context(installed_runtime_root, source, {
         "activity.feature.tactical_mind": "definition.activity", "resource.second_wind": "definition.resource"})
     catalog = runtime.admit_activity_catalog(request, package_snapshots=snapshots,
-        engine_contract_inventory_source=source, natural_owner_sources={}, compiler_generation=1,
+        engine_contract_inventory_source=source, natural_owner_sources={}, compiler_generation=2,
         mode_policy_profile_id="execution.spell_cast.srd521")
     compiled = runtime.compile_activity(catalog, "activity.feature.tactical_mind")
     template = compiled.symbol_contracts["compiled.d10_plus_prior_check_total"]["template"]
@@ -1967,7 +1977,7 @@ def test_source_subclass_cannot_override_exact_source_issuance(installed_runtime
         "activity.check.generic": "definition.activity"})
     with pytest.raises(runtime.ActivityRuntimeError, match="authenticated package source"):
         runtime.admit_activity_catalog(request, package_snapshots=snapshots,
-            engine_contract_inventory_source=spoofed, natural_owner_sources={}, compiler_generation=1,
+            engine_contract_inventory_source=spoofed, natural_owner_sources={}, compiler_generation=2,
             mode_policy_profile_id="execution.spell_cast.srd521")
 
 

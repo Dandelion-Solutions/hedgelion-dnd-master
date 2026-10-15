@@ -228,6 +228,7 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
             live_transport,
             publication_transport,
             hot_owner_store=hot_owner_store,
+            accepted_input_capability=None,
         )
 
     def test_unselected_or_new_game_selection_cannot_compose_gameplay_host(
@@ -295,6 +296,7 @@ class CampaignSelectionBarrierTests(unittest.TestCase):
             live_transport,
             publication_transport,
             hot_owner_store=hot_owner_store,
+            accepted_input_capability=None,
         )
 
     def test_host_composition_is_not_a_gameplay_request_dependency(self) -> None:
@@ -316,7 +318,7 @@ class InitialCampaignPublicationTests(unittest.TestCase):
     def test_bootstrap_module_version_tracks_material_publication_contract(
         self,
     ) -> None:
-        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.5")
+        self.assertEqual(getattr(bootstrap, "FRAMEWORK_MODULE_VERSION", None), "1.0.6")
 
     def test_freeze_initial_publication_copies_exact_generated_file_identity(
         self,

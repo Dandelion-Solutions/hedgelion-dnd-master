@@ -37,8 +37,8 @@ from .live_state import LiveRouting
 from .native_storage import ROUTE_PREFIX, route_native_record
 from .policy_basis import PinnedCampaign
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 
 _FAMILY_ROOTS: Final = MappingProxyType(
     {
@@ -482,6 +482,8 @@ def revalidate_membership(
         )
         if not observation._owner_session.revalidate(observation.p0_observation):
             return False
+        mechanical_context._accepted_command(context.compiled, context.accepted_command,
+            observation.p0_observation)
         repo_path = _conformance_repository_path(observation._owner_session, context)
         pinned = observation._owner_session._pinned_campaign
         if type(pinned) is not PinnedCampaign or (
@@ -557,7 +559,7 @@ def _validate_context(
     try:
         roles = mechanical_context._roles(compiled, context.role_bindings)
         command = mechanical_context._accepted_command(
-            compiled, context.accepted_command
+            compiled, context.accepted_command, session.observation
         )
     except (KeyError, TypeError, ValueError) as error:
         raise MechanicalSourceError(
@@ -1172,8 +1174,6 @@ def _require_p0_reads(
         read = observation.require(owner_ref)
         if (
             read.status is not CurrentOwnerStatus.RESOLVED
-            or read.source is not CurrentOwnerSource.PINNED_CAMPAIGN
-            or read.source_basis != pinned.revision
             or read.payload is None
             or not read.fingerprint
         ):
@@ -1182,6 +1182,21 @@ def _require_p0_reads(
                 "AUTHORITY_UNAVAILABLE",
                 "membership requires complete exact pinned-campaign P0 reads",
             )
+        # Only enumerated families are constrained to the exact Git coverage.
+        # Infrastructure and native role owners retain P0's selected source law;
+        # a genuinely admitted HOT Actor does not invalidate pinned Asset/Effect
+        # enumeration, and cannot certify either family's completeness.
+        if owner_ref.family_key in _FAMILY_ROOTS and (
+            read.source is not CurrentOwnerSource.PINNED_CAMPAIGN
+            or read.source_basis != pinned.revision
+        ):
+            _hold(context, "AUTHORITY_UNAVAILABLE", "membership family is not the enumerated pinned source")
+    if not session.revalidate(observation):
+        _hold(context, "REVALIDATION_REQUIRED", "membership accumulated source union moved")
+    try:
+        mechanical_context._accepted_command(context.compiled, context.accepted_command, observation)
+    except (KeyError, TypeError, ValueError) as error:
+        raise _hold_error(context, "AUTHORITY_UNAVAILABLE", "membership input authority moved") from error
     return observation
 
 

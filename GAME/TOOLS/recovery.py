@@ -15,6 +15,7 @@ from enum import Enum
 from typing import Final, Protocol
 
 from .catalog_runtime import BoundCatalogContext, CatalogBindingError
+from .current_owner import CurrentOwnerObservation
 from .native_storage import NativeStorageError, route_native_record
 from .policy_basis import (
     PinnedCampaign,
@@ -28,14 +29,13 @@ from .recovery_roots import (
 from .runtime_execution import (
     CommandAcceptanceError,
     input_native_state,
-    validate_execution_proposal,
     validate_input_closure,
     validate_input_interaction,
     validate_input_resolution,
 )
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final = "1.0.7"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _NATIVE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
@@ -138,16 +138,16 @@ class CheckpointDescriptor:
 class RecoveredExecution:
     """Accepted execution evidence returned without replay or reallocation."""
 
-    command_id: str
-    input_fingerprint: str
-    resolution_id: str
-    segment_id: str
-    event_id: str
+    execution_identity: Mapping[str, object]
     fixed_rng_values: tuple[int, ...]
     catalog_basis: Mapping[str, object]
     policy_basis: Mapping[str, object]
     accepted_command: Mapping[str, object]
     execution: Mapping[str, object]
+
+    @property
+    def command_id(self) -> str:
+        return self.execution_identity["command_id"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -519,16 +519,31 @@ def validate_recovered_basis(
 
     command = _mapping_or_failure(accepted_command, "accepted command")
     result = _mapping_or_failure(execution, "execution evidence")
+    from .runtime_execution import command_policy_basis, execution_result_identity
+
+    try:
+        identity = execution_result_identity(command, result)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RecoveryFailure("native execution identity closure is corrupt", code=RecoveryFailureCode.CORRUPT) from exc
+    if command.get("command_kind") == "transition":
+        if resolution is not None:
+            raise RecoveryFailure("direct execution cannot hydrate a Resolution", code=RecoveryFailureCode.CORRUPT)
+        accepted_catalog = _mapping_or_failure(command.get("catalog_context"), "catalog context")
+        if dict(accepted_catalog) != dict(catalog_basis):
+            raise RecoveryFailure("direct catalog context differs", code=RecoveryFailureCode.STALE)
+        expected_policy = command_policy_basis(command)
+        if dict(policy_basis) != expected_policy:
+            raise RecoveryFailure("direct native policy basis differs", code=RecoveryFailureCode.CORRUPT)
+        return RecoveredExecution(execution_identity=deepcopy(dict(identity)), fixed_rng_values=(),
+            catalog_basis=deepcopy(dict(accepted_catalog)), policy_basis=deepcopy(dict(policy_basis)),
+            accepted_command=deepcopy(dict(command)), execution=deepcopy(dict(result)))
     command_id = _string_or_failure(command.get("command_id"), "command_id")
     fingerprint = _digest_or_failure(command.get("input_fingerprint"), "input_fingerprint")
     if result.get("accepted_command_id") != command_id or result.get("accepted_input_fingerprint") != fingerprint:
         raise RecoveryFailure("accepted execution identity differs", code=RecoveryFailureCode.CORRUPT)
     resolution_id = _string_or_failure(result.get("resolution_id"), "resolution_id")
     segment = _mapping_or_failure(result.get("segment"), "execution segment")
-    segment_id = _string_or_failure(segment.get("segment_id"), "segment_id")
-    event = _mapping_or_failure(result.get("event"), "execution event")
-    _validate_event_identity(result, resolution_id, segment, segment_id, event)
-    event_id = _string_or_failure(result.get("event_id"), "event_id")
+    _string_or_failure(segment.get("segment_id"), "segment_id")
     roll = result.get("roll_result", {})
     if not isinstance(roll, Mapping):
         raise RecoveryFailure("fixed RNG evidence is malformed", code=RecoveryFailureCode.CORRUPT)
@@ -542,6 +557,17 @@ def validate_recovered_basis(
         _validate_roll_identity(roll)
     if resolution is not None:
         _validate_resolution_closure(resolution, resolution_id, command_id, segment, roll)
+        from .runtime_execution import (
+            _validate_action_resolution_binding,
+            _validate_execution_owner_edge,
+        )
+
+        try:
+            current_state = _validate_execution_owner_edge(owner_kind="runtime.resolution", owner_id=resolution_id,
+                owner=resolution, segment=segment, receipt=result["receipt"])
+            _validate_action_resolution_binding(command, resolution_id, current_state)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RecoveryFailure("current Resolution native edge is corrupt", code=RecoveryFailureCode.CORRUPT) from exc
     accepted_catalog = _mapping_or_failure(command.get("catalog_context"), "catalog basis")
     supplied_catalog = _mapping_or_failure(catalog_basis, "catalog basis")
     if dict(accepted_catalog) != dict(supplied_catalog):
@@ -566,20 +592,18 @@ def validate_recovered_basis(
     typed_supplied_refs = tuple(sorted(_string_or_failure(ref, "policy reference") for ref in supplied_refs))
     if typed_supplied_refs != refs:
         raise RecoveryFailure("policy basis differs from accepted execution", code=RecoveryFailureCode.STALE)
-    if refs:
-        supplied_action = _mapping_or_failure(supplied_policy.get("action_request"), "policy basis action_request")
-        supplied_facts = supplied_policy.get("invocation_facts")
-        if dict(supplied_action) != dict(action_request) or supplied_facts != invocation_facts:
+    expected_policy = command_policy_basis(command)
+    if set(supplied_policy) - set(expected_policy) - {"source_revision"}:
+        raise RecoveryFailure("policy basis has unexpected variant fields", code=RecoveryFailureCode.CORRUPT)
+    for field, value in expected_policy.items():
+        if supplied_policy.get(field) != value:
             raise RecoveryFailure("policy basis inputs differ from accepted execution", code=RecoveryFailureCode.CORRUPT)
     source_revision = supplied_policy.get("source_revision")
-    if refs and (not isinstance(source_revision, str) or any(not ref.endswith("@" + source_revision) for ref in refs)):
+    if source_revision is not None and (not isinstance(source_revision, str)
+            or any(not ref.endswith("@" + source_revision) for ref in refs)):
         raise RecoveryFailure("accepted policy basis is stale", code=RecoveryFailureCode.STALE)
     return RecoveredExecution(
-        command_id=command_id,
-        input_fingerprint=fingerprint,
-        resolution_id=resolution_id,
-        segment_id=segment_id,
-        event_id=event_id,
+        execution_identity=deepcopy(dict(identity)),
         fixed_rng_values=fixed_values,
         catalog_basis=deepcopy(dict(accepted_catalog)),
         policy_basis=deepcopy(dict(supplied_policy)),
@@ -619,6 +643,7 @@ def recover_current_runtime(
     *,
     checkpoint: Mapping[str, object] | None = None,
     hot_state: Mapping[str, object] | None = None,
+    input_observation: CurrentOwnerObservation | None = None,
 ) -> RecoveryResult:
     """Recover the selected current native source set without replay or scans."""
 
@@ -654,7 +679,7 @@ def recover_current_runtime(
     except (AttributeError, KeyError, OSError, TypeError) as exc:
         raise RecoveryFailure("operational-root route is missing", code=RecoveryFailureCode.MISSING) from exc
     hydrated = hydrate_operational_roots(repository, pinned, _mapping_or_failure(page, "root routing page"))
-    _validate_recovered_root_closures(repository, pinned, hydrated)
+    _validate_recovered_root_closures(repository, pinned, hydrated, input_observation=input_observation)
     checkpoint_descriptor = None
     if checkpoint is not None:
         try:
@@ -872,6 +897,7 @@ def _validate_recovered_root_closures(
     repository: object,
     pinned: PinnedCampaign,
     owners: Sequence[Mapping[str, object]],
+    *, input_observation: CurrentOwnerObservation | None = None,
 ) -> None:
     for owner in owners:
         if owner.get("kind") in {"runtime.interaction", "runtime.intent_plan"}:
@@ -879,8 +905,27 @@ def _validate_recovered_root_closures(
             continue
         if not _is_runtime_command_owner(owner):
             continue
-        accepted_command = owner
+        from .runtime_execution import native_command_state
+
+        try:
+            accepted_command = native_command_state(owner, command_id=owner["id"], campaign_id=pinned.campaign_id)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RecoveryFailure("native command root is invalid", code=RecoveryFailureCode.CORRUPT) from exc
         command_id = _string_or_failure(accepted_command.get("command_id"), "accepted command_id")
+        catalog_basis = _mapping_or_failure(accepted_command.get("catalog_context"), "catalog basis")
+        # Historical closure is checked before any new requested agency. The
+        # observation is an actual bound source session, never serialized auth.
+        _validate_catalog_closure(repository, pinned, accepted_command, catalog_basis,
+            input_observation=input_observation)
+        interaction = _read_pinned_native_record(repository, pinned, "runtime.interaction",
+            (accepted_command["interaction_id"],), "command input Interaction")
+        _hydrate_input_root_closure(repository, pinned, interaction)
+        if accepted_command["command_kind"] == "transition":
+            execution = _hydrate_execution_result(repository, pinned, accepted_command, None)
+            if execution is not None:
+                validate_recovered_basis(accepted_command, execution, catalog_basis=catalog_basis,
+                    policy_basis=_recovered_policy_basis(repository, pinned, accepted_command))
+            continue
         raw_resolution_id = accepted_command.get("root_resolution_id")
         if raw_resolution_id is None:
             raise RecoveryFailure(
@@ -910,7 +955,6 @@ def _validate_recovered_root_closures(
                 "runtime command closure identity differs from native owner",
                 code=RecoveryFailureCode.CORRUPT,
             )
-        _validate_catalog_closure(repository, pinned, accepted_command, catalog_basis)
 
 
 def _hydrate_input_root_closure(
@@ -1084,8 +1128,67 @@ def _hydrate_execution_result(
     repository: object,
     pinned: PinnedCampaign,
     accepted_command: Mapping[str, object],
-    resolution: Mapping[str, object],
-) -> dict[str, object]:
+    resolution: Mapping[str, object] | None,
+) -> dict[str, object] | None:
+    if accepted_command.get("command_kind") == "transition":
+        if resolution is not None or "root_resolution_id" in accepted_command:
+            raise RecoveryFailure("direct root cannot be a Resolution", code=RecoveryFailureCode.CORRUPT)
+        command_id = _string_or_failure(accepted_command.get("command_id"), "command_id")
+        segments = accepted_command.get("direct_transition_segments", [])
+        if not isinstance(segments, list):
+            raise RecoveryFailure("direct segments are malformed", code=RecoveryFailureCode.CORRUPT)
+        if not segments:
+            if accepted_command.get("disposition") == "command.settled" or "direct_transition_receipt" in accepted_command:
+                raise RecoveryFailure("direct result has no accepted segment", code=RecoveryFailureCode.INCOMPLETE)
+            return None  # Typed accepted work, with no native execution yet.
+        receipt = _mapping_or_failure(accepted_command.get("direct_transition_receipt"), "direct receipt")
+        from .runtime_execution import (
+            _input_wire,
+            execution_identity,
+            execution_result_identity,
+        )
+
+        prior_sequence = 0
+        selected_events = []
+        all_event_ids = []
+        for segment in segments:
+            segment = _mapping_or_failure(segment, "direct segment")
+            try:
+                _input_wire("execution-segment", segment)
+                execution_identity(accepted_command, execution_owner_kind="runtime.command",
+                    execution_owner_id=command_id, segment=segment)
+            except (KeyError, TypeError, ValueError) as exc:
+                raise RecoveryFailure("direct native segment is invalid", code=RecoveryFailureCode.CORRUPT) from exc
+            sequence = segment.get("segment_sequence")
+            if type(sequence) is not int or sequence != prior_sequence + 1:
+                raise RecoveryFailure("direct segments are not an exact increasing sequence", code=RecoveryFailureCode.CORRUPT)
+            prior_sequence = sequence
+            events = []
+            raw_ids = segment.get("event_ids")
+            if not isinstance(raw_ids, list):
+                raise RecoveryFailure("direct event membership is malformed", code=RecoveryFailureCode.CORRUPT)
+            for event_id in raw_ids:
+                event = _read_pinned_native_record(repository, pinned, "runtime.mechanical_event", (event_id,), "direct event")
+                event_copy = deepcopy(dict(event))
+                event_copy["event_id"] = event_id
+                _validate_event_route_identity(event_copy, command_id, command_id, segment["segment_id"])
+                events.append(event_copy)
+                all_event_ids.append(event_id)
+            selected_events = events
+        if (receipt.get("segment_refs") != [segment["segment_id"] for segment in segments]
+                or receipt.get("event_ids") != all_event_ids):
+            raise RecoveryFailure("direct receipt lacks exact complete segment/event closure", code=RecoveryFailureCode.CORRUPT)
+        result = {"accepted_command_id": command_id, "accepted_input_fingerprint": accepted_command["input_fingerprint"],
+            "execution_owner_id": command_id, "segment": deepcopy(dict(segments[-1])),
+            "receipt": deepcopy(dict(receipt)), "events": selected_events,
+            "status": segments[-1].get("resulting_execution_state")}
+        try:
+            result["execution_identity"] = execution_result_identity(accepted_command, result)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise RecoveryFailure("direct native result closure is invalid", code=RecoveryFailureCode.CORRUPT) from exc
+        return result
+    if accepted_command.get("command_kind") != "action" or not isinstance(resolution, Mapping):
+        raise RecoveryFailure("execution owner variant is incomplete", code=RecoveryFailureCode.INCOMPLETE)
     command_id = _string_or_failure(accepted_command.get("command_id"), "accepted command_id")
     input_fingerprint = _digest_or_failure(
         accepted_command.get("input_fingerprint"), "accepted input_fingerprint"
@@ -1128,7 +1231,7 @@ def _hydrate_execution_result(
             )
         seen_sequences.add(sequence)
         event_ids = segment.get("event_ids")
-        if not isinstance(event_ids, list) or not event_ids:
+        if not isinstance(event_ids, list):
             raise RecoveryFailure(
                 "resolution segment event membership is incomplete",
                 code=RecoveryFailureCode.INCOMPLETE,
@@ -1153,17 +1256,26 @@ def _hydrate_execution_result(
         hydrated_segments.append(segment)
 
     selected_segment = max(hydrated_segments, key=lambda item: int(item["segment_sequence"]))
-    selected_event_id = _string_or_failure(selected_segment["event_ids"][-1], "event_id")
+    selected_events = [deepcopy(dict(events_by_id[event_id])) for event_id in selected_segment["event_ids"]]
     result: dict[str, object] = {
         "accepted_command_id": command_id,
         "accepted_input_fingerprint": input_fingerprint,
         "execution_owner_id": resolution_id,
         "resolution_id": resolution_id,
-        "status": selected_segment.get("resulting_execution_state", resolution.get("status", "COMPLETED")),
+        "status": resolution.get("status"),
         "segment": deepcopy(dict(selected_segment)),
-        "event": deepcopy(dict(events_by_id[selected_event_id])),
-        "event_id": selected_event_id,
+        "events": selected_events,
+        "resolution": deepcopy(dict(resolution)),
+        "receipt": {"execution_owner_id": resolution_id,
+            "segment_refs": [segment["segment_id"] for segment in hydrated_segments],
+            "status": selected_segment.get("resulting_execution_state", resolution.get("status")),
+            "event_ids": [event_id for segment in hydrated_segments for event_id in segment["event_ids"]],
+            "exports": deepcopy(selected_segment.get("receipt_exports", {})),
+            "pending_child_refs": [child["firing_key"] for child in selected_segment.get("pending_child_invocations", [])]},
     }
+    if len(selected_events) == 1:
+        result["event"] = selected_events[0]
+        result["event_id"] = selected_segment["event_ids"][0]
     if fixed_results:
         result["roll_result"] = deepcopy(dict(fixed_results[-1]))
     return result
@@ -1190,7 +1302,13 @@ def _validate_catalog_closure(
     pinned: PinnedCampaign,
     accepted_command: Mapping[str, object],
     catalog_basis: Mapping[str, object],
+    *, input_observation: CurrentOwnerObservation | None = None,
 ) -> None:
+    if (type(input_observation) is not CurrentOwnerObservation
+            or getattr(getattr(input_observation.operation_token, "host", None), "_repository", None) is not repository
+            or getattr(getattr(input_observation.operation_token, "basis", None), "pinned_campaign", None) != pinned):
+        raise RecoveryFailure("recovery requires the exact selected Host input source observation",
+            code=RecoveryFailureCode.INCOMPLETE)
     resolver = getattr(repository, "resolve_recovery_catalog_context", None)
     if callable(resolver):
         try:
@@ -1211,7 +1329,10 @@ def _validate_catalog_closure(
                 code=RecoveryFailureCode.CORRUPT,
             )
         try:
-            validate_execution_proposal(accepted_command, context, candidate)
+            from .runtime_execution import _validate_execution_proposal
+
+            _validate_execution_proposal(accepted_command, context, candidate,
+                input_observation=input_observation, current_authority=False)
         except (CatalogBindingError, CommandAcceptanceError, TypeError, ValueError) as exc:
             raise RecoveryFailure(
                 "accepted catalog basis failed owner validation", code=RecoveryFailureCode.STALE
@@ -1229,11 +1350,9 @@ def _recovered_policy_basis(
     accepted_command: Mapping[str, object],
 ) -> Mapping[str, object]:
     refs = _accepted_policy_refs(accepted_command)
-    basis: dict[str, object] = {
-        "policy_refs": list(refs),
-        "action_request": deepcopy(_mapping_or_failure(accepted_command.get("action_request"), "action_request")),
-        "invocation_facts": deepcopy(accepted_command.get("invocation_facts", [])),
-    }
+    from .runtime_execution import command_policy_basis
+
+    basis = dict(command_policy_basis(accepted_command))
     if not refs:
         return basis
     resolver = getattr(repository, "resolve_recovery_policy_basis", None)

@@ -150,7 +150,13 @@ class SpellClosedContractTests(unittest.TestCase):
             child_actor["id"] = child_actor_id
 
             class ChildActorRepository(ActorRepository):
+                def __init__(self):
+                    super().__init__()
+                    self.native_records = {}
+
                 def read_exact_path(self, pinned, path):
+                    if path in self.native_records:
+                        return copy.deepcopy(self.native_records[path])
                     child_path = route_native_record(
                         "world.actor", (child_actor_id,)
                     ).relative_path
@@ -158,23 +164,44 @@ class SpellClosedContractTests(unittest.TestCase):
                         return copy.deepcopy(child_actor)
                     return super().read_exact_path(pinned, path)
 
-            host, _source = _selected_host(
-                store, repository=ChildActorRepository()
+            import tempfile
+
+            from DEV.TESTS.test_sp03_authenticated_input import (
+                TrustedInputAdapterFixture,
+                trusted_input_source_records,
             )
-            session = host._current_owner.begin(host._begin_operation())
-            owner = NativeOwnerRef("world.actor", (ACTOR_ID,))
-            observation = session.require((owner,))
-            token = object()
-            handle = contracts.NativeAllocationHandle(owner, "occ.one", "allocation.one", token, _issue_seal=contracts._CONTRACT_SEAL)
+            from DEV.TESTS.test_w05_t06_p0_actor_producer import CAMPAIGN_ID
+
             proposal = _proposal()
             proposal["action_request"]["actor_id"] = ACTOR_ID
-            accepted = accept_command(_interpreter_result(), context, _candidate(), proposal)
-            resolution = {"root_command_id": accepted["command_id"], "initiating_command_id": accepted["command_id"],
+            repository = ChildActorRepository()
+            repository.native_records, mapping = trusted_input_source_records(proposal,
+                repository_identity=repository.repository_identity(), campaign_id=CAMPAIGN_ID)
+            temporary = tempfile.TemporaryDirectory(prefix="s2-closed-", dir="/tmp/hdm-dev/spell-recovery")
+            self.addCleanup(temporary.cleanup)
+            mapping_path = Path(temporary.name) / "exchange.json"
+            mapping_path.write_text(json.dumps(mapping), encoding="utf-8")
+            host, _source = _selected_host(store, repository=repository,
+                accepted_input_capability=TrustedInputAdapterFixture(mapping_path))
+            accepted = accept_command(_interpreter_result(), context, _candidate(), proposal,
+                input_observation=host._current_owner._observe_command_input(proposal))
+            owner = NativeOwnerRef("world.actor", (ACTOR_ID,))
+            token = object()
+            handle = contracts.NativeAllocationHandle(owner, "occ.one", "allocation.one", token, _issue_seal=contracts._CONTRACT_SEAL)
+            resolution = {"schema_version": 1, "root_command_id": accepted["command_id"], "initiating_command_id": accepted["command_id"],
                 "activity_id": compiled.activity_id, "actor_id": ACTOR_ID,
                 "ruleset_set_digest_generation": 1, "ruleset_set_sha256": compiled.ruleset_set_sha256,
                 "catalog_context_fingerprint_generation": 1, "catalog_context_fingerprint": context.fingerprint,
                 "status": "RUNNING", "next_segment_sequence": 1, "invocation_facts": [], "fixed_rng_results": [],
                 "prior_step_exports": {}, "child_resolution_ids": [], "segments": []}
+            for family, identity, state in (("runtime.command", accepted["command_id"], accepted),
+                                           ("runtime.resolution", accepted["root_resolution_id"], resolution)):
+                repository.native_records[route_native_record(family, (identity,)).relative_path] = {
+                    "kind": family, "id": identity, **state}
+            observation = host._current_owner._observe_command_input(accepted,
+                required_owner_refs=(NativeOwnerRef("runtime.command", (accepted["command_id"],)),
+                    NativeOwnerRef("runtime.resolution", (accepted["root_resolution_id"],))))
+            session = observation.operation_token.session
             preparation = contracts.NativePreparationContext(
                 catalog=catalog, compiled=compiled, consumer_id="activity.check.generic.step.0", occurrence_id="occ.one",
                 execution_ref=contracts.ExecutionRef(accepted["command_id"], accepted["root_resolution_id"]), observation=observation, owner_session=session,

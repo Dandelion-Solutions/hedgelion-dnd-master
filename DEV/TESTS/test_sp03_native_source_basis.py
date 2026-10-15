@@ -188,7 +188,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             package_snapshots=snapshots,
             engine_contract_inventory_source=source,
             natural_owner_sources=natural_owner_sources,
-            compiler_generation=1,
+            compiler_generation=2,
             mode_policy_profile_id="execution.spell_cast.srd521",
         )
         cls.compiled = activity_runtime.compile_activity(cls.catalog, str(recipe["id"]))
@@ -983,7 +983,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         effect_records: tuple[dict[str, object], ...] = (),
         asset_records: tuple[dict[str, object], ...] = (),
     ):
-        from DEV.TESTS.test_rd05_runtime_execution import _interpreter_result, _proposal
+        from DEV.TESTS.test_rd05_runtime_execution import _proposal
         from DEV.TESTS.test_sp03_native_membership import (
             GitCampaignRepository,
             _write_routed,
@@ -995,7 +995,6 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         from GAME.TOOLS.hot_store import NativeHotStore
         from GAME.TOOLS.native_storage import route_native_record
         from GAME.TOOLS.policy_basis import AcceptedAdjudicationBasis
-        from GAME.TOOLS.runtime_execution import accept_command
 
         state = self._actor_state() if actor_state is None else actor_state
         actor = {
@@ -1061,15 +1060,15 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
             if adjudication_basis is None
             else {"adjudication_basis": adjudication_basis}
         )
-        accepted = accept_command(
-            _interpreter_result(),
-            self.catalog.catalog_context,
-            {"definition_id": self.compiled.activity_id, "kind": "definition.activity"},
-            proposal,
+        from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+
+        accepted, input_adapter = prepare_trusted_git_command(
+            repository, proposal, self.catalog.catalog_context,
             **acceptance_arguments,
         )
 
         resolution = {
+            "schema_version": 1,
             "root_command_id": accepted["command_id"],
             "initiating_command_id": accepted["command_id"],
             "activity_id": self.compiled.activity_id,
@@ -1110,7 +1109,7 @@ class PinnedNativeSourceBasisTests(unittest.TestCase):
         repository.commit("accepted source-basis root inputs")
         store = NativeHotStore(":memory:")
         self.addCleanup(store.close)
-        host, _ = _selected_host(store, repository=repository)
+        host, _ = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
         context = host._current_owner._prepare_root_context(
             self.catalog,
             self.compiled,

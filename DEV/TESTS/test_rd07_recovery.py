@@ -17,8 +17,7 @@ from GAME.TOOLS.policy_basis import (
     PinnedCampaign,
     PlayerEvidence,
 )
-from GAME.TOOLS.mechanics import ExecutionStore, FixedRng, execute_segment
-from GAME.TOOLS.runtime_execution import accept_command
+from GAME.TOOLS.mechanics import ExecutionStore, FixedRng
 from GAME.TOOLS.recovery import (
     CheckpointDescriptorError,
     CurrentNativeSource,
@@ -70,8 +69,12 @@ def _normative() -> str:
     return "# Правила\n\n## Social Leverage\n\nThe adopted ruling applies to social leverage.\n"
 
 
-class FakeRepository:
+from DEV.TESTS.test_w05_t06_p0_actor_producer import ActorRepository
+
+
+class FakeRepository(ActorRepository):
     def __init__(self) -> None:
+        super().__init__()
         self.reads: list[tuple[str, str]] = []
         self.files: dict[str, object] = {
             "MANIFEST.yaml": {"rules": {"house_rules_path": "RULES/HOUSE_RULES.md"}},
@@ -429,53 +432,17 @@ class CurrentSourceSelectionTests(unittest.TestCase):
 
 
 def _accepted_command_for_recovery() -> dict[str, object]:
-    return {
-        "command_id": "command-000001",
-        "input_fingerprint": "a" * 64,
-        "catalog_context": {
-            "catalog_generation": 2,
-            "catalog_context_fingerprint": "b" * 64,
-            "ruleset_set_sha256": "c" * 64,
-        },
-        "action_request": {
-            "activity_id": "activity.check.generic",
-            "actor_id": "actor-1",
-            "parameter_bindings": {
-                "dc": {
-                    "source_class": "INVOCATION_ADJUDICATED",
-                    "value": 15,
-                    "provenance_ref": "turn-1:dc",
-                    "eligibility_basis_fingerprint": "eligibility-A",
-                    "rules_context_fingerprint": "rules-A",
-                    "policy_basis_refs": [f"policy.social_leverage@{H}"],
-                }
-            },
-        },
-        "invocation_facts": [],
-    }
+    from DEV.TESTS.test_rd06_durability_publication import _accepted_command
+
+    return _accepted_command()
 
 
 def _execution_for_recovery() -> dict[str, object]:
-    return {
-        "accepted_command_id": "command-000001",
-        "accepted_input_fingerprint": "a" * 64,
-        "resolution_id": "resolution-000001",
-        "segment": {"segment_id": "resolution-000001:segment:1", "segment_sequence": 1},
-        "event": {
-            "segment_id": "resolution-000001:segment:1",
-            "event_ordinal": 1,
-            "event_id": "resolution-000001:segment:1:event:1",
-        },
-        "event_id": "resolution-000001:segment:1:event:1",
-        "roll_result": {
-            "roll_id": "resolution-000001:roll:1",
-            "request_id": "resolution-000001:roll:1",
-            "expression": "fixed",
-            "raw_values": [17],
-            "source_kind": "rng.system",
-            "provenance_ref": "resolution-000001:rng:1",
-        },
-    }
+    from DEV.TESTS.test_rd06_durability_publication import _execution
+
+    execution = _execution()
+    execution["roll_result"].update(expression="fixed", source_kind="rng.system")
+    return execution
 
 
 def _policy_basis_for_recovery(
@@ -492,6 +459,13 @@ def _policy_basis_for_recovery(
 def _validated_command_closure(
     *, include_policy: bool = False, producer_roll: bool = False
 ) -> tuple[dict[str, object], dict[str, object], dict[str, object], object, dict[str, str]]:
+    from DEV.TESTS.test_rd05_runtime_execution import (
+        SourceCommandFixture,
+        _resolution_source,
+    )
+
+    source = SourceCommandFixture()
+    source.source_campaign_id = "campaign-1"
     context = _bind_context()
     accepted_basis = None
     resolved_policy = None
@@ -522,7 +496,7 @@ def _validated_command_closure(
     }
     if accepted_basis is not None:
         action_request["parameter_bindings"] = accepted_basis.runtime_parameter_bindings()
-    accepted = accept_command(
+    accepted = source.accept_from_sources(
         {
             "kind": "interpreter_result",
             "purpose": "interpret",
@@ -544,71 +518,18 @@ def _validated_command_closure(
     )
     if not isinstance(accepted, dict):
         raise AssertionError("test command must be accepted")
-    if producer_roll:
-        execution = execute_segment(
-            accepted,
-            {
-                "resolution_id": "resolution-1",
-                "root_command_id": accepted["command_id"],
-                "initiating_command_id": accepted["command_id"],
-                "activity_id": "activity.check.generic",
-                "actor_id": "actor-1",
-                "status": "COMPLETED",
-                "next_segment_sequence": 1,
-                "invocation_facts": [],
-                "fixed_rng_results": [],
-                "prior_step_exports": {},
-                "child_resolution_ids": [],
-                "segments": [],
-            },
-            rng=FixedRng([17]),
+    execution = source.execute_from_sources(
+            accepted, _resolution_source(accepted), rng=FixedRng([17]),
             roll_request={
                 "roll_id": "roll.attack.1",
                 "request_id": "request.attack.1",
                 "expression": "1d20",
                 "source_kind": "rng.system",
                 "provenance_ref": "rng:fixture",
-            },
+            } if producer_roll else None,
             store=ExecutionStore(),
         )
-        resolution = execution["resolution"]
-    else:
-        segment_id = "resolution-1:segment:1"
-        event_id = f"{segment_id}:event:1"
-        roll = {
-            "roll_id": "resolution-1:roll:1",
-            "request_id": "resolution-1:roll:1",
-            "expression": "fixed",
-            "raw_values": [17],
-            "source_kind": "rng.system",
-            "provenance_ref": "resolution-1:rng:1",
-        }
-        segment = {
-            "segment_id": segment_id,
-            "segment_sequence": 1,
-            "commit_state": "committed",
-            "event_ids": [event_id],
-        }
-        execution = {
-            "accepted_command_id": accepted["command_id"],
-            "accepted_input_fingerprint": accepted["input_fingerprint"],
-            "execution_owner_id": "resolution-1",
-            "resolution_id": "resolution-1",
-            "segment": segment,
-            "event": {
-                "segment_id": segment_id,
-                "event_ordinal": 1,
-                "event_id": event_id,
-            },
-            "event_id": event_id,
-            "roll_result": roll,
-        }
-        resolution = {
-            "resolution_id": "resolution-1",
-            "root_command_id": accepted["command_id"],
-            "segments": [segment],
-            "fixed_rng_results": [roll],
-        }
+    resolution = execution["resolution"]
     policy = _policy_basis_for_recovery(
         accepted,
         [] if resolved_policy is None else [resolved_policy.policy_ref],
@@ -622,6 +543,7 @@ def _validated_command_closure(
         "policy_basis": policy,
         "candidate": {"definition_id": "activity.check.generic", "kind": "definition.activity"},
     }
+    source.doCleanups()
     return accepted, execution, closure, context, {"command_id": str(accepted["command_id"]), "path": ""}
 
 
@@ -657,6 +579,37 @@ class CheckpointDescriptorTests(unittest.TestCase):
 
 
 class AcceptedExecutionRecoveryTests(unittest.TestCase):
+    def test_closed_current_resolution_hydrates_without_rewriting_historical_receipt(self):
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            SourceCommandFixture,
+            _candidate,
+            _interpreter_result,
+            _proposal,
+            _resolution_source,
+        )
+        from GAME.TOOLS.mechanics import close_resolution
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import _hydrate_execution_result
+        from GAME.TOOLS.runtime_execution import command_policy_basis
+
+        source = SourceCommandFixture()
+        self.addCleanup(source.doCleanups)
+        command = source.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        store = ExecutionStore()
+        result = source.execute_from_sources(command, _resolution_source(command, status="RUNNING"),
+            event_payload={}, store=store)
+        closed = close_resolution(result, store=store)
+        repository = FakeRepository()
+        event_id = result["event_id"]
+        repository.files[route_native_record("runtime.mechanical_event", (event_id,)).relative_path] = {
+            "kind": "runtime.mechanical_event", "id": event_id, **result["event"]}
+        hydrated = _hydrate_execution_result(repository, repository.pin_campaign("campaign-1"), command, closed["resolution"])
+        self.assertEqual(hydrated["status"], "COMPLETED")
+        self.assertEqual(hydrated["receipt"]["status"], "RUNNING")
+        recovered = validate_recovered_basis(command, hydrated, catalog_basis=command["catalog_context"],
+            policy_basis=command_policy_basis(command))
+        self.assertEqual(recovered.execution_identity, closed["execution_identity"])
+
     def test_recovery_preserves_command_event_and_fixed_rng_identity(self) -> None:
         command = _accepted_command_for_recovery()
         execution = _execution_for_recovery()
@@ -669,7 +622,7 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
 
         self.assertIsInstance(recovered, RecoveredExecution)
         self.assertEqual(recovered.command_id, command["command_id"])
-        self.assertEqual(recovered.event_id, execution["event_id"])
+        self.assertEqual(recovered.execution_identity["event_ids"], [execution["event_id"]])
         self.assertEqual(recovered.fixed_rng_values, (17,))
         self.assertEqual(recovered.catalog_basis, command["catalog_context"])
 
@@ -720,16 +673,8 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
         segment_id = "resolution-000001:segment:2"
         event_id = f"{segment_id}:event:3"
         roll_id = "resolution-000001:roll:7"
-        later_segment = {
-            "segment_id": segment_id,
-            "segment_sequence": 2,
-            "event_ids": [event_id],
-        }
-        later_event = {
-            "segment_id": segment_id,
-            "event_ordinal": 3,
-            "event_id": event_id,
-        }
+        later_segment = dict(execution["segment"], segment_id=segment_id, segment_sequence=2, event_ids=[event_id])
+        later_event = dict(execution["event"], segment_id=segment_id, event_ordinal=3, event_id=event_id)
         later_roll = {
             "roll_id": roll_id,
             "request_id": roll_id,
@@ -743,13 +688,14 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
             "event": later_event,
             "event_id": event_id,
             "roll_result": later_roll,
+            "receipt": {"execution_owner_id": "resolution-000001", "segment_refs": [segment_id],
+                "event_ids": [event_id], "status": "COMPLETED", "exports": later_segment["receipt_exports"],
+                "pending_child_refs": []},
         }
-        resolution = {
-            "resolution_id": "resolution-000001",
-            "root_command_id": command["command_id"],
-            "segments": [later_segment],
-            "fixed_rng_results": [later_roll],
-        }
+        resolution = dict(execution["resolution"], segments=[later_segment], fixed_rng_results=[later_roll],
+            next_segment_sequence=3)
+        later_execution["resolution"] = resolution
+        later_execution.pop("execution_identity")
 
         recovered = validate_recovered_basis(
             command,
@@ -759,8 +705,8 @@ class AcceptedExecutionRecoveryTests(unittest.TestCase):
             resolution=resolution,
         )
 
-        self.assertEqual(recovered.segment_id, segment_id)
-        self.assertEqual(recovered.event_id, event_id)
+        self.assertEqual(recovered.execution_identity["segment_id"], segment_id)
+        self.assertEqual(recovered.execution_identity["event_ids"], [event_id])
         self.assertEqual(recovered.fixed_rng_values, (19,))
         self.assertEqual(recovered.execution["roll_result"], later_roll)
 
@@ -910,6 +856,17 @@ class OperationalRootRecoveryTests(unittest.TestCase):
 
 
 class RecoveryCurrentRuntimeTests(unittest.TestCase):
+    def recover_bound_command(self, repository, accepted):
+        from DEV.TESTS.test_sp03_authenticated_input import trusted_command_source
+        from GAME.TOOLS.current_owner import NativeOwnerRef
+
+        host, _records = self.enterContext(trusted_command_source(accepted,
+            repository=repository, campaign_id="campaign-1"))
+        observation = host._current_owner._observe_command_input(accepted,
+            required_owner_refs=(NativeOwnerRef("runtime.command", (accepted["command_id"],)),),
+            current_authority=False)
+        return recover_current_runtime(repository, "campaign-1", input_observation=observation)
+
     def test_current_runtime_recovery_does_not_require_checkpoint_or_hot_authority(self) -> None:
         class Repository(FakeRepository):
             def select_current_native_sources(
@@ -980,7 +937,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
 
         with self.assertRaises(RecoveryFailure) as raised:
             recover_current_runtime(Repository(), "campaign-1")
-        self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
+        self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
     def test_current_runtime_hydrates_t05_command_and_execution_sources_before_ready(self) -> None:
         from GAME.TOOLS.native_storage import route_native_record
@@ -1026,7 +983,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
                     return page
                 if requested == path:
-                    return accepted
+                    return {"kind": "runtime.command", "id": accepted["command_id"], **accepted}
                 if requested == resolution_path:
                     return resolution
                 if requested == event_path:
@@ -1053,7 +1010,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 return {"source_revision": pinned.revision}
 
         repository = Repository()
-        result = recover_current_runtime(repository, "campaign-1")
+        result = self.recover_bound_command(repository, accepted)
         self.assertEqual(result.disposition, "READY")
         self.assertEqual(result.hydrated_owners[0]["command_id"], identity["command_id"])
         reads = [path for _revision, path in repository.reads]
@@ -1123,7 +1080,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                         if requested == "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml":
                             return page
                         if requested == path:
-                            return accepted
+                            return {"kind": "runtime.command", "id": accepted["command_id"], **accepted}
                         if requested == resolution_path:
                             return resolution
                         if requested == event_path:
@@ -1150,7 +1107,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                         return {"source_revision": pinned.revision}
 
                 with self.assertRaises(RecoveryFailure) as raised:
-                    recover_current_runtime(Repository(), "campaign-1")
+                    self.recover_bound_command(Repository(), accepted)
                 self.assertEqual(raised.exception.code, RecoveryFailureCode.AMBIGUOUS)
 
     def test_current_runtime_rejects_missing_resolution_root_command_id(self) -> None:
@@ -1168,6 +1125,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
         del resolution["root_command_id"]
         command_owner = copy.deepcopy(accepted)
         command_owner["kind"] = "runtime.command"
+        command_owner["id"] = accepted["command_id"]
         page = {
             "schema_version": 1,
             "campaign_id": "campaign-1",
@@ -1211,7 +1169,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
 
         with self.assertRaises(RecoveryFailure) as raised:
-            recover_current_runtime(Repository(), "campaign-1")
+            self.recover_bound_command(Repository(), accepted)
         self.assertEqual(raised.exception.code, RecoveryFailureCode.INCOMPLETE)
 
     def test_current_runtime_rejects_mismatched_resolution_root_command_id(self) -> None:
@@ -1229,6 +1187,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
         resolution["root_command_id"] = "command-forged"
         command_owner = copy.deepcopy(accepted)
         command_owner["kind"] = "runtime.command"
+        command_owner["id"] = accepted["command_id"]
         page = {
             "schema_version": 1,
             "campaign_id": "campaign-1",
@@ -1272,7 +1231,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 return context, {"definition_id": "activity.check.generic", "kind": "definition.activity"}
 
         with self.assertRaises(RecoveryFailure) as raised:
-            recover_current_runtime(Repository(), "campaign-1")
+            self.recover_bound_command(Repository(), accepted)
         self.assertEqual(raised.exception.code, RecoveryFailureCode.CORRUPT)
 
 

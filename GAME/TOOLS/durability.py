@@ -19,8 +19,8 @@ from typing import Final
 
 from .native_storage import route_native_record
 
-# framework_module_version: 1.0.5
-FRAMEWORK_MODULE_VERSION: Final = "1.0.5"
+# framework_module_version: 1.0.6
+FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -393,11 +393,7 @@ class ExecutionDurabilityJoin:
     """Durability evidence joined to one accepted execution identity."""
 
     campaign_id: str
-    command_id: str
-    input_fingerprint: str
-    resolution_id: str
-    segment_id: str
-    event_id: str
+    execution_identity: Mapping[str, object]
     fixed_rng_values: tuple[int, ...]
     catalog_basis: Mapping[str, object]
     policy_basis_refs: tuple[str, ...]
@@ -411,11 +407,12 @@ class ExecutionDurabilityJoin:
 
     def __post_init__(self) -> None:
         _machine_id(self.campaign_id, "campaign_id")
-        _machine_id(self.command_id, "command_id")
-        _sha256(self.input_fingerprint, "input_fingerprint")
-        _machine_id(self.resolution_id, "resolution_id")
-        _nonempty(self.segment_id, "segment_id")
-        _nonempty(self.event_id, "event_id")
+        from .runtime_execution import execution_result_identity
+
+        expected = execution_result_identity(self.accepted_command, self.execution)
+        if _thaw(self.execution_identity) != expected:
+            raise DurabilityContractError("durability execution projection differs")
+        object.__setattr__(self, "execution_identity", _freeze(expected))
         if any(isinstance(value, bool) or not isinstance(value, int) for value in self.fixed_rng_values):
             raise DurabilityContractError("fixed RNG values must remain typed integers")
         basis = _json_copy(self.catalog_basis, "catalog_basis")
@@ -431,7 +428,7 @@ class ExecutionDurabilityJoin:
             raise DurabilityContractError("execution/durability join requires an owner-routed operation")
         if self.routed_operation.owner_kind != "runtime.command":
             raise DurabilityContractError("execution/durability operation must route a RuntimeCommand")
-        if self.routed_operation.owner_id != self.command_id:
+        if self.routed_operation.owner_id != self.execution_identity["command_id"]:
             raise DurabilityContractError("execution/durability route identity differs from command identity")
         if _thaw(self.routed_operation.payload) != accepted:
             raise DurabilityContractError("execution/durability route payload differs from accepted command")
@@ -447,11 +444,7 @@ class ExecutionDurabilityJoin:
     def to_dict(self) -> dict[str, object]:
         return {
             "campaign_id": self.campaign_id,
-            "command_id": self.command_id,
-            "input_fingerprint": self.input_fingerprint,
-            "resolution_id": self.resolution_id,
-            "segment_id": self.segment_id,
-            "event_id": self.event_id,
+            "execution_identity": _thaw(self.execution_identity),
             "fixed_rng_values": list(self.fixed_rng_values),
             "catalog_basis": _thaw(self.catalog_basis),
             "policy_basis_refs": list(self.policy_basis_refs),
@@ -508,13 +501,12 @@ def join_execution_durability(
         raise DurabilityContractError("execution and accepted identity differ")
     if execution.get("accepted_input_fingerprint") != fingerprint:
         raise DurabilityContractError("execution and accepted input fingerprint differ")
-    resolution_id = _machine_id(execution.get("resolution_id"), "execution resolution_id")
-    segment = execution.get("segment")
-    event = execution.get("event")
-    if not isinstance(segment, Mapping) or not isinstance(event, Mapping):
-        raise DurabilityContractError("execution segment and event evidence are required")
-    segment_id = _nonempty(segment.get("segment_id"), "execution segment_id")
-    event_id = _nonempty(execution.get("event_id"), "execution event_id")
+    from .runtime_execution import command_policy_basis, execution_result_identity
+
+    try:
+        identity = execution_result_identity(accepted_command, execution)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise DurabilityContractError("execution native identity closure is invalid") from exc
     roll = execution.get("roll_result")
     fixed_values: tuple[int, ...] = ()
     if isinstance(roll, Mapping):
@@ -532,26 +524,21 @@ def join_execution_durability(
     if not isinstance(catalog, Mapping):
         raise DurabilityContractError("accepted catalog basis is required")
     catalog_basis = dict(catalog)
-    if catalog_basis.get("catalog_generation") != 2:
+    catalog_native_basis = catalog_basis.get("basis")
+    if (not isinstance(catalog_native_basis, Mapping)
+            or type(catalog_native_basis.get("catalog_generation")) is not int
+            or catalog_native_basis["catalog_generation"] != 2):
         raise DurabilityContractError("accepted catalog basis is not the pinned generation")
     policy_refs = _policy_refs(accepted_command)
     accepted_copy = _json_copy(accepted_command, "accepted command")
     execution_copy = _json_copy(execution, "execution evidence")
     if not isinstance(accepted_copy, dict) or not isinstance(execution_copy, dict):
         raise DurabilityContractError("accepted command and execution must be serialized objects")
-    basis = {
-        "policy_refs": list(policy_refs),
-        "action_request": _json_copy(accepted_command.get("action_request", {}), "action request"),
-        "invocation_facts": _json_copy(accepted_command.get("invocation_facts", []), "invocation facts"),
-    }
+    basis = command_policy_basis(accepted_command)
     join = object.__new__(ExecutionDurabilityJoin)
     for field, value in {
         "campaign_id": promise.campaign_id,
-        "command_id": command_id,
-        "input_fingerprint": fingerprint,
-        "resolution_id": resolution_id,
-        "segment_id": segment_id,
-        "event_id": event_id,
+        "execution_identity": identity,
         "fixed_rng_values": fixed_values,
         "catalog_basis": catalog_basis,
         "policy_basis_refs": policy_refs,

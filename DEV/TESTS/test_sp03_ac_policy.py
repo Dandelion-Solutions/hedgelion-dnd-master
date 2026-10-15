@@ -933,12 +933,8 @@ with tempfile.TemporaryDirectory(prefix="sp03-ac-policy-") as temporary:
     proposal = _proposal(compiled.activity_id)
     proposal["action_request"]["actor_id"] = ACTOR_ID
     proposal["action_request"]["target_ids"] = [target_id]
-    accepted = accept_command(
-        _interpreter_result(),
-        catalog.catalog_context,
-        {"definition_id": compiled.activity_id, "kind": "definition.activity"},
-        proposal,
-    )
+    from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+    accepted, input_adapter = prepare_trusted_git_command(repository, proposal, catalog.catalog_context)
     resolution = {
         "root_command_id": accepted["command_id"],
         "initiating_command_id": accepted["command_id"],
@@ -977,7 +973,7 @@ with tempfile.TemporaryDirectory(prefix="sp03-ac-policy-") as temporary:
     revision_before_calculation = repository._git("rev-parse", "HEAD").stdout.decode("ascii").strip()
 
     with NativeHotStore(":memory:") as store:
-        host, _source = _selected_host(store, repository=repository)
+        host, _source = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
         context = None
         try:
             context = host._current_owner._prepare_root_context(

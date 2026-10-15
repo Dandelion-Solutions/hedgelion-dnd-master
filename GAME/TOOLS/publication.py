@@ -30,8 +30,8 @@ from .recovery_roots import (
     validate_operational_root_delta,
 )
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final = "1.0.7"
 OPERATIONAL_ROOT_MEMBERSHIP_PATH: Final = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
 _SHA40_OR_64: Final = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
@@ -146,18 +146,38 @@ class CampaignIdentity:
 
 @dataclass(frozen=True, slots=True)
 class AcceptedExecutionIdentity:
+    identity_generation: int
     command_id: str
+    input_fingerprint_generation: int
     input_fingerprint: str
-    resolution_id: str
+    execution_owner_kind: str
+    execution_owner_id: str
     segment_id: str
-    event_id: str
+    event_ids: tuple[str, ...]
 
     def __post_init__(self) -> None:
         _machine_id(self.command_id, "accepted command_id")
         _sha256(self.input_fingerprint, "accepted input_fingerprint")
-        _machine_id(self.resolution_id, "accepted resolution_id")
+        if type(self.identity_generation) is not int or self.identity_generation != 1:
+            raise PublicationContractError("unsupported execution identity generation")
+        if type(self.input_fingerprint_generation) is not int or self.input_fingerprint_generation != 3:
+            raise PublicationContractError("unsupported command fingerprint generation")
+        if self.execution_owner_kind not in {"runtime.command", "runtime.resolution"}:
+            raise PublicationContractError("unsupported execution owner kind")
+        _machine_id(self.execution_owner_id, "accepted execution owner")
         _nonempty(self.segment_id, "accepted segment_id")
-        _nonempty(self.event_id, "accepted event_id")
+        object.__setattr__(self, "event_ids", tuple(self.event_ids))
+        if len(set(self.event_ids)) != len(self.event_ids):
+            raise PublicationContractError("duplicate native event IDs")
+        for event_id in self.event_ids:
+            _nonempty(event_id, "accepted event_id")
+
+    def to_dict(self) -> dict[str, object]:
+        return {"identity_generation": self.identity_generation, "command_id": self.command_id,
+            "input_fingerprint_generation": self.input_fingerprint_generation,
+            "input_fingerprint": self.input_fingerprint, "execution_owner_kind": self.execution_owner_kind,
+            "execution_owner_id": self.execution_owner_id, "segment_id": self.segment_id,
+            "event_ids": list(self.event_ids)}
 
 
 @dataclass(frozen=True, slots=True)
@@ -317,11 +337,7 @@ class FrozenCampaignPublicationAttempt:
             "accepted_identity": None
             if self.accepted_identity is None
             else {
-                "command_id": self.accepted_identity.command_id,
-                "input_fingerprint": self.accepted_identity.input_fingerprint,
-                "resolution_id": self.accepted_identity.resolution_id,
-                "segment_id": self.accepted_identity.segment_id,
-                "event_id": self.accepted_identity.event_id,
+                **self.accepted_identity.to_dict(),
             },
             "fixed_rng_values": list(self.fixed_rng_values),
             "catalog_basis": _thaw(self.catalog_basis),
@@ -568,13 +584,12 @@ def _accepted_identity(
     input_fingerprint = _sha256(accepted_command.get("input_fingerprint"), "accepted input_fingerprint")
     if execution.get("accepted_command_id") != command_id or execution.get("accepted_input_fingerprint") != input_fingerprint:
         raise PublicationContractError("execution and accepted identity differ")
-    resolution_id = _machine_id(execution.get("resolution_id"), "execution resolution_id")
-    segment = execution.get("segment")
-    event = execution.get("event")
-    if not isinstance(segment, Mapping) or not isinstance(event, Mapping):
-        raise PublicationContractError("execution segment and event evidence are required")
-    segment_id = _nonempty(segment.get("segment_id"), "execution segment_id")
-    event_id = _nonempty(execution.get("event_id"), "execution event_id")
+    from .runtime_execution import execution_result_identity
+
+    try:
+        identity = execution_result_identity(accepted_command, execution)
+    except (KeyError, TypeError, ValueError) as exc:
+        raise PublicationContractError("execution native identity closure is invalid") from exc
     roll = execution.get("roll_result")
     values: tuple[int, ...] = ()
     if isinstance(roll, Mapping):
@@ -588,7 +603,7 @@ def _accepted_identity(
     if not isinstance(catalog, Mapping):
         raise PublicationContractError("accepted catalog basis is required")
     return (
-        AcceptedExecutionIdentity(command_id, input_fingerprint, resolution_id, segment_id, event_id),
+        AcceptedExecutionIdentity(**identity),
         values,
         dict(catalog),
     )
@@ -781,11 +796,21 @@ def freeze_campaign_publication_attempt(
     )
     if execution_durability_join is not None:
         expected_join_policy = _thaw(execution_durability_join.policy_basis)
-        for field in ("policy_refs", "action_request", "invocation_facts"):
-            if field in policy and policy[field] != expected_join_policy[field]:
+        for field in expected_join_policy:
+            if field in policy and _thaw(policy[field]) != expected_join_policy[field]:
                 raise PublicationContractError("policy basis differs from typed execution/durability join")
             policy[field] = expected_join_policy[field]
     if accepted_command is not None:
+        from .runtime_execution import command_policy_basis
+
+        native_policy = command_policy_basis(accepted_command)
+        variant_fields = {"action_request", "transition_request", "transition_binding"}
+        if (set(policy) & variant_fields) - set(native_policy):
+            raise PublicationContractError("policy basis has fields forbidden for its command variant")
+        for field, value in native_policy.items():
+            if field in policy and _thaw(policy[field]) != value:
+                raise PublicationContractError("policy inputs differ from accepted command")
+            policy[field] = value
         expected_refs = _policy_refs(accepted_command)
         supplied_refs = policy.get("policy_refs", expected_refs)
         if isinstance(supplied_refs, Sequence) and not isinstance(supplied_refs, (str, bytes)):

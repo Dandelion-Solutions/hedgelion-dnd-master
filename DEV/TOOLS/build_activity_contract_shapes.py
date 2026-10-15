@@ -18,7 +18,7 @@ from activity_primitive_contracts import load_activity_primitive_contracts
 DESTINATION = ROOT / "GAME/TOOLS/activity_contract_shapes.json"
 BASE = "https://hedgelion.invalid/schemas/"
 COMPILED_VALUES = BASE + "compiled-activity-values.schema.json"
-ROOTS = ("runtime-interaction-state", "runtime-message-state", "runtime-intent-plan-state", "intent-clause",
+ROOTS = ("gameplay-spine-transition-request", "runtime-interaction-state", "runtime-message-state", "runtime-intent-plan-state", "intent-clause", "world-player-state",
          "spell-native-profile-values", "mechanical-surfaces", "runtime-command-state", "runtime-resolution-state",
          "resolution-receipt", "execution-segment", "activity-parameter-spec", "catalog-definition",
          "roll-result", "activity-primitive-values", "runtime-mechanical-event-state",
@@ -186,11 +186,12 @@ def build_projection(root=ROOT):
         "native_execution_envelope": {
             "type": "object", "additionalProperties": False,
             "required": ["accepted_command_id", "accepted_input_fingerprint", "execution_owner_id",
-                         "resolution_id", "status", "segment", "event", "event_id", "receipt", "resolution"],
+                          "resolution_id", "status", "segment", "event", "event_id", "receipt", "resolution", "execution_identity"],
             "properties": {
                 "accepted_command_id": ID,
                 "accepted_input_fingerprint": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
                 "execution_owner_id": ID,
+                "execution_identity": reference(BASE + "spell-native-profile-values.schema.json#/$defs/executionIdentity"),
                 "resolution_id": ID,
                 "status": schemas[BASE + "runtime-resolution-state.schema.json"]["properties"]["status"],
                 "segment": reference(BASE + "execution-segment.schema.json"),

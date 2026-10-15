@@ -33,8 +33,8 @@ from .ruleset_package import (
     validate_resolved_lock,
 )
 
-# framework_module_version: 1.0.2
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.2"
+# framework_module_version: 1.0.3
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.3"
 CATALOG_CONTEXT_FINGERPRINT_GENERATION: Final = 1
 CATALOG_CONTEXT_DOMAIN: Final = b"HDM_CATALOG_CONTEXT/1\n"
 NATURAL_OWNER_EVIDENCE_DOMAIN: Final = b"HDM_CATALOG_NATURAL_OWNER_EVIDENCE/1\n"
@@ -578,6 +578,7 @@ def _validate_compiler_contracts_package_root(
         raise CatalogBindingError(
             "compiler projection contains a development source path"
         )
+    _validate_schema_contract_members(projected_families["schema_contract"])
 
     frozen_inventory = _freeze(inventory)
     frozen_projection = _freeze(projection)
@@ -592,6 +593,29 @@ def _validate_compiler_contracts_package_root(
         raw_projection,
         actual_projection_sha256,
     )
+
+
+def _validate_schema_contract_members(value: object) -> None:
+    """Close the installed existing schema family; no caller auth/registry input."""
+    members = _require_exact_keys(value, {
+        "runtime_command_state_schema", "runtime_interaction_state_schema",
+        "runtime_message_state_schema", "runtime_intent_plan_state_schema", "intent_clause_schema",
+        "world_player_state_schema",
+        "execution_segment_schema", "transition_request_schema", "gameplay_spine_transition_request_schema",
+        "gameplay_spine_seed", "ruleset_package_manifest_schema", "resolved_ruleset_lock_schema",
+        "ruleset_set_compatibility_result_schema", "runtime_resolution_state_schema",
+        "runtime_continuation_state_schema", "spell_native_profile_values_schema",
+        "spell_definition_data_schema", "activity_compiler_declaration_schema",
+    }, "compiler schema contract members")
+    for member in members.values():
+        _require_mapping(member, "compiler schema contract member")
+    try:
+        descriptor = members["activity_compiler_declaration_schema"]["$defs"]["acceptedInputOriginInfrastructure"]
+    except (KeyError, TypeError) as exc:
+        raise CatalogBindingError("accepted input infrastructure contract is missing") from exc
+    if canonical_json(_thaw(descriptor)) != canonical_json({"const": {
+        "contract_id": "infrastructure.accepted_input_origin", "contract_generation": 1}}):
+        raise CatalogBindingError("accepted input infrastructure contract differs")
 
 
 def validate_activity_compiler_contracts_package_root(

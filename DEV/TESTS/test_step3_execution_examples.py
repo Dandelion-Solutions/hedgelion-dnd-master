@@ -6,7 +6,8 @@ from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
 from DEV.TESTS.test_rd15_catalog_runtime import _bind_context
-from GAME.TOOLS.runtime_execution import CatalogGap, accept_command
+from GAME.TOOLS.runtime_execution import CatalogGap
+from DEV.TESTS.test_rd05_runtime_execution import SourceCommandFixture
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMAS = ROOT / "DEV" / "SCHEMAS"
@@ -43,12 +44,14 @@ def roll(value=17):
 
 
 def action_command(disposition="command.accepted"):
-    command = accept_command(
+    source = SourceCommandFixture()
+    command = source.accept_from_sources(
         {"kind": "interpreter_result", "purpose": "interpret", "bundle_id": "bundle-1", "source_generation": "frontier-7", "intent": "make a check"},
         _bind_context(),
         {"definition_id": "activity.check.generic", "kind": "definition.activity"},
         {"command_id": "turn-1-cmd-01", "interaction_id": "turn-1", "intent_plan_id": "turn-1-plan", "clause_id": "c1", "action_request": {"activity_id": "activity.check.generic", "actor_id": "actor-1", "target_ids": ["actor-2"]}, "root_resolution_id": "resolution-1"},
     )
+    source.doCleanups()
     if isinstance(command, CatalogGap):
         raise AssertionError("fixture candidate unexpectedly returned a catalog gap")
     command["disposition"] = disposition
@@ -57,6 +60,7 @@ def action_command(disposition="command.accepted"):
 
 def resolution(status="COMPLETED"):
     return {
+        "schema_version": 1,
         "root_command_id": "turn-1-cmd-01",
         "initiating_command_id": "turn-1-cmd-01",
         "activity_id": "activity.attack.basic",
@@ -73,6 +77,7 @@ def resolution(status="COMPLETED"):
         "prior_step_exports": {"hit": True},
         "child_resolution_ids": [],
         "segments": [{
+            "schema_version": 1,
             "segment_id": "resolution-1:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
@@ -129,6 +134,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
 
     def test_C_post_commit_followup_is_in_committed_segment_contract(self):
         validate("execution-segment.schema.json", {
+            "schema_version": 1,
             "segment_id": "resolution-1:segment:1",
             "segment_sequence": 1,
             "commit_state": "committed",
@@ -157,22 +163,11 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
         })
 
     def test_E_direct_transition_is_distinct_from_activity_resolution(self):
-        validate("runtime-command-state.schema.json", {
-            "schema_version": 3,
-            "command_id": "turn-1-cmd-01",
-            "interaction_id": "turn-1",
-            "intent_plan_id": "turn-1-plan",
-            "clause_id": "c1",
-            "command_kind": "transition",
-            "catalog_context_fingerprint": "ctx",
-            "input_fingerprint": "fp",
-            "disposition": "command.settled",
-            "invocation_facts": [],
-            "transition_request": {
-                "transition_kind": "transition.location_change",
-                "payload": {"target_id": "actor-1", "destination_id": "location-2"},
-            },
+        from DEV.TESTS.test_step3_command_intent_contract import transition_command
+
+        validate("runtime-command-state.schema.json", {**transition_command("command.settled"),
             "direct_transition_segments": [{
+                "schema_version": 1,
                 "segment_id": "turn-1-cmd-01:segment:1",
                 "segment_sequence": 1,
                 "commit_state": "committed",
@@ -247,6 +242,7 @@ class Step3ExecutionExamplesTest(unittest.TestCase):
             "participant_resources": {"actor-2": {"resource.reaction": {"spent": 1}}}
         })
         child = {
+            "schema_version": 1,
             "root_command_id": "cmd",
             "causal_invocation_key": "offer-1:activity.shield",
             "activity_id": "activity.shield",

@@ -305,12 +305,6 @@ scenario = json.loads(sys.argv[4])
 proposal = _proposal(compiled.activity_id)
 proposal["action_request"]["actor_id"] = ACTOR_ID
 proposal["action_request"]["target_ids"] = ["actor.target"]
-accepted = accept_command(
-    _interpreter_result(),
-    catalog.catalog_context,
-    {"definition_id": compiled.activity_id, "kind": "definition.activity"},
-    proposal,
-)
 
 def make_repository(path, health_current):
     repository = GitCampaignRepository(path)
@@ -363,6 +357,9 @@ def make_repository(path, health_current):
     return repository
 
 def seed_root(repository):
+    from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+    global accepted
+    accepted, adapter = prepare_trusted_git_command(repository, proposal, catalog.catalog_context)
     resolution = {
         "root_command_id": accepted["command_id"],
         "initiating_command_id": accepted["command_id"],
@@ -398,12 +395,13 @@ def seed_root(repository):
         },
     )
     repository.commit("seed accepted native root command and Resolution")
+    return adapter
 
 def run_calculation(path, health_current):
     repository = make_repository(path, health_current)
-    seed_root(repository)
+    adapter = seed_root(repository)
     with NativeHotStore(":memory:") as store:
-        host, _source = _selected_host(store, repository=repository)
+        host, _source = _selected_host(store, repository=repository, accepted_input_capability=adapter)
         consumer_id = compiled.instructions[0].consumer_id
         context = host._current_owner._prepare_root_context(
             catalog,

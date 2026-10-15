@@ -1140,12 +1140,6 @@ from GAME.TOOLS.runtime_execution import accept_command
 proposal = _proposal(compiled.activity_id)
 proposal["action_request"]["actor_id"] = ACTOR_ID
 proposal["action_request"]["target_ids"] = ["actor.target"]
-accepted = accept_command(
-    _interpreter_result(),
-    catalog.catalog_context,
-    {"definition_id": compiled.activity_id, "kind": "definition.activity"},
-    proposal,
-)
 
 with tempfile.TemporaryDirectory(prefix="sp03-damage-input-") as temporary:
     repository = GitCampaignRepository(Path(temporary) / "campaign.git")
@@ -1157,6 +1151,8 @@ with tempfile.TemporaryDirectory(prefix="sp03-damage-input-") as temporary:
     target["id"] = "actor.target"
     _write_routed(repository, "world.actor", target)
     repository.commit("seed bounded damage preparation source")
+    from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+    accepted, input_adapter = prepare_trusted_git_command(repository, proposal, catalog.catalog_context)
 
     resolution = {
         "root_command_id": accepted["command_id"],
@@ -1196,7 +1192,7 @@ with tempfile.TemporaryDirectory(prefix="sp03-damage-input-") as temporary:
     revision_before = repository._git("rev-parse", "HEAD").stdout.decode("ascii").strip()
 
     with NativeHotStore(":memory:") as store:
-        host, _source = _selected_host(store, repository=repository)
+        host, _source = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
         try:
             context = host._current_owner._prepare_root_context(
                 catalog,
@@ -1297,12 +1293,6 @@ else:
 proposal = _proposal(compiled.activity_id)
 proposal["action_request"]["actor_id"] = ACTOR_ID
 proposal["action_request"]["target_ids"] = ["actor.target"]
-accepted = accept_command(
-    _interpreter_result(),
-    catalog.catalog_context,
-    {"definition_id": compiled.activity_id, "kind": "definition.activity"},
-    proposal,
-)
 
 def run_case(case):
     with tempfile.TemporaryDirectory(prefix="sp03-damage-defense-") as temporary:
@@ -1328,6 +1318,8 @@ def run_case(case):
             asset["definition_id"] = definition_id
             _write_routed(repository, "world.asset", asset)
         repository.commit("seed source-backed damage defense membership")
+        from DEV.TESTS.test_sp03_authenticated_input import prepare_trusted_git_command
+        accepted, input_adapter = prepare_trusted_git_command(repository, proposal, catalog.catalog_context)
 
         resolution = {
             "root_command_id": accepted["command_id"],
@@ -1369,7 +1361,7 @@ def run_case(case):
         if "consumer_indices" in case:
             grouped_results = []
             with NativeHotStore(":memory:") as store:
-                host, _source = _selected_host(store, repository=repository)
+                host, _source = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
                 for consumer_index in case["consumer_indices"]:
                     context = host._current_owner._prepare_root_context(
                         catalog,
@@ -1393,7 +1385,7 @@ def run_case(case):
         consumer_id = f"{compiled.activity_id}.step.{case['consumer_index']}"
 
         with NativeHotStore(":memory:") as store:
-            host, _source = _selected_host(store, repository=repository)
+            host, _source = _selected_host(store, repository=repository, accepted_input_capability=input_adapter)
             context = host._current_owner._prepare_root_context(
                 catalog,
                 compiled,

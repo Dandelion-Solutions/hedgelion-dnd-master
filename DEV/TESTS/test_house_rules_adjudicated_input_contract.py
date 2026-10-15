@@ -81,6 +81,7 @@ class HouseRulesAdjudicatedInputContractTests(unittest.TestCase):
     def test_resolution_and_continuation_preserve_same_adjudicated_binding_shape(self):
         binding = self.adjudicated_binding()
         resolution = {
+            "schema_version": 1,
             "root_command_id": "cmd-1",
             "initiating_command_id": "cmd-1",
             "activity_id": "activity.test.generic",

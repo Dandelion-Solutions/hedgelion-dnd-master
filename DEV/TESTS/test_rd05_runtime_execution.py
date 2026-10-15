@@ -70,12 +70,78 @@ def _pending_child_invocation() -> dict[str, str]:
     }
 
 
-class AcceptedIdentityTests(unittest.TestCase):
+def _resolution_source(command, **overrides):
+    """Complete current R state from the fixture's actual accepted K/context."""
+    request = command["action_request"]
+    context = command["catalog_context"]
+    value = {"schema_version": 1, "resolution_id": command["root_resolution_id"],
+        "root_command_id": command["command_id"], "initiating_command_id": command["command_id"],
+        "activity_id": request["activity_id"], "actor_id": request["actor_id"],
+        "target_ids": deepcopy(request.get("target_ids", [])),
+        "parameter_bindings": deepcopy(request.get("parameter_bindings", {})),
+        "ruleset_set_digest_generation": context["basis"]["ruleset_lock"]["ruleset_set_digest_generation"],
+        "ruleset_set_sha256": context["basis"]["ruleset_lock"]["ruleset_set_sha256"],
+        "catalog_context_fingerprint_generation": context["catalog_context_fingerprint_generation"],
+        "catalog_context_fingerprint": context["catalog_context_fingerprint"],
+        "status": "COMPLETED", "next_segment_sequence": 1,
+        "invocation_facts": deepcopy(command["invocation_facts"]), "fixed_rng_results": [],
+        "prior_step_exports": {}, "child_resolution_ids": [], "segments": []}
+    value.update(overrides)
+    return value
+
+
+class SourceCommandFixture(unittest.TestCase):
+    """Retained native K/C and actual Host session shared by the consumer tests."""
+
+    source_campaign_id = "campaign-frostfall"
+
+    def accept_from_sources(self, interpreter, context, candidate, proposal, **kwargs):
+        from DEV.TESTS.test_sp03_authenticated_input import trusted_command_source
+        from GAME.TOOLS.current_owner import NativeOwnerRef
+        from GAME.TOOLS.native_storage import route_native_record
+
+        host, records = self.enterContext(trusted_command_source(proposal, campaign_id=self.source_campaign_id))
+        observation = host._current_owner._observe_command_input(proposal)
+        accepted = accept_command(interpreter, context, candidate, proposal,
+            input_observation=observation, **kwargs)
+        if not isinstance(accepted, CatalogGap):
+            records[route_native_record("runtime.command", (accepted["command_id"],)).relative_path] = {
+                "kind": "runtime.command", "id": accepted["command_id"], **deepcopy(accepted)}
+            self.source_host, self.source_records = host, records
+            self.accepted_command = accepted
+            self.input_observation = host._current_owner._observe_command_input(accepted,
+                required_owner_refs=(NativeOwnerRef("runtime.command", (accepted["command_id"],)),))
+        return accepted
+
+    def retain_lifecycle(self, command):
+        from GAME.TOOLS.current_owner import NativeOwnerRef
+        from GAME.TOOLS.native_storage import route_native_record
+
+        ref = NativeOwnerRef("runtime.command", (command["command_id"],))
+        self.source_records[route_native_record(ref.family_key, ref.identity).relative_path] = {
+            "kind": ref.family_key, "id": command["command_id"], **deepcopy(command)}
+        self.input_observation = self.source_host._current_owner._observe_command_input(command,
+            required_owner_refs=(ref,))
+
+    def validate_from_sources(self, command, context, candidate):
+        return validate_execution_proposal(command, context, candidate, input_observation=self.input_observation)
+
+    def execute_from_sources(self, *args, **kwargs):
+        return execute_segment(*args, input_observation=self.input_observation, **kwargs)
+
+    def resolve_from_sources(self, *args, **kwargs):
+        return resolve_mechanic(*args, input_observation=self.input_observation, **kwargs)
+
+    def resume_from_sources(self, *args, **kwargs):
+        return resume_accepted_execution(*args, input_observation=self.input_observation, **kwargs)
+
+
+class AcceptedIdentityTests(SourceCommandFixture):
     def test_accepted_command_pins_the_exact_interpreter_result_context_and_candidate(self) -> None:
         interpreter_result = _interpreter_result()
         context = _bind_context()
 
-        accepted = accept_command(interpreter_result, context, _candidate(), _proposal())
+        accepted = self.accept_from_sources(interpreter_result, context, _candidate(), _proposal())
 
         self.assertNotIsInstance(accepted, CatalogGap)
         self.assertEqual(accepted["interpreter_result"], interpreter_result)
@@ -83,12 +149,12 @@ class AcceptedIdentityTests(unittest.TestCase):
             accepted["catalog_context"]["catalog_context_fingerprint"], context.fingerprint
         )
         self.assertEqual(accepted["candidate_binding"]["definition_id"], "activity.check.generic")
-        self.assertEqual(accepted["schema_version"], 3)
-        self.assertEqual(accepted["input_fingerprint_generation"], 2)
+        self.assertEqual(accepted["schema_version"], 4)
+        self.assertEqual(accepted["input_fingerprint_generation"], 3)
         self.assertRegex(accepted["input_fingerprint"], r"^[a-f0-9]{64}$")
         unsupported = dict(accepted, schema_version=2)
-        with self.assertRaisesRegex(CommandAcceptanceError, "schema version"):
-            validate_execution_proposal(unsupported, context, _candidate())
+        with self.assertRaisesRegex(CommandAcceptanceError, "actual native accepted command"):
+            self.validate_from_sources(unsupported, context, _candidate())
         registry, schemas = _schema_registry()
         Draft202012Validator(
             schemas["runtime-command-state.schema.json"], registry=registry
@@ -101,12 +167,12 @@ class AcceptedIdentityTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(CommandAcceptanceError, "admitted"):
-            accept_command(_interpreter_result(), forged, _candidate(), _proposal())
+            self.accept_from_sources(_interpreter_result(), forged, _candidate(), _proposal())
 
 
-class ProposalValidationTests(unittest.TestCase):
+class ProposalValidationTests(SourceCommandFixture):
     def test_unavailable_candidate_is_typed_gap_evidence_not_an_accepted_command(self) -> None:
-        result = accept_command(
+        result = self.accept_from_sources(
             _interpreter_result(),
             _bind_context(),
             {"definition_id": "activity.unknown", "kind": "definition.activity"},
@@ -117,31 +183,31 @@ class ProposalValidationTests(unittest.TestCase):
         self.assertEqual(result.gap_report["reason"], "definition_not_found")
 
 
-class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
+class AcceptedExecutionCatalogBasisTests(SourceCommandFixture):
     def test_proposal_rejects_context_or_candidate_selected_after_acceptance(self) -> None:
-        accepted = accept_command(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        accepted = self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
         self.assertNotIsInstance(accepted, CatalogGap)
 
         with self.assertRaisesRegex(CommandAcceptanceError, "stale catalog context"):
-            validate_execution_proposal(accepted, _bind_context(_request_with_frontier_revision(5)), _candidate())
+            self.validate_from_sources(accepted, _bind_context(_request_with_frontier_revision(5)), _candidate())
         with self.assertRaisesRegex(CommandAcceptanceError, "candidate differs from accepted binding"):
-            validate_execution_proposal(
+            self.validate_from_sources(
                 accepted,
                 _bind_context(),
                 {"definition_id": "activity.unknown", "kind": "definition.activity"},
             )
 
     def test_forged_command_fingerprint_cannot_reach_execution(self) -> None:
-        accepted = accept_command(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        accepted = self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
         self.assertNotIsInstance(accepted, CatalogGap)
         forged = dict(accepted)
         forged["input_fingerprint"] = "0" * 64
 
-        with self.assertRaisesRegex(CommandAcceptanceError, "input fingerprint"):
-            validate_execution_proposal(forged, _bind_context(), _candidate())
+        with self.assertRaisesRegex(CommandAcceptanceError, "actual native accepted command"):
+            self.validate_from_sources(forged, _bind_context(), _candidate())
 
     def test_settled_command_retains_exact_accepted_basis(self) -> None:
-        accepted = accept_command(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        accepted = self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
         self.assertNotIsInstance(accepted, CatalogGap)
         settled = dict(accepted, disposition="command.settled")
 
@@ -149,7 +215,8 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         Draft202012Validator(
             schemas["runtime-command-state.schema.json"], registry=registry
         ).validate(settled)
-        validate_execution_proposal(settled, _bind_context(), _candidate())
+        self.retain_lifecycle(settled)
+        self.validate_from_sources(settled, _bind_context(), _candidate())
         for field in (
             "catalog_context",
             "candidate_binding",
@@ -174,21 +241,23 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
                 ).validate(discarded_basis)
 
     def test_accepted_input_fingerprint_ignores_lifecycle_and_rejects_accepted_input_tampering(self) -> None:
-        accepted = accept_command(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        accepted = self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
         self.assertNotIsInstance(accepted, CatalogGap)
 
         with_pending_child = dict(accepted, pending_child_invocations=[_pending_child_invocation()])
-        validate_execution_proposal(with_pending_child, _bind_context(), _candidate())
+        self.retain_lifecycle(with_pending_child)
+        self.validate_from_sources(with_pending_child, _bind_context(), _candidate())
         self.assertEqual(with_pending_child["input_fingerprint"], accepted["input_fingerprint"])
 
         settled = dict(accepted, disposition="command.settled")
-        validate_execution_proposal(settled, _bind_context(), _candidate())
+        self.retain_lifecycle(settled)
+        self.validate_from_sources(settled, _bind_context(), _candidate())
         self.assertEqual(settled["input_fingerprint"], accepted["input_fingerprint"])
 
         tampered = dict(accepted)
         tampered["action_request"] = dict(accepted["action_request"], actor_id="actor-3")
-        with self.assertRaisesRegex(CommandAcceptanceError, "input fingerprint"):
-            validate_execution_proposal(tampered, _bind_context(), _candidate())
+        with self.assertRaisesRegex(CommandAcceptanceError, "native source owners"):
+            self.validate_from_sources(tampered, _bind_context(), _candidate())
 
     def test_accepted_command_identity_includes_complete_adjudication_basis(self) -> None:
         from DEV.TESTS.test_rd07_recovery import FakeAccess, FakeApplicability, FakeRepository, H
@@ -216,7 +285,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         )
         proposal = _proposal()
         proposal["action_request"] = dict(proposal["action_request"], parameter_bindings={"dc": binding})
-        accepted = accept_command(
+        accepted = self.accept_from_sources(
             _interpreter_result(), context, _candidate(), proposal,
             adjudication_basis=basis,
         )
@@ -230,7 +299,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         Draft202012Validator(
             schemas["runtime-command-state.schema.json"], registry=registry
         ).validate(accepted)
-        validate_execution_proposal(accepted, context, _candidate())
+        self.validate_from_sources(accepted, context, _candidate())
 
         changed = dict(proposal)
         changed["action_request"] = dict(
@@ -242,7 +311,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             invocation_facts=(),
             verified_policies=(resolved,),
         )
-        changed_command = accept_command(
+        changed_command = self.accept_from_sources(
             _interpreter_result(), context, _candidate(), changed,
             adjudication_basis=changed_basis,
         )
@@ -303,7 +372,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             activity_id="activity.spell.fire_bolt",
             parameter_bindings={},
         )
-        accepted = accept_command(
+        accepted = self.accept_from_sources(
             _interpreter_result(),
             context,
             {"definition_id": "activity.spell.fire_bolt", "kind": "definition.activity"},
@@ -315,7 +384,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         read_count = len(repository.reads)
 
         repository.files["RULES/HOUSE_RULES.yaml"] = {"schema_version": 1, "source_path": "RULES/HOUSE_RULES.md", "policies": []}
-        validate_execution_proposal(
+        self.validate_from_sources(
             accepted,
             context,
             {"definition_id": "activity.spell.fire_bolt", "kind": "definition.activity"},
@@ -325,7 +394,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
     def test_untrusted_policy_basis_mapping_cannot_be_used_as_acceptance_authority(self) -> None:
         proposal = _proposal()
         with self.assertRaisesRegex(CommandAcceptanceError, "resolver-produced"):
-            accept_command(
+            self.accept_from_sources(
                 _interpreter_result(),
                 _bind_context(),
                 _candidate(),
@@ -336,7 +405,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
     def test_direct_dev_validator_output_cannot_be_used_as_acceptance_authority(self) -> None:
         proposal = _proposal()
         with self.assertRaisesRegex(CommandAcceptanceError, "resolver-produced"):
-            accept_command(
+            self.accept_from_sources(
                 _interpreter_result(),
                 _bind_context(),
                 _candidate(),
@@ -397,7 +466,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             verified_policies=(resolved,),
         )
         with self.assertRaisesRegex(CommandAcceptanceError, "consuming command"):
-            accept_command(
+            self.accept_from_sources(
                 _interpreter_result(), context, _candidate(), proposal,
                 adjudication_basis=basis,
             )
@@ -432,7 +501,7 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(CommandAcceptanceError, "catalog context"):
-            accept_command(
+            self.accept_from_sources(
                 _interpreter_result(),
                 _bind_context(_request_with_frontier_revision(5)),
                 _candidate(),
@@ -447,32 +516,24 @@ class AcceptedExecutionCatalogBasisTests(unittest.TestCase):
             parameter_bindings={"dc": {"bogus": True}},
         )
         with self.assertRaisesRegex(CommandAcceptanceError, "parameter binding object"):
-            accept_command(_interpreter_result(), _bind_context(), _candidate(), proposal)
+            self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), proposal)
 
 
-class DeterministicExecutionTests(unittest.TestCase):
+class DeterministicExecutionTests(SourceCommandFixture):
     def _accepted(self) -> dict[str, object]:
-        accepted = accept_command(_interpreter_result(), _bind_context(), _candidate(), _proposal())
+        accepted = self.accept_from_sources(_interpreter_result(), _bind_context(), _candidate(), _proposal())
         self.assertNotIsInstance(accepted, CatalogGap)
         return accepted
 
     def _resolution(self, **overrides: object) -> dict[str, object]:
-        value: dict[str, object] = {
-            "resolution_id": "resolution-1",
-            "root_command_id": "turn-1-cmd-01",
-            "initiating_command_id": "turn-1-cmd-01",
-            "activity_id": "activity.check.generic",
-            "actor_id": "actor-1",
-            "procedure_id": "procedure-1",
-            "execution_cursor": "step.check.resolve",
-            "safe_recompute_phase": "determine",
-        }
+        value = _resolution_source(self.accepted_command, procedure_id="procedure-1",
+            cursor="step.check.resolve", safe_recompute_phase="determine")
         value.update(overrides)
         return value
 
     def test_committed_execution_crosses_only_a_registered_narrator_handoff(self) -> None:
         accepted = self._accepted()
-        execution = execute_segment(
+        execution = self.execute_from_sources(
             accepted,
             self._resolution(),
             event_payload={"result": 17},
@@ -551,7 +612,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         resolution = self._resolution()
         store = ExecutionStore()
         first_rng = FixedRng([17])
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             resolution,
             rng=first_rng,
@@ -561,7 +622,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
 
         retry_rng = FixedRng([3])
-        retry = execute_segment(
+        retry = self.execute_from_sources(
             accepted,
             resolution,
             rng=retry_rng,
@@ -611,7 +672,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             "committed_segment_refs": [],
             "fixed_rng_results": [],
         }
-        result = execute_segment(
+        result = self.execute_from_sources(
             accepted,
             self._resolution(status="AWAITING_REACTION", next_segment_sequence=2),
             rng=FixedRng([17]),
@@ -654,7 +715,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         ):
             with self.subTest(procedure=invalid):
                 with self.assertRaisesRegex(ExecutionContractError, "procedure schema"):
-                    execute_segment(
+                    self.execute_from_sources(
                         accepted,
                         self._resolution(status="AWAITING_REACTION", next_segment_sequence=2),
                         procedure_state=invalid,
@@ -671,7 +732,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         rng = FixedRng([17])
 
         with self.assertRaisesRegex(ExecutionConflict, "stale continuation"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(),
                 rng=rng,
@@ -689,8 +750,8 @@ class DeterministicExecutionTests(unittest.TestCase):
         forged["action_request"] = dict(accepted["action_request"], actor_id="actor-9")
         rng = FixedRng([17])
 
-        with self.assertRaisesRegex(ExecutionContractError, "input fingerprint"):
-            execute_segment(
+        with self.assertRaisesRegex(ExecutionContractError, "exact native input source basis"):
+            self.execute_from_sources(
                 forged,
                 self._resolution(),
                 rng=rng,
@@ -704,8 +765,8 @@ class DeterministicExecutionTests(unittest.TestCase):
         accepted = self._accepted()
         forged = dict(accepted, input_fingerprint="0" * 64)
 
-        with self.assertRaisesRegex(ExecutionConflict, "input fingerprint"):
-            execute_segment(
+        with self.assertRaisesRegex(ExecutionContractError, "exact native input source basis"):
+            self.execute_from_sources(
                 forged,
                 self._resolution(),
                 event_payload={"result": 17},
@@ -715,7 +776,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_lost_acknowledgement_retry_returns_the_existing_committed_result(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        execute_segment(
+        self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -723,7 +784,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             store=store,
         )
 
-        recovered = resume_accepted_execution(
+        recovered = self.resume_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([2]),
@@ -737,7 +798,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_conflicting_replay_payload_fails_closed_without_new_event(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -746,7 +807,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
 
         with self.assertRaisesRegex(ExecutionConflict, "conflicting input"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(),
                 rng=FixedRng([3]),
@@ -761,7 +822,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_recovery_replay_reuses_fixed_rng_and_segment_identity(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = resolve_mechanic(
+        first = self.resolve_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -770,7 +831,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
         retry_rng = FixedRng([19])
 
-        replay = resume_accepted_execution(
+        replay = self.resume_from_sources(
             accepted,
             self._resolution(),
             rng=retry_rng,
@@ -795,7 +856,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         }
         rng = FixedRng([3])
 
-        result = execute_segment(
+        result = self.execute_from_sources(
             accepted,
             self._resolution(fixed_rng_results=[roll]),
             rng=rng,
@@ -809,7 +870,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_retry_accepts_resolution_with_its_committed_evidence(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -817,7 +878,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             store=store,
         )
 
-        retry = execute_segment(
+        retry = self.execute_from_sources(
             accepted,
             first["resolution"],
             target_segment_id=first["segment"]["segment_id"],
@@ -831,7 +892,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_later_segment_under_one_root_command_gets_its_own_idempotency_slot(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(next_segment_sequence=1, segments=[]),
             rng=FixedRng([17]),
@@ -848,7 +909,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             "provenance_ref": "resolution-1:rng:2",
         }
 
-        second = execute_segment(
+        second = self.execute_from_sources(
             accepted,
             second_resolution,
             rng=FixedRng([19]),
@@ -868,7 +929,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
 
         replay_rng = FixedRng([23])
-        replay = resume_accepted_execution(
+        replay = self.resume_from_sources(
             accepted,
             second["resolution"],
             target_segment_id=second["segment"]["segment_id"],
@@ -885,7 +946,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_no_rng_continuation_advances_past_prior_roll_backed_segment(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -893,7 +954,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             store=store,
         )
 
-        continuity = resume_accepted_execution(
+        continuity = self.resume_from_sources(
             accepted,
             first["resolution"],
             event_payload={"continuity": True},
@@ -909,14 +970,14 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_targeted_recovery_replays_prior_segment_after_continuation_advance(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
             event_payload={"result": 17},
             store=store,
         )
-        execute_segment(
+        self.execute_from_sources(
             accepted,
             first["resolution"],
             event_payload={"continuity": True},
@@ -924,7 +985,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
 
         replay_rng = FixedRng([23])
-        replay = resume_accepted_execution(
+        replay = self.resume_from_sources(
             accepted,
             first["resolution"],
             target_segment_id=first["segment"]["segment_id"],
@@ -941,7 +1002,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         replay_rng = FixedRng([23])
 
         with self.assertRaisesRegex(ExecutionConflict, "target segment"):
-            resume_accepted_execution(
+            self.resume_from_sources(
                 accepted,
                 self._resolution(),
                 target_segment_id="resolution-1:segment:99",
@@ -964,7 +1025,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         )
         child_resolution.pop("initiating_command_id")
 
-        child = execute_segment(
+        child = self.execute_from_sources(
             accepted,
             child_resolution,
             event_payload={"followup": True},
@@ -981,7 +1042,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_close_requires_stored_result_and_rejects_tampered_evidence(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        committed = execute_segment(
+        committed = self.execute_from_sources(
             accepted,
             self._resolution(status="RUNNING"),
             event_payload={"result": 17},
@@ -1022,7 +1083,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         rng = FixedRng([17])
 
         with self.assertRaisesRegex(ExecutionConflict, "root_command_id"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(root_command_id="other-command"),
                 rng=rng,
@@ -1039,7 +1100,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         rng = FixedRng([17])
 
         with self.assertRaisesRegex(ExecutionConflict, "procedure_id"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(),
                 rng=rng,
@@ -1069,7 +1130,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(ExecutionConflict, "continuation root_command_id"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(),
                 rng=rng,
@@ -1084,7 +1145,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_replay_with_conflicting_fixed_rng_fails_without_reroll(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        first = execute_segment(
+        first = self.execute_from_sources(
             accepted,
             self._resolution(),
             rng=FixedRng([17]),
@@ -1098,7 +1159,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         retry_rng = FixedRng([3])
 
         with self.assertRaisesRegex(ExecutionConflict, "conflicting fixed RNG"):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 conflicting_resolution,
                 target_segment_id=first["segment"]["segment_id"],
@@ -1115,7 +1176,7 @@ class DeterministicExecutionTests(unittest.TestCase):
         rng = FixedRng([17])
 
         with self.assertRaises(ExecutionContractError):
-            execute_segment(
+            self.execute_from_sources(
                 accepted,
                 self._resolution(),
                 rng=rng,
@@ -1129,7 +1190,7 @@ class DeterministicExecutionTests(unittest.TestCase):
     def test_close_resolution_preserves_segment_and_event_identity(self) -> None:
         accepted = self._accepted()
         store = ExecutionStore()
-        running = execute_segment(
+        running = self.execute_from_sources(
             accepted,
             self._resolution(status="RUNNING"),
             event_payload={"progress": True},
@@ -1189,7 +1250,7 @@ class DeterministicExecutionTests(unittest.TestCase):
             "expected_child_resolution_ids": [],
             "future_rng_frontier": "rng:1",
         }
-        result = execute_segment(
+        result = self.execute_from_sources(
             accepted,
             resolution,
             rng=FixedRng([17]),
