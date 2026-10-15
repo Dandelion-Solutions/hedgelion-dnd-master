@@ -1,6 +1,8 @@
 # Prayer of Healing — bounded PO decision gate, original key 62
 
-Date: 2026-10-15. Status: **PROPOSAL / AWAITING PO DECISION**, not accepted source interpretation.
+Date: 2026-10-15. Status: **HISTORICAL R2 DECISION BRIEF — THREE RECOMMENDATIONS ACCEPTED**.
+
+The Product Owner subsequently replied **“да, все три”** to the final BROADER-7 / NO / DIFFERENTIATED request. The sole current final law is the [Prayer owner decision](../specs/2026-10-15-sp00-prayer-benefits-owner-decision.md); [canonicalization provenance](2026-10-15-sp00-prayer-owner-canonicalization.md) records supersession, source qualification and pending independent review/publication. The proposal, alternatives, open-choice wording, source-gap discussion and prior verification below are retained as history, not current unselected choices or a competing normative owner. The former fourth-question repair remains mechanical; acceptance does not close key62's registry hold or establish native proof.
 
 **Human decision required: YES — three choices. Recommendation confidence: MEDIUM. Source-gap confidence: HIGH.** No Prayer-specific owner preference has been expressed. Retention and targeted repair are authorized; none of the three recommendations is selected.
 

@@ -102,6 +102,10 @@ closes the six source-specific outcome judgments for Aid, Magic Missile, Pass
 without Trace, Speed normalization, Resistance and Warding Bond. It supplies
 implementation-facing law, not active consumer/recipe or production proof.
 
+Prayer's three benefits-only interpretations and affected-target qualification are
+owned by the accepted [Prayer decision](2026-10-15-sp00-prayer-benefits-owner-decision.md).
+Its source-registry binding and native proof remain separate gates.
+
 Preflight validates actor/source/origin/context, actual acquisition eligibility, level/slot/ability, entitlement, components/material price/consumption, hands/focus, targeting and accepted spatial facts. Material substitution follows exact nonconsumed/unpriced common rules. Slotless item/feature/ritual modes retain their source costs. Upcasting is bounded typed definition expression, locally evaluated. Binding error and valid secret-invalid-target outcome remain different.
 
 NativeSegmentPlan is sealed immutable ephemeral owner-issued data. Fields: campaign ID; command/input/root/Resolution/segment identity; compiled Activity/catalog identity; complete CurrentOwnerObservation; exact resulting OwnerDocument tuple; per-document native profile and consuming instruction IDs; fixed RollResults/future RNG frontier; Procedure/Resolution/Continuation changes; planned stable-ordinal event batch; typed receipt exports; mandatory child/firing descriptors; exact owner-generation/dirty changes. Structural/native profile validators compare every output to the observed predecessor. Stable damage_instance_id and optional simultaneous_group_id follow the source-defined damage grouping. Caller documents/event JSON cannot issue a plan.
