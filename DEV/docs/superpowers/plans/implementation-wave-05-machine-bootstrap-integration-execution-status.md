@@ -4013,3 +4013,36 @@ threePOdecisionsonly.OtherremainingSource/consumer-framing/nativeconformance
 lanescontinue. S2–S4/SP04productionkernel/actualdeployedissuer andfullSP03/P2/
 package/acquisition/all339/performance retainactualgates. Prayerproposal/status
 checkpointpublication/readback follows; no unfinishedruntimework outsideacceptedS1.
+
+## 2026-10-15 Prayer three-part owner acceptance and canonicalization
+
+PO_ACCEPTANCE: explicit“да, все три” accepts BROADER-7 completion benefits,
+NO doubled-mount-pace renewal and DIFFERENTIATED Simulacrum/benefit-denial
+restrictions. NEEDS_PO:NONE for these three parts; A–F/Wish unchanged.
+FINAL_OWNER: DEV/docs/superpowers/specs/2026-10-15-sp00-prayer-benefits-owner-decision.md.
+Final owner records each7named feature opportunity/actual grant/prerequisite;
+107ordinary+7completion=114 census,86numericmonsterRecharge notX/Day; benefits
+notRestActivity/hour/startHP/study/attunement. Simulacrum nonhealth eligibility
+does not authorizeHP healing or creator-rest reset; curses blockrest branch,
+separatelylawfuldirecthealing retained. CurrenttargetownLongRestgate unchanged.
+
+Source-grounded affected-target qualification was not another PO choice:
+zero numerical delta ordeclinedoptionalone!=unaffected; provenallblockednothing
+happens/no sole-gateconsumption; unknowneligibilityis scoped completenesshold,
+notinventedunconsumed/success. No-costrefund/newcastversusfixedreplay preserved.
+Historicalbrief explicitlyroutesfinalowner; bothannexeslinked; no duplicate
+normativehistory/no activeconsumerprofile registered bydocumentation.
+
+CANON_INPUT:c7607de03230e23468fc6982f879cc6a2bd32c61,parent7cfc576b.
+Independent Step6/Stage8fidelity ses_ebfb86733ffe6WM60pM7dEia3j PASS onexact5files;
+ownerblob8b4cc275c1e85a78ac74c497d9a45d219eed758f; no blocking/significant findings,
+HumanDecisionNO for formalization. Source-complete942records/114rows check,
+targetedlinkintegrity/auditPASS worker evidence, not runtime/deployed proof.
+VERSION_IMPACTNONE for unversionedDEVowner/history/link projections; no active
+schema/profile/module/catalog/package/persistent/digest namespace modified.
+Finalpublication/read-back and independentPrayerStop2 follow. Key62machineHOLD
+counts unchanged70/7 untilaccepted-ownerbinding; source/nativeReadyfalse.
+
+S2 continues independently in task-owned isolatedworkspace; whole51-pathcutover
+candidate has task-review findings underrepair, not an accepted checkpoint.
+Publicruntime stillS1/schema3/codec2, no unverifiedhalf-cutover published.
