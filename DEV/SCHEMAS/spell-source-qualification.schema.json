@@ -48,6 +48,8 @@
     "source_tenth_review",
     "source_tenth_resolution_contract",
     "source_tenth_resolution_evidence",
+    "source_prayer_owner_resolution_contract",
+    "source_prayer_owner_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -203,6 +205,15 @@
       "minItems": 3,
       "maxItems": 3,
       "items": {"$ref": "#/$defs/sourceTenthResolutionEvidence"}
+    },
+    "source_prayer_owner_resolution_contract": {
+      "$ref": "#/$defs/sourcePrayerOwnerResolutionContract"
+    },
+    "source_prayer_owner_resolution_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/sourcePrayerOwnerResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -2729,6 +2740,209 @@
         "retained_source_residual": {"type": "string", "minLength": 1},
         "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
         "actual_native_proof_refs": {"type": "array", "maxItems": 0}
+      }
+    },
+    "sourcePrayerOwnerResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_owner_decided_key_count", "selected_owner_decided_subobligation_count",
+        "prior_reviewed_key_count", "prior_resolution_record_count",
+        "prior_source_resolved_key_count", "prior_source_resolved_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "prior_active_source_blocker_entry_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_closed_key_count", "cumulative_owner_decided_key_count",
+        "cumulative_source_resolved_key_count", "cumulative_source_resolved_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "original_record_count", "original_source_blocking_key_count",
+        "downstream_only_key_count", "active_source_blocker_count",
+        "active_source_blocker_entry_count", "source_census_responder_count",
+        "validated_exact_source_span_record_count", "accepted_completion_row_numbers",
+        "future_native_proof_status", "full_339_source_qualification_status",
+        "source_ready", "production_claim", "selected_original_classification_indexes"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_PRAYER_ACCEPTED_OWNER_SOURCE_BINDING_ONLY"},
+        "selected_key_count": {"const": 1},
+        "resolution_record_count": {"const": 1},
+        "selected_owner_decided_key_count": {"const": 1},
+        "selected_owner_decided_subobligation_count": {"const": 1},
+        "prior_reviewed_key_count": {"const": 77},
+        "prior_resolution_record_count": {"const": 91},
+        "prior_source_resolved_key_count": {"const": 70},
+        "prior_source_resolved_subobligation_count": {"const": 74},
+        "prior_source_held_key_count": {"const": 7},
+        "prior_source_held_subobligation_count": {"const": 7},
+        "prior_active_source_blocker_count": {"const": 7},
+        "prior_active_source_blocker_entry_count": {"const": 7},
+        "cumulative_reviewed_key_count": {"const": 77},
+        "cumulative_resolution_record_count": {"const": 92},
+        "cumulative_source_closed_key_count": {"const": 64},
+        "cumulative_owner_decided_key_count": {"const": 7},
+        "cumulative_source_resolved_key_count": {"const": 71},
+        "cumulative_source_resolved_subobligation_count": {"const": 75},
+        "cumulative_source_held_key_count": {"const": 6},
+        "cumulative_source_held_subobligation_count": {"const": 6},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 6},
+        "active_source_blocker_entry_count": {"const": 6},
+        "source_census_responder_count": {"const": 114},
+        "validated_exact_source_span_record_count": {"const": 942},
+        "accepted_completion_row_numbers": {"const": [12, 13, 14, 18, 19, 21, 28]},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "source_ready": {"const": false},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {"const": [62]}
+      }
+    },
+    "sourcePrayerOwnerDecisionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "path", "raw_utf8_sha256", "git_blob_sha1", "section_numbers"],
+      "properties": {
+        "authority": {"const": "ACCEPTED_PRODUCT_OWNER_DECISION"},
+        "path": {"const": "DEV/docs/superpowers/specs/2026-10-15-sp00-prayer-benefits-owner-decision.md"},
+        "raw_utf8_sha256": {"const": "efbe9b06f43306cbf6d325f72c5c8e2959b01eb9288d4e9699dd93e5de64cab0"},
+        "git_blob_sha1": {"const": "8b4cc275c1e85a78ac74c497d9a45d219eed758f"},
+        "section_numbers": {"const": ["1", "2", "3", "4", "5"]}
+      }
+    },
+    "sourcePrayerCensusRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path", "raw_utf8_sha256", "git_blob_sha1", "responders_pointer",
+        "responder_count", "unique_source_id_count", "validated_exact_span_record_count",
+        "source_markdown_path", "source_markdown_sha256", "source_markdown_git_blob_sha1"
+      ],
+      "properties": {
+        "path": {"const": "DEV/docs/superpowers/research/2026-10-15-prayer-short-rest-responder-census.json"},
+        "raw_utf8_sha256": {"const": "d4aaa21108c3c20c0adcc14a55d33f93b2adc7a1c5aaa51e9db4644f18b092f0"},
+        "git_blob_sha1": {"const": "2ab5b1302dd83a65c52d90a25de85b47c737b9fa"},
+        "responders_pointer": {"const": "/responders"},
+        "responder_count": {"const": 114},
+        "unique_source_id_count": {"const": 114},
+        "validated_exact_span_record_count": {"const": 942},
+        "source_markdown_path": {"const": "DEV/docs/SRD_CC_v5.2.1.md"},
+        "source_markdown_sha256": {"const": "c03c41b7c94d644646c8f979541b1664036a107e03823797ab1afac4b6e0b01e"},
+        "source_markdown_git_blob_sha1": {"const": "45392ab96e8adfeba66694bca8950b6ce1a71797"}
+      }
+    },
+    "sourcePrayerCompletionRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "row_number", "json_pointer", "source_id", "source_exact_name",
+        "span_line_start", "span_line_end", "span_sha256", "actual_grant_condition",
+        "historical_census_disposition", "accepted_owner_section"
+      ],
+      "properties": {
+        "row_number": {"enum": [12, 13, 14, 18, 19, 21, 28]},
+        "json_pointer": {"type": "string", "pattern": "^/responders/[0-9]+$"},
+        "source_id": {"type": "string", "minLength": 1},
+        "source_exact_name": {"type": "string", "minLength": 1},
+        "span_line_start": {"type": "integer", "minimum": 1},
+        "span_line_end": {"type": "integer", "minimum": 1},
+        "span_sha256": {"$ref": "#/$defs/sha256"},
+        "actual_grant_condition": {"type": "string", "minLength": 1},
+        "historical_census_disposition": {"enum": ["SOURCE_SUPPORTED_RECHARGE_OR_HD_BENEFIT_IF_ACTUALLY_GRANTED", "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED"]},
+        "accepted_owner_section": {"const": "3.BROADER-7"}
+      }
+    },
+    "sourcePrayerGroundedLineRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["line_number", "line_sha256"],
+      "properties": {
+        "line_number": {"enum": [1089, 13985, 13987, 17127, 17131, 17133, 22038, 22040, 9219, 9235, 1470, 14839, 27248, 29289]},
+        "line_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourcePrayerTargetGateQualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lawful_zero_delta_or_declined_option", "proved_all_blocked", "unknown_eligibility",
+        "proved_no_effect_after_prior_consumption", "reset_boundary", "cost_and_replay"
+      ],
+      "properties": {
+        "lawful_zero_delta_or_declined_option": {"const": "AFFECTED_AND_CONSUMES_RECIPIENT_GATE"},
+        "proved_all_blocked": {"const": "NO_EFFECT_AND_NO_NEW_GATE_CONSUMPTION"},
+        "unknown_eligibility": {"const": "SCOPED_HOLD_NOT_ALL_BLOCKED_OR_SUCCESS"},
+        "proved_no_effect_after_prior_consumption": {"const": "DOES_NOT_CLEAR_CONSUMED_GATE"},
+        "reset_boundary": {"const": "RECIPIENT_OWN_ACCEPTED_LONG_REST_ONLY"},
+        "cost_and_replay": {"const": "NO_REFUND_NEW_CAST_PAYS_SAME_ATTEMPT_REUSES_FIXED_RESULTS_ONCE"}
+      }
+    },
+    "sourcePrayerSpecialBranches": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mount", "simulacrum", "incubus", "rakshasa"],
+      "properties": {
+        "mount": {"const": "NO_DOUBLED_PACE_RENEWAL_WITHOUT_ACTUAL_SHORT_OR_LONG_REST"},
+        "simulacrum": {"const": "ELIGIBLE_NONHEALTH_IF_GRANTED_REPAIR_ONLY_HP_AND_OWN_RECIPIENT_GATE"},
+        "incubus": {"const": "CURSE_DENIES_REST_BENEFIT_UNTIL_24H_OR_INCUBUS_DEATH_DIRECT_HEALING_SEPARATE"},
+        "rakshasa": {"const": "CURSE_DENIES_REST_BENEFIT_WHILE_CURSED_DIRECT_HEALING_SEPARATE"}
+      }
+    },
+    "sourcePrayerOwnerResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "resolution_authority", "resolution_basis",
+        "source_record_ref", "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "owner_decision_ref", "source_census_ref", "accepted_choice_ids",
+        "accepted_completion_rows", "source_grounded_claims", "source_grounded_line_refs", "owner_decided_claims",
+        "target_gate_qualification", "special_branches", "new_feature_or_grant",
+        "future_native_proof_status", "actual_native_proof_refs", "source_ready_status", "production_claim"
+      ],
+      "properties": {
+        "review_item_id": {"const": "PRAYER-OWNER-01"},
+        "unresolved_key": {"const": "source.spell.prayer_of_healing.unresolved.responder_census"},
+        "source_exact_name": {"const": "Prayer of Healing"},
+        "source_category": {"const": "source_mapping_review"},
+        "subobligation_id": {"const": "source.spell.prayer_of_healing.unresolved.responder_census::source_mapping_review"},
+        "disposition": {"const": "OWNER_DECIDED"},
+        "resolution_authority": {"const": "ACCEPTED_PRODUCT_OWNER_DECISION"},
+        "resolution_basis": {"const": "ACCEPTED_HDM_INTERPRETATION_NOT_LITERAL_SRD_WORDING"},
+        "source_record_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer", "source_exact_name", "printed_page", "source_header_line", "raw_body_sha256", "raw_hash_basis", "body_witness_ref", "qualification_ref"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"const": "/rows/100/required_modes_or_exceptions"},
+            "source_exact_name": {"const": "Prayer of Healing"},
+            "printed_page": {"const": 154},
+            "source_header_line": {"const": 13554},
+            "raw_body_sha256": {"const": "fd0df00cfdaf3ed9b6a03304107390c6dbf574f9bef34c924a1642fea74e5e2d"},
+            "raw_hash_basis": {"const": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"},
+            "body_witness_ref": {"type": "object", "additionalProperties": false, "required": ["artifact_id", "json_pointer"], "properties": {"artifact_id": {"const": "source-body-witnesses"}, "json_pointer": {"const": "/rows/237"}}},
+            "qualification_ref": {"type": "object", "additionalProperties": false, "required": ["artifact_id", "json_pointer"], "properties": {"artifact_id": {"const": "source-pass-0-2"}, "json_pointer": {"const": "/rows/100/qualifications"}}}
+          }
+        },
+        "source_classification_pointer": {"const": "/source_unknown_classifications/62"},
+        "source_unresolved_record_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/62"},
+        "current_map_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/entries/98"},
+        "owner_decision_ref": {"$ref": "#/$defs/sourcePrayerOwnerDecisionRef"},
+        "source_census_ref": {"$ref": "#/$defs/sourcePrayerCensusRef"},
+        "accepted_choice_ids": {"const": ["BROADER-7", "NO-MOUNT-PACE-RENEWAL", "DIFFERENTIATED"]},
+        "accepted_completion_rows": {"type": "array", "minItems": 7, "maxItems": 7, "items": {"$ref": "#/$defs/sourcePrayerCompletionRow"}},
+        "source_grounded_claims": {"const": ["PRAYER_CASTING_TARGET_RANGE_DURATION_AND_DIRECT_HEALING", "SHORT_REST_HIT_DICE_AND_FEATURE_GRANTS", "NUMERIC_RECHARGE_VERSUS_X_PER_DAY", "EFFECTS_INVALID_TARGET_COST_AND_HEALING_CAP", "MOUNT_SIMULACRUM_INCUBUS_AND_RAKSHASA_SOURCE_CLAUSES"]},
+        "source_grounded_line_refs": {"type": "array", "minItems": 14, "maxItems": 14, "items": {"$ref": "#/$defs/sourcePrayerGroundedLineRef"}},
+        "owner_decided_claims": {"const": ["BROADER_7_POSSESSED_COMPLETION_OPPORTUNITIES", "NO_MOUNT_PACE_RENEWAL_WITHOUT_ACTUAL_REST", "DIFFERENTIATED_REST_BENEFIT_DENIAL_AND_SIMULACRUM_RESTRICTIONS", "AFFECTED_TARGET_ZERO_DELTA_ALL_BLOCKED_UNKNOWN_COST_AND_REPLAY"]},
+        "target_gate_qualification": {"$ref": "#/$defs/sourcePrayerTargetGateQualification"},
+        "special_branches": {"$ref": "#/$defs/sourcePrayerSpecialBranches"},
+        "new_feature_or_grant": {"const": "NONE"},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0},
+        "source_ready_status": {"const": "NOT_ESTABLISHED"},
+        "production_claim": {"const": "NONE"}
       }
     },
     "packageNoticeObservation": {

@@ -811,5 +811,161 @@
       "value": ["native.actor.unseen_servant"],
       "expected_error_code": "source_tenth_future_proof"
     }
+  ],
+  "prayer_owner_rejections": [
+    {
+      "case_id": "prayer-owner-path-is-exact",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "owner_decision_ref", "path"],
+      "operation": "replace",
+      "value": "DEV/docs/superpowers/design/2026-10-15-sp00-prayer-benefits-decision-brief.md",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-owner-raw-hash-is-exact",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "owner_decision_ref", "raw_utf8_sha256"],
+      "operation": "replace",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-owner-git-blob-is-exact",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "owner_decision_ref", "git_blob_sha1"],
+      "operation": "replace",
+      "value": "0000000000000000000000000000000000000000",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-owner-section-provenance-cannot-shrink",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "owner_decision_ref", "section_numbers"],
+      "operation": "replace",
+      "value": ["3"],
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-census-path-is-exact-and-tracked",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "source_census_ref", "path"],
+      "operation": "replace",
+      "value": "/tmp/unreviewed-prayer-census.json",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-census-sha-is-not-a-source-tuple-authority",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "source_census_ref", "raw_utf8_sha256"],
+      "operation": "replace",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-census-span-count-cannot-be-asserted-opaqely",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "source_census_ref", "validated_exact_span_record_count"],
+      "operation": "replace",
+      "value": 1,
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-completion-seven-row-membership-is-exact",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "accepted_completion_rows"],
+      "operation": "delete_index",
+      "index": 6,
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "tireless-is-owner-decided-completion-not-ordinary",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "accepted_completion_rows", 0, "historical_census_disposition"],
+      "operation": "replace",
+      "value": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "tireless-actual-grant-and-exhaustion-condition-remain-bound",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "accepted_completion_rows", 0, "actual_grant_condition"],
+      "operation": "replace",
+      "value": "Any recipient; always reduce Exhaustion",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-choice-set-is-not-caller-selectable",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "accepted_choice_ids"],
+      "operation": "replace",
+      "value": ["NARROWER-6", "MOUNT-RENEWAL", "UNIFORM-REST-DENIAL"],
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "lawful-zero-delta-consumes-recipient-gate",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "target_gate_qualification", "lawful_zero_delta_or_declined_option"],
+      "operation": "replace",
+      "value": "NO_DELTA_NO_EFFECT_NO_GATE",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "proved-all-blocked-does-not-consume-gate",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "target_gate_qualification", "proved_all_blocked"],
+      "operation": "replace",
+      "value": "SELECTION_ALONE_CONSUMES_GATE",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "unknown-eligibility-is-not-all-blocked",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "target_gate_qualification", "unknown_eligibility"],
+      "operation": "replace",
+      "value": "UNKNOWN_MEANS_NO_EFFECT_AND_NO_GATE",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "simulacrum-prayer-does-not-bypass-repair-only-hp",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "special_branches", "simulacrum"],
+      "operation": "replace",
+      "value": "PRAYER_MAY_HEAL_SIMULACRUM_HP",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "incubus-curse-retains-its-timed-branch",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "special_branches", "incubus"],
+      "operation": "replace",
+      "value": "SAME_UNTIMED_BROAD_CURSE_AS_RAKSHASA",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "rakshasa-curse-remains-distinct-from-incubus",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "special_branches", "rakshasa"],
+      "operation": "replace",
+      "value": "24H_OR_INCUBUS_DEATH",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "prayer-cannot-grant-missing-features-or-items",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "new_feature_or_grant"],
+      "operation": "replace",
+      "value": "GRANT_ALL_SEVEN_FEATURES",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "future-native-proof-remains-not-established",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "future_native_proof_status"],
+      "operation": "replace",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "future-native-proof-reference-cannot-be-invented",
+      "path": ["source_prayer_owner_resolution_evidence", 0, "actual_native_proof_refs"],
+      "operation": "append",
+      "value": "native.prayer.consumer",
+      "expected_error_code": "source_prayer_owner_binding"
+    },
+    {
+      "case_id": "key-62-future-proof-subobligation-remains-held",
+      "path": ["source_unknown_classifications", 62, "subobligations", 1, "status"],
+      "operation": "replace",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_unknown_subobligation"
+    },
+    {
+      "case_id": "aggregate-current-count-is-derived-not-caller-declared",
+      "path": ["source_prayer_owner_resolution_contract", "cumulative_source_resolved_key_count"],
+      "operation": "replace",
+      "value": 70,
+      "expected_error_code": "source_prayer_owner_contract"
+    }
   ]
 }

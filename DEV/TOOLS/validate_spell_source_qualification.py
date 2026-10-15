@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "66512ea7f3df0ebdcba1bffbf4af0212d30c7468029e6a118f595c28e54d4f51"
+    "fde7aba890cf3e8926aeff66af69df09074c42fc96484227590665df5a464fa2"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -6141,6 +6141,165 @@ SOURCE_TENTH_REVIEW: dict[str, str] = {
     "task_evidence_path": SOURCE_TENTH_EVIDENCE_RELATIVE_PATH,
     "task_evidence_sha256": SOURCE_TENTH_EVIDENCE_SHA256,
 }
+PRAYER_OWNER_SOURCE_KEY = (
+    "source.spell.prayer_of_healing.unresolved.responder_census"
+)
+PRAYER_OWNER_DECISION_PATH = (
+    "DEV/docs/superpowers/specs/2026-10-15-sp00-prayer-benefits-owner-decision.md"
+)
+PRAYER_OWNER_DECISION_SHA256 = (
+    "efbe9b06f43306cbf6d325f72c5c8e2959b01eb9288d4e9699dd93e5de64cab0"
+)
+PRAYER_OWNER_DECISION_GIT_BLOB = "8b4cc275c1e85a78ac74c497d9a45d219eed758f"
+PRAYER_RESPONDER_CENSUS_PATH = (
+    "DEV/docs/superpowers/research/2026-10-15-prayer-short-rest-responder-census.json"
+)
+PRAYER_RESPONDER_CENSUS_SHA256 = (
+    "d4aaa21108c3c20c0adcc14a55d33f93b2adc7a1c5aaa51e9db4644f18b092f0"
+)
+PRAYER_RESPONDER_CENSUS_GIT_BLOB = "2ab5b1302dd83a65c52d90a25de85b47c737b9fa"
+PRAYER_SOURCE_MARKDOWN_GIT_BLOB = "45392ab96e8adfeba66694bca8950b6ce1a71797"
+PRAYER_COMPLETION_ROWS: tuple[dict[str, object], ...] = (
+    {
+        "row_number": 12,
+        "source_exact_name": "Ranger Tireless",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L4866:Ranger Tireless",
+        "span_line_start": 4860,
+        "span_line_end": 4867,
+        "span_sha256": "b50001d062c908ea2d4c7d9fbb0ec18bac7a885c7cbd9b697a9529a4db9df65a",
+        "condition": "Ranger10+; Exhaustion >0",
+        "census_disposition": "SOURCE_SUPPORTED_RECHARGE_OR_HD_BENEFIT_IF_ACTUALLY_GRANTED",
+    },
+    {
+        "row_number": 13,
+        "source_exact_name": "Hunter Prey",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L5011:Hunter Prey",
+        "span_line_start": 5009,
+        "span_line_end": 5016,
+        "span_sha256": "4c499d20bb63061b65cc04944845cd169ef92022a4fafbf0a4f2208271acec5c",
+        "condition": "Hunter3+; actual subclass feature",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+    {
+        "row_number": 14,
+        "source_exact_name": "Hunter Defensive Tactics",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L5021:Hunter Defensive Tactics",
+        "span_line_start": 5019,
+        "span_line_end": 5026,
+        "span_sha256": "ef12ea4c1f4bf1b793a3f3a40405cd8756315be1c5fd0bb9e94cb2e8b511870a",
+        "condition": "Hunter7+; actual subclass feature",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+    {
+        "row_number": 18,
+        "source_exact_name": "Pact of the Tome",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L6126:Pact of the Tome",
+        "span_line_start": 6124,
+        "span_line_end": 6131,
+        "span_sha256": "4ef4319857a5688dcc24e395b8e78bc8fdfc3730d501edcb545ce8dd038551e7",
+        "condition": "Actual Pact of the Tome invocation grant",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+    {
+        "row_number": 19,
+        "source_exact_name": "Fiendish Resilience",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L6353:Fiendish Resilience",
+        "span_line_start": 6351,
+        "span_line_end": 6354,
+        "span_sha256": "d4c345753a52f64a1861c3a72fa3199ab3c17d14c576f3f1e6ccf52c579a1f60",
+        "condition": "Fiend Patron Warlock10+; actual feature",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+    {
+        "row_number": 21,
+        "source_exact_name": "Wizard Memorize Spell",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L6502:Wizard Memorize Spell",
+        "span_line_start": 6500,
+        "span_line_end": 6503,
+        "span_sha256": "c2a78e79411ee76848f21c5b075bd63b2ce3ee6dbbde9ac5f1b0d8fcb2eb4b11",
+        "condition": "Wizard5+; spellbook study; actual feature",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+    {
+        "row_number": 28,
+        "source_exact_name": "Erinyes Magic Rope",
+        "source_id": "SRD_5_2_1:DEV/docs/SRD_CC_v5.2.1.md:L25115:Erinyes Magic Rope",
+        "span_line_start": 25109,
+        "span_line_end": 25116,
+        "span_sha256": "a5d58193925a8ffb2d48d2d7eea188eb9c9a6c6122e94f785e41648560bba166",
+        "condition": "Recipient actually has Magic Rope trait; own rope damaged or destroyed",
+        "census_disposition": "CONDITIONAL_COMPLETION_BENEFIT_BRIDGE_REVIEW_REQUIRED",
+    },
+)
+PRAYER_OWNER_SECTION_HEADINGS: dict[str, str] = {
+    "1": "## 1. Authorization, scope and ownership",
+    "2": "## 2. Benefits-only grant and conditional census",
+    "3": "## 3. Exactly three accepted choices",
+    "4": "## 4. Affected-target qualification, cost and replay",
+    "5": "## 5. Required cases and later native proof",
+}
+PRAYER_OWNER_SECTION_TOKENS: dict[str, tuple[str, ...]] = {
+    "1": (
+        "да, все три",
+        "sole final normative owner",
+        "This document selects no active registry member, machine generation, executable profile or recipe.",
+    ),
+    "2": (
+        "107 ordinary rows:",
+        "7 completion-benefit rows:",
+        "**114 conditional source records total**",
+        "These are evidence locators, not admitted machine IDs.",
+        "including Recharge6",
+        "It supplies no missing feature, class/subclass, equipment",
+    ),
+    "3": (
+        "BROADER-7",
+        "NO — mount-pace renewal",
+        "DIFFERENTIATED",
+        "Actual Ranger10+ feature decreases Exhaustion",
+        "Never refills its Long-Rest-only temporary-HP action uses",
+        "Actual Hunter3+ feature may exchange Colossus Slayer and Horde Breaker",
+        "Actual Hunter7+ feature may exchange Escape the Horde and Multiattack Defense",
+        "Actual invocation conjures its Book of Shadows",
+        "Actual Fiend Patron Warlock10+ feature chooses a non-Force damage type",
+        "Actual Wizard5+ feature and actual spellbook study may replace",
+        "Actual trait may fully restore its own damaged/destroyed rope",
+        "Until its curse ends (24h or incubus death)",
+        "not Incubus's timed curse",
+        "its broader Short/Long-Rest-benefit denial",
+        "No Prayer direct HP healing or HD healing bypasses that law.",
+        "Separate direct spell healing is not denied by this curse",
+    ),
+    "4": (
+        "zero numerical delta",
+        "benefit applications are actually prohibited/inapplicable",
+        "Unknown eligibility is not all-blocked.",
+        "same accepted attempt",
+        "that target's own accepted Long Rest",
+    ),
+    "5": (
+        "implementation acceptance obligations, **not executed tests**",
+        "PRODUCTION_CLAIM: NONE",
+        "SOURCE_READY: false",
+        "FUTURE_NATIVE_PROOF: NOT_ESTABLISHED",
+    ),
+}
+PRAYER_SOURCE_LINE_REQUIREMENTS: dict[int, tuple[str, ...]] = {
+    1089: ("twice that distance for 1 hour", "need a Short or Long Rest"),
+    13985: ("Up to five creatures", "entire casting", "benefits of a Short Rest", "2d8 Hit Points", "finishes a Long Rest"),
+    13987: ("increases by 1d8 for each spell slot level above 2"),
+    17127: ("1-hour period", "at least 1 Hit Point"),
+    17131: ("one or more of your Hit Point Dice", "minimum of 1 Hit Point", "additional Hit Point Die after each roll"),
+    17133: ("recharges in the way specified in its description"),
+    22038: ("X/Day", "must finish a Long Rest"),
+    22040: ("Recharge X–Y", "roll 1d6", "recharges when the monster finishes a Short or Long Rest"),
+    9219: ("present exactly what the spell does", "outcomes beyond those effects are under the GM’s purview"),
+    9235: ("nothing happens to that target", "spell slot to cast", "slot is still expended"),
+    1470: ("Hit Point maximum", "any Hit Points regained in excess of the maximum are lost"),
+    14839: ("can’t take Short or Long Rests", "only way to restore its Hit Points is to repair it", "100 GP per Hit Point restored"),
+    27248: ("cursed for 24 hours or until the incubus dies", "gains no benefit from finishing Short Rests"),
+    29289: ("While cursed", "no benefit from finishing a Short or Long Rest"),
+}
 SOURCE_TENTH_EVIDENCE_ORDER = (
     (
         "TENTH-01",
@@ -11330,6 +11489,437 @@ def _validate_source_tenth_resolution_evidence(
     }
 
 
+def _git_blob_sha1(data: bytes) -> str:
+    """Return Git's SHA-1 object name for exact blob bytes (identity, not authority)."""
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
+
+
+def _validate_prayer_responder_census(
+    census_bytes: bytes, markdown_bytes: bytes
+) -> dict[str, object]:
+    """Verify the durable Prayer census and every stored source-span record."""
+    if hashlib.sha256(census_bytes).hexdigest() != PRAYER_RESPONDER_CENSUS_SHA256:
+        _fail("source_prayer_census_identity", "tracked responder census bytes differ")
+    if _git_blob_sha1(census_bytes) != PRAYER_RESPONDER_CENSUS_GIT_BLOB:
+        _fail("source_prayer_census_identity", "tracked responder census Git blob differs")
+    if hashlib.sha256(markdown_bytes).hexdigest() != SOURCE_MARKDOWN_SHA256:
+        _fail("source_prayer_source_identity", "adopted SRD Markdown bytes differ")
+    if _git_blob_sha1(markdown_bytes) != PRAYER_SOURCE_MARKDOWN_GIT_BLOB:
+        _fail("source_prayer_source_identity", "adopted SRD Markdown Git blob differs")
+
+    census = _object(_decode_json(census_bytes, "Prayer responder census"), "Prayer responder census")
+    if (
+        census.get("source_sha256") != SOURCE_MARKDOWN_SHA256
+        or census.get("source_ready") is not False
+        or census.get("future_native_proof_status") != "NOT_ESTABLISHED"
+        or census.get("production_claim") != "NONE"
+    ):
+        _fail("source_prayer_census_status", "census source identity or proof limits changed")
+    expected_historical_counts = {
+        "short_match_lines": 50,
+        "numeric_recharge_match_lines": 87,
+        "numeric_monster_responders": 86,
+        "direct_census_rows": 114,
+        "completion_bridge_candidate_rows": 6,
+        "rest_only_exclusion_lines": 141,
+    }
+    if census.get("counts") != expected_historical_counts:
+        _fail("source_prayer_census_history", "historical responder-census counts changed")
+
+    markdown_lines = markdown_bytes.splitlines(keepends=True)
+    source_spans: list[dict[str, object]] = []
+
+    def collect_spans(value: object) -> None:
+        if isinstance(value, dict):
+            if {
+                "artifact",
+                "line_start",
+                "line_end",
+                "sha256",
+                "hash_basis",
+                "text",
+            }.issubset(value):
+                source_spans.append(value)
+            for child in value.values():
+                collect_spans(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect_spans(child)
+
+    collect_spans(census)
+    if len(source_spans) != 805:
+        _fail("source_prayer_census_spans", "stored exact source-span record count differs")
+
+    for index, span in enumerate(source_spans):
+        start = span.get("line_start")
+        end = span.get("line_end")
+        text = span.get("text")
+        if (
+            span.get("artifact") != SOURCE_MARKDOWN_RELATIVE_PATH
+            or span.get("hash_basis") != "UTF8 exact inclusive lines including existing newline"
+            or type(start) is not int
+            or type(end) is not int
+            or not isinstance(text, str)
+            or not isinstance(span.get("sha256"), str)
+            or start < 1
+            or end < start
+            or end > len(markdown_lines)
+        ):
+            _fail("source_prayer_census_spans", f"source-span record {index} has invalid bounds or basis")
+        raw_span = b"".join(markdown_lines[start - 1 : end])
+        try:
+            decoded_span = raw_span.decode("utf-8")
+        except UnicodeDecodeError:
+            _fail("source_prayer_census_spans", f"source-span record {index} is not UTF-8")
+        if (
+            decoded_span != text
+            or hashlib.sha256(raw_span).hexdigest() != span.get("sha256")
+        ):
+            _fail("source_prayer_census_span_hash", f"source-span record {index} differs from current SRD bytes")
+
+    inventory = _object(census.get("mechanical_inventory"), "Prayer census mechanical inventory")
+    matched_blocks = [
+        _object(value, f"Prayer census matched_blocks[{index}]")
+        for index, value in enumerate(_array(inventory.get("matched_blocks"), "Prayer census matched_blocks"))
+    ]
+    if len(matched_blocks) != 137:
+        _fail("source_prayer_census_spans", "matched source-block record count differs")
+    for index, block in enumerate(matched_blocks):
+        start = block.get("start")
+        end = block.get("end")
+        line = block.get("line")
+        text = block.get("text")
+        if (
+            type(start) is not int
+            or type(end) is not int
+            or type(line) is not int
+            or not isinstance(text, str)
+            or start < 1
+            or end < start
+            or not start <= line <= end
+            or end > len(markdown_lines)
+            or not isinstance(block.get("sha256"), str)
+        ):
+            _fail("source_prayer_census_spans", f"matched source block {index} has invalid bounds")
+        raw_span = b"".join(markdown_lines[start - 1 : end])
+        try:
+            decoded_span = raw_span.decode("utf-8")
+        except UnicodeDecodeError:
+            _fail("source_prayer_census_spans", f"matched source block {index} is not UTF-8")
+        if decoded_span != text or hashlib.sha256(raw_span).hexdigest() != block.get("sha256"):
+            _fail("source_prayer_census_span_hash", f"matched source block {index} differs from current SRD bytes")
+
+    span_record_count = len(source_spans) + len(matched_blocks)
+    if span_record_count != 942:
+        _fail("source_prayer_census_spans", "805 exact spans plus 137 matched blocks must total 942")
+
+    responders = [
+        _object(value, f"Prayer census responders[{index}]")
+        for index, value in enumerate(_array(census.get("responders"), "Prayer census responders"))
+    ]
+    source_ids = [row.get("sourceID") for row in responders]
+    if len(responders) != 114 or len(set(source_ids)) != 114:
+        _fail("source_prayer_census_rows", "exactly 114 unique responder source IDs are required")
+    for spec in PRAYER_COMPLETION_ROWS:
+        row_index = int(spec["row_number"]) - 1
+        row = responders[row_index]
+        source_span = _object(row.get("sourceSpan"), f"Prayer responder row {row_index + 1}.sourceSpan")
+        if (
+            row.get("name") != spec["source_exact_name"]
+            or row.get("sourceID") != spec["source_id"]
+            or row.get("condition") != spec["condition"]
+            or row.get("censusDisposition") != spec["census_disposition"]
+            or source_span.get("artifact") != SOURCE_MARKDOWN_RELATIVE_PATH
+            or source_span.get("line_start") != spec["span_line_start"]
+            or source_span.get("line_end") != spec["span_line_end"]
+            or source_span.get("sha256") != spec["span_sha256"]
+        ):
+            _fail(
+                "source_prayer_completion_row_membership",
+                f"accepted completion row {spec['row_number']} differs from the source census",
+            )
+
+    source_lines = [line.decode("utf-8") for line in markdown_lines]
+    for line_number, tokens in PRAYER_SOURCE_LINE_REQUIREMENTS.items():
+        if (
+            line_number < 1
+            or line_number > len(source_lines)
+            or any(token not in source_lines[line_number - 1] for token in tokens)
+        ):
+            _fail(
+                "source_prayer_source_grounding",
+                f"required primary-source line {line_number} is absent from the validated census/source",
+            )
+    return {
+        "census": census,
+        "responders": responders,
+        "responder_count": len(responders),
+        "unique_source_id_count": len(set(source_ids)),
+        "exact_source_span_record_count": span_record_count,
+    }
+
+
+def _validate_prayer_owner_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Bind accepted Prayer law to its exact source key, owner bytes and census."""
+    owner_bytes = _read_pinned_local_evidence(
+        PRAYER_OWNER_DECISION_PATH,
+        PRAYER_OWNER_DECISION_SHA256,
+        "source_prayer_owner_identity",
+    )
+    if _git_blob_sha1(owner_bytes) != PRAYER_OWNER_DECISION_GIT_BLOB:
+        _fail("source_prayer_owner_identity", "accepted Prayer owner Git blob differs")
+    try:
+        owner_text = owner_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        _fail("source_prayer_owner_identity", "accepted Prayer owner is not UTF-8")
+    owner_lines = owner_text.splitlines()
+    for section_number, heading in PRAYER_OWNER_SECTION_HEADINGS.items():
+        matches = [index for index, line in enumerate(owner_lines) if line == heading]
+        if len(matches) != 1:
+            _fail("source_prayer_owner_section", f"accepted owner section {section_number} is missing or duplicated")
+        start = matches[0] + 1
+        end = next(
+            (index for index in range(start, len(owner_lines)) if owner_lines[index].startswith("## ")),
+            len(owner_lines),
+        )
+        section_text = " ".join("\n".join(owner_lines[start:end]).split())
+        if any(token not in section_text for token in PRAYER_OWNER_SECTION_TOKENS[section_number]):
+            _fail("source_prayer_owner_section", f"accepted owner section {section_number} lacks required accepted clauses")
+    if "ACCEPTED PRODUCT OWNER DECISION — IMPLEMENTATION-FACING LAW" not in owner_text:
+        _fail("source_prayer_owner_identity", "accepted Prayer owner status is not final")
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_prayer_source_identity",
+    )
+    census_bytes = _read_pinned_local_evidence(
+        PRAYER_RESPONDER_CENSUS_PATH,
+        PRAYER_RESPONDER_CENSUS_SHA256,
+        "source_prayer_census_identity",
+    )
+    census_result = _validate_prayer_responder_census(census_bytes, markdown_bytes)
+    markdown_lines = markdown_bytes.splitlines(keepends=True)
+    source_grounded_line_refs = [
+        {
+            "line_number": line_number,
+            "line_sha256": hashlib.sha256(markdown_lines[line_number - 1]).hexdigest(),
+        }
+        for line_number in PRAYER_SOURCE_LINE_REQUIREMENTS
+    ]
+
+    expected_owner_ref = {
+        "authority": "ACCEPTED_PRODUCT_OWNER_DECISION",
+        "path": PRAYER_OWNER_DECISION_PATH,
+        "raw_utf8_sha256": PRAYER_OWNER_DECISION_SHA256,
+        "git_blob_sha1": PRAYER_OWNER_DECISION_GIT_BLOB,
+        "section_numbers": ["1", "2", "3", "4", "5"],
+    }
+    expected_census_ref = {
+        "path": PRAYER_RESPONDER_CENSUS_PATH,
+        "raw_utf8_sha256": PRAYER_RESPONDER_CENSUS_SHA256,
+        "git_blob_sha1": PRAYER_RESPONDER_CENSUS_GIT_BLOB,
+        "responders_pointer": "/responders",
+        "responder_count": census_result["responder_count"],
+        "unique_source_id_count": census_result["unique_source_id_count"],
+        "validated_exact_span_record_count": census_result["exact_source_span_record_count"],
+        "source_markdown_path": SOURCE_MARKDOWN_RELATIVE_PATH,
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+        "source_markdown_git_blob_sha1": PRAYER_SOURCE_MARKDOWN_GIT_BLOB,
+    }
+    expected_completion_rows = [
+        {
+            "row_number": spec["row_number"],
+            "json_pointer": f"/responders/{int(spec['row_number']) - 1}",
+            "source_id": spec["source_id"],
+            "source_exact_name": spec["source_exact_name"],
+            "span_line_start": spec["span_line_start"],
+            "span_line_end": spec["span_line_end"],
+            "span_sha256": spec["span_sha256"],
+            "actual_grant_condition": spec["condition"],
+            "historical_census_disposition": spec["census_disposition"],
+            "accepted_owner_section": "3.BROADER-7",
+        }
+        for spec in PRAYER_COMPLETION_ROWS
+    ]
+    expected_source_record_ref = {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/100/required_modes_or_exceptions",
+        "source_exact_name": "Prayer of Healing",
+        "printed_page": 154,
+        "source_header_line": 13554,
+        "raw_body_sha256": "fd0df00cfdaf3ed9b6a03304107390c6dbf574f9bef34c924a1642fea74e5e2d",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {"artifact_id": "source-body-witnesses", "json_pointer": "/rows/237"},
+        "qualification_ref": {"artifact_id": "source-pass-0-2", "json_pointer": "/rows/100/qualifications"},
+    }
+    expected_row = {
+        "review_item_id": "PRAYER-OWNER-01",
+        "unresolved_key": PRAYER_OWNER_SOURCE_KEY,
+        "source_exact_name": "Prayer of Healing",
+        "source_category": "source_mapping_review",
+        "subobligation_id": f"{PRAYER_OWNER_SOURCE_KEY}::source_mapping_review",
+        "disposition": "OWNER_DECIDED",
+        "resolution_authority": "ACCEPTED_PRODUCT_OWNER_DECISION",
+        "resolution_basis": "ACCEPTED_HDM_INTERPRETATION_NOT_LITERAL_SRD_WORDING",
+        "source_record_ref": expected_source_record_ref,
+        "source_classification_pointer": "/source_unknown_classifications/62",
+        "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/62",
+        "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/98",
+        "owner_decision_ref": expected_owner_ref,
+        "source_census_ref": expected_census_ref,
+        "accepted_choice_ids": ["BROADER-7", "NO-MOUNT-PACE-RENEWAL", "DIFFERENTIATED"],
+        "accepted_completion_rows": expected_completion_rows,
+        "source_grounded_claims": [
+            "PRAYER_CASTING_TARGET_RANGE_DURATION_AND_DIRECT_HEALING",
+            "SHORT_REST_HIT_DICE_AND_FEATURE_GRANTS",
+            "NUMERIC_RECHARGE_VERSUS_X_PER_DAY",
+            "EFFECTS_INVALID_TARGET_COST_AND_HEALING_CAP",
+            "MOUNT_SIMULACRUM_INCUBUS_AND_RAKSHASA_SOURCE_CLAUSES",
+        ],
+        "source_grounded_line_refs": source_grounded_line_refs,
+        "owner_decided_claims": [
+            "BROADER_7_POSSESSED_COMPLETION_OPPORTUNITIES",
+            "NO_MOUNT_PACE_RENEWAL_WITHOUT_ACTUAL_REST",
+            "DIFFERENTIATED_REST_BENEFIT_DENIAL_AND_SIMULACRUM_RESTRICTIONS",
+            "AFFECTED_TARGET_ZERO_DELTA_ALL_BLOCKED_UNKNOWN_COST_AND_REPLAY",
+        ],
+        "target_gate_qualification": {
+            "lawful_zero_delta_or_declined_option": "AFFECTED_AND_CONSUMES_RECIPIENT_GATE",
+            "proved_all_blocked": "NO_EFFECT_AND_NO_NEW_GATE_CONSUMPTION",
+            "unknown_eligibility": "SCOPED_HOLD_NOT_ALL_BLOCKED_OR_SUCCESS",
+            "proved_no_effect_after_prior_consumption": "DOES_NOT_CLEAR_CONSUMED_GATE",
+            "reset_boundary": "RECIPIENT_OWN_ACCEPTED_LONG_REST_ONLY",
+            "cost_and_replay": "NO_REFUND_NEW_CAST_PAYS_SAME_ATTEMPT_REUSES_FIXED_RESULTS_ONCE",
+        },
+        "special_branches": {
+            "mount": "NO_DOUBLED_PACE_RENEWAL_WITHOUT_ACTUAL_SHORT_OR_LONG_REST",
+            "simulacrum": "ELIGIBLE_NONHEALTH_IF_GRANTED_REPAIR_ONLY_HP_AND_OWN_RECIPIENT_GATE",
+            "incubus": "CURSE_DENIES_REST_BENEFIT_UNTIL_24H_OR_INCUBUS_DEATH_DIRECT_HEALING_SEPARATE",
+            "rakshasa": "CURSE_DENIES_REST_BENEFIT_WHILE_CURSED_DIRECT_HEALING_SEPARATE",
+        },
+        "new_feature_or_grant": "NONE",
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "actual_native_proof_refs": [],
+        "source_ready_status": "NOT_ESTABLISHED",
+        "production_claim": "NONE",
+    }
+
+    rows = [
+        _object(value, f"source_prayer_owner_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_prayer_owner_resolution_evidence"),
+                "source_prayer_owner_resolution_evidence",
+            )
+        )
+    ]
+    if len(rows) != 1:
+        _fail("source_prayer_owner_binding", "exactly one accepted owner/source evidence record is required")
+    if rows[0] != expected_row:
+        mismatched_fields = sorted(
+            field
+            for field, expected in expected_row.items()
+            if rows[0].get(field) != expected
+        )
+        _fail(
+            "source_prayer_owner_binding",
+            f"accepted owner/source evidence differs in fields {mismatched_fields}",
+        )
+
+    classification = classified_by_key.get(PRAYER_OWNER_SOURCE_KEY)
+    original = _object(
+        _resolve_json_pointer(
+            manifest,
+            "/source_unknown_classifications/62",
+            "Prayer original classification pointer",
+        ),
+        "Prayer original classification",
+    )
+    history = _object(
+        _resolve_json_pointer(
+            manifest,
+            "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/62",
+            "Prayer original history pointer",
+        ),
+        "Prayer original history",
+    )
+    current_map = _object(
+        _resolve_json_pointer(
+            manifest,
+            "/source_mapping_lanes/0/mapping_payload/entries/98",
+            "Prayer current map pointer",
+        ),
+        "Prayer current map",
+    )
+    source_holds = [
+        _object(value, f"source_fifth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(manifest.get("source_fifth_resolution_evidence"), "source_fifth_resolution_evidence")
+        )
+        if isinstance(value, dict) and value.get("unresolved_key") == PRAYER_OWNER_SOURCE_KEY
+    ]
+    source_subobligations = [
+        _object(value, f"Prayer source subobligations[{index}]")
+        for index, value in enumerate(_array(original.get("subobligations"), "Prayer source subobligations"))
+        if isinstance(value, dict) and value.get("category") in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+    ]
+    future_subobligations = [
+        _object(value, f"Prayer future proof subobligations[{index}]")
+        for index, value in enumerate(_array(original.get("subobligations"), "Prayer future proof subobligations"))
+        if isinstance(value, dict)
+        and value.get("category") == "downstream_domain_consumer_admission_native_proof"
+    ]
+    if (
+        classification is None
+        or len(source_holds) != 1
+        or source_holds[0].get("review_item_id") != "FIFTH-07"
+        or source_holds[0].get("source_category") != "source_mapping_review"
+        or source_holds[0].get("disposition") != "SOURCE_HELD"
+        or original.get("unresolved_key") != PRAYER_OWNER_SOURCE_KEY
+        or original.get("source_exact_name") != "Prayer of Healing"
+        or original.get("source_ready_blocking") is not True
+        or original.get("original_status") != "NOT_ESTABLISHED"
+        or original.get("original_disposition") != "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+        or history.get("unresolved_key") != PRAYER_OWNER_SOURCE_KEY
+        or history.get("reason") != original.get("original_reason")
+        or history.get("evidence_ref") != original.get("evidence_ref")
+        or history.get("status") != "NOT_ESTABLISHED"
+        or history.get("disposition") != "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+        or current_map.get("source_exact_name") != "Prayer of Healing"
+        or not any(
+            isinstance(value, dict) and value.get("unresolved_key") == PRAYER_OWNER_SOURCE_KEY
+            for value in _array(current_map.get("unresolved_keys"), "Prayer current map unresolved_keys")
+        )
+        or len(source_subobligations) != 1
+        or source_subobligations[0].get("subobligation_id") != f"{PRAYER_OWNER_SOURCE_KEY}::source_mapping_review"
+        or source_subobligations[0].get("status") != "NOT_ESTABLISHED"
+        or len(future_subobligations) != 1
+        or future_subobligations[0].get("status") != "NOT_ESTABLISHED"
+        or future_subobligations[0].get("gate_phase") != "FUTURE_PROOF"
+    ):
+        _fail("source_prayer_owner_history", "Prayer key 62 history/map or future-proof hold changed")
+
+    source_rows = [
+        _object(value, f"source_prayer_owner_resolution_evidence[{index}]")
+        for index, value in enumerate(rows)
+    ]
+    closed_ids = [f"{PRAYER_OWNER_SOURCE_KEY}::source_mapping_review"]
+    return {
+        "source_resolution_records": source_rows,
+        "source_owner_decided_keys": [PRAYER_OWNER_SOURCE_KEY],
+        "source_owner_decided_subobligation_ids": closed_ids,
+        "source_owner_decided_subobligation_count": len(closed_ids),
+        "source_census_row_count": census_result["responder_count"],
+        "validated_exact_span_record_count": census_result["exact_source_span_record_count"],
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -11955,7 +12545,7 @@ def _validate_source_unknown_classifications(
     if tenth_contract != expected_tenth_contract:
         _fail("source_tenth_contract", "open-domain closure cumulative counts differ")
 
-    source_resolved_keys = list(
+    source_resolved_keys_before_prayer = list(
         dict.fromkeys(
             [
                 str(key)
@@ -11968,10 +12558,141 @@ def _validate_source_unknown_classifications(
         )
     )
     if (
-        len(source_resolved_keys) != 70
-        or set(source_resolved_keys) != all_resolved_keys
+        len(source_resolved_keys_before_prayer) != 70
+        or set(source_resolved_keys_before_prayer) != all_resolved_keys
     ):
         _fail("source_tenth_resolution_census", "70 exact resolved keys are not unique")
+
+    source_blocking_keys_before_prayer = list(source_blocking_keys)
+    source_held_keys_before_prayer = list(source_held_keys)
+    current_open_subobligations_before_prayer = set(current_open_source_subobligation_ids)
+    closed_subobligation_ids_before_prayer = set(closed_subobligation_ids)
+    all_records_before_prayer = list(all_records)
+    reviewed_keys_before_prayer = set(reviewed_keys)
+    all_resolved_keys_before_prayer = set(all_resolved_keys)
+    source_closed_key_set_before_prayer = set(source_closed_key_set)
+    if (
+        len(source_blocking_keys_before_prayer) != 7
+        or len(current_open_subobligations_before_prayer) != 7
+        or len(all_records_before_prayer) != 91
+        or len(all_resolved_keys_before_prayer) != 70
+        or PRAYER_OWNER_SOURCE_KEY not in source_blocking_keys_before_prayer
+        or PRAYER_OWNER_SOURCE_KEY in all_resolved_keys_before_prayer
+    ):
+        _fail("source_prayer_owner_prior_state", "Prayer key 62 is not the exact held source input")
+
+    prayer_owner_resolution = _validate_prayer_owner_resolution_evidence(
+        manifest, classified_by_key
+    )
+    prayer_owner_closed_ids = set(
+        prayer_owner_resolution["source_owner_decided_subobligation_ids"]
+    )
+    prayer_owner_keys = set(prayer_owner_resolution["source_owner_decided_keys"])
+    expected_prayer_closed_ids = {
+        f"{PRAYER_OWNER_SOURCE_KEY}::source_mapping_review"
+    }
+    if (
+        prayer_owner_keys != {PRAYER_OWNER_SOURCE_KEY}
+        or prayer_owner_closed_ids != expected_prayer_closed_ids
+        or prayer_owner_keys & all_resolved_keys_before_prayer
+        or prayer_owner_closed_ids & closed_subobligation_ids_before_prayer
+        or len(source_held_keys_before_prayer) != 7
+        or len(prayer_owner_resolution["source_resolution_records"]) != 1
+    ):
+        _fail("source_prayer_owner_census", "Prayer owner evidence does not close exactly source key 62")
+
+    closed_subobligation_ids.update(prayer_owner_closed_ids)
+    source_blocking_keys = [
+        key
+        for key in source_blocking_keys_before_prayer
+        if any(
+            subobligation["subobligation_id"] not in closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    current_open_source_subobligation_ids = {
+        str(subobligation["subobligation_id"])
+        for key in source_blocking_keys
+        for subobligation in classified_by_key[key]["subobligations"]
+        if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        and subobligation["subobligation_id"] not in closed_subobligation_ids
+    }
+    active_source_blocker_entry_count = len(
+        {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
+    )
+    source_held_keys = [
+        key for key in source_held_keys_before_prayer if key in source_blocking_keys
+    ]
+    all_records = [
+        *all_records_before_prayer,
+        *prayer_owner_resolution["source_resolution_records"],
+    ]
+    source_owner_decided_key_set = owner_decided_key_set | prayer_owner_keys
+    all_resolved_keys = source_closed_key_set_before_prayer | source_owner_decided_key_set
+    reviewed_keys = reviewed_keys_before_prayer
+    source_closed_key_set = source_closed_key_set_before_prayer
+    source_resolved_keys = [*source_resolved_keys_before_prayer, PRAYER_OWNER_SOURCE_KEY]
+    if (
+        len(source_blocking_keys) != 6
+        or len(current_open_source_subobligation_ids) != 6
+        or len(source_held_keys) != 6
+        or len(all_records) != 92
+        or len(all_resolved_keys) != 71
+        or len(closed_subobligation_ids) != 75
+        or len(reviewed_keys) != 77
+        or len(source_resolved_keys) != 71
+        or set(source_resolved_keys) != all_resolved_keys
+        or PRAYER_OWNER_SOURCE_KEY in source_blocking_keys
+        or source_closed_key_set != source_closed_key_set_before_prayer
+    ):
+        _fail("source_prayer_owner_accounting", "Prayer owner closure changed unrelated source counts")
+
+    expected_prayer_contract = {
+        "status": "PARTIAL_PRAYER_ACCEPTED_OWNER_SOURCE_BINDING_ONLY",
+        "selected_key_count": 1,
+        "resolution_record_count": 1,
+        "selected_owner_decided_key_count": 1,
+        "selected_owner_decided_subobligation_count": 1,
+        "prior_reviewed_key_count": 77,
+        "prior_resolution_record_count": 91,
+        "prior_source_resolved_key_count": 70,
+        "prior_source_resolved_subobligation_count": 74,
+        "prior_source_held_key_count": 7,
+        "prior_source_held_subobligation_count": 7,
+        "prior_active_source_blocker_count": 7,
+        "prior_active_source_blocker_entry_count": 7,
+        "cumulative_reviewed_key_count": 77,
+        "cumulative_resolution_record_count": 92,
+        "cumulative_source_closed_key_count": 64,
+        "cumulative_owner_decided_key_count": 7,
+        "cumulative_source_resolved_key_count": 71,
+        "cumulative_source_resolved_subobligation_count": 75,
+        "cumulative_source_held_key_count": 6,
+        "cumulative_source_held_subobligation_count": 6,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 6,
+        "active_source_blocker_entry_count": active_source_blocker_entry_count,
+        "source_census_responder_count": prayer_owner_resolution["source_census_row_count"],
+        "validated_exact_source_span_record_count": prayer_owner_resolution[
+            "validated_exact_span_record_count"
+        ],
+        "accepted_completion_row_numbers": [12, 13, 14, 18, 19, 21, 28],
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "source_ready": False,
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": [62],
+    }
+    prayer_contract = _object(
+        manifest.get("source_prayer_owner_resolution_contract"),
+        "source_prayer_owner_resolution_contract",
+    )
+    if prayer_contract != expected_prayer_contract:
+        _fail("source_prayer_owner_contract", "Prayer owner cumulative source counts differ")
+
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
@@ -11984,15 +12705,20 @@ def _validate_source_unknown_classifications(
         "source_owner_decided_key_count": len(source_owner_decided_key_set),
         "source_held_key_count": len(source_blocking_keys),
         "source_resolved_keys": source_resolved_keys,
-        "source_owner_decided_keys": eighth_resolution["source_owner_decided_keys"],
-        "source_owner_decided_subobligation_count": eighth_resolution[
-            "source_owner_decided_subobligation_count"
+        "source_owner_decided_keys": [
+            *eighth_resolution["source_owner_decided_keys"],
+            *prayer_owner_resolution["source_owner_decided_keys"],
         ],
+        "source_owner_decided_subobligation_count": (
+            eighth_resolution["source_owner_decided_subobligation_count"]
+            + prayer_owner_resolution["source_owner_decided_subobligation_count"]
+        ),
         "source_held_subobligation_count": len(current_open_source_subobligation_ids),
         "source_held_keys": source_held_keys,
         "source_resolution_evidence": all_records,
-        "source_owner_decision_evidence": eighth_resolution[
-            "source_resolution_records"
+        "source_owner_decision_evidence": [
+            *eighth_resolution["source_resolution_records"],
+            *prayer_owner_resolution["source_resolution_records"],
         ],
         "source_ninth_resolution_evidence": familiar_resolution[
             "source_resolution_records"
@@ -12002,6 +12728,10 @@ def _validate_source_unknown_classifications(
             "source_resolution_records"
         ],
         "source_tenth_resolution_contract": tenth_contract,
+        "source_prayer_owner_resolution_evidence": prayer_owner_resolution[
+            "source_resolution_records"
+        ],
+        "source_prayer_owner_resolution_contract": prayer_contract,
         "source_reviewed_key_count": len(reviewed_keys),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[
