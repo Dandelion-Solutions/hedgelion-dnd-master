@@ -4281,15 +4281,15 @@ class TestSpellSourceQualification(unittest.TestCase):
                 data = read_pinned(relative_path, expected_sha256, evidence_name)
                 return data + b"\n" if relative_path == pinned_path else data
 
-            with (
-                patch.object(
-                    TOOL, "_read_pinned_local_evidence", side_effect=drift_bytes
-                ),
-                self.assertRaises(TOOL.SourceQualificationError) as caught,
-                self.subTest(path=target_path),
-            ):
-                TOOL._validate_source_unknown_classifications(manifest)
-            self.assertEqual(caught.exception.code, expected_error)
+            with self.subTest(path=target_path):
+                with (
+                    patch.object(
+                        TOOL, "_read_pinned_local_evidence", side_effect=drift_bytes
+                    ),
+                    self.assertRaises(TOOL.SourceQualificationError) as caught,
+                ):
+                    TOOL._validate_source_unknown_classifications(manifest)
+                self.assertEqual(caught.exception.code, expected_error)
 
     def test_tenth_open_domain_batch_closes_only_three_source_obligations(
         self,
