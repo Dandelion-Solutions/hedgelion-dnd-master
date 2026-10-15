@@ -1,0 +1,45 @@
+{
+  "result": "PASS_SOURCE_EVIDENCE_MECHANICS_ONLY",
+  "checks": "all bounded source texts/hash spans; owner hashes; full-text versus line inventory equality; unique114 responder IDs; all50/87 dispositions; exact original62/current98/held SOURCE-FUTURE and current contract unchanged",
+  "counts": {
+    "short_match_lines": 50,
+    "numeric_recharge_match_lines": 87,
+    "numeric_monster_responders": 86,
+    "direct_census_rows": 114,
+    "completion_bridge_candidate_rows": 6,
+    "rest_only_exclusion_lines": 141
+  },
+  "evidence_sha256": "d4aaa21108c3c20c0adcc14a55d33f93b2adc7a1c5aaa51e9db4644f18b092f0",
+  "report_sha256": "9c96439b5e5544d4b3f8bde57af7de057bb5a78259550ed876a272098f296faf",
+  "native_tests": "NOT_RUN_NOT_CLAIMED",
+  "remaining_source_gaps": [
+    {
+      "gap_id": "PRAYER-G01",
+      "source_lines": [
+        5011,
+        5021,
+        6126,
+        6353,
+        6502,
+        25115
+      ],
+      "issue": "Six actual-rest completion benefits are not explicitly recharge wording. Retain all six as conditional candidates; decide exact benefits-only bridge without inventing actual rest passage or granting unavailable features."
+    },
+    {
+      "gap_id": "PRAYER-G02",
+      "source_lines": [
+        1089
+      ],
+      "issue": "Mount boosted travel says it needs a Short or Long Rest; exact benefits-only recovery vs actual-rest prerequisite is not explicit."
+    },
+    {
+      "gap_id": "PRAYER-G03",
+      "source_lines": [
+        14839,
+        27248,
+        29289
+      ],
+      "issue": "Rest prohibition / literal finishing-rest benefit denial vs direct spell benefit grant requires explicit source interpretation. Simulacrum only-repair healing clause independently forbids ordinary spell/HD HP repair."
+    }
+  ]
+}
