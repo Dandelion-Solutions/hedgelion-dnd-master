@@ -2282,31 +2282,164 @@ class InputRetentionSourceTests(unittest.TestCase):
     def test_r3_response_root_catalog_facts_and_roles_must_match_actual_k(self):
         self.check_response_binding_mutations(("catalog_context_fingerprint", "ruleset_set_sha256", "invocation_facts", "target_ids"))
 
-    def test_r3_cold_response_root_binding_rejects_shape_valid_contradictions(self):
-        from GAME.TOOLS.native_storage import route_native_record
-        from GAME.TOOLS.recovery import CurrentNativeSource, recover_current_runtime
+    @contextmanager
+    def cold_response_sources(self):
+        from GAME.TOOLS.recovery import CurrentNativeSource
 
-        with self.retained() as (host, records, _i, _m, _p, _promise, _put):
+        with self.retained() as (host, records, interaction, _m, _p, _promise, put):
             class ColdRepository:
+                def __init__(self):
+                    self.reads = []
+
                 def pin_campaign(self, campaign_id):
                     return host._repository.pin_campaign(campaign_id)
 
                 def read_exact_path(self, pinned, path):
+                    self.reads.append(path)
                     return host._repository.read_exact_path(pinned, path)
 
                 def select_current_native_sources(self, pinned):
                     return (CurrentNativeSource(pinned.campaign_id, "campaign", pinned.campaign_id,
                         pinned.revision, "MANIFEST.yaml"),)
 
-            repository = ColdRepository()
+            yield ColdRepository(), host._campaign_id, records, interaction, put
+
+    def test_r3_cold_response_root_binding_rejects_shape_valid_contradictions(self):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import recover_current_runtime
+
+        with self.cold_response_sources() as (repository, campaign_id, records, _i, _put):
             path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
             valid = deepcopy(records[path])
             for field, value in response_binding_mutations().items():
                 records[path] = deepcopy(valid)
-                self.assertEqual(recover_current_runtime(repository, host._campaign_id).disposition.value, "READY")
+                self.assertEqual(recover_current_runtime(repository, campaign_id).disposition.value, "READY")
                 records[path]["state"][field] = value
                 with self.subTest(field=field), self.assertRaises(ValueError):
-                    recover_current_runtime(repository, host._campaign_id)
+                    recover_current_runtime(repository, campaign_id)
+
+    def check_cold_missing_response_dependency(self, kind):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import (
+            RecoveryFailure,
+            RecoveryFailureCode,
+            recover_current_runtime,
+        )
+
+        with self.cold_response_sources() as (repository, campaign_id, records, _i, _put):
+            self.assertEqual(recover_current_runtime(repository, campaign_id).disposition.value, "READY")
+            state = records[route_native_record("runtime.resolution", ("resolution-1",)).relative_path]["state"]
+            segment = state["segments"][0]
+            if kind == "event":
+                segment["event_ids"] = ["resolution-1:segment:1:event:1"]
+            elif kind == "child":
+                state["child_resolution_ids"] = ["missing-child"]
+                segment["pending_child_invocations"] = [{"firing_key": "fixed-child",
+                    "root_command_id": state["root_command_id"], "activity_id": state["activity_id"],
+                    "trigger_ref": segment["segment_id"], "reason": "mandatory_followup",
+                    "child_resolution_id": "missing-child"}]
+            else:
+                state.update(status="AWAITING_CHOICE", continuation_id="continuation-next")
+                segment.update(resulting_execution_state="AWAITING_CHOICE", continuation_id="continuation-next")
+            runtime_execution.validate_retained_resolution(resolution_id="resolution-1", resolution={
+                "kind": "runtime.resolution", "id": "resolution-1", "state": state})
+            with self.assertRaises(RecoveryFailure) as raised:
+                recover_current_runtime(repository, campaign_id)
+            self.assertEqual(raised.exception.code, RecoveryFailureCode.MISSING)
+
+    def test_cold_ready_response_requires_its_declared_native_event(self):
+        self.check_cold_missing_response_dependency("event")
+
+    def test_cold_ready_response_requires_its_declared_native_child(self):
+        self.check_cold_missing_response_dependency("child")
+
+    def test_cold_ready_response_requires_current_next_continuation(self):
+        self.check_cold_missing_response_dependency("continuation")
+
+    def test_cold_ready_response_loads_cumulative_results_child_and_next_offer_without_old_offer(self):
+        from DEV.TESTS.test_rd12_collaboration import _choice, _ordered_continuation
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import (
+            RecoveryFailure,
+            RecoveryFailureCode,
+            recover_current_runtime,
+        )
+
+        with self.cold_response_sources() as (repository, campaign_id, records, interaction, put):
+            target = interaction["state"]["response_target"]
+            root_id = target["root_command_id"]
+            message = records[route_native_record("runtime.message", (interaction["state"]["input_message_id"],)).relative_path]
+            target["responder_id"] = "actor-other"
+            interaction["state"]["accepted_input_basis"]["authority_at_acceptance"]["accepted_subject_ids"] = ["actor-other"]
+            consumed = response_survivor(interaction, message)
+            put(interaction)
+            state = records[route_native_record("runtime.resolution", ("resolution-1",)).relative_path]["state"]
+            self.assertNotEqual(state["actor_id"], target["responder_id"])
+            next_segment = retained_eventless_segment("resolution-1")
+            next_segment.update(segment_id="resolution-1:segment:2", segment_sequence=2,
+                resulting_execution_state="AWAITING_CHOICE", continuation_id="continuation-next")
+            next_segment["pending_child_invocations"] = [{"firing_key": "response-child-key",
+                "root_command_id": root_id, "activity_id": state["activity_id"],
+                "trigger_ref": next_segment["segment_id"], "reason": "mandatory_followup",
+                "child_resolution_id": "response-child"}]
+            state.update(segments=[consumed, next_segment], next_segment_sequence=3,
+                child_resolution_ids=["response-child"], status="AWAITING_CHOICE", continuation_id="continuation-next")
+            event_paths = []
+            for segment in state["segments"]:
+                event_id = segment["segment_id"] + ":event:1"
+                segment["event_ids"] = [event_id]
+                put({"kind": "runtime.mechanical_event", "id": event_id, "state": {
+                    "segment_id": segment["segment_id"], "event_ordinal": 1, "event_kind": "event.test.response",
+                    "root_command_id": root_id, "causal_ref": "resolution-1", "payload": {"segment": segment["segment_sequence"]}}})
+                event_paths.append(route_native_record("runtime.mechanical_event", (event_id,)).relative_path)
+            child = deepcopy(state)
+            child.pop("initiating_command_id")
+            child.pop("continuation_id")
+            child.update(resolution_id="response-child", causal_invocation_key="response-child-key", status="COMPLETED",
+                segments=[retained_eventless_segment("response-child")], next_segment_sequence=2, child_resolution_ids=[])
+            put({"kind": "runtime.resolution", "id": "response-child", "state": child})
+            offer = _choice()
+            offer.update(offer_id="offer-next", continuation_generation=2, responder_id="actor-next")
+            continuation = _ordered_continuation(pending_response=offer)
+            continuation.update(id="continuation-next", campaign_id=campaign_id, generation=2,
+                expected_child_resolution_ids=["response-child"],
+                committed_segment_refs=[segment["segment_id"] for segment in state["segments"]])
+            for key in ("root_command_id", "activity_id", "actor_id", "target_ids", "parameter_bindings",
+                        "ruleset_set_digest_generation", "ruleset_set_sha256", "catalog_context_fingerprint_generation",
+                        "catalog_context_fingerprint", "invocation_facts", "fixed_rng_results", "prior_step_exports"):
+                if key in state:
+                    continuation[key] = deepcopy(state[key])
+            put(continuation)
+            paths = event_paths + [route_native_record("runtime.resolution", ("response-child",)).relative_path,
+                route_native_record("runtime.continuation", ("continuation-next",)).relative_path]
+            old_offer_path = route_native_record("runtime.continuation", (target["continuation_id"],)).relative_path
+            self.assertNotIn(old_offer_path, records)
+            self.assertNotIn("intent_plan_id", interaction["state"])
+            self.assertEqual(recover_current_runtime(repository, campaign_id).disposition.value, "READY")
+            self.assertTrue(set(paths) <= set(repository.reads))
+            self.assertNotIn(old_offer_path, repository.reads)
+            self.assertFalse(any("INTENT_PLANS" in path or "PLAYERS" in path for path in repository.reads))
+            for path in paths:
+                saved = records.pop(path)
+                with self.subTest(path=path), self.assertRaises(RecoveryFailure) as raised:
+                    recover_current_runtime(repository, campaign_id)
+                self.assertEqual(raised.exception.code, RecoveryFailureCode.MISSING)
+                records[path] = saved
+                self.assertEqual(recover_current_runtime(repository, campaign_id).disposition.value, "READY")
+            for path, container, field, wrong in (
+                (event_paths[0], "state", "root_command_id", "foreign-command"),
+                (route_native_record("runtime.resolution", ("response-child",)).relative_path,
+                 "state", "causal_invocation_key", "foreign-child-key"),
+                (route_native_record("runtime.continuation", ("continuation-next",)).relative_path,
+                 None, "generation", True),
+            ):
+                saved = deepcopy(records[path])
+                target_state = records[path] if container is None else records[path][container]
+                target_state[field] = wrong
+                with self.subTest(path=path, field=field), self.assertRaises(ValueError):
+                    recover_current_runtime(repository, campaign_id)
+                records[path] = saved
+                self.assertEqual(recover_current_runtime(repository, campaign_id).disposition.value, "READY")
 
     @contextmanager
     def retained_extra(self, *, direct=False, pending=False):

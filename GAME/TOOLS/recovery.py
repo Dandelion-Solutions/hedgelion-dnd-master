@@ -1053,6 +1053,9 @@ def _hydrate_input_root_closure(
                     resolution_state if "accepted_resume_ref" in state else current_resolution_state)
             except CommandAcceptanceError as exc:
                 raise RecoveryFailure("input response native K/R binding differs", code=RecoveryFailureCode.CORRUPT) from exc
+            _hydrate_required_execution_children(repository, pinned, root,
+                resolution_state if "accepted_resume_ref" in state else current_resolution_state,
+                owner_id=target["resolution_id"])
         validate_input_closure(campaign_id=pinned.campaign_id, interaction=interaction,
                                message=message, plan=plan, accepted_response_segment=segment)
         commands = []
@@ -1176,7 +1179,7 @@ def _validate_pinned_native_identity(
 def _hydrate_required_execution_children(repository: object, pinned: PinnedCampaign,
         command: Mapping[str, object], owner: Mapping[str, object], *, owner_id: str,
         seen: set[str] | None = None) -> None:
-    """Bounded cold-source closure for declared native results, never replay."""
+    """Bounded cold-source closure for an owner's results and descendants."""
     from .catalog_runtime import canonical_json
     from .native_storage import validate_loaded_identity
     from .recovery_roots import _validate_native_owner
@@ -1197,6 +1200,28 @@ def _hydrate_required_execution_children(repository: object, pinned: PinnedCampa
         invocations += list(command["pending_child_invocations"])
     child_ids = set(owner.get("child_resolution_ids", ())) | {
         child["child_resolution_id"] for child in invocations if "child_resolution_id" in child}
+    # Every retained owner has its own event dependencies, including a response R
+    # reached from a ready I with no extra K. Visit all committed segments rather
+    # than only a selected result or events belonging to mandatory descendants.
+    for segment in segments:
+        for event_id in segment["event_ids"]:
+            event = _read_pinned_native_record(repository, pinned, "runtime.mechanical_event", (event_id,), "execution event")
+            if "kind" in event or "id" in event or "state" in event:
+                try:
+                    validate_loaded_identity("runtime.mechanical_event", (event_id,), event)
+                except NativeStorageError as exc:
+                    raise RecoveryFailure("event native envelope identity differs", code=RecoveryFailureCode.CORRUPT) from exc
+            state = event.get("state", event)
+            if "state" in event:
+                for key, value in state.items():
+                    if key in event and canonical_json(event[key]) != canonical_json(value):
+                        raise RecoveryFailure("event envelope/state conflicts", code=RecoveryFailureCode.CORRUPT)
+            wire = state if "state" in event else {key: value for key, value in state.items()
+                if key not in {"kind", "id", "campaign_id", "revision", "state_revision", "event_id"}}
+            _input_wire("runtime-mechanical-event-state", wire)
+            _validate_event_identity({"event_id": event_id}, owner_id, segment, segment["segment_id"], state)
+            if state["root_command_id"] != command_id or state["causal_ref"] != owner_id:
+                raise RecoveryFailure("event native cause differs", code=RecoveryFailureCode.CORRUPT)
     for segment in segments:
         output = segment.get("continuation_id")
         if output is None or output == owner.get("continuation_id"):
@@ -1234,25 +1259,6 @@ def _hydrate_required_execution_children(repository: object, pinned: PinnedCampa
             raise RecoveryFailure("mandatory child native cause/result differs", code=RecoveryFailureCode.INCOMPLETE)
         if command["disposition"] == "command.settled" and child["status"] not in {"COMPLETED", "REJECTED", "ABORTED", "FAILED"}:
             raise RecoveryFailure("settled command retains pending child result", code=RecoveryFailureCode.INCOMPLETE)
-        for segment in child["segments"]:
-            for event_id in segment["event_ids"]:
-                event = _read_pinned_native_record(repository, pinned, "runtime.mechanical_event", (event_id,), "mandatory child event")
-                if "kind" in event or "id" in event or "state" in event:
-                    try:
-                        validate_loaded_identity("runtime.mechanical_event", (event_id,), event)
-                    except NativeStorageError as exc:
-                        raise RecoveryFailure("child event native envelope identity differs", code=RecoveryFailureCode.CORRUPT) from exc
-                state = event.get("state", event)
-                if "state" in event:
-                    for key, value in state.items():
-                        if key in event and canonical_json(event[key]) != canonical_json(value):
-                            raise RecoveryFailure("child event envelope/state conflicts", code=RecoveryFailureCode.CORRUPT)
-                wire = state if "state" in event else {key: value for key, value in state.items()
-                    if key not in {"kind", "id", "campaign_id", "revision", "event_id"}}
-                _input_wire("runtime-mechanical-event-state", wire)
-                _validate_event_identity({"event_id": event_id}, child_id, segment, segment["segment_id"], state)
-                if state["root_command_id"] != command_id or state["causal_ref"] != child_id:
-                    raise RecoveryFailure("child event native cause differs", code=RecoveryFailureCode.CORRUPT)
         _hydrate_required_execution_children(repository, pinned, command, child, owner_id=child_id, seen=seen)
     if "continuation_id" in owner:
         identity = owner["continuation_id"]
