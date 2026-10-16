@@ -7,7 +7,7 @@ BASE_SHA: `36862aa4c2ac212226f6a7d95390930995cd34ea`
 STATUS: AUTONOMOUS IMPLEMENTATION — SP01/SP02 ACCEPTED; SP00/P2 partial preparations published; remaining named dependencies and original integration gates apply.
 CURRENT_TASK: complete SP03 allocated finite policy/membership/evaluator/preflight realization after published read/cache preparation; independent SP00 source/default obligations and P2 non-HOT preparation retain exact holds. No full339 support claim.
 LAST_COMPLETED_TASK: W05.SP02 -> `W05_SPELL_SEALED_CATALOG_READY` at `d0c97f623bfb5fd24a44403dc163b16793186673`; independent task/Senior integration audit and clean integrated proof/read-back PASS. Prior accepted tasks remain valid as recorded below.
-LAST_SAFE_SHA: `39ab1b4a1c7a844f4df2e7886c4b2ac17e401243` — last read-back before the clean-verified seventh source/design retention candidate7684f10a; final documentary synchronization publication/read-back follows. Complete SP03 remains open; unchanged plan GO applies outside affected design/owner-decision gates.
+LAST_SAFE_SHA: `d79168f204aad1bb1179a828a06dc8b9dcb6eae9` — latest clean-verified, independently accepted and remotely read-back S3/source checkpoint. Whole SP03 remains open; S4 and independently eligible work retain the current plan GO, Spike source interpretation has its bounded PO gate.
 
 ## W05.T01 Implementation Impact Envelope
 
@@ -4045,4 +4045,99 @@ counts unchanged70/7 untilaccepted-ownerbinding; source/nativeReadyfalse.
 
 S2 continues independently in task-owned isolatedworkspace; whole51-pathcutover
 candidate has task-review findings underrepair, not an accepted checkpoint.
-Publicruntime stillS1/schema3/codec2, no unverifiedhalf-cutover published.
+
+## 2026-10-16 S2/S3 accepted; Prayer and Magic Mouth evidence; Spike decision gate
+
+LAST_PUBLISHED_SHA:d79168f204aad1bb1179a828a06dc8b9dcb6eae9;
+TREE:ef264e19578a18d4369a390f28e17e84c1603190.
+Normal non-force publication and fresh pruned read-back matched exact commit/tree;
+no branch creation/deletion/force. Main runtime state has no half-migrated S2/S3.
+
+PRAYER_CANONICAL_STOP2: independent ses_ebfb86733ffe6WM60pM7dEia3j GO at52923a33,
+tree1f303232a5345200ace5a5bec5b395d2ad49f293; unchanged5canonicalownerblobs+
+reviewed2control docs. Exact3acceptedchoices/source-groundedno-effect preserved,
+noNativeSourceReady. Prayerkey62 OWNER_DECIDED binding5f38ff23 integrated8b7d934f;
+allpriorhistory/A–F/33future roots unchanged. Independent machineSPECQUALITYPASS
+ses_ebe8ae67effeRMjyU5cBlypYO0;71resolved64SOURCE7OWNER/6held. Initialcleanunittest
+foundtest-onlysubTestinsideassertRaises interceptedexpectederrorexceptions;pytest
+passedbutcanonicalfailed. Publicvalidatorcorrectlyrejectedchangedbytes. Exact
+test-onlybe6ac330 moves subTestoutside;REDcanonicalFAIL+ERRORthenGREENsingleand
+full66modulebothrunners; independentreviewPASS. No policy/validator weakening.
+Cleanbe6canonical1783OK/93skip,source/provenancepytest70passed,auditPASS.
+
+S2_ACCEPTED:code090b92ba3d41d25fad2e2237482045d9c4a36fac,
+treefe9d11196229f76a3455e4945bb01aee632e7839; isolated9b75d8ff51blobsunchanged.
+IndependenttaskreviewR3ses_ebf1f9a7effeClf4hLjzNt1uoL SPECQUALITYPASSallF1–F4:
+exactissuedHostsession/callback/store/source binding;allfinitePlayerroute/body
+account associations before reduction;strictnativeowner/committedsegment/receipt/
+eventcarrieralias closure;strictmixedpriorRsource. No copiedDTO/verifiedflag,
+publisheridentityoropaquehashauth.Laterplural/singularevent contradiction repaired
+withcanonicaltypedexactequality; actualcolddual/singular/plural/eventless retained.
+IndependentSeniorintegration ses_ebe8ae788ffeZlje6zvhtzABF9 PASS, no extraEnvelope
+impact. Sourcecommand schema4/hash3,compilersemantic2; initialR/segment/execution-
+identity/infrastructure1. Thirteenmodulebumps once:
+activity_contracts.12->.13,activity_runtime.9->.10,bootstrap.5->.6,catalog_runtime.2->.3,
+durability.5->.6,mechanical_context.6->.7,mechanical_sources.2->.3,mechanics.5->.6,
+publication.6->.7,recovery.6->.7,runtime_execution.9->.10,runtime_host.18->.19,
+spell_cast.3->.4 (all1.0.line). Nestedcatalog/policy/actionR/directK/currentvs
+historicalauthority/completeinputreadunion synchronized. NoS3writer/S4activation.
+Clean090pytest2081/93skip,canonical1780OK/93skip,installed24/19OK,censusnone,
+audit/buildPASS. Remote exact090readback followed before later source integration.
+
+S3_ACCEPTED:integratedd4bcd5c2+dc7bdcf1(coldrepair9a68ad8e), actualfinalcodein
+d79168f2. ReviewedS3inputf8508bba14filesandtwo-filecoldfix; twelveoriginalpaths
+unchanged, recoveryblob83927968b42620160bc58c20b10a3c0a0974ea92 andtestblob
+c225e1ad5652af1a559b1da7af1ecabc2874dc5a exactreviewedrepair.S3taskwhole/R2/R3
+ses_ebe0521d4ffeHR8iqLOyrNAUz5 PASSafterdigest-onlysurvivor/extraKresult/current
+suspension-child/publicRmalformation andactualK-Rfact/catalog/actorbinding gaps.
+SeniorintegrationfirstfoundS3-INT-01coldreadyNoP skippedrequiredresponseevents/
+children/currentNEXTContinuation; actualpublicREDall3thenGREEN, graphhelper now
+calledbeforeempty-extraKreturnandallretainedsegment eventsvalidated.Fixaffected
+reviewPASS; finalSeniorintegration ses_ebd86fa91ffesAIf538FbOCPHR PASSatd791exact
+scope.No tuplehash-as-meaning; unknownsurvivor/protection retains/holds; same-I
+pure/mixedreference-only/currentauthoritycollaboration,actualnative sourcegraph
+andpromises coherent. No responseconsume/materialization/protectionwriter, no
+currentauthlease fromhistoricalorigin. CurrentRactorneednotequalresponder.
+Versionsonce:runtime_execution1.0.10->1.0.11,runtime_host1.0.19->1.0.20,
+collaboration1.0.21->1.0.22,durability1.0.6->1.0.7,recovery1.0.7->1.0.8;
+initialresume1/projectionssynchronized.No extra repair bump.
+
+FINAL_CLEAN_PROOFd791: fullpytest2142passed/93skipped;canonicalunittest1841OK/
+93skipped; actualinstalledcontext24/membership19OK; fullnamespacecensusunclassified/
+legacyEMPTY; canonicalaudit/releasebuildPASS; allchainexit0andfinalcleanSHA/tree.
+Earlierd4clean2136/1835runis historical, notfinalrepairedbytesproof.Workerunclean
+metadatafailuresremainFAIL,notcountedasPASS; finalunfilteredclean includescase.
+ExactSP03seven116passed24skipped andaffectedproofs retained atreviewedscopes.
+No hostedCI/deployedissuer/kernel/performance proof.Senior independentlyidentity/
+scope checked; allfullcommandsabove coordinator-run, notreviewer reruns.
+
+MAGIC_MOUTH_SOURCE:key53closedonlymissinguniversal-frequencyexpectation: lawful
+casterdefinedvisual/audiblecircumstancewithin30ftOBJECT suppliesoccurrencesemantics;
+no globaltick/cooldown/once-true-episode/overlapsuppression rule.Nothing makesprose
+executableorBoolcomplete/omniscient; ambiguityresolvedbeforeaffectedacceptance.
+Key54qualifiersandallpriorroots/FUTURE unchanged.Code05a2725e integratedd791six
+hashesexactindependentreviewPASS. Current72resolved65SOURCE7OWNER/5held,33FUTURE
+NOT_ESTABLISHED;defaultWordRecallstillopen.Source/profile/packageREADYfalse.
+VERSION_IMPACTNONEforsourceevidenceDEVdraft1andtest-onlyrepair/cursors; noGAME
+policyactivationfromSourceClosureorowneracceptance.
+
+SPIKE_NEEDS_PO:key75only,remainderaccumulation lifetimeanddamage-instancepartition.
+Briefdesign/2026-10-16-sp00-spike-growth-decision-brief.md recommends percreature+
+exactspellapplicationlifetime(inapplicabilityretainsalreadyearnedfraction,
+accrues0,clearonexactendwithoutdeletingprotectedretryevidence) andpercompleted5ft
+distinct2d4instance. Alternateoccupancylifetimes/semanticaggregatesneedcomplete
+reset/timingdefinitionbeforeimplementation.No Policy_SELECTED.Senior source/fidelity
+ses_ebdd5598cffeK9YpSEOvZ26vyH confirmsgenuinetwochoices/sourceconstraints/goldens;
+precisionfixes qualifyidenticalrules/progress/state andlawfulcontinuedforcedpath
+afterunconsciousness, separateSOURCEfromFUTURE closure. Actualdistance!=budgetcost,
+noVoluntary-only/cap/teleportgap/flatentry;spatialfacts cannotchoosemechanics.
+
+NEXT_EXACT_TASK: S4purecommon-turn/Actor3/concreteProcedure3sourcebridgeunder
+existingplanGO.S3acceptancenoS4/nativeKernel/deployedoriginalissuer proof.SP04
+joins waitfullSP03actualinputs;S2/S3readconformance notreceiptsfornativewriter.
+AffectedSpike recipe waits2POinterpretationsonly; othereligiblelanesremainallowed.
+This metadata/decisionbrief publication follows; fullSP03/SP04/P2/all339 notready.
+Published runtime includes accepted S1–S3 and the S2 command schema4/input
+fingerprint generation3 cutover. This supersedes the pre-S2-publication runtime
+state at the earlier Prayer checkpoint. S4 and fullSP03 remain incomplete; no
+native consume/Plan/protection/turn-writer or deployed-issuer proof is claimed.
