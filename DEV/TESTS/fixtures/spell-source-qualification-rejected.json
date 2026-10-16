@@ -967,5 +967,130 @@
       "value": 70,
       "expected_error_code": "source_prayer_owner_contract"
     }
+  ],
+  "magic_mouth_source_rejections": [
+    {
+      "case_id": "magic-mouth-source-scope-cannot-promote-native-readiness",
+      "target": "review",
+      "operation": "replace",
+      "field": "accepted_scope",
+      "value": "SOURCE_AND_NATIVE_RUNTIME_READY",
+      "expected_error_code": "source_magic_mouth_review"
+    },
+    {
+      "case_id": "magic-mouth-trigger-radius-is-not-caster-centered",
+      "target": "evidence",
+      "operation": "replace",
+      "field": "source_interpretation",
+      "value": "At casting, the caster determines a trigger within 30 feet of the caster and repeats whenever it occurs.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-does-not-infer-global-tick-frequency",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "The mouth delivers the message on every global tick while the condition is true.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-does-not-infer-automatic-cooldown",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "Every repeated delivery receives an automatic one-round cooldown.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-does-not-infer-once-per-true-episode",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "A continuously true condition can trigger at most once until it becomes false.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-does-not-suppress-overlapping-triggers-by-default",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "A second trigger is suppressed while the prior message is still audible.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-does-not-choose-an-audible-overlap-policy",
+      "target": "evidence",
+      "operation": "replace",
+      "field": "material_qualifiers",
+      "value": [
+        "Concurrent deliveries are always queued in order.",
+        "The integration chooses no other interpretation."
+      ],
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-ambiguous-trigger-must-not-be-accepted-unresolved",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "A materially ambiguous intended trigger may be accepted without resolution.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-trigger-prose-is-not-an-executable-script-or-poller",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "Arbitrary executable prose may run as a Boolean world poller.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-trigger-prose-does-not-grant-unregistered-facts",
+      "target": "evidence",
+      "operation": "append",
+      "field": "material_qualifiers",
+      "value": "The caster's trigger sentence authorizes arbitrary unregistered fact access.",
+      "expected_error_code": "source_magic_mouth_qualifier"
+    },
+    {
+      "case_id": "magic-mouth-primary-source-span-hash-is-pinned",
+      "target": "locator",
+      "operation": "replace",
+      "field": "span_sha256",
+      "value": "0000000000000000000000000000000000000000000000000000000000000000",
+      "expected_error_code": "source_magic_mouth_span_hash"
+    },
+    {
+      "case_id": "magic-mouth-native-proof-remains-not-established",
+      "target": "evidence",
+      "operation": "replace",
+      "field": "future_native_proof_status",
+      "value": "ESTABLISHED",
+      "expected_error_code": "source_magic_mouth_future_proof"
+    },
+    {
+      "case_id": "magic-mouth-native-proof-reference-cannot-be-fabricated",
+      "target": "evidence",
+      "operation": "append",
+      "field": "actual_native_proof_refs",
+      "value": "spell.magic_mouth.native.consumer",
+      "expected_error_code": "source_magic_mouth_future_proof"
+    },
+    {
+      "case_id": "magic-mouth-source-closure-count-is-derived",
+      "target": "contract",
+      "operation": "replace",
+      "field": "cumulative_source_resolved_key_count",
+      "value": 73,
+      "expected_error_code": "source_magic_mouth_contract"
+    },
+    {
+      "case_id": "magic-mouth-original-source-readiness-gate-is-preserved",
+      "target": "classification",
+      "operation": "replace",
+      "field": "source_ready_blocking",
+      "value": false,
+      "expected_error_code": "source_unknown_classification_gate"
+    }
   ]
 }

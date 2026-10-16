@@ -50,6 +50,9 @@
     "source_tenth_resolution_evidence",
     "source_prayer_owner_resolution_contract",
     "source_prayer_owner_resolution_evidence",
+    "source_magic_mouth_review",
+    "source_magic_mouth_resolution_contract",
+    "source_magic_mouth_resolution_evidence",
     "source_modeling_resolutions",
     "source_modeling_residuals",
     "primary_table_evidence_witnesses",
@@ -214,6 +217,16 @@
       "minItems": 1,
       "maxItems": 1,
       "items": {"$ref": "#/$defs/sourcePrayerOwnerResolutionEvidence"}
+    },
+    "source_magic_mouth_review": {"$ref": "#/$defs/sourceMagicMouthReview"},
+    "source_magic_mouth_resolution_contract": {
+      "$ref": "#/$defs/sourceMagicMouthResolutionContract"
+    },
+    "source_magic_mouth_resolution_evidence": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {"$ref": "#/$defs/sourceMagicMouthResolutionEvidence"}
     },
     "source_modeling_resolutions": {
       "type": "array",
@@ -2943,6 +2956,181 @@
         "actual_native_proof_refs": {"type": "array", "maxItems": 0},
         "source_ready_status": {"const": "NOT_ESTABLISHED"},
         "production_claim": {"const": "NONE"}
+      }
+    },
+    "sourceMagicMouthReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_id", "integration_base_sha", "senior_ruling_id",
+        "senior_ruling", "accepted_scope", "task_evidence_path",
+        "task_evidence_sha256"
+      ],
+      "properties": {
+        "review_id": {"const": "SP00_MAGIC_MOUTH_TRIGGER_SOURCE_RECONCILIATION_20261016"},
+        "integration_base_sha": {"const": "be6ac3305e258fcaea910f29a95e22d3bfb802cc"},
+        "senior_ruling_id": {"const": "ses_ebdd5598cffeK9YpSEOvZ26vyH"},
+        "senior_ruling": {"const": "GO_SOURCE_ONLY_KEY_53; NO_NEW_PRODUCT_POLICY_OR_NATIVE_PROOF"},
+        "accepted_scope": {"const": "EXACTLY_KEY_53_SOURCE_SEMANTICS; PRESERVE_KEY_54_AND_PRIOR_HELD_HISTORY; KEEP_FUTURE_PROOF_NOT_ESTABLISHED"},
+        "task_evidence_path": {"const": "DEV/docs/superpowers/design/2026-10-16-sp00-magic-mouth-source-reconciliation.md"},
+        "task_evidence_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "sourceMagicMouthResolutionContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "selected_key_count", "resolution_record_count",
+        "selected_source_closed_key_count", "selected_source_closed_subobligation_count",
+        "prior_reviewed_key_count", "prior_resolution_record_count",
+        "prior_source_resolved_key_count", "prior_source_resolved_subobligation_count",
+        "prior_source_held_key_count", "prior_source_held_subobligation_count",
+        "prior_active_source_blocker_count", "prior_active_source_blocker_entry_count",
+        "cumulative_reviewed_key_count", "cumulative_resolution_record_count",
+        "cumulative_source_closed_key_count", "cumulative_owner_decided_key_count",
+        "cumulative_source_resolved_key_count", "cumulative_source_resolved_subobligation_count",
+        "cumulative_source_held_key_count", "cumulative_source_held_subobligation_count",
+        "original_record_count", "original_source_blocking_key_count",
+        "downstream_only_key_count", "active_source_blocker_count",
+        "active_source_blocker_entry_count", "future_native_proof_status",
+        "full_339_source_qualification_status", "source_ready", "production_claim",
+        "selected_original_classification_indexes"
+      ],
+      "properties": {
+        "status": {"const": "PARTIAL_MAGIC_MOUTH_TRIGGER_SOURCE_ONLY"},
+        "selected_key_count": {"const": 1},
+        "resolution_record_count": {"const": 1},
+        "selected_source_closed_key_count": {"const": 1},
+        "selected_source_closed_subobligation_count": {"const": 1},
+        "prior_reviewed_key_count": {"const": 77},
+        "prior_resolution_record_count": {"const": 92},
+        "prior_source_resolved_key_count": {"const": 71},
+        "prior_source_resolved_subobligation_count": {"const": 75},
+        "prior_source_held_key_count": {"const": 6},
+        "prior_source_held_subobligation_count": {"const": 6},
+        "prior_active_source_blocker_count": {"const": 6},
+        "prior_active_source_blocker_entry_count": {"const": 6},
+        "cumulative_reviewed_key_count": {"const": 77},
+        "cumulative_resolution_record_count": {"const": 93},
+        "cumulative_source_closed_key_count": {"const": 65},
+        "cumulative_owner_decided_key_count": {"const": 7},
+        "cumulative_source_resolved_key_count": {"const": 72},
+        "cumulative_source_resolved_subobligation_count": {"const": 76},
+        "cumulative_source_held_key_count": {"const": 5},
+        "cumulative_source_held_subobligation_count": {"const": 5},
+        "original_record_count": {"const": 82},
+        "original_source_blocking_key_count": {"const": 77},
+        "downstream_only_key_count": {"const": 5},
+        "active_source_blocker_count": {"const": 5},
+        "active_source_blocker_entry_count": {"const": 5},
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "full_339_source_qualification_status": {"const": "NOT_ESTABLISHED"},
+        "source_ready": {"const": false},
+        "production_claim": {"const": "NONE"},
+        "selected_original_classification_indexes": {"const": [53]}
+      }
+    },
+    "sourceMagicMouthRecordRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact_id", "json_pointer", "source_exact_name", "printed_page",
+        "source_header_line", "raw_body_sha256", "raw_hash_basis",
+        "body_witness_ref", "qualification_ref", "evidence_boundary"
+      ],
+      "properties": {
+        "artifact_id": {"const": "source-pass-0-2"},
+        "json_pointer": {"const": "/rows/88/required_modes_or_exceptions"},
+        "source_exact_name": {"const": "Magic Mouth"},
+        "printed_page": {"const": 146},
+        "source_header_line": {"const": 12802},
+        "raw_body_sha256": {"const": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0"},
+        "raw_hash_basis": {"const": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"},
+        "body_witness_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-body-witnesses"},
+            "json_pointer": {"const": "/rows/199"}
+          }
+        },
+        "qualification_ref": {
+          "type": "object", "additionalProperties": false,
+          "required": ["artifact_id", "json_pointer"],
+          "properties": {
+            "artifact_id": {"const": "source-pass-0-2"},
+            "json_pointer": {"const": "/rows/88/qualifications"}
+          }
+        },
+        "evidence_boundary": {"const": "CURRENT_PRIMARY_SRD_BODY_READ; SOURCE_ONLY; NO_NATIVE_CONSUMER_PROOF"}
+      }
+    },
+    "sourceMagicMouthMarkdownLocator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "line_start", "line_end", "span_sha256"],
+      "properties": {
+        "heading": {"const": "Magic Mouth"},
+        "line_start": {"const": 13277},
+        "line_end": {"const": 13291},
+        "span_sha256": {"const": "f4bae8f5abed8471d713c43cfff53669fb68e253e2157bd42c048f1c04ebc704"}
+      }
+    },
+    "sourceMagicMouthResolutionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_item_id", "unresolved_key", "source_exact_name", "source_category",
+        "subobligation_id", "disposition", "source_record_ref",
+        "source_classification_pointer", "source_unresolved_record_pointer",
+        "current_map_pointer", "source_markdown_locators", "source_interpretation",
+        "material_qualifiers", "negative_findings", "retained_source_residual",
+        "future_native_proof_status", "actual_native_proof_refs"
+      ],
+      "properties": {
+        "review_item_id": {"const": "MAGIC-MOUTH-01"},
+        "unresolved_key": {"const": "source.spell.magic_mouth.unresolved.trigger_episode_frequency"},
+        "source_exact_name": {"const": "Magic Mouth"},
+        "source_category": {"const": "source_semantics"},
+        "subobligation_id": {"const": "source.spell.magic_mouth.unresolved.trigger_episode_frequency::source_semantics"},
+        "disposition": {"const": "SOURCE_CLOSED"},
+        "source_record_ref": {"$ref": "#/$defs/sourceMagicMouthRecordRef"},
+        "source_classification_pointer": {"const": "/source_unknown_classifications/53"},
+        "source_unresolved_record_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/53"},
+        "current_map_pointer": {"const": "/source_mapping_lanes/0/mapping_payload/entries/86"},
+        "source_markdown_locators": {
+          "type": "array", "minItems": 1, "maxItems": 1,
+          "items": {"$ref": "#/$defs/sourceMagicMouthMarkdownLocator"}
+        },
+        "source_interpretation": {
+          "const": "At casting, the caster determines a triggering circumstance based on visual or audible conditions within 30 feet of the enchanted object. The caster chooses whether the spell ends after delivery or remains and repeats whenever that specified trigger occurs."
+        },
+        "material_qualifiers": {
+          "const": [
+            "The casting Range of 30 feet governs initial placement of the enchanted object; the separate trigger radius is within 30 feet of that enchanted object, not the caster.",
+            "For the repeating choice, each occurrence of the sufficiently specified lawful cast circumstance is the source trigger occurrence; the source supplies no universal cadence.",
+            "Do not infer a global tick, automatic cooldown, once-per-continuous-true-episode limit, or overlap suppression.",
+            "The spell does not settle what happens when a new trigger occurs during an in-progress delivery; do not choose queueing, interruption, concurrency, or other audible-delivery overlap behavior here.",
+            "If the intended trigger is materially ambiguous, resolve it before the affected acceptance under existing exact source/consumer contracts; this is not permission for arbitrary executable prose, a boolean world poller, or unregistered fact access.",
+            "Typed predicate evaluation, occurrence production/enrollment, delivery, retry/idempotency, cleanup/termination, persistence and recovery remain FUTURE_PROOF / NOT_ESTABLISHED.",
+            "This source-only closure adds no native consumer, package admission, production support, or source-readiness claim."
+          ]
+        },
+        "negative_findings": {
+          "const": [
+            "NO_UNIVERSAL_CADENCE_OR_TICK",
+            "NO_AUTOMATIC_COOLDOWN",
+            "NO_ONCE_PER_CONTINUOUS_TRUE_EPISODE_LIMIT",
+            "NO_OVERLAP_SUPPRESSION_OR_AUDIBLE_DELIVERY_POLICY",
+            "NO_ARBITRARY_EXECUTABLE_PROSE_BOOLEAN_POLLER_OR_UNREGISTERED_FACT_PERMISSION",
+            "NO_NATIVE_CONSUMER_OR_PACKAGE_ADMISSION"
+          ]
+        },
+        "retained_source_residual": {
+          "const": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; absence of a universal cadence is not a source gap. Materially ambiguous intended triggers and in-progress audible-delivery overlap are not assigned a new policy. Typed predicate/occurrence production, enrollment, delivery, retry, cleanup, persistence, recovery and native consumer remain FUTURE_PROOF / NOT_ESTABLISHED."
+        },
+        "future_native_proof_status": {"const": "NOT_ESTABLISHED"},
+        "actual_native_proof_refs": {"type": "array", "maxItems": 0}
       }
     },
     "packageNoticeObservation": {

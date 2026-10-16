@@ -18,7 +18,7 @@ SOURCE_MANIFEST_PATH = (
     REPOSITORY_ROOT / "DEV/TESTS/fixtures/spell-source-qualification.json"
 )
 REVIEWED_SOURCE_MANIFEST_SHA256 = (
-    "fde7aba890cf3e8926aeff66af69df09074c42fc96484227590665df5a464fa2"
+    "001f17ef46dc7b936a54744535bc9b1e4515e6aadd80519a9991640721e96f49"
 )
 SOURCE_SEED_PATH = (
     REPOSITORY_ROOT
@@ -6159,6 +6159,110 @@ PRAYER_RESPONDER_CENSUS_SHA256 = (
 )
 PRAYER_RESPONDER_CENSUS_GIT_BLOB = "2ab5b1302dd83a65c52d90a25de85b47c737b9fa"
 PRAYER_SOURCE_MARKDOWN_GIT_BLOB = "45392ab96e8adfeba66694bca8950b6ce1a71797"
+SOURCE_MAGIC_MOUTH_EVIDENCE_RELATIVE_PATH = (
+    "DEV/docs/superpowers/design/2026-10-16-sp00-magic-mouth-source-reconciliation.md"
+)
+SOURCE_MAGIC_MOUTH_EVIDENCE_SHA256 = (
+    "7f62e7486633828a9b1735c40f0cace014b3845c3a5d36d9340082737ca666f2"
+)
+SOURCE_MAGIC_MOUTH_KEY = "source.spell.magic_mouth.unresolved.trigger_episode_frequency"
+SOURCE_MAGIC_MOUTH_REVIEW: dict[str, str] = {
+    "review_id": "SP00_MAGIC_MOUTH_TRIGGER_SOURCE_RECONCILIATION_20261016",
+    "integration_base_sha": "be6ac3305e258fcaea910f29a95e22d3bfb802cc",
+    "senior_ruling_id": "ses_ebdd5598cffeK9YpSEOvZ26vyH",
+    "senior_ruling": "GO_SOURCE_ONLY_KEY_53; NO_NEW_PRODUCT_POLICY_OR_NATIVE_PROOF",
+    "accepted_scope": "EXACTLY_KEY_53_SOURCE_SEMANTICS; PRESERVE_KEY_54_AND_PRIOR_HELD_HISTORY; KEEP_FUTURE_PROOF_NOT_ESTABLISHED",
+    "task_evidence_path": SOURCE_MAGIC_MOUTH_EVIDENCE_RELATIVE_PATH,
+    "task_evidence_sha256": SOURCE_MAGIC_MOUTH_EVIDENCE_SHA256,
+}
+SOURCE_MAGIC_MOUTH_SPEC: dict[str, object] = {
+    "source_exact_name": "Magic Mouth",
+    "source_category": "source_semantics",
+    "classification_index": 53,
+    "map_entry_index": 86,
+    "source_pass_row": 88,
+    "body_witness_row": 199,
+    "printed_page": 146,
+    "source_header_line": 12802,
+    "raw_body_sha256": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0",
+    "locator": {
+        "heading": "Magic Mouth",
+        "line_start": 13277,
+        "line_end": 13291,
+        "span_sha256": "f4bae8f5abed8471d713c43cfff53669fb68e253e2157bd42c048f1c04ebc704",
+    },
+    "source_phrases": (
+        "Range:** 30 feet",
+        "a message that is uttered when a trigger condition is met",
+        "Choose an object that you can see and that isn’t being worn or carried by another creature",
+        "must be 25 words or fewer",
+        "it can be delivered over as long as 10 minutes",
+        "determine the circumstance that will trigger the spell to deliver your message",
+        "When that trigger occurs",
+        "end after it delivers its message",
+        "remain and repeat its message whenever the trigger occurs",
+        "visual or audible conditions that occur within 30 feet of the object",
+    ),
+    "common_range_phrases": (
+        "A spell’s range indicates how far from the spellcaster the spell’s effect can originate",
+        "the spell’s description specifies which part of the effect is limited by the range",
+    ),
+    "source_interpretation": (
+        "At casting, the caster determines a triggering circumstance based on visual or audible "
+        "conditions within 30 feet of the enchanted object. The caster chooses whether the spell "
+        "ends after delivery or remains and repeats whenever that specified trigger occurs."
+    ),
+    "material_qualifiers": (
+        (
+            "The casting Range of 30 feet governs initial placement of the enchanted object; the "
+            + "separate trigger radius is within 30 feet of that enchanted object, not the caster."
+        ),
+        (
+            "For the repeating choice, each occurrence of the sufficiently specified lawful cast "
+            + "circumstance is the source trigger occurrence; the source supplies no universal cadence."
+        ),
+        (
+            "Do not infer a global tick, automatic cooldown, once-per-continuous-true-episode limit, "
+            + "or overlap suppression."
+        ),
+        (
+            "The spell does not settle what happens when a new trigger occurs during an in-progress "
+            + "delivery; do not choose queueing, interruption, concurrency, or other audible-delivery "
+            + "overlap behavior here."
+        ),
+        (
+            "If the intended trigger is materially ambiguous, resolve it before the affected acceptance "
+            + "under existing exact source/consumer contracts; this is not permission for arbitrary "
+            + "executable prose, a boolean world poller, or unregistered fact access."
+        ),
+        (
+            "Typed predicate evaluation, occurrence production/enrollment, delivery, retry/idempotency, "
+            + "cleanup/termination, persistence and recovery remain FUTURE_PROOF / NOT_ESTABLISHED."
+        ),
+        (
+            "This source-only closure adds no native consumer, package admission, production support, "
+            + "or source-readiness claim."
+        ),
+    ),
+    "negative_findings": (
+        "NO_UNIVERSAL_CADENCE_OR_TICK",
+        "NO_AUTOMATIC_COOLDOWN",
+        "NO_ONCE_PER_CONTINUOUS_TRUE_EPISODE_LIMIT",
+        "NO_OVERLAP_SUPPRESSION_OR_AUDIBLE_DELIVERY_POLICY",
+        "NO_ARBITRARY_EXECUTABLE_PROSE_BOOLEAN_POLLER_OR_UNREGISTERED_FACT_PERMISSION",
+        "NO_NATIVE_CONSUMER_OR_PACKAGE_ADMISSION",
+    ),
+    "retained_source_residual": (
+        "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; absence of a universal cadence is not a "
+        "source gap. Materially ambiguous intended triggers and in-progress audible-delivery "
+        "overlap are not assigned a new policy. Typed predicate/occurrence production, enrollment, "
+        "delivery, retry, cleanup, persistence, recovery and native consumer remain FUTURE_PROOF / "
+        "NOT_ESTABLISHED."
+    ),
+}
+SOURCE_MAGIC_MOUTH_PRIOR_HOLDS = (
+    ("source_fourth_resolution_evidence", "FOURTH-09", SOURCE_MAGIC_MOUTH_KEY),
+)
 PRAYER_COMPLETION_ROWS: tuple[dict[str, object], ...] = (
     {
         "row_number": 12,
@@ -11920,6 +12024,350 @@ def _validate_prayer_owner_resolution_evidence(
     }
 
 
+def _validate_source_magic_mouth_resolution_evidence(
+    manifest: Mapping[str, object],
+    classified_by_key: Mapping[str, dict[str, object]],
+) -> dict[str, object]:
+    """Close only Magic Mouth key 53's source-frequency misconception."""
+    review = _object(
+        manifest.get("source_magic_mouth_review"), "source_magic_mouth_review"
+    )
+    if review != SOURCE_MAGIC_MOUTH_REVIEW:
+        _fail("source_magic_mouth_review", "Senior ruling identity or scope differs")
+
+    task_bytes = _read_pinned_local_evidence(
+        SOURCE_MAGIC_MOUTH_EVIDENCE_RELATIVE_PATH,
+        SOURCE_MAGIC_MOUTH_EVIDENCE_SHA256,
+        "source_magic_mouth_task_evidence",
+    )
+    try:
+        task_text = " ".join(task_bytes.decode("utf-8").split()).lower()
+    except UnicodeDecodeError:
+        _fail(
+            "source_magic_mouth_review",
+            "durable reconciliation evidence is not UTF-8",
+        )
+    required_task_tokens = (
+        "magic mouth trigger-frequency source reconciliation",
+        "ses_ebdd5598cffek9ypseovz26vyh",
+        "the source does not require a second, universal frequency rule",
+        "the spell’s 30-foot range governs the object’s initial placement from the caster",
+        "the trigger is based on visual or audible conditions within 30 feet of the object",
+        "the source supplies no global tick, automatic cooldown, once-per-continuous-true-episode cap, or overlap-suppression rule",
+        "this integration chooses no queueing, interruption, concurrency, suppression",
+        "if a materially ambiguous intended trigger affects acceptance, resolve it before that affected acceptance",
+        "this does not authorize arbitrary executable prose, an omniscient or boolean world poller, or unregistered fact access",
+        "33 historical `future_proof` subobligations remain `not_established`",
+        "version_impact: none",
+        "system_impact: none",
+    )
+    if any(token not in task_text for token in required_task_tokens):
+        _fail(
+            "source_magic_mouth_review",
+            "source-only disposition or proof limits differ",
+        )
+
+    markdown_bytes = _read_pinned_local_evidence(
+        SOURCE_MARKDOWN_RELATIVE_PATH,
+        SOURCE_MARKDOWN_SHA256,
+        "source_magic_mouth_markdown",
+    )
+    if _git_blob_sha1(markdown_bytes) != "45392ab96e8adfeba66694bca8950b6ce1a71797":
+        _fail("source_magic_mouth_markdown", "primary SRD Git blob differs")
+    try:
+        byte_lines = markdown_bytes.splitlines(keepends=True)
+        text_lines = [line.decode("utf-8") for line in byte_lines]
+    except UnicodeDecodeError:
+        _fail("source_magic_mouth_markdown", "primary SRD is not UTF-8")
+
+    rows = [
+        _object(value, f"source_magic_mouth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_magic_mouth_resolution_evidence"),
+                "source_magic_mouth_resolution_evidence",
+            )
+        )
+    ]
+    if len(rows) != 1:
+        _fail(
+            "source_magic_mouth_census",
+            "exactly one existing key-53 closure is required",
+        )
+    row = rows[0]
+    spec = SOURCE_MAGIC_MOUTH_SPEC
+    key = SOURCE_MAGIC_MOUTH_KEY
+    name = str(spec["source_exact_name"])
+    classification_index = int(spec["classification_index"])
+    map_entry_index = int(spec["map_entry_index"])
+    source_pass_row = int(spec["source_pass_row"])
+    body_witness_row = int(spec["body_witness_row"])
+    category = str(spec["source_category"])
+    subobligation_id = f"{key}::{category}"
+    source_pointer = f"/rows/{source_pass_row}/required_modes_or_exceptions"
+    qualification_pointer = f"/rows/{source_pass_row}/qualifications"
+    body_pointer = f"/rows/{body_witness_row}"
+    classification_pointer = f"/source_unknown_classifications/{classification_index}"
+    history_pointer = (
+        "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/"
+        f"{classification_index}"
+    )
+    map_pointer = f"/source_mapping_lanes/0/mapping_payload/entries/{map_entry_index}"
+
+    classification = classified_by_key.get(key)
+    if classification is None:
+        _fail("source_magic_mouth_binding", "original key-53 classification is missing")
+    original = _object(
+        _resolve_json_pointer(
+            manifest, classification_pointer, "Magic Mouth classification pointer"
+        ),
+        "Magic Mouth original classification",
+    )
+    history = _object(
+        _resolve_json_pointer(manifest, history_pointer, "Magic Mouth history pointer"),
+        "Magic Mouth original history",
+    )
+    map_entry = _object(
+        _resolve_json_pointer(manifest, map_pointer, "Magic Mouth map pointer"),
+        "Magic Mouth current map entry",
+    )
+    map_unresolved = [
+        _object(value, f"Magic Mouth map unresolved_keys[{index}]")
+        for index, value in enumerate(
+            _array(map_entry.get("unresolved_keys"), "Magic Mouth map unresolved_keys")
+        )
+    ]
+    source_subobligations = [
+        _object(value, f"Magic Mouth subobligations[{index}]")
+        for index, value in enumerate(
+            _array(original.get("subobligations"), "Magic Mouth subobligations")
+        )
+    ]
+    source_matches = [
+        value
+        for value in source_subobligations
+        if value.get("subobligation_id") == subobligation_id
+    ]
+    future_matches = [
+        value
+        for value in source_subobligations
+        if value.get("category") == "downstream_domain_consumer_admission_native_proof"
+    ]
+    if (
+        original.get("unresolved_key") != key
+        or original.get("source_exact_name") != name
+        or original.get("source_unresolved_record_pointer") != history_pointer
+        or original.get("original_status") != "NOT_ESTABLISHED"
+        or original.get("original_disposition")
+        != "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+        or original.get("source_ready_blocking") is not True
+        or history.get("unresolved_key") != key
+        or history.get("source_exact_name") != name
+        or history.get("reason") != original.get("original_reason")
+        or history.get("evidence_ref") != original.get("evidence_ref")
+        or history.get("status") != "NOT_ESTABLISHED"
+        or history.get("disposition")
+        != "RECONCILE_EXACT_QUALIFIED_SOURCE_OR_OWNER; DO_NOT_GUESS"
+        or map_entry.get("source_exact_name") != name
+        or not any(value.get("unresolved_key") == key for value in map_unresolved)
+        or len(source_matches) != 1
+        or source_matches[0].get("category") != "source_semantics"
+        or source_matches[0].get("gate_phase") != "SP00_SOURCE"
+        or source_matches[0].get("status") != "NOT_ESTABLISHED"
+        or len(future_matches) != 1
+        or future_matches[0].get("gate_phase") != "FUTURE_PROOF"
+        or future_matches[0].get("status") != "NOT_ESTABLISHED"
+    ):
+        _fail(
+            "source_magic_mouth_binding",
+            "new source closure does not preserve the original source/FUTURE_PROOF roots",
+        )
+
+    evidence = _load_evidence(manifest)
+    source_pass = _object(evidence["source-pass-0-2"], "source-pass-0-2")
+    body_carrier = _object(evidence["source-body-witnesses"], "source-body-witnesses")
+    source_record = _rows(source_pass, "rows", "source-pass-0-2")[source_pass_row]
+    body_witness = _rows(body_carrier, "rows", "source-body-witnesses")[
+        body_witness_row
+    ]
+    raw_hash_basis = "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization"
+    expected_source_ref = {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": source_pointer,
+        "source_exact_name": name,
+        "printed_page": int(spec["printed_page"]),
+        "source_header_line": int(spec["source_header_line"]),
+        "raw_body_sha256": str(spec["raw_body_sha256"]),
+        "raw_hash_basis": raw_hash_basis,
+        "body_witness_ref": {
+            "artifact_id": "source-body-witnesses",
+            "json_pointer": body_pointer,
+        },
+        "qualification_ref": {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": qualification_pointer,
+        },
+        "evidence_boundary": "CURRENT_PRIMARY_SRD_BODY_READ; SOURCE_ONLY; NO_NATIVE_CONSUMER_PROOF",
+    }
+    expected_classification_ref = {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": source_pointer,
+        "exact_record_name": name,
+        "record_index": source_pass_row,
+        "source_asset_id": "srd52_en",
+        "edition": "SRD_5_2_1",
+        "printed_page": int(spec["printed_page"]),
+        "source_header_line": int(spec["source_header_line"]),
+        "source_heading": name,
+        "raw_body_sha256": str(spec["raw_body_sha256"]),
+        "raw_hash_basis": raw_hash_basis,
+        "body_witness_ref": {
+            "artifact_id": "source-body-witnesses",
+            "json_pointer": body_pointer,
+        },
+        "qualification_ref": {
+            "artifact_id": "source-pass-0-2",
+            "json_pointer": qualification_pointer,
+        },
+        "evidence_boundary": (
+            "RETAINED_FULL_BODY_REVIEW_SUMMARY_DECOMPOSITION; "
+            "NO_NEW_PRIMARY_BODY_OR_NATIVE_CONSUMER_PROOF"
+        ),
+    }
+    if (
+        source_record.get("name") != name
+        or source_record.get("source_page") != spec["printed_page"]
+        or source_record.get("source_header_line") != spec["source_header_line"]
+        or source_record.get("body_sha256") != spec["raw_body_sha256"]
+        or source_record.get("hash_basis") != raw_hash_basis
+        or source_record.get("qualifications")
+        != [
+            "Cannot use unbounded script or omniscient trigger; trigger frequency while condition persists requires exact episode semantics.",
+            "The final adjacent spell header belongs to the next entry and is excluded from this spell requirement set; the reviewed hash intentionally covers the complete supplied raw body.",
+        ]
+        or body_witness.get("name") != name
+        or body_witness.get("page") != spec["printed_page"]
+        or body_witness.get("line") != spec["source_header_line"]
+        or body_witness.get("body_sha256") != spec["raw_body_sha256"]
+        or row.get("source_record_ref") != expected_source_ref
+        or original.get("evidence_ref") != expected_classification_ref
+    ):
+        _fail(
+            "source_magic_mouth_provenance",
+            "primary body or historical source-pass/body-witness identity differs",
+        )
+
+    locator = _object(spec["locator"], "Magic Mouth expected locator")
+    supplied_locators = [
+        _object(value, f"Magic Mouth source_markdown_locators[{index}]")
+        for index, value in enumerate(
+            _array(
+                row.get("source_markdown_locators"),
+                "Magic Mouth source_markdown_locators",
+            )
+        )
+    ]
+    if len(supplied_locators) != 1:
+        _fail(
+            "source_magic_mouth_locator", "exact Magic Mouth span locator is required"
+        )
+    start, end = int(locator["line_start"]), int(locator["line_end"])
+    if start < 1 or end < start or end > len(byte_lines):
+        _fail(
+            "source_magic_mouth_locator", "primary Magic Mouth span bounds are invalid"
+        )
+    actual_span_hash = hashlib.sha256(b"".join(byte_lines[start - 1 : end])).hexdigest()
+    section = "".join(text_lines[start - 1 : end])
+    range_section = "".join(text_lines[9165 - 1 : 9175])
+    if (
+        supplied_locators[0] != locator
+        or actual_span_hash != locator["span_sha256"]
+        or text_lines[start - 1].strip() != "##### Magic Mouth"
+        or any(phrase not in section for phrase in spec["source_phrases"])
+        or any(phrase not in range_section for phrase in spec["common_range_phrases"])
+    ):
+        _fail(
+            "source_magic_mouth_span_hash",
+            "primary spell/common-range source wording or exact span hash differs",
+        )
+
+    expected_row = {
+        "review_item_id": "MAGIC-MOUTH-01",
+        "unresolved_key": key,
+        "source_exact_name": name,
+        "source_category": category,
+        "subobligation_id": subobligation_id,
+        "disposition": "SOURCE_CLOSED",
+        "source_record_ref": expected_source_ref,
+        "source_classification_pointer": classification_pointer,
+        "source_unresolved_record_pointer": history_pointer,
+        "current_map_pointer": map_pointer,
+        "source_markdown_locators": [dict(locator)],
+        "source_interpretation": spec["source_interpretation"],
+        "material_qualifiers": list(spec["material_qualifiers"]),
+        "negative_findings": list(spec["negative_findings"]),
+        "retained_source_residual": spec["retained_source_residual"],
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "actual_native_proof_refs": [],
+    }
+    if (
+        row.get("future_native_proof_status") != "NOT_ESTABLISHED"
+        or row.get("actual_native_proof_refs") != []
+    ):
+        _fail("source_magic_mouth_future_proof", "native proof was promoted")
+    if row != expected_row:
+        _fail(
+            "source_magic_mouth_qualifier",
+            "source interpretation, boundary qualifiers or negative findings differ",
+        )
+
+    for field, review_item_id, prior_key in SOURCE_MAGIC_MOUTH_PRIOR_HOLDS:
+        prior_rows = [
+            _object(value, f"{field}[{index}]")
+            for index, value in enumerate(_array(manifest.get(field), field))
+            if isinstance(value, dict) and value.get("review_item_id") == review_item_id
+        ]
+        if (
+            len(prior_rows) != 1
+            or prior_rows[0].get("unresolved_key") != prior_key
+            or prior_rows[0].get("disposition") != "SOURCE_HELD"
+        ):
+            _fail(
+                "source_magic_mouth_history",
+                "prior FOURTH-09 SOURCE_HELD history changed",
+            )
+    fourth_rows = [
+        _object(value, f"source_fourth_resolution_evidence[{index}]")
+        for index, value in enumerate(
+            _array(
+                manifest.get("source_fourth_resolution_evidence"),
+                "source_fourth_resolution_evidence",
+            )
+        )
+    ]
+    prior_word_bound = [
+        value for value in fourth_rows if value.get("review_item_id") == "FOURTH-10"
+    ]
+    if (
+        len(prior_word_bound) != 1
+        or prior_word_bound[0].get("disposition") != "SOURCE_CLOSED"
+        or prior_word_bound[0].get("unresolved_key")
+        != "source.spell.magic_mouth.unresolved.message_word_bound"
+    ):
+        _fail("source_magic_mouth_history", "prior key-54 closure was changed")
+
+    return {
+        "source_resolution_records": rows,
+        "source_resolved_keys": [key],
+        "source_closed_subobligation_ids": [subobligation_id],
+        "source_held_keys": [],
+        "source_held_subobligation_ids": [],
+        "source_resolved_subobligation_count": 1,
+        "source_held_subobligation_count": 0,
+        "source_markdown_sha256": SOURCE_MARKDOWN_SHA256,
+    }
+
+
 def _validate_source_unknown_classifications(
     manifest: Mapping[str, object],
 ) -> dict[str, object]:
@@ -12693,6 +13141,143 @@ def _validate_source_unknown_classifications(
     if prayer_contract != expected_prayer_contract:
         _fail("source_prayer_owner_contract", "Prayer owner cumulative source counts differ")
 
+    source_blocking_keys_before_magic_mouth = list(source_blocking_keys)
+    source_held_keys_before_magic_mouth = list(source_held_keys)
+    open_subobligations_before_magic_mouth = set(current_open_source_subobligation_ids)
+    closed_subobligations_before_magic_mouth = set(closed_subobligation_ids)
+    records_before_magic_mouth = list(all_records)
+    resolved_keys_before_magic_mouth = set(all_resolved_keys)
+    source_closed_keys_before_magic_mouth = set(source_closed_key_set)
+    if (
+        len(source_blocking_keys_before_magic_mouth) != 6
+        or len(source_held_keys_before_magic_mouth) != 6
+        or len(open_subobligations_before_magic_mouth) != 6
+        or len(records_before_magic_mouth) != 92
+        or len(resolved_keys_before_magic_mouth) != 71
+        or len(closed_subobligations_before_magic_mouth) != 75
+        or SOURCE_MAGIC_MOUTH_KEY not in source_blocking_keys_before_magic_mouth
+        or SOURCE_MAGIC_MOUTH_KEY in resolved_keys_before_magic_mouth
+    ):
+        _fail(
+            "source_magic_mouth_prior_state",
+            "key 53 is not the exact remaining source/FUTURE_PROOF hold after Prayer",
+        )
+
+    magic_mouth_resolution = _validate_source_magic_mouth_resolution_evidence(
+        manifest, classified_by_key
+    )
+    magic_mouth_keys = set(magic_mouth_resolution["source_resolved_keys"])
+    magic_mouth_closed_ids = set(
+        magic_mouth_resolution["source_closed_subobligation_ids"]
+    )
+    expected_magic_mouth_closed_ids = {f"{SOURCE_MAGIC_MOUTH_KEY}::source_semantics"}
+    if (
+        magic_mouth_keys != {SOURCE_MAGIC_MOUTH_KEY}
+        or magic_mouth_closed_ids != expected_magic_mouth_closed_ids
+        or magic_mouth_keys - set(source_blocking_keys_before_magic_mouth)
+        or magic_mouth_keys & resolved_keys_before_magic_mouth
+        or magic_mouth_closed_ids & closed_subobligations_before_magic_mouth
+        or len(magic_mouth_resolution["source_resolution_records"]) != 1
+    ):
+        _fail("source_magic_mouth_census", "source-only key-53 closure differs")
+
+    closed_subobligation_ids.update(magic_mouth_closed_ids)
+    source_blocking_keys = [
+        key
+        for key in source_blocking_keys_before_magic_mouth
+        if any(
+            subobligation["subobligation_id"] not in closed_subobligation_ids
+            for subobligation in classified_by_key[key]["subobligations"]
+            if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        )
+    ]
+    current_open_source_subobligation_ids = {
+        str(subobligation["subobligation_id"])
+        for key in source_blocking_keys
+        for subobligation in classified_by_key[key]["subobligations"]
+        if subobligation["category"] in SOURCE_UNKNOWN_SOURCE_CATEGORIES
+        and subobligation["subobligation_id"] not in closed_subobligation_ids
+    }
+    active_source_blocker_entry_count = len(
+        {classified_by_key[key]["source_exact_name"] for key in source_blocking_keys}
+    )
+    source_held_keys = [
+        key
+        for key in source_held_keys_before_magic_mouth
+        if key in source_blocking_keys
+    ]
+    all_records = [
+        *records_before_magic_mouth,
+        *magic_mouth_resolution["source_resolution_records"],
+    ]
+    source_closed_key_set = source_closed_keys_before_magic_mouth | magic_mouth_keys
+    all_resolved_keys = source_closed_key_set | source_owner_decided_key_set
+    reviewed_keys = reviewed_keys_before_prayer
+    source_resolved_keys = [*source_resolved_keys, SOURCE_MAGIC_MOUTH_KEY]
+    if (
+        len(source_blocking_keys) != 5
+        or len(source_held_keys) != 5
+        or len(current_open_source_subobligation_ids) != 5
+        or len(all_records) != 93
+        or len(all_resolved_keys) != 72
+        or len(source_closed_key_set) != 65
+        or len(source_owner_decided_key_set) != 7
+        or len(closed_subobligation_ids) != 76
+        or len(reviewed_keys) != 77
+        or len(source_resolved_keys) != 72
+        or set(source_resolved_keys) != all_resolved_keys
+        or SOURCE_MAGIC_MOUTH_KEY in source_blocking_keys
+        or source_closed_key_set
+        != (source_closed_keys_before_magic_mouth | magic_mouth_keys)
+    ):
+        _fail(
+            "source_magic_mouth_accounting",
+            "source-only key-53 closure altered unrelated source/root counts",
+        )
+
+    expected_magic_mouth_contract = {
+        "status": "PARTIAL_MAGIC_MOUTH_TRIGGER_SOURCE_ONLY",
+        "selected_key_count": 1,
+        "resolution_record_count": 1,
+        "selected_source_closed_key_count": 1,
+        "selected_source_closed_subobligation_count": 1,
+        "prior_reviewed_key_count": 77,
+        "prior_resolution_record_count": 92,
+        "prior_source_resolved_key_count": 71,
+        "prior_source_resolved_subobligation_count": 75,
+        "prior_source_held_key_count": 6,
+        "prior_source_held_subobligation_count": 6,
+        "prior_active_source_blocker_count": 6,
+        "prior_active_source_blocker_entry_count": 6,
+        "cumulative_reviewed_key_count": 77,
+        "cumulative_resolution_record_count": 93,
+        "cumulative_source_closed_key_count": 65,
+        "cumulative_owner_decided_key_count": 7,
+        "cumulative_source_resolved_key_count": 72,
+        "cumulative_source_resolved_subobligation_count": 76,
+        "cumulative_source_held_key_count": 5,
+        "cumulative_source_held_subobligation_count": 5,
+        "original_record_count": 82,
+        "original_source_blocking_key_count": 77,
+        "downstream_only_key_count": 5,
+        "active_source_blocker_count": 5,
+        "active_source_blocker_entry_count": active_source_blocker_entry_count,
+        "future_native_proof_status": "NOT_ESTABLISHED",
+        "full_339_source_qualification_status": "NOT_ESTABLISHED",
+        "source_ready": False,
+        "production_claim": "NONE",
+        "selected_original_classification_indexes": [53],
+    }
+    magic_mouth_contract = _object(
+        manifest.get("source_magic_mouth_resolution_contract"),
+        "source_magic_mouth_resolution_contract",
+    )
+    if magic_mouth_contract != expected_magic_mouth_contract:
+        _fail(
+            "source_magic_mouth_contract",
+            "Magic Mouth source-only cumulative counts differ",
+        )
+
     return {
         "total_record_count": 82,
         "source_blocking_key_count": len(source_blocking_keys),
@@ -12732,6 +13317,10 @@ def _validate_source_unknown_classifications(
             "source_resolution_records"
         ],
         "source_prayer_owner_resolution_contract": prayer_contract,
+        "source_magic_mouth_resolution_evidence": magic_mouth_resolution[
+            "source_resolution_records"
+        ],
+        "source_magic_mouth_resolution_contract": magic_mouth_contract,
         "source_reviewed_key_count": len(reviewed_keys),
         "source_markdown_sha256": first12_resolution["source_markdown_sha256"],
         "command_approach_source_text": first12_resolution[

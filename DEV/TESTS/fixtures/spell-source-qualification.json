@@ -116932,5 +116932,107 @@
       "source_ready_status": "NOT_ESTABLISHED",
       "production_claim": "NONE"
     }
+  ],
+  "source_magic_mouth_review": {
+    "review_id": "SP00_MAGIC_MOUTH_TRIGGER_SOURCE_RECONCILIATION_20261016",
+    "integration_base_sha": "be6ac3305e258fcaea910f29a95e22d3bfb802cc",
+    "senior_ruling_id": "ses_ebdd5598cffeK9YpSEOvZ26vyH",
+    "senior_ruling": "GO_SOURCE_ONLY_KEY_53; NO_NEW_PRODUCT_POLICY_OR_NATIVE_PROOF",
+    "accepted_scope": "EXACTLY_KEY_53_SOURCE_SEMANTICS; PRESERVE_KEY_54_AND_PRIOR_HELD_HISTORY; KEEP_FUTURE_PROOF_NOT_ESTABLISHED",
+    "task_evidence_path": "DEV/docs/superpowers/design/2026-10-16-sp00-magic-mouth-source-reconciliation.md",
+    "task_evidence_sha256": "7f62e7486633828a9b1735c40f0cace014b3845c3a5d36d9340082737ca666f2"
+  },
+  "source_magic_mouth_resolution_contract": {
+    "status": "PARTIAL_MAGIC_MOUTH_TRIGGER_SOURCE_ONLY",
+    "selected_key_count": 1,
+    "resolution_record_count": 1,
+    "selected_source_closed_key_count": 1,
+    "selected_source_closed_subobligation_count": 1,
+    "prior_reviewed_key_count": 77,
+    "prior_resolution_record_count": 92,
+    "prior_source_resolved_key_count": 71,
+    "prior_source_resolved_subobligation_count": 75,
+    "prior_source_held_key_count": 6,
+    "prior_source_held_subobligation_count": 6,
+    "prior_active_source_blocker_count": 6,
+    "prior_active_source_blocker_entry_count": 6,
+    "cumulative_reviewed_key_count": 77,
+    "cumulative_resolution_record_count": 93,
+    "cumulative_source_closed_key_count": 65,
+    "cumulative_owner_decided_key_count": 7,
+    "cumulative_source_resolved_key_count": 72,
+    "cumulative_source_resolved_subobligation_count": 76,
+    "cumulative_source_held_key_count": 5,
+    "cumulative_source_held_subobligation_count": 5,
+    "original_record_count": 82,
+    "original_source_blocking_key_count": 77,
+    "downstream_only_key_count": 5,
+    "active_source_blocker_count": 5,
+    "active_source_blocker_entry_count": 5,
+    "future_native_proof_status": "NOT_ESTABLISHED",
+    "full_339_source_qualification_status": "NOT_ESTABLISHED",
+    "source_ready": false,
+    "production_claim": "NONE",
+    "selected_original_classification_indexes": [53]
+  },
+  "source_magic_mouth_resolution_evidence": [
+    {
+      "review_item_id": "MAGIC-MOUTH-01",
+      "unresolved_key": "source.spell.magic_mouth.unresolved.trigger_episode_frequency",
+      "source_exact_name": "Magic Mouth",
+      "source_category": "source_semantics",
+      "subobligation_id": "source.spell.magic_mouth.unresolved.trigger_episode_frequency::source_semantics",
+      "disposition": "SOURCE_CLOSED",
+      "source_record_ref": {
+        "artifact_id": "source-pass-0-2",
+        "json_pointer": "/rows/88/required_modes_or_exceptions",
+        "source_exact_name": "Magic Mouth",
+        "printed_page": 146,
+        "source_header_line": 12802,
+        "raw_body_sha256": "93e2864ca9f5cbf9b31cc0e5aa7a9304963e97938e3105a2680aff0e63559eb0",
+        "raw_hash_basis": "Exact decoded body field UTF8 bytes, no whitespace/glyph/page-tail normalization",
+        "body_witness_ref": {
+          "artifact_id": "source-body-witnesses",
+          "json_pointer": "/rows/199"
+        },
+        "qualification_ref": {
+          "artifact_id": "source-pass-0-2",
+          "json_pointer": "/rows/88/qualifications"
+        },
+        "evidence_boundary": "CURRENT_PRIMARY_SRD_BODY_READ; SOURCE_ONLY; NO_NATIVE_CONSUMER_PROOF"
+      },
+      "source_classification_pointer": "/source_unknown_classifications/53",
+      "source_unresolved_record_pointer": "/source_mapping_lanes/0/mapping_payload/unresolved_key_index/53",
+      "current_map_pointer": "/source_mapping_lanes/0/mapping_payload/entries/86",
+      "source_markdown_locators": [
+        {
+          "heading": "Magic Mouth",
+          "line_start": 13277,
+          "line_end": 13291,
+          "span_sha256": "f4bae8f5abed8471d713c43cfff53669fb68e253e2157bd42c048f1c04ebc704"
+        }
+      ],
+      "source_interpretation": "At casting, the caster determines a triggering circumstance based on visual or audible conditions within 30 feet of the enchanted object. The caster chooses whether the spell ends after delivery or remains and repeats whenever that specified trigger occurs.",
+      "material_qualifiers": [
+        "The casting Range of 30 feet governs initial placement of the enchanted object; the separate trigger radius is within 30 feet of that enchanted object, not the caster.",
+        "For the repeating choice, each occurrence of the sufficiently specified lawful cast circumstance is the source trigger occurrence; the source supplies no universal cadence.",
+        "Do not infer a global tick, automatic cooldown, once-per-continuous-true-episode limit, or overlap suppression.",
+        "The spell does not settle what happens when a new trigger occurs during an in-progress delivery; do not choose queueing, interruption, concurrency, or other audible-delivery overlap behavior here.",
+        "If the intended trigger is materially ambiguous, resolve it before the affected acceptance under existing exact source/consumer contracts; this is not permission for arbitrary executable prose, a boolean world poller, or unregistered fact access.",
+        "Typed predicate evaluation, occurrence production/enrollment, delivery, retry/idempotency, cleanup/termination, persistence and recovery remain FUTURE_PROOF / NOT_ESTABLISHED.",
+        "This source-only closure adds no native consumer, package admission, production support, or source-readiness claim."
+      ],
+      "negative_findings": [
+        "NO_UNIVERSAL_CADENCE_OR_TICK",
+        "NO_AUTOMATIC_COOLDOWN",
+        "NO_ONCE_PER_CONTINUOUS_TRUE_EPISODE_LIMIT",
+        "NO_OVERLAP_SUPPRESSION_OR_AUDIBLE_DELIVERY_POLICY",
+        "NO_ARBITRARY_EXECUTABLE_PROSE_BOOLEAN_POLLER_OR_UNREGISTERED_FACT_PERMISSION",
+        "NO_NATIVE_CONSUMER_OR_PACKAGE_ADMISSION"
+      ],
+      "retained_source_residual": "NONE_FOR_SELECTED_SOURCE_SUBOBLIGATION_ONLY; absence of a universal cadence is not a source gap. Materially ambiguous intended triggers and in-progress audible-delivery overlap are not assigned a new policy. Typed predicate/occurrence production, enrollment, delivery, retry, cleanup, persistence, recovery and native consumer remain FUTURE_PROOF / NOT_ESTABLISHED.",
+      "future_native_proof_status": "NOT_ESTABLISHED",
+      "actual_native_proof_refs": []
+    }
   ]
 }
