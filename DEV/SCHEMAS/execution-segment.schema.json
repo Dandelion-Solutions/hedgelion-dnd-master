@@ -40,10 +40,26 @@
       "uniqueItems": true,
       "items": {"type": "string", "minLength": 1}
     },
-    "continuation_id": {"type": "string", "minLength": 1}
+    "continuation_id": {"type": "string", "minLength": 1},
+    "accepted_resume_input": {"$ref": "#/$defs/acceptedResumeInput"}
   },
   "$defs": {
-    "scalar": {"type": ["string", "number", "boolean"]}
+    "scalar": {"type": ["string", "number", "boolean"]},
+    "acceptedResumeInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "resume_fingerprint_generation", "resume_fingerprint", "response_interaction_id", "response_message_id", "target", "selection"],
+      "properties": {
+        "schema_version": {"type": "integer", "const": 1},
+        "resume_fingerprint_generation": {"type": "integer", "const": 1},
+        "resume_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "response_interaction_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+        "response_message_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_.:-]*$"},
+        "target": {"$ref": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/target"},
+        "selection": {"$ref": "https://hedgelion.invalid/schemas/runtime-interaction-state.schema.json#/$defs/selection"}
+      },
+      "allOf": [{"if": {"properties": {"target": {"properties": {"offer_kind": {"const": "choice"}}}}}, "then": {"properties": {"selection": {"properties": {"kind": {"const": "choice"}}}}}, "else": {"properties": {"selection": {"properties": {"kind": {"const": "reaction"}}}}}}]
+    }
   },
   "examples": [
     {

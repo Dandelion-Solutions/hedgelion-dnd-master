@@ -116,6 +116,67 @@ def mixed_plan(interaction):
     }}
 
 
+def retained_response_command(interaction):
+    """Actual bound-source command preparation for the earlier response root.
+
+    Its original I/exchange is distinct from the later responding I. No native
+    input/consume producer or original-author reauthorization is claimed.
+    """
+    from DEV.TESTS.test_rd05_runtime_execution import (
+        _bind_context,
+        _candidate,
+        _interpreter_result,
+        _proposal,
+    )
+    from GAME.TOOLS.native_storage import route_native_record
+
+    target = interaction["state"]["response_target"]
+    proposal = _proposal()
+    proposal.update(command_id=target["root_command_id"], root_resolution_id=target["resolution_id"],
+        interaction_id=target["root_command_id"] + ".input", intent_plan_id=target["root_command_id"] + ".plan")
+    with trusted_command_source(proposal, campaign_id=interaction["state"]["campaign_id"]) as (host, records):
+        basis = records[route_native_record("runtime.interaction", (proposal["interaction_id"],)).relative_path]["state"]["accepted_input_basis"]
+        basis.update(accepted_exchange_key=proposal["command_id"] + ":exchange",
+            host_invocation_ref=proposal["command_id"] + ":invocation")
+        mapping_path = host._accepted_input_capability.mapping_path
+        mapping = json.loads(mapping_path.read_text(encoding="utf-8"))
+        mapping["key"][4] = basis["accepted_exchange_key"]
+        mapping["host_invocation_ref"] = basis["host_invocation_ref"]
+        mapping_path.write_text(json.dumps(mapping), encoding="utf-8")
+        accepted = runtime_execution.accept_command(_interpreter_result(), _bind_context(), _candidate(), proposal,
+            input_observation=host._current_owner._observe_command_input(proposal))
+    return {"kind": "runtime.command", "id": accepted["command_id"], **accepted}
+
+
+def retained_response_resolution(interaction, segment, *, command):
+    """Complete existing R grammar and actual K binding; not native issuance."""
+    from DEV.TESTS.test_rd05_runtime_execution import _resolution_source
+
+    state = _resolution_source(command, segments=[deepcopy(segment)], next_segment_sequence=2)
+    return {"kind": "runtime.resolution", "id": interaction["state"]["response_target"]["resolution_id"], "state": state}
+
+
+def retained_eventless_segment(owner_id):
+    return {"schema_version": 1, "segment_id": owner_id + ":segment:1", "segment_sequence": 1,
+        "commit_state": "committed", "resulting_execution_state": "COMPLETED", "event_ids": [],
+        "pending_child_invocations": [], "receipt_exports": {}, "affected_revision_refs": []}
+
+
+def response_binding_mutations():
+    return {
+        "actor_id": "foreign-root-actor",
+        "activity_id": "activity.foreign",
+        "initiating_command_id": "foreign-command",
+        "catalog_context_fingerprint": "wrong-context",
+        "ruleset_set_sha256": "1" * 64,
+        "invocation_facts": [{"fact_id": "fiction.target_reachable", "value": True,
+            "provenance_class": "INVOCATION_ADJUDICATED", "provenance_ref": "retained:foreign-fact",
+            "consumer_id": "activity.check.generic", "binding_fingerprint": "a" * 64,
+            "rules_context_fingerprint": "b" * 64, "policy_basis_refs": []}],
+        "target_ids": ["foreign-target"],
+    }
+
+
 class TrustedInputAdapterFixture:
     """Constructor-only TC infrastructure with restart-stable exchange mapping.
 
@@ -1195,6 +1256,314 @@ class AuthenticatedCommandCodecTests(unittest.TestCase):
                     execution_owner_id=owner_id, segment=source)
 
 
+class CollaborationInputAuthorityTests(unittest.TestCase):
+    """Clause-use TC over the established P0 source fixture, never native issue."""
+
+    def setUp(self):
+        AuthenticatedHostSourceTests.setUp(self)
+        from GAME.TOOLS.native_storage import route_native_record
+
+        self.plan["state"]["clauses"][0].pop("command_id")
+        self.plan["state"]["clauses"][0].update(
+            collaboration_semantic_class="OOC_COORDINATION",
+            normalized_semantics={"request": "move later"},
+        )
+        self.records[route_native_record("runtime.intent_plan", (self.plan["id"],)).relative_path] = deepcopy(self.plan)
+
+    def observe(self, **kwargs):
+        from GAME.TOOLS.access_control import PrincipalPlayerRoute
+
+        method = getattr(self.host._current_owner, "_observe_collaboration_input", None)
+        self.assertTrue(callable(method), "trusted no-K collaboration observation is missing")
+        arguments = {"principal": self.adapter.principal,
+            "player_route": kwargs.get("player_route") or PrincipalPlayerRoute.from_mapping(self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"])}
+        arguments.update(kwargs)
+        return method(self.interaction["id"], "clause-1", **arguments)
+
+    def test_no_k_clause_uses_complete_native_source_union(self):
+        observation, player = self.observe()
+        self.assertEqual(player.player_id, "player-1")
+        self.assertEqual({ref.family_key for ref in observation.key_union},
+                         {"runtime.interaction", "runtime.message", "runtime.intent_plan", "world.player"})
+        self.assertNotIn("command_id", self.plan["state"]["clauses"][0])
+
+    def test_caller_principal_cannot_replace_trusted_current_principal(self):
+        from GAME.TOOLS.access_control import VerifiedPrincipal
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        self.adapter.principal = VerifiedPrincipal("other-account", "other-login")
+        with self.assertRaises(InputAuthorityUnavailable):
+            self.observe(principal=VerifiedPrincipal("123", "fixture-player"))
+
+    def test_caller_route_cannot_replace_complete_native_account_route(self):
+        from GAME.TOOLS.access_control import PrincipalPlayerRoute
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        claimed = PrincipalPlayerRoute.from_mapping(self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"])
+        self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"]["complete"] = False
+        with self.assertRaises(InputAuthorityUnavailable):
+            self.observe(player_route=claimed)
+
+    def test_missing_bound_issuer_holds_before_association(self):
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        self.host = self.compose(None)
+        with self.assertRaises(InputAuthorityUnavailable):
+            self.observe()
+
+    def _obligation(self, clause_id="clause-1"):
+        from GAME.TOOLS.access_control import PrincipalPlayerRoute
+        from GAME.TOOLS.collaboration import (
+            classify_coordination_dependency,
+            open_or_successor_obligation,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+
+        clause = next(clause for clause in self.plan["state"]["clauses"] if clause["clause_id"] == clause_id)
+        clause.update(execution_state="intent.pending", dependency_kind="JOINT_VOLUNTARY_ACTION",
+            purpose="move-later", dependency_scope={"scene_id": "scene-1"},
+            required_contributors=[{"player_id": "player-1"}],
+            native_basis_refs=[{"family": "world.scene", "id": "scene-1", "revision": self.repository.revision}])
+        self.records[route_native_record("runtime.intent_plan", (self.plan["id"],)).relative_path] = deepcopy(self.plan)
+        self.records[route_native_record("world.scene", ("scene-1",)).relative_path] = {
+            "kind": "world.scene", "id": "scene-1", "revision": self.repository.revision, "state": {}}
+        self.player.update(deepcopy(self.player["state"]))
+        self.records[route_native_record("world.player", ("player-1",)).relative_path] = deepcopy(self.player)
+        self.route = PrincipalPlayerRoute.from_mapping(self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"])
+        admission = classify_coordination_dependency(self.host, self.interaction["id"], clause_id,
+            principal=self.adapter.principal, player_route=self.route)
+        obligation = open_or_successor_obligation(admission, obligation_id="obligation-1")
+        self.assertIsNotNone(obligation)
+        self.records[route_native_record("runtime.collaboration_obligation", (obligation.obligation_id,)).relative_path] = obligation.to_mapping()
+        self.player["state"]["collaboration_route_refs"] = [{"obligation_id": "obligation-1", "generation": 1}]
+        self.player["collaboration_route_refs"] = deepcopy(self.player["state"]["collaboration_route_refs"])
+        self.records[route_native_record("world.player", ("player-1",)).relative_path] = deepcopy(self.player)
+        return obligation
+
+    def test_public_association_rejects_caller_principal_after_trusted_account_switch(self):
+        from GAME.TOOLS.access_control import VerifiedPrincipal
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+
+        obligation = self._obligation()
+        self.assertEqual(associate_input(obligation, self.host, self.interaction["id"], "clause-1",
+            principal=self.adapter.principal, player_route=self.route), obligation)
+        self.adapter.principal = VerifiedPrincipal("other-account", "other-login")
+        with self.assertRaises(CollaborationAdmissionError):
+            associate_input(obligation, self.host, self.interaction["id"], "clause-1",
+                principal=VerifiedPrincipal("123", "fixture-player"), player_route=self.route)
+
+    def test_public_association_rejects_callback_host_replaying_an_old_observation(self):
+        from types import SimpleNamespace
+
+        from GAME.TOOLS.access_control import VerifiedPrincipal
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+
+        obligation = self._obligation()
+        captured = self.observe(player_route=self.route)
+        real_host = self.host
+
+        class CallbackHost:
+            _current_owner = SimpleNamespace(
+                _observe_collaboration_input=lambda *args, **kwargs: captured,
+                _input_payload=real_host._current_owner._input_payload,
+            )
+
+            def __getattr__(proxy, name):
+                return getattr(real_host, name)
+
+        self.adapter.principal = VerifiedPrincipal("other-account", "other-login")
+        with self.assertRaises(CollaborationAdmissionError):
+            associate_input(obligation, CallbackHost(), self.interaction["id"], "clause-1",
+                principal=VerifiedPrincipal("123", "fixture-player"), player_route=self.route)
+
+    def test_public_association_generation_is_not_boolean(self):
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+
+        obligation = self._obligation()
+        with self.assertRaises(CollaborationAdmissionError):
+            associate_input(obligation, self.host, self.interaction["id"], "clause-1",
+                principal=self.adapter.principal, player_route=self.route, generation=True)
+
+    def test_inactive_duplicate_rebound_and_omitted_native_players_hold(self):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        route_path = "STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"
+        player_path = route_native_record("world.player", ("player-1",)).relative_path
+        original = deepcopy(self.records)
+        for label in ("inactive", "duplicate", "rebound", "omitted", "invalid envelope"):
+            self.records.clear()
+            self.records.update(deepcopy(original))
+            if label == "inactive":
+                self.records[player_path]["state"]["status"] = "inactive"
+            elif label == "rebound":
+                self.records[player_path]["state"]["github_binding"]["user_id"] = "other"
+            elif label == "invalid envelope":
+                self.records[player_path]["id"] = "foreign"
+            else:
+                other = deepcopy(self.records[player_path])
+                other["id"] = other["state"]["player_id"] = "player-2"
+                self.records[route_native_record("world.player", ("player-2",)).relative_path] = other
+                self.records["MANIFEST.yaml"]["players"]["player_ids"].append("player-2")
+                if label == "duplicate":
+                    self.records[route_path]["entries"][0]["candidate_player_ids"].append("player-2")
+            with self.subTest(label=label), self.assertRaises(InputAuthorityUnavailable):
+                self.observe()
+
+    def test_mixed_ooc_uses_prior_marker_without_current_old_offer_or_command(self):
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        interaction = self.interaction
+        state = interaction["state"]
+        state.pop("intent_plan_id")
+        state.update(input_kind="response_and_intent", planning_phase="awaiting_response",
+            response_target={"root_command_id": "old-command", "resolution_id": "old-resolution",
+                "continuation_id": "old-continuation", "continuation_generation": 7,
+                "offer_kind": "choice", "offer_id": "offer-7", "responder_id": self.actor_id},
+            response_selection={"kind": "choice", "option_id": "option-A"})
+        text = "Choose A; let's move later"
+        digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        state["accepted_input_basis"]["representation"]["content_digest"] = digest
+        self.message["state"].update(exact_text=text, content_digest=digest)
+        mapping = json.loads(self.mapping_path.read_text(encoding="utf-8"))
+        mapping["exact_text"] = text
+        self.mapping_path.write_text(json.dumps(mapping), encoding="utf-8")
+        segment = response_survivor(interaction, self.message)
+        # Use the actual fixed old R address; no current Continuation is needed
+        # to validate retained historical response evidence for a new clause use.
+        state["accepted_resume_ref"]["resolution_id"] = "old-resolution"
+        state["accepted_resume_ref"]["segment_id"] = "old-resolution:segment:1"
+        segment["segment_id"] = "old-resolution:segment:1"
+        self.plan = mixed_plan(interaction)
+        for owner in (interaction, self.message, self.plan):
+            self.records[route_native_record(owner["kind"], (owner["id"],)).relative_path] = deepcopy(owner)
+        root_command = retained_response_command(interaction)
+        self.records[route_native_record("runtime.command", (root_command["id"],)).relative_path] = root_command
+        self.records[route_native_record("runtime.resolution", ("old-resolution",)).relative_path] = retained_response_resolution(
+            interaction, segment, command=root_command)
+        method = self.host._current_owner._observe_collaboration_input
+        observation, player = method(interaction["id"], "clause.intent.1", principal=self.adapter.principal,
+                                     player_route=self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"])
+        self.assertEqual(player.player_id, "player-1")
+        self.assertIn("runtime.resolution", {ref.family_key for ref in observation.key_union})
+        self.assertFalse({ref.identity[0] for ref in observation.key_union if ref.family_key == "runtime.command"} - {"old-command"})
+        self.assertNotEqual(root_command["action_request"]["actor_id"], state["response_target"]["responder_id"])
+        obligation = self._obligation("clause.intent.1")
+        associated = associate_input(obligation, self.host, interaction["id"], "clause.intent.1",
+            principal=self.adapter.principal, player_route=self.route, generation=obligation.generation)
+        self.assertIn((interaction["id"], "clause.intent.1"), associated.accepted_input_uses)
+        self.assertNotIn((interaction["id"], "clause.response"), associated.accepted_input_uses)
+        with self.assertRaises(CollaborationAdmissionError):
+            associate_input(obligation, self.host, interaction["id"], "clause.response",
+                principal=self.adapter.principal, player_route=self.route)
+        with self.assertRaises(InputAuthorityUnavailable):
+            method(interaction["id"], "clause.response", principal=self.adapter.principal,
+                   player_route=self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"])
+
+    def test_public_mixed_association_rejects_incomplete_or_malformed_retained_result(self):
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+
+        self.test_mixed_ooc_uses_prior_marker_without_current_old_offer_or_command()
+        obligation = self._obligation("clause.intent.1")
+        path = route_native_record("runtime.resolution", ("old-resolution",)).relative_path
+        valid = deepcopy(self.records[path])
+        for case in ("truncated", "status", "rng", "frontier", "suspension", "child"):
+            self.records[path] = deepcopy(valid)
+            state = self.records[path]["state"]
+            if case == "truncated":
+                self.records[path]["state"] = {key: state[key] for key in ("schema_version", "root_command_id", "segments")}
+            elif case == "status":
+                state["status"] = "NOT_A_NATIVE_STATUS"
+            elif case == "rng":
+                state["fixed_rng_results"] = [{"digest": "a" * 64}]
+            elif case == "frontier":
+                state["next_segment_sequence"] = 1
+            elif case == "suspension":
+                state["status"] = "AWAITING_CHOICE"
+            else:
+                state["child_resolution_ids"] = ["missing-child"]
+                state["segments"][0]["pending_child_invocations"] = [{"firing_key": "fixed-child",
+                    "root_command_id": state["root_command_id"], "activity_id": state["activity_id"],
+                    "trigger_ref": state["segments"][0]["segment_id"], "reason": "mandatory_followup",
+                    "child_resolution_id": "missing-child"}]
+            with self.subTest(case=case), self.assertRaises(CollaborationAdmissionError):
+                associate_input(obligation, self.host, self.interaction["id"], "clause.intent.1",
+                    principal=self.adapter.principal, player_route=self.route)
+
+    def test_r3_public_mixed_association_binds_response_r_to_actual_original_k(self):
+        from GAME.TOOLS.collaboration import (
+            CollaborationAdmissionError,
+            associate_input,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+
+        self.test_mixed_ooc_uses_prior_marker_without_current_old_offer_or_command()
+        obligation = self._obligation("clause.intent.1")
+        path = route_native_record("runtime.resolution", ("old-resolution",)).relative_path
+        valid = deepcopy(self.records[path])
+        for field, value in response_binding_mutations().items():
+            self.records[path] = deepcopy(valid)
+            associate_input(obligation, self.host, self.interaction["id"], "clause.intent.1",
+                principal=self.adapter.principal, player_route=self.route)
+            self.records[path]["state"][field] = value
+            with self.subTest(field=field), self.assertRaises(CollaborationAdmissionError):
+                associate_input(obligation, self.host, self.interaction["id"], "clause.intent.1",
+                    principal=self.adapter.principal, player_route=self.route)
+
+    def test_creator_without_player_is_scoped_hold_without_fake_multiplayer_reads(self):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        source = self.records[route_native_record("runtime.interaction", (self.interaction["id"],)).relative_path]
+        source["state"].pop("player_id")
+        source["state"]["accepted_input_basis"]["authority_at_acceptance"] = input_sources(
+            kind="intent", creator=True)[0]["state"]["accepted_input_basis"]["authority_at_acceptance"]
+        self.records["MANIFEST.yaml"]["mode"] = "singleplayer"
+        self.records.pop(route_native_record("world.player", ("player-1",)).relative_path)
+        self.records.pop("STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml")
+        before = len(self.repository.path_reads)
+        with self.assertRaisesRegex(InputAuthorityUnavailable, "multiplayer participation"):
+            self.host._current_owner._observe_collaboration_input(self.interaction["id"], "clause-1",
+                principal=self.adapter.principal, player_route=None)
+        self.assertFalse(any("PLAYER" in path for _, path in self.repository.path_reads[before:]))
+
+    def test_relevant_source_movement_invalidates_clause_observation(self):
+        from GAME.TOOLS.runtime_host import InputAuthorityUnavailable
+
+        repository = self.repository
+
+        class MovingTrustedAdapter(TrustedInputAdapterFixture):
+            def current_principal(adapter, **scope):
+                principal = super().current_principal(**scope)
+                if adapter.calls.count("principal") == 2:
+                    repository.revision_records["c" * 40] = deepcopy(repository.revision_records[repository.revision])
+                    repository.revision = "c" * 40
+                return principal
+
+        adapter = MovingTrustedAdapter(self.mapping_path)
+        self.host = self.compose(adapter)
+        with self.assertRaisesRegex(InputAuthorityUnavailable, "REVALIDATION_REQUIRED"):
+            self.observe()
+
+
 class InputRootClosureTests(unittest.TestCase):
     def validate(self, interaction, message, plan=None, segment=None):
         runtime_execution.validate_input_closure(
@@ -1211,14 +1580,10 @@ class InputRootClosureTests(unittest.TestCase):
             if source is not None:
                 repository.files[route_native_record(source["kind"], (source["id"],)).relative_path] = deepcopy(source)
         if segment is not None:
-            resolution_id = interaction["state"]["accepted_resume_ref"]["resolution_id"]
-            repository.files[route_native_record("runtime.resolution", (resolution_id,)).relative_path] = {
-                "kind": "runtime.resolution", "id": resolution_id, "state": {
-                    "schema_version": 1,
-                    "root_command_id": interaction["state"]["response_target"]["root_command_id"],
-                    "segments": [deepcopy(segment)],
-                },
-            }
+            command = retained_response_command(interaction)
+            resolution = retained_response_resolution(interaction, segment, command=command)
+            for source in (command, resolution):
+                repository.files[route_native_record(source["kind"], (source["id"],)).relative_path] = source
         return repository
 
     def test_review_f1_cold_response_requires_native_resolution_identity(self):
@@ -1505,10 +1870,9 @@ class InputRootClosureTests(unittest.TestCase):
             repository = Repository()
             repository.put(interaction)
             repository.put(message)
-            repository.put({"kind": "runtime.resolution", "id": "resolution-1", "state": {
-                "schema_version": 1,
-                "root_command_id": "command-1", "segments": [segment],
-            }})
+            command = retained_response_command(interaction)
+            repository.put(command)
+            repository.put(retained_response_resolution(interaction, segment, command=command))
             promise = issue_durability_handoff_promise(campaign_id="campaign-1", owner_kind="runtime.interaction",
                                                       native_owner=interaction, scope="handoff")
             repository.records["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"] = enumerate_operational_root_page(
@@ -1606,11 +1970,11 @@ class InputRootClosureTests(unittest.TestCase):
                                              native_owner=plan, scope="handoff")
 
     def test_unconsumed_response_root_requires_exact_offer_source(self):
+        from DEV.TESTS.test_rd05_runtime_execution import _resolution_source
         from DEV.TESTS.test_rd07_recovery import FakeRepository
         from DEV.TESTS.test_rd12_collaboration import (
             _choice,
             _ordered_continuation,
-            _ordered_resolution,
         )
         from GAME.TOOLS.native_storage import route_native_record
         from GAME.TOOLS.recovery import RecoveryFailure, _hydrate_input_root_closure
@@ -1624,13 +1988,1032 @@ class InputRootClosureTests(unittest.TestCase):
         target.update(continuation_generation=3, offer_id="choice-1", responder_id="actor-bob")
         interaction["state"]["accepted_input_basis"]["authority_at_acceptance"]["accepted_subject_ids"] = ["actor-bob"]
         interaction["state"]["response_selection"]["option_id"] = "option.left"
-        for record in (_ordered_resolution(), _ordered_continuation(pending_response=_choice())):
+        command = retained_response_command(interaction)
+        state = _resolution_source(command, status="AWAITING_CHOICE", continuation_id=target["continuation_id"])
+        resolution = {"kind": "runtime.resolution", "id": target["resolution_id"], "state": state}
+        continuation = _ordered_continuation(pending_response=_choice())
+        for key in ("root_command_id", "activity_id", "actor_id", "target_ids", "parameter_bindings",
+                    "ruleset_set_digest_generation", "ruleset_set_sha256", "catalog_context_fingerprint_generation",
+                    "catalog_context_fingerprint", "invocation_facts", "fixed_rng_results", "prior_step_exports"):
+            if key in state:
+                continuation[key] = deepcopy(state[key])
+        for record in (command, resolution, continuation):
             record["campaign_id"] = "campaign-1"
             repository.files[route_native_record(record["kind"], (record["id"],)).relative_path] = record
         _hydrate_input_root_closure(repository, repository.pin_campaign("campaign-1"), interaction)
         interaction["state"]["response_selection"]["option_id"] = "option.foreign"
         with self.assertRaises(RecoveryFailure):
             _hydrate_input_root_closure(repository, repository.pin_campaign("campaign-1"), interaction)
+
+
+class ResponseMixedClosureTests(unittest.TestCase):
+    """S3 deterministic source conformance; not a native consume/issuer proof."""
+
+    def test_mixed_materialization_cannot_replace_extra_meaning_with_dummy_unit(self):
+        interaction, message, _ = input_sources()
+        segment = response_survivor(interaction, message)
+        plan = mixed_plan(interaction)
+        extra = plan["state"]["clauses"][1]
+        del extra["normalized_semantics"]
+        with self.assertRaises(ValueError):
+            runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=interaction,
+                message=message, plan=plan, accepted_response_segment=segment)
+
+    def test_mixed_preserves_all_semantic_classes_guards_and_collection_metadata(self):
+        from GAME.TOOLS.collaboration import CollaborationAdmissionError, _load_clause
+
+        for semantic_class in ("OOC_COORDINATION", "DIEGETIC_COMMUNICATION", "CONTROL_SIGNAL", "ACTIONABLE_INTENT"):
+            interaction, message, _ = input_sources()
+            segment = response_survivor(interaction, message)
+            plan = mixed_plan(interaction)
+            extra = plan["state"]["clauses"][1]
+            extra.update(collaboration_semantic_class=semantic_class,
+                dependency_kind="JOINT_VOLUNTARY_ACTION", purpose="joint-entry",
+                dependency_scope={"scene_id": "scene-market"},
+                required_contributors=[{"player_id": "player-1", "pc_id": "actor-1"}],
+                optional_contributors=[{"player_id": "player-2"}],
+                native_basis_refs=[{"family": "world.scene", "id": "scene-market", "revision": "r1"}])
+            later = deepcopy(extra)
+            later.update(clause_id="clause.intent.2", order=3,
+                guard={"prior_clause_id": "clause.intent.1", "source": "export", "export_id": "outcome",
+                       "operator": "in", "literal_values": ["done", False, 0]})
+            plan["state"]["clauses"].append(later)
+            expected = deepcopy(plan)
+            runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=interaction,
+                message=message, plan=plan, accepted_response_segment=segment)
+            self.assertEqual(plan, expected)
+            self.assertEqual(_load_clause(plan["state"], "clause.intent.1"), extra)
+            self.assertNotIn("command_id", extra)
+            with self.assertRaises(CollaborationAdmissionError):
+                _load_clause(plan["state"], "clause.response")
+
+    def test_pure_response_and_swapped_mixed_sources_never_become_extra_commands(self):
+        interaction, message, _ = input_sources(kind="response")
+        segment = response_survivor(interaction, message)
+        runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=interaction,
+            message=message, plan=None, accepted_response_segment=segment)
+        foreign_plan = input_sources(kind="intent")[2]
+        with self.assertRaises(ValueError):
+            runtime_execution.accepted_input_origin(campaign_id="campaign-1", interaction=interaction,
+                message=message, plan=foreign_plan, clause_id="clause-1", accepted_response_segment=segment)
+        interaction, message, _ = input_sources()
+        segment = response_survivor(interaction, message)
+        plan = mixed_plan(interaction)
+        for mutate in (
+            lambda i, p, s: i.update(id="another-I"),
+            lambda i, p, s: i["state"].update(input_kind="response"),
+            lambda i, p, s: p["state"].update(interaction_id="another-I"),
+            lambda i, p, s: p["state"]["clauses"][0].update(command_id="synthetic-K"),
+            lambda i, p, s: p["state"]["clauses"][0].update(normalized_semantics={"new": "response"}),
+            lambda i, p, s: p["state"]["clauses"][1].update(clause_id="clause.intent.01"),
+            lambda i, p, s: s["accepted_resume_input"].update(response_interaction_id="another-I"),
+        ):
+            wrong_i, wrong_p, wrong_s = deepcopy(interaction), deepcopy(plan), deepcopy(segment)
+            mutate(wrong_i, wrong_p, wrong_s)
+            with self.assertRaises(ValueError):
+                runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=wrong_i,
+                    message=message, plan=wrong_p, accepted_response_segment=wrong_s)
+
+    def test_resume_codec_is_public_and_stable_across_same_i_planning(self):
+        codec = getattr(runtime_execution, "resume_input_fingerprint", None)
+        self.assertTrue(callable(codec), "S3 requires the single public resume codec")
+        interaction, message, _ = input_sources()
+        before = codec(interaction=interaction, message=message)
+        segment = response_survivor(interaction, message)
+        self.assertEqual(before, segment["accepted_resume_input"]["resume_fingerprint"])
+        self.assertEqual(before, codec(interaction=interaction, message=message))
+        plan = mixed_plan(interaction)
+        self.assertEqual(before, codec(interaction=interaction, message=message))
+        runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=interaction,
+            message=message, plan=plan, accepted_response_segment=segment)
+
+    def test_resume_codec_hashes_all_fixed_origin_target_selection_fields(self):
+        codec = getattr(runtime_execution, "resume_input_fingerprint", None)
+        self.assertTrue(callable(codec), "S3 requires the single public resume codec")
+        interaction, message, _ = input_sources()
+        before = codec(interaction=interaction, message=message)
+        for field in interaction["state"]["response_target"]:
+            if field == "offer_kind":
+                continue
+            wrong = deepcopy(interaction)
+            wrong["state"]["response_target"][field] = 2 if field == "continuation_generation" else "foreign-id"
+            if field == "responder_id":
+                wrong["state"]["accepted_input_basis"]["authority_at_acceptance"]["accepted_subject_ids"] = ["foreign-id"]
+            with self.subTest(field=field):
+                self.assertNotEqual(before, codec(interaction=wrong, message=message))
+        for mutate in (
+            lambda i: i["state"]["response_selection"].update(option_id="option-B"),
+            lambda i: i["state"]["accepted_input_basis"].update(accepted_exchange_key="exchange-2"),
+            lambda i: i["state"].update(input_kind="response"),
+        ):
+            wrong = deepcopy(interaction)
+            mutate(wrong)
+            if wrong["state"]["input_kind"] == "response":
+                wrong["state"].pop("planning_phase")
+            self.assertNotEqual(before, codec(interaction=wrong, message=message))
+        for mutate in (
+            lambda m: m.update(id="foreign-M"),
+            lambda m: m["state"].update(exact_text="changed"),
+            lambda m: m["state"].update(exact_text="\ud800"),
+        ):
+            wrong = deepcopy(message)
+            mutate(wrong)
+            with self.assertRaises(ValueError):
+                codec(interaction=interaction, message=wrong)
+
+    def test_marker_is_admitted_by_strict_dev_and_installed_segment_wire(self):
+        from jsonschema import Draft202012Validator
+        from referencing import Registry, Resource
+
+        from GAME.TOOLS.structural_contracts import validate_contract
+
+        root = Path(__file__).resolve().parents[2]
+        schemas = [json.loads(path.read_text(encoding="utf-8")) for path in (root / "DEV/SCHEMAS").glob("*.json")]
+        registry = Registry().with_resources((s["$id"], Resource.from_contents(s)) for s in schemas if "$id" in s)
+        schema = next(s for s in schemas if s.get("$id", "").endswith("/execution-segment.schema.json"))
+        validator = Draft202012Validator(schema, registry=registry)
+        interaction, message, _ = input_sources(kind="response")
+        segment = response_survivor(interaction, message)
+        self.assertTrue(validator.is_valid(segment), "W09 must admit the genuine embedded marker")
+        validate_contract("execution-segment", segment)
+        for field in segment["accepted_resume_input"]:
+            wrong = deepcopy(segment)
+            del wrong["accepted_resume_input"][field]
+            self.assertFalse(validator.is_valid(wrong))
+            with self.assertRaises(ValueError):
+                validate_contract("execution-segment", wrong)
+        for value in (True, 1.0, None):
+            wrong = deepcopy(segment)
+            wrong["accepted_resume_input"]["target"]["continuation_generation"] = value
+            with self.assertRaises(ValueError):
+                runtime_execution.validate_input_closure(campaign_id="campaign-1", interaction=interaction,
+                    message=message, plan=None, accepted_response_segment=wrong)
+
+    def test_later_pending_offer_can_retain_old_response_marker_without_replay(self):
+        from DEV.TESTS.test_rd12_collaboration import _ordered_resolution
+
+        interaction, message, _ = input_sources(kind="response")
+        segment = response_survivor(interaction, message)
+        resolution = _ordered_resolution()
+        resolution.update(segments=[segment], next_segment_sequence=2)
+        # A different current suspension is not the consumed offer or a retry.
+        runtime_execution._ordering_resolution_schema(resolution)
+
+    def test_direct_command_segment_cannot_carry_synthetic_response_marker(self):
+        from GAME.TOOLS.structural_contracts import validate_contract
+
+        interaction, message, _ = input_sources(kind="response")
+        segment = response_survivor(interaction, message)
+        segment["segment_id"] = "command-direct:segment:1"
+        command = {"command_id": "command-direct", "command_kind": "transition",
+                   "input_fingerprint_generation": 3, "input_fingerprint": "a" * 64}
+        with self.assertRaises(ValueError):
+            runtime_execution.execution_identity(command, execution_owner_kind="runtime.command",
+                execution_owner_id="command-direct", segment=segment)
+        contract = "https://hedgelion.invalid/schemas/runtime-command-state.schema.json#/properties/direct_transition_segments"
+        with self.assertRaises(ValueError):
+            validate_contract(contract, [segment])
+        del segment["accepted_resume_input"]
+        validate_contract(contract, [segment])
+
+
+class InputRetentionSourceTests(unittest.TestCase):
+    """S3 retained-source sufficiency, not native protection establishment."""
+
+    @contextmanager
+    def retained(self, *, materialized=False, kind="response_and_intent"):
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            _bind_context,
+            _candidate,
+            _interpreter_result,
+            _proposal,
+            _resolution_source,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+
+        proposal = _proposal()
+        with trusted_command_source(proposal) as (host, records):
+            command = runtime_execution.accept_command(_interpreter_result(), _bind_context(),
+                _candidate(), proposal, input_observation=host._current_owner._observe_command_input(proposal))
+            interaction, message, _ = input_sources(kind=kind)
+            interaction["state"]["campaign_id"] = host._campaign_id
+            interaction["state"]["accepted_input_basis"]["repository_identity"] = host._repository.repository_identity()
+            interaction["state"]["accepted_input_basis"].update(
+                accepted_exchange_key="response-exchange", host_invocation_ref="response-invocation")
+            interaction["state"]["response_target"]["root_command_id"] = command["command_id"]
+            segment = response_survivor(interaction, message)
+            plan = mixed_plan(interaction) if materialized else None
+            resolution = {"kind": "runtime.resolution", "id": "resolution-1",
+                "state": _resolution_source(command, segments=[segment], next_segment_sequence=2)}
+            def put(record):
+                records[route_native_record(record["kind"], (record["id"],)).relative_path] = deepcopy(record)
+            for record in (interaction, message, resolution,
+                           {"kind": "runtime.command", "id": command["command_id"], **command}):
+                put(record)
+            if plan is not None:
+                put(plan)
+            promise = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=interaction, scope="handoff")
+            records["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"] = enumerate_operational_root_page(
+                host._campaign_id, [("runtime.interaction", interaction, promise)]).to_dict()
+            adapter_path = host._accepted_input_capability.mapping_path
+            mapping = json.loads(adapter_path.read_text(encoding="utf-8"))
+            mapping.update(interaction_id=interaction["id"], exact_text=message["state"]["exact_text"],
+                host_invocation_ref=interaction["state"]["accepted_input_basis"]["host_invocation_ref"])
+            mapping["key"][4] = interaction["state"]["accepted_input_basis"]["accepted_exchange_key"]
+            adapter_path.write_text(json.dumps(mapping), encoding="utf-8")
+
+            def resolve_catalog(pin, accepted, catalog_basis):
+                # Existing recovery source port returns a real owner-admitted
+                # context. The production reader independently checks it and all
+                # native input/codec bindings; this is not a callback verdict.
+                if accepted["command_kind"] == "transition":
+                    from DEV.TESTS.sp02_installed_test_support import (
+                        authentic_generic_catalog,
+                    )
+
+                    context, candidate = authentic_generic_catalog().catalog_context, None
+                else:
+                    context, candidate = _bind_context(), _candidate()
+                if pin != host._repository.pin_campaign(host._campaign_id) or context.to_dict() != catalog_basis:
+                    raise ValueError("accepted catalog interpretation source differs")
+                return context, candidate
+            host._repository.resolve_recovery_catalog_context = resolve_catalog
+            yield host, records, interaction, message, plan, promise, put
+
+    def validator(self):
+        validator = getattr(__import__("GAME.TOOLS.durability", fromlist=["validate_input_handoff_sources"]),
+                            "validate_input_handoff_sources", None)
+        self.assertTrue(callable(validator), "S3 needs actual retained-source sufficiency validation")
+        return validator
+
+    def check_response_binding_mutations(self, fields):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, i, _m, _p, promise, _put):
+            target = i["state"]["response_target"]
+            path = route_native_record("runtime.resolution", (target["resolution_id"],)).relative_path
+            command = runtime_execution.native_command_state(
+                records[route_native_record("runtime.command", (target["root_command_id"],)).relative_path],
+                command_id=target["root_command_id"], campaign_id=host._campaign_id)
+            valid = deepcopy(records[path])
+            for field in fields:
+                records[path] = deepcopy(valid)
+                validate(promise, host=host)
+                state = records[path]["state"]
+                runtime_execution._validate_action_resolution_binding(command, target["resolution_id"], state)
+                state[field] = response_binding_mutations()[field]
+                runtime_execution.validate_retained_resolution(resolution_id=target["resolution_id"], resolution=records[path])
+                with self.assertRaises(ValueError):
+                    runtime_execution._validate_action_resolution_binding(command, target["resolution_id"], state)
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_r3_response_root_actor_must_match_its_actual_k_request(self):
+        self.check_response_binding_mutations(("actor_id",))
+
+    def test_r3_response_root_activity_must_match_its_actual_k_request(self):
+        self.check_response_binding_mutations(("activity_id",))
+
+    def test_r3_response_root_initiating_command_must_match_actual_k(self):
+        self.check_response_binding_mutations(("initiating_command_id",))
+
+    def test_r3_response_root_catalog_facts_and_roles_must_match_actual_k(self):
+        self.check_response_binding_mutations(("catalog_context_fingerprint", "ruleset_set_sha256", "invocation_facts", "target_ids"))
+
+    def test_r3_cold_response_root_binding_rejects_shape_valid_contradictions(self):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import CurrentNativeSource, recover_current_runtime
+
+        with self.retained() as (host, records, _i, _m, _p, _promise, _put):
+            class ColdRepository:
+                def pin_campaign(self, campaign_id):
+                    return host._repository.pin_campaign(campaign_id)
+
+                def read_exact_path(self, pinned, path):
+                    return host._repository.read_exact_path(pinned, path)
+
+                def select_current_native_sources(self, pinned):
+                    return (CurrentNativeSource(pinned.campaign_id, "campaign", pinned.campaign_id,
+                        pinned.revision, "MANIFEST.yaml"),)
+
+            repository = ColdRepository()
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            valid = deepcopy(records[path])
+            for field, value in response_binding_mutations().items():
+                records[path] = deepcopy(valid)
+                self.assertEqual(recover_current_runtime(repository, host._campaign_id).disposition.value, "READY")
+                records[path]["state"][field] = value
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    recover_current_runtime(repository, host._campaign_id)
+
+    @contextmanager
+    def retained_extra(self, *, direct=False, pending=False):
+        from DEV.TESTS.test_rd05_runtime_execution import _resolution_source
+        from GAME.TOOLS.native_storage import route_native_record
+
+        with self.retained(materialized=True) as (host, records, i, m, p, promise, put):
+            command = deepcopy(next(v for v in records.values() if v.get("kind") == "runtime.command"))
+            command.update(id="extra-command", command_id="extra-command", interaction_id=i["id"],
+                intent_plan_id=p["id"], clause_id="clause.intent.1", disposition="command.accepted" if pending else "command.settled")
+            clause = p["state"]["clauses"][1]
+            clause.update(command_id=command["command_id"], collaboration_semantic_class="ACTIONABLE_INTENT",
+                mapping_outcome="exact", execution_state="intent.ready" if pending else "intent.executed",
+                normalized_semantics={"request": "move"})
+            segment = {"schema_version": 1, "segment_id": "resolution-extra:segment:1", "segment_sequence": 1,
+                "commit_state": "committed", "resulting_execution_state": "COMPLETED", "event_ids": [],
+                "pending_child_invocations": [], "receipt_exports": {}, "affected_revision_refs": []}
+            if direct:
+                from DEV.TESTS.sp02_installed_test_support import (
+                    authentic_generic_catalog,
+                )
+
+                context = authentic_generic_catalog().catalog_context
+                for field in ("action_request", "root_resolution_id", "interpreter_result", "interpreter_result_fingerprint_generation",
+                              "interpreter_result_fingerprint", "candidate_binding"):
+                    command.pop(field, None)
+                actor = records[route_native_record("world.actor", ("actor-1",)).relative_path]
+                command.update(command_kind="transition", catalog_context=context.to_dict(), catalog_context_fingerprint=context.fingerprint,
+                    transition_request={"transition_kind": "transition.location_change", "payload": {
+                        "transition_kind": "transition.location_change", "profile_id": "location_change.outside_procedure",
+                        "idempotency_key": "retained-extra-move", "catalog_generation": 2, "actor_id": "actor-1",
+                        "actor_revision": actor["state_revision"], "destination_location_id": "location-2",
+                        "destination_location_revision": 1, "movement_cost": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}},
+                    transition_binding={"profile_id": "location_change.outside_procedure", "profile_generation": 1,
+                        "payload_schema_id": "https://hedgelion.invalid/schemas/gameplay-spine-transition-request.schema.json#/$defs/outsideProcedureMovement",
+                        "payload_schema_version": 1})
+                put({"kind": "world.location", "id": "location-2", "state_revision": 1, "state": {}})
+                if not pending:
+                    segment["segment_id"] = "extra-command:segment:1"
+                    command.update(direct_transition_segments=[segment], direct_transition_receipt={"execution_owner_id": "extra-command",
+                        "segment_refs": [segment["segment_id"]], "status": "COMPLETED", "event_ids": [], "exports": {}, "pending_child_refs": []})
+            else:
+                command["root_resolution_id"] = "resolution-extra"
+                put({"kind": "runtime.resolution", "id": "resolution-extra", "state": _resolution_source(command,
+                    segments=[segment], next_segment_sequence=2)})
+            put(p)
+            prior = records[route_native_record("runtime.resolution", ("resolution-1",)).relative_path]["state"]["segments"][0]
+            origin = runtime_execution.accepted_input_origin(campaign_id=host._campaign_id, interaction=i,
+                message=m, plan=p, clause_id=clause["clause_id"], accepted_response_segment=prior)
+            command["input_fingerprint"] = runtime_execution.command_input_fingerprint(command, origin=origin)
+            put(command)
+            yield host, records, promise, put, command
+
+    def test_r2_complete_extra_action_root_is_distinct_and_missing_result_holds(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained_extra() as (host, records, promise, _put, _command):
+            validate(promise, host=host)
+            actual_resolver = host._repository.resolve_recovery_catalog_context
+            host._repository.resolve_recovery_catalog_context = None
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            host._repository.resolve_recovery_catalog_context = lambda *_args: (True, None)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)  # Existing port cannot substitute a callback verdict for admitted context.
+            host._repository.resolve_recovery_catalog_context = actual_resolver
+            validate(promise, host=host)
+            records.pop(route_native_record("runtime.resolution", ("resolution-extra",)).relative_path)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_r2_direct_pending_eventless_and_required_event_receipt_sources(self):
+        import os
+
+        from GAME.TOOLS.native_storage import route_native_record
+
+        if "HDM_INSTALLED_STRUCTURAL_TEST" not in os.environ:
+            from DEV.TESTS.sp02_installed_test_support import (
+                run_installed_structural_test,
+            )
+
+            result = run_installed_structural_test("DEV.TESTS.test_sp03_authenticated_input.InputRetentionSourceTests."
+                "test_r2_direct_pending_eventless_and_required_event_receipt_sources")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            return
+        validate = self.validator()
+        with self.retained_extra(direct=True, pending=True) as (host, _records, promise, put, command):
+            validate(promise, host=host)
+            command["disposition"] = "command.settled"
+            put(command)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+        with self.retained_extra(direct=True) as (host, records, promise, put, command):
+            validate(promise, host=host)
+            valid = deepcopy(command)
+            command.pop("direct_transition_receipt")
+            put(command)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            command = valid
+            segment = command["direct_transition_segments"][0]
+            event_id = segment["segment_id"] + ":event:1"
+            segment["event_ids"] = [event_id]
+            command["direct_transition_receipt"]["event_ids"] = [event_id]
+            put(command)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            event = {"kind": "runtime.mechanical_event", "id": event_id, "state": {
+                "segment_id": segment["segment_id"], "event_ordinal": 1, "event_kind": "event.test.transition",
+                "root_command_id": command["command_id"], "causal_ref": command["command_id"], "payload": {}}}
+            put(event)
+            validate(promise, host=host)
+            records[route_native_record("runtime.mechanical_event", (event_id,)).relative_path]["state"]["causal_ref"] = "foreign"
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_r2_executed_extra_unit_requires_settled_native_mandatory_closure(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained_extra() as (host, records, promise, put, command):
+            validate(promise, host=host)
+            command["disposition"] = "command.accepted"
+            put(command)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)  # Executed clause cannot be a settlement assertion.
+            command["disposition"] = "command.settled"
+            put(command)
+            path = route_native_record("runtime.resolution", ("resolution-extra",)).relative_path
+            parent = records[path]["state"]
+            parent["child_resolution_ids"] = ["extra-child"]
+            parent["segments"][0]["pending_child_invocations"] = [{"firing_key": "extra-child-key",
+                "root_command_id": command["command_id"], "activity_id": parent["activity_id"],
+                "trigger_ref": parent["segments"][0]["segment_id"], "reason": "mandatory_followup",
+                "child_resolution_id": "extra-child"}]
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            child = deepcopy(records[path])
+            child.update(id="extra-child")
+            child["state"].pop("initiating_command_id")
+            child["state"].update(resolution_id="extra-child", causal_invocation_key="extra-child-key",
+                child_resolution_ids=[], segments=[retained_eventless_segment("extra-child")], next_segment_sequence=2)
+            put(child)
+            validate(promise, host=host)
+            child_event_id = "extra-child:segment:1:event:1"
+            child["state"]["segments"][0]["event_ids"] = [child_event_id]
+            put(child)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            child_event = {"kind": "runtime.mechanical_event", "id": child_event_id, "state": {
+                "segment_id": "extra-child:segment:1", "event_ordinal": 1, "event_kind": "event.test.child",
+                "root_command_id": command["command_id"], "causal_ref": "extra-child", "payload": {}}}
+            put(child_event)
+            validate(promise, host=host)
+            from GAME.TOOLS.recovery import _hydrate_input_root_closure
+
+            interaction = records[route_native_record("runtime.interaction", ("interaction-1",)).relative_path]
+            _hydrate_input_root_closure(host._repository, host._repository.pin_campaign(host._campaign_id), interaction)
+            records[route_native_record("runtime.mechanical_event", (child_event_id,)).relative_path]["id"] = "foreign-event"
+            with self.assertRaises(ValueError):
+                _hydrate_input_root_closure(host._repository, host._repository.pin_campaign(host._campaign_id), interaction)
+            put(child_event)
+            child["state"]["status"] = "RUNNING"
+            put(child)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            child["state"].update(status="COMPLETED", segments=[], next_segment_sequence=1)
+            put(child)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_r2_cold_input_reader_cannot_skip_populated_extra_action_result(self):
+        from GAME.TOOLS.native_storage import route_native_record
+        from GAME.TOOLS.recovery import _hydrate_input_root_closure
+
+        with self.retained_extra() as (host, records, _promise, _put, _command):
+            interaction = records[route_native_record("runtime.interaction", ("interaction-1",)).relative_path]
+            pin = host._repository.pin_campaign(host._campaign_id)
+            _hydrate_input_root_closure(host._repository, pin, interaction)
+            records.pop(route_native_record("runtime.resolution", ("resolution-extra",)).relative_path)
+            with self.assertRaises(ValueError):
+                _hydrate_input_root_closure(host._repository, pin, interaction)
+
+    def test_r1_open_normalized_shape_is_not_positive_content_survivor_evidence(self):
+        validate = self.validator()
+        for meaning in ({"opaque": "a" * 64}, {"content_digest": {"sha256": "a" * 64}},
+                        {"request": "move later"}):
+            with self.retained(materialized=True) as (host, _records, _i, m, p, promise, put):
+                p["state"]["clauses"][1]["normalized_semantics"] = meaning
+                put(p)
+                validate(promise, host=host)  # Exact M is actual retained content.
+                m["state"].pop("exact_text")
+                m["state"]["payload_state"] = "message.compacted"
+                put(m)
+                with self.subTest(meaning=meaning), self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_r2_settled_extra_action_requires_its_distinct_native_result(self):
+        validate = self.validator()
+        with self.retained(materialized=True) as (host, records, i, m, p, promise, put):
+            validate(promise, host=host)
+            command = deepcopy(next(v for v in records.values() if v.get("kind") == "runtime.command"))
+            command.update(id="extra-command", command_id="extra-command", interaction_id=i["id"],
+                intent_plan_id=p["id"], clause_id="clause.intent.1", root_resolution_id="missing-extra-resolution",
+                disposition="command.settled")
+            p["state"]["clauses"][1].update(command_id=command["id"], collaboration_semantic_class="ACTIONABLE_INTENT",
+                mapping_outcome="exact", execution_state="intent.executed", normalized_semantics={"request": "move"})
+            put(p)
+            segment = next(v for v in records.values() if v.get("kind") == "runtime.resolution")["state"]["segments"][0]
+            origin = runtime_execution.accepted_input_origin(campaign_id=host._campaign_id, interaction=i,
+                message=m, plan=p, clause_id="clause.intent.1", accepted_response_segment=segment)
+            command["input_fingerprint"] = runtime_execution.command_input_fingerprint(command, origin=origin)
+            put(command)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_r3_response_relational_closure_rejects_missing_current_forward_sources(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        for case in ("awaiting", "frontier", "declared-child"):
+            with self.retained() as (host, records, _i, _m, _p, promise, _put):
+                validate(promise, host=host)
+                state = records[route_native_record("runtime.resolution", ("resolution-1",)).relative_path]["state"]
+                if case == "awaiting":
+                    state["status"] = "AWAITING_CHOICE"
+                elif case == "frontier":
+                    state["next_segment_sequence"] = 1
+                else:
+                    state["segments"][0]["pending_child_invocations"] = [{"firing_key": "fixed-child",
+                        "root_command_id": state["root_command_id"], "activity_id": state["activity_id"],
+                        "trigger_ref": state["segments"][0]["segment_id"], "reason": "mandatory_followup",
+                        "child_resolution_id": "missing-declared-child"}]
+                with self.subTest(case=case), self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_r3_old_segment_continuation_can_retire_only_after_its_actual_consume(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, i, _m, _p, _promise, put):
+            state = records[route_native_record("runtime.resolution", ("resolution-1",)).relative_path]["state"]
+            consume = state["segments"][0]
+            consume.update(segment_id="resolution-1:segment:2", segment_sequence=2)
+            i["state"]["accepted_resume_ref"]["segment_id"] = consume["segment_id"]
+            put(i)
+            offered = retained_eventless_segment("resolution-1")
+            offered.update(resulting_execution_state="AWAITING_CHOICE", continuation_id="continuation-1")
+            state.update(segments=[offered, consume], next_segment_sequence=3)
+            promise = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            validate(promise, host=host)
+            offered["continuation_id"] = "missing-unconsumed-continuation"
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_ready_exact_same_source_root_and_response_closure_is_sufficient(self):
+        validate = self.validator()
+        with self.retained() as (host, _records, i, m, p, promise, put):
+            self.assertIsNone(p)
+            validate(promise, host=host)
+            # An outbound acknowledgement has no effect on remaining input.
+            i["state"]["response_message_id"] = "outbound-1"
+            put(i)
+            changed = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            validate(changed, host=host)
+            m["state"].pop("exact_text")
+            m["state"]["payload_state"] = "message.compacted"
+            put(m)
+            with self.assertRaises(ValueError):
+                validate(changed, host=host)
+
+    def test_bool_hash_copied_promise_and_callback_host_never_prove_protection(self):
+        from types import SimpleNamespace
+
+        validate = self.validator()
+        with self.retained() as (host, _records, _i, _m, _p, promise, _put):
+            validate(promise, host=host)
+            for evidence in (True, "a" * 64, deepcopy(promise), SimpleNamespace(validate=lambda **kw: True)):
+                with self.subTest(evidence=type(evidence).__name__), self.assertRaises(ValueError):
+                    validate(evidence, host=host)
+            with self.assertRaises(ValueError):
+                validate(promise, host=SimpleNamespace(_current_owner=host._current_owner))
+
+    def test_unknown_root_protection_and_missing_response_survivor_hold(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, _i, _m, _p, promise, _put):
+            root_path = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
+            page = records.pop(root_path)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            records[root_path] = dict(page, roots=[])
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            records[root_path] = page
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            records[path]["state"]["segments"][0].pop("accepted_resume_input")
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_selected_live_input_does_not_fall_back_to_campaign_protection(self):
+        from GAME.TOOLS.live_state import (
+            LiveClaim,
+            LiveEnvelope,
+            LiveNativeStatePack,
+            LiveRouting,
+            build_live_ref,
+            derive_live_epoch_id,
+        )
+
+        validate = self.validator()
+        with self.retained() as (host, _records, i, _m, _p, promise, _put):
+            claim = LiveClaim.exact_owner("runtime.interaction", i["id"])
+            opening = "b" * 40
+            epoch = derive_live_epoch_id(host._campaign_id, "scene.test", opening, (claim,))
+            source = LiveEnvelope(campaign_id=host._campaign_id, scene_id="scene.test", epoch_id=epoch,
+                source_ref=build_live_ref(host._campaign_id, "scene.test", epoch), source_revision="c" * 40,
+                opening_campaign_revision=opening, claims=(claim,))
+            host._live_transport.route = LiveRouting(campaign_id=host._campaign_id, entries=(source,))
+            host._live_transport.pack = LiveNativeStatePack(source_key=source.source_key,
+                source_revision=source.source_revision, next_source_native_creation_ordinal=1, source_native_ids=(),
+                native_owner_states={"runtime.interaction": deepcopy(i)}, provenance={}, privacy={}, chronology={}, unresolved_work={})
+            with self.assertRaisesRegex(ValueError, "cross-source protection/freeze is unavailable"):
+                validate(promise, host=host)
+
+    def test_plan_root_survivor_covers_every_no_k_unit_before_i_root_release(self):
+        validate = self.validator()
+        with self.retained(materialized=True) as (host, records, _i, m, p, promise, put):
+            for n, semantic_class in enumerate(("DIEGETIC_COMMUNICATION", "CONTROL_SIGNAL", "ACTIONABLE_INTENT"), 2):
+                clause = deepcopy(p["state"]["clauses"][1])
+                clause.update(clause_id=f"clause.intent.{n}", order=n + 1,
+                    collaboration_semantic_class=semantic_class,
+                    normalized_semantics={"request": f"retained unit {n}"})
+                p["state"]["clauses"].append(clause)
+            put(p)
+            pp = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.intent_plan", native_owner=p, scope="handoff")
+            records["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"] = enumerate_operational_root_page(
+                host._campaign_id, [("runtime.intent_plan", p, pp)]).to_dict()
+            validate(promise, host=host)
+            # Each unit, including held/nonexecutable, must retain its meaning.
+            for index in range(1, len(p["state"]["clauses"])):
+                wrong = deepcopy(p)
+                wrong["state"]["clauses"][index].pop("normalized_semantics")
+                put(wrong)
+                with self.assertRaises(ValueError):
+                    validate(promise, host=host)
+            put(p)
+            m["state"].pop("exact_text")
+            m["state"]["payload_state"] = "message.compacted"
+            put(m)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)  # Open normalized shape is not a sufficient survivor.
+
+    def test_exact_refs_and_opaque_digest_are_not_content_discharge(self):
+        validate = self.validator()
+        with self.retained(materialized=True) as (host, _records, _i, m, p, promise, put):
+            validate(promise, host=host)
+            p["state"]["clauses"][1]["material_exact_text_refs"] = ["unknown-natural-owner"]
+            put(p)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+            p["state"]["clauses"][1].pop("material_exact_text_refs")
+            p["state"]["clauses"][1]["normalized_semantics"] = {"content_digest": "a" * 64}
+            put(p)
+            m["state"].pop("exact_text")
+            m["state"]["payload_state"] = "message.compacted"
+            put(m)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_declared_native_basis_is_required_even_for_a_no_k_held_unit(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained(materialized=True) as (host, records, _i, _m, p, promise, put):
+            p["state"]["clauses"][1]["native_basis_refs"] = [{"family": "world.scene", "id": "scene-1", "revision": "scene-r1"}]
+            put(p)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            scene = {"kind": "world.scene", "id": "scene-1", "revision": "scene-r1", "state": {}}
+            put(scene)
+            validate(promise, host=host)
+            records.pop(route_native_record("world.scene", ("scene-1",)).relative_path)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_native_result_children_and_fixed_cause_cannot_be_omitted(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, _i, _m, _p, promise, _put):
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            source = deepcopy(records[path])
+            for field, value in (("child_resolution_ids", ["missing-child"]),
+                                 ("fixed_rng_results", [{"digest": "b" * 64}])):
+                records[path] = deepcopy(source)
+                records[path]["state"][field] = value
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_actual_child_and_event_survivors_are_read_before_sufficiency(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, _i, _m, _p, promise, put):
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            state = records[path]["state"]
+            child = deepcopy(records[path])
+            child["id"] = "resolution-child"
+            child["state"].update(resolution_id="resolution-child",
+                segments=[retained_eventless_segment("resolution-child")], next_segment_sequence=2)
+            child["state"].pop("initiating_command_id")
+            child["state"]["causal_invocation_key"] = "fixed-child-key"
+            state["child_resolution_ids"] = [child["id"]]
+            put(child)
+            segment = state["segments"][0]
+            segment["pending_child_invocations"] = [{"firing_key": "fixed-child-key",
+                "root_command_id": state["root_command_id"], "activity_id": child["state"]["activity_id"],
+                "trigger_ref": segment["segment_id"], "reason": "mandatory_followup",
+                "child_resolution_id": child["id"]}]
+            event_id = segment["segment_id"] + ":event:1"
+            segment["event_ids"] = [event_id]
+            event = {"kind": "runtime.mechanical_event", "id": event_id, "state": {
+                "segment_id": segment["segment_id"], "event_ordinal": 1,
+                "event_kind": "event.test.response", "root_command_id": state["root_command_id"],
+                "causal_ref": "resolution-1", "payload": {"selected_option_id": "option-A"}}}
+            put(event)
+            validate(promise, host=host)
+            put({"kind": event["kind"], "id": event["id"], **deepcopy(event["state"])})
+            validate(promise, host=host)
+            child["state"]["causal_invocation_key"] = "foreign-child-key"
+            put(child)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            child["state"]["causal_invocation_key"] = "fixed-child-key"
+            put(child)
+            event["state"]["causal_ref"] = "foreign-resolution"
+            put(event)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_settled_response_k_root_does_not_discover_unplanned_or_no_k_extras(self):
+        validate = self.validator()
+        for materialized in (False, True):
+            with self.retained(materialized=materialized) as (host, records, i, _m, _p, promise, _put):
+                root_page = records["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"]
+                root = root_page["roots"][0]
+                from GAME.TOOLS.native_storage import route_native_record
+
+                command_id = i["state"]["response_target"]["root_command_id"]
+                records[route_native_record("runtime.command", (command_id,)).relative_path]["disposition"] = "command.settled"
+                root.update(owner_kind="runtime.command", owner_id=command_id,
+                    route={"family_key": "runtime.command", "identity": [command_id],
+                           "relative_path": route_native_record("runtime.command", (command_id,)).relative_path})
+                with self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_relevant_input_and_root_movement_during_source_window_hold(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        for changed in ("interaction", "roots"):
+            with self.retained() as (host, records, i, m, _p, promise, put):
+                repository = host._repository
+                original = repository.read_exact_path
+                message_path = route_native_record("runtime.message", (m["id"],)).relative_path
+                triggered = False
+                def moving(pin, path, *, original=original, message_path=message_path, changed=changed):
+                    nonlocal triggered
+                    result = original(pin, path)
+                    if path == message_path and not triggered:
+                        triggered = True
+                        if changed == "interaction":
+                            i["state"]["response_message_id"] = "new-outbound"
+                            put(i)
+                        else:
+                            records["STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"]["roots"] = []
+                    return result
+                repository.read_exact_path = moving
+                with self.subTest(changed=changed), self.assertRaises(ValueError):
+                    validate(promise, host=host)
+
+    def test_expanding_source_union_cannot_accept_an_unvisited_new_child(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, _i, m, _p, promise, _put):
+            repository = host._repository
+            original = repository.read_exact_path
+            message_path = route_native_record("runtime.message", (m["id"],)).relative_path
+            resolution_path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            message_reads = 0
+            def moving(pin, path):
+                nonlocal message_reads
+                if path == message_path:
+                    message_reads += 1
+                    if message_reads == 2:
+                        records[resolution_path]["state"]["child_resolution_ids"] = ["new-unvisited-child"]
+                return original(pin, path)
+            repository.read_exact_path = moving
+            with self.assertRaisesRegex(ValueError, "REVALIDATION_REQUIRED"):
+                validate(promise, host=host)
+
+    def test_cold_ready_keeps_old_marker_after_offer_retirement_without_plan(self):
+        from GAME.TOOLS.recovery import _hydrate_input_root_closure
+
+        validate = self.validator()
+        for kind in ("response", "response_and_intent"):
+            with self.retained(kind=kind) as (host, _records, i, m, p, promise, put):
+                validate(promise, host=host)
+                _hydrate_input_root_closure(host._repository,
+                    host._repository.pin_campaign(host._campaign_id), i)
+                # No current/old Continuation or Player is needed for historical
+                # retrieval; no P is allocated for either retained pre-plan case.
+                self.assertIsNone(p)
+                source = deepcopy(i)
+                source["id"] = "different-I"
+                m["state"]["interaction_id"] = source["id"]
+                put(m)
+                with self.assertRaises(ValueError):
+                    _hydrate_input_root_closure(host._repository,
+                        host._repository.pin_campaign(host._campaign_id), source)
+
+    def test_new_suspension_keeps_old_marker_but_requires_its_current_native_source(self):
+        from DEV.TESTS.test_rd12_collaboration import _choice, _ordered_continuation
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained() as (host, records, i, _m, _p, promise, put):
+            continuation = _ordered_continuation()
+            continuation.update(id="continuation-next", campaign_id=host._campaign_id,
+                generation=2, root_command_id=i["state"]["response_target"]["root_command_id"])
+            offer = _choice()
+            offer.update(continuation_generation=2, offer_id="choice-next")
+            continuation["pending_response"] = offer
+            put(continuation)
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            records[path]["state"].update(continuation_id=continuation["id"], status="AWAITING_CHOICE")
+            validate(promise, host=host)
+            continuation["generation"] = True
+            put(continuation)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+            continuation["generation"] = 2
+            continuation.pop("pending_response")
+            put(continuation)
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+
+    def test_unconsumed_native_envelope_offer_retains_exact_candidate_without_fake_p(self):
+        from DEV.TESTS.test_rd12_collaboration import _ordered_continuation
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained(kind="response") as (host, records, i, _m, _p, _promise, put):
+            i["state"].pop("accepted_resume_ref")
+            put(i)
+            target = i["state"]["response_target"]
+            path = route_native_record("runtime.resolution", (target["resolution_id"],)).relative_path
+            state = records[path]["state"]
+            state.update(status="AWAITING_CHOICE", continuation_id=target["continuation_id"],
+                segments=[], next_segment_sequence=1)
+            continuation = _ordered_continuation()
+            continuation.update(campaign_id=host._campaign_id, generation=target["continuation_generation"])
+            for key in ("root_command_id", "activity_id", "actor_id", "target_ids", "parameter_bindings",
+                        "ruleset_set_digest_generation", "ruleset_set_sha256", "catalog_context_fingerprint_generation",
+                        "catalog_context_fingerprint", "invocation_facts", "fixed_rng_results", "prior_step_exports"):
+                if key in state:
+                    continuation[key] = deepcopy(state[key])
+            continuation["pending_response"] = {"kind": "choice", "offer_id": target["offer_id"],
+                "parent_resolution_id": target["resolution_id"], "continuation_generation": target["continuation_generation"],
+                "responder_id": target["responder_id"], "option_ids": ["option-A", "option-B"]}
+            put(continuation)
+            promise = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            validate(promise, host=host)
+            i["state"]["response_selection"]["option_id"] = "foreign-option"
+            put(i)
+            wrong = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            with self.assertRaises(ValueError):
+                validate(wrong, host=host)
+
+    def test_response_root_author_and_responder_need_not_be_the_same_actor(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained(kind="response") as (host, records, i, m, _p, promise, put):
+            i["state"]["response_target"]["responder_id"] = "actor-other"
+            i["state"]["accepted_input_basis"]["authority_at_acceptance"]["accepted_subject_ids"] = ["actor-other"]
+            segment = response_survivor(i, m)
+            put(i)
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            records[path]["state"]["segments"] = [segment]
+            promise = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            validate(promise, host=host)
+
+    def test_reaction_selected_native_child_survives_with_different_root_actor(self):
+        from GAME.TOOLS.native_storage import route_native_record
+
+        validate = self.validator()
+        with self.retained(kind="response") as (host, records, i, m, _p, promise, put):
+            i["state"]["response_target"].update(offer_kind="reaction", responder_id="actor-other")
+            i["state"]["response_selection"] = {"kind": "reaction", "activity_id": "activity.check.generic"}
+            i["state"]["accepted_input_basis"]["authority_at_acceptance"]["accepted_subject_ids"] = ["actor-other"]
+            segment = response_survivor(i, m)
+            put(i)
+            path = route_native_record("runtime.resolution", ("resolution-1",)).relative_path
+            state = records[path]["state"]
+            state["segments"] = [segment]
+            state["child_resolution_ids"] = ["reaction-child"]
+            promise = issue_durability_handoff_promise(campaign_id=host._campaign_id,
+                owner_kind="runtime.interaction", native_owner=i, scope="handoff")
+            with self.assertRaises(ValueError):
+                validate(promise, host=host)
+            child = deepcopy(records[path])
+            child["id"] = "reaction-child"
+            child["state"].pop("initiating_command_id")
+            child["state"].update(resolution_id="reaction-child", actor_id="actor-other",
+                segments=[retained_eventless_segment("reaction-child")], child_resolution_ids=[],
+                next_segment_sequence=2, causal_invocation_key="fixed-reaction")
+            put(child)
+            state["child_resolution_ids"] = [child["id"]]
+            segment["pending_child_invocations"] = [{"firing_key": "fixed-reaction",
+                "root_command_id": state["root_command_id"], "activity_id": "activity.check.generic",
+                "trigger_ref": segment["segment_id"], "reason": "mandatory_followup",
+                "child_resolution_id": child["id"]}]
+            validate(promise, host=host)
+
+    def test_mixed_extra_action_and_direct_move_bind_same_i_and_fixed_resume(self):
+        import os
+
+        from DEV.TESTS.test_rd05_runtime_execution import (
+            _bind_context,
+            _candidate,
+            _interpreter_result,
+        )
+        from GAME.TOOLS.native_storage import route_native_record
+
+        if "HDM_INSTALLED_STRUCTURAL_TEST" not in os.environ:
+            from DEV.TESTS.sp02_installed_test_support import (
+                run_installed_structural_test,
+            )
+
+            result = run_installed_structural_test(
+                "DEV.TESTS.test_sp03_authenticated_input.InputRetentionSourceTests."
+                "test_mixed_extra_action_and_direct_move_bind_same_i_and_fixed_resume")
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            return
+
+        for direct in (False, True):
+            with self.retained(materialized=True) as (host, records, i, m, p, _promise, put):
+                basis = i["state"]["accepted_input_basis"]
+                adapter_path = host._accepted_input_capability.mapping_path
+                mapping = json.loads(adapter_path.read_text(encoding="utf-8"))
+                mapping.update(interaction_id=i["id"], exact_text=m["state"]["exact_text"])
+                mapping["key"][4] = basis["accepted_exchange_key"]
+                mapping["host_invocation_ref"] = basis["host_invocation_ref"]
+                adapter_path.write_text(json.dumps(mapping), encoding="utf-8")
+                p["state"]["clauses"][1].update(mapping_outcome="exact", execution_state="intent.ready",
+                    collaboration_semantic_class="ACTIONABLE_INTENT", normalized_semantics={"request": "move"})
+                put(p)
+                command = {"command_id": "extra-command", "interaction_id": i["id"],
+                    "intent_plan_id": p["id"], "clause_id": "clause.intent.1"}
+                if direct:
+                    records[route_native_record("world.location", ("location-2",)).relative_path] = {
+                        "kind": "world.location", "id": "location-2", "state_revision": 1, "state": {}}
+                    command.update(command_kind="transition", transition_request={
+                        "transition_kind": "transition.location_change", "payload": {
+                            "transition_kind": "transition.location_change", "profile_id": "location_change.outside_procedure",
+                            "idempotency_key": "move-extra", "catalog_generation": 2, "actor_id": "actor-1",
+                            "actor_revision": records[route_native_record("world.actor", ("actor-1",)).relative_path]["state_revision"],
+                            "destination_location_id": "location-2", "destination_location_revision": 1,
+                            "movement_cost": "NOT_APPLICABLE_OUTSIDE_PROCEDURE"}},
+                        transition_binding={"profile_id": "location_change.outside_procedure", "profile_generation": 1,
+                            "payload_schema_id": "https://hedgelion.invalid/schemas/gameplay-spine-transition-request.schema.json#/$defs/outsideProcedureMovement",
+                            "payload_schema_version": 1})
+                else:
+                    command.update(action_request={"activity_id": "activity.check.generic", "actor_id": "actor-1", "target_ids": ["actor-2"]},
+                        root_resolution_id="resolution-extra")
+                observed = host._current_owner._observe_command_input(command)
+                from DEV.TESTS.sp02_installed_test_support import (
+                    authentic_generic_catalog,
+                )
+
+                accepted = runtime_execution.accept_command(None if direct else _interpreter_result(),
+                    authentic_generic_catalog().catalog_context if direct else _bind_context(),
+                    None if direct else _candidate(), command, input_observation=observed)
+                self.assertEqual(accepted["interaction_id"], i["id"])
+                self.assertEqual(accepted["intent_plan_id"], p["id"])
+                self.assertEqual(basis["principal"]["stable_account_id"], "123")
+                fixed = runtime_execution.resume_input_fingerprint(interaction=i, message=m)
+                origin = runtime_execution.accepted_input_origin(campaign_id=host._campaign_id,
+                    interaction=i, message=m, plan=p, clause_id="clause.intent.1",
+                    accepted_response_segment=records[next(path for path in records if path.endswith(".yaml")
+                        and records[path].get("kind") == "runtime.resolution")]["state"]["segments"][0])
+                self.assertEqual(origin["accepted_resume_ref"], i["state"]["accepted_resume_ref"])
+                self.assertEqual(accepted["input_fingerprint"], runtime_execution.command_input_fingerprint(accepted, origin=origin))
+                self.assertEqual(fixed, runtime_execution.resume_input_fingerprint(interaction=i, message=m))
 
 
 if __name__ == "__main__":

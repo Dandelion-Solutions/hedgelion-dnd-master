@@ -985,7 +985,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 if requested == path:
                     return {"kind": "runtime.command", "id": accepted["command_id"], **accepted}
                 if requested == resolution_path:
-                    return resolution
+                    return {"kind": "runtime.resolution", "id": accepted["root_resolution_id"], **resolution}
                 if requested == event_path:
                     return event
                 return super().read_exact_path(pinned, requested)
@@ -1082,7 +1082,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                         if requested == path:
                             return {"kind": "runtime.command", "id": accepted["command_id"], **accepted}
                         if requested == resolution_path:
-                            return resolution
+                            return {"kind": "runtime.resolution", "id": accepted["root_resolution_id"], **resolution}
                         if requested == event_path:
                             return execution["event"]
                         return super().read_exact_path(pinned, requested)
@@ -1155,7 +1155,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 if requested == command_path:
                     return command_owner
                 if requested == resolution_path:
-                    return resolution
+                    return {"kind": "runtime.resolution", "id": accepted["root_resolution_id"], **resolution}
                 if requested == event_path:
                     return execution["event"]
                 return super().read_exact_path(pinned, requested)
@@ -1217,7 +1217,7 @@ class RecoveryCurrentRuntimeTests(unittest.TestCase):
                 if requested == command_path:
                     return command_owner
                 if requested == resolution_path:
-                    return resolution
+                    return {"kind": "runtime.resolution", "id": accepted["root_resolution_id"], **resolution}
                 if requested == event_path:
                     return execution["event"]
                 return super().read_exact_path(pinned, requested)

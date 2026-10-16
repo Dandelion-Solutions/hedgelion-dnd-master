@@ -61,6 +61,7 @@ from .publication import (
 )
 
 if TYPE_CHECKING:
+    from .access_control import PlayerRecord
     from .activity_contracts import (
         AcceptedAdjudicationBasis,
         AdmittedActivityCatalog,
@@ -74,8 +75,8 @@ if TYPE_CHECKING:
         NativeSemanticEvent,
     )
 
-# framework_module_version: 1.0.19
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.19"
+# framework_module_version: 1.0.20
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.20"
 
 _REPOSITORY_OPERATIONS: Final[tuple[str, ...]] = (
     "pin_campaign",
@@ -1781,6 +1782,538 @@ class CurrentOwnerView(_BoundService):
             if isinstance(exc, RuntimeHostError):
                 raise
             raise InputAuthorityUnavailable("native input source/authority closure is unavailable") from exc
+
+    def _observe_retained_resolution_sources(self, session: CurrentOwnerReadSession,
+            observation: CurrentOwnerObservation, roots: Mapping[str, str]) -> tuple[CurrentOwnerObservation, set[NativeOwnerRef]]:
+        """Read only the existing finite R/child/suspension/event source graph."""
+        from .recovery import _validate_event_identity
+        from .recovery_roots import _validate_native_owner
+        from .runtime_execution import (
+            _pending_offer,
+            _validate_action_resolution_binding,
+            _validate_ordering_owner_schema,
+            native_command_state,
+            resume_input_fingerprint,
+            validate_input_interaction,
+            validate_retained_resolution,
+        )
+        from .structural_contracts import validate_contract
+
+        def payload(ref: NativeOwnerRef) -> Mapping[str, object]:
+            native = self._input_payload(observation, ref)
+            if native.get("campaign_id", self._host._campaign_id) != self._host._campaign_id:
+                raise RuntimeHostError("retained execution source campaign differs")
+            if isinstance(native.get("state"), Mapping):
+                for key, value in native["state"].items():
+                    if key in native and _operation_digest(value) != _operation_digest(native[key]):
+                        raise RuntimeHostError("retained execution envelope/state projections conflict")
+            return native
+
+        def expand(refs: set[NativeOwnerRef]) -> None:
+            nonlocal observation
+            prior = observation
+            observation = session.require(tuple(refs))
+            if any(observation.require(ref) != prior.require(ref) for ref in prior.key_union):
+                raise RuntimeHostError("REVALIDATION_REQUIRED: retained execution closure moved")
+
+        refs = set(observation.key_union)
+        expected_roots = dict(roots)
+        refs.update(NativeOwnerRef("runtime.resolution", (identity,)) for identity in roots)
+        refs.update(NativeOwnerRef("runtime.command", (identity,)) for identity in roots.values())
+        expand(refs)
+        checked: set[NativeOwnerRef] = set()
+        causes: dict[str, list[Mapping[str, object]]] = {}
+        states: dict[str, Mapping[str, object]] = {}
+        continuations: dict[str, str] = {}
+        events: dict[str, tuple[str, Mapping[str, object]]] = {}
+        while True:
+            pending = [identity for identity in expected_roots
+                       if NativeOwnerRef("runtime.resolution", (identity,)) not in checked]
+            if not pending:
+                break
+            for identity in pending:
+                ref = NativeOwnerRef("runtime.resolution", (identity,))
+                state = validate_retained_resolution(resolution_id=identity, resolution=payload(ref))
+                if state["status"] == "COMPLETED" and not state["segments"]:
+                    raise RuntimeHostError("completed retained Resolution lacks its native result segment")
+                if state["root_command_id"] != expected_roots[identity]:
+                    raise RuntimeHostError("retained Resolution has a foreign root command")
+                if identity in roots:
+                    command_id = expected_roots[identity]
+                    command = native_command_state(payload(NativeOwnerRef("runtime.command", (command_id,))),
+                        command_id=command_id, campaign_id=self._host._campaign_id)
+                    if command["command_kind"] == "action":
+                        _validate_action_resolution_binding(command, identity, state)
+                if identity not in roots:
+                    matches = [cause for cause in causes.get(identity, ())
+                        if cause["firing_key"] == state.get("causal_invocation_key")
+                        and cause["activity_id"] == state["activity_id"]
+                        and cause["root_command_id"] == state["root_command_id"]
+                        and ("procedure_id" not in cause or cause["procedure_id"] == state.get("procedure_id"))]
+                    if len(matches) != 1 or "initiating_command_id" in state:
+                        raise RuntimeHostError("retained child lacks its exact fixed native cause")
+                states[identity] = state
+                for child_id in state["child_resolution_ids"]:
+                    if child_id in expected_roots:
+                        raise RuntimeHostError("retained child owner is cyclic or multiply linked")
+                    expected_roots[child_id] = state["root_command_id"]
+                    refs.add(NativeOwnerRef("runtime.resolution", (child_id,)))
+                    causes[child_id] = [cause for segment in state["segments"]
+                        for cause in segment["pending_child_invocations"]
+                        if cause.get("child_resolution_id", child_id) == child_id]
+                if "continuation_id" in state:
+                    continuation_id = state["continuation_id"]
+                    if continuation_id in continuations:
+                        raise RuntimeHostError("current Continuation has multiple native owners")
+                    continuations[continuation_id] = identity
+                    refs.add(NativeOwnerRef("runtime.continuation", (continuation_id,)))
+                if "procedure_id" in state:
+                    refs.add(NativeOwnerRef("runtime.procedure", (state["procedure_id"],)))
+                for segment in state["segments"]:
+                    for event_id in segment["event_ids"]:
+                        if event_id in events:
+                            raise RuntimeHostError("retained event ownership is ambiguous")
+                        events[event_id] = identity, segment
+                        refs.add(NativeOwnerRef("runtime.mechanical_event", (event_id,)))
+                checked.add(ref)
+            expand(refs)
+        # An old segment's output Continuation is a required forward link unless
+        # the native R retains its later consuming edge AND the exact I/M source
+        # proves that consume. A matching marker in isolation is insufficient.
+        retired_outputs = []
+        for identity, state in states.items():
+            for segment in state["segments"]:
+                output = segment.get("continuation_id")
+                if output is None or output == state.get("continuation_id"):
+                    continue
+                consumers = [later for later in state["segments"]
+                    if later["segment_sequence"] > segment["segment_sequence"]
+                    and later.get("accepted_resume_input", {}).get("target", {}).get("continuation_id") == output]
+                if len(consumers) != 1:
+                    raise RuntimeHostError("old Continuation forward link lacks an actual retained consume")
+                consume = consumers[0]
+                marker = consume["accepted_resume_input"]
+                refs.add(NativeOwnerRef("runtime.interaction", (marker["response_interaction_id"],)))
+                refs.add(NativeOwnerRef("runtime.message", (marker["response_message_id"],)))
+                retired_outputs.append((identity, consume))
+        if retired_outputs:
+            expand(refs)
+        for identity, consume in retired_outputs:
+            marker = consume["accepted_resume_input"]
+            interaction = payload(NativeOwnerRef("runtime.interaction", (marker["response_interaction_id"],)))
+            message = payload(NativeOwnerRef("runtime.message", (marker["response_message_id"],)))
+            source = validate_input_interaction(campaign_id=self._host._campaign_id, interaction=interaction)
+            if (source.get("accepted_resume_ref") != {"resolution_id": identity, "segment_id": consume["segment_id"]}
+                    or _operation_digest(source.get("response_target")) != _operation_digest(marker["target"])
+                    or _operation_digest(source.get("response_selection")) != _operation_digest(marker["selection"])
+                    or message.get("state", message).get("payload_state") != "message.exact_retained"
+                    or resume_input_fingerprint(interaction=interaction, message=message) != marker["resume_fingerprint"]):
+                raise RuntimeHostError("old Continuation consume lacks its fixed native I/M provenance")
+        for identity, parent_id in continuations.items():
+            native = payload(NativeOwnerRef("runtime.continuation", (identity,)))
+            if "state" in native:
+                native = {**native["state"], **{key: native[key] for key in
+                    ("kind", "id", "campaign_id", "revision") if key in native}}
+            _validate_ordering_owner_schema("runtime.continuation", native)
+            parent = states[parent_id]
+            if (native["resolution_id"] != parent_id or native["root_command_id"] != parent["root_command_id"]
+                    or native.get("procedure_id") != parent.get("procedure_id")
+                    or not set(native["expected_child_resolution_ids"]) <= set(parent["child_resolution_ids"])):
+                raise RuntimeHostError("current Continuation/parent forward links differ")
+            if parent["status"] in {"AWAITING_CHOICE", "AWAITING_REACTION"}:
+                kind, _offer, _responder = _pending_offer(native.get("pending_response"),
+                    resolution_id=parent_id, continuation_generation=native["generation"])
+                if kind != ("choice" if parent["status"] == "AWAITING_CHOICE" else "reaction"):
+                    raise RuntimeHostError("current suspension/offer kinds differ")
+        for identity, state in states.items():
+            if "procedure_id" in state:
+                _validate_native_owner("runtime.procedure", payload(NativeOwnerRef("runtime.procedure", (state["procedure_id"],))))
+        for event_id, (identity, segment) in events.items():
+            native = payload(NativeOwnerRef("runtime.mechanical_event", (event_id,)))
+            event = native.get("state", native)
+            wire = event if "state" in native else {key: value for key, value in event.items()
+                if key not in {"kind", "id", "campaign_id", "revision", "event_id"}}
+            validate_contract("runtime-mechanical-event-state", wire)
+            _validate_event_identity({"event_id": event_id}, identity, segment, segment["segment_id"], event)
+            if event["root_command_id"] != states[identity]["root_command_id"] or event["causal_ref"] != identity:
+                raise RuntimeHostError("retained event native cause differs")
+        return observation, checked
+
+    def _observe_collaboration_input(
+        self, interaction_id: str, clause_id: str, *, principal: object,
+        player_route: object,
+    ) -> tuple[CurrentOwnerObservation, PlayerRecord]:
+        """Observe a voluntary clause use without manufacturing an executable K.
+
+        Public account/route arguments are nominations only. The constructor-bound
+        adapter, native campaign route and every nominated Player supply authority.
+        This source conformance operation neither associates nor publishes input.
+        """
+        from .access_control import (
+            PrincipalPlayerRoute,
+            authorize_operation,
+            resolve_player,
+            resolve_principal,
+        )
+        from .runtime_execution import (
+            native_command_state,
+            validate_input_closure,
+            validate_input_interaction,
+            validate_retained_resolution,
+        )
+
+        if self._host._accepted_input_capability is None:
+            raise InputAuthorityUnavailable("accepted-input issuer is unavailable")
+        operation = _InputSourceOperation(self._host, self._host._begin_operation())
+        session = self.begin(operation.basis)
+        try:
+            interaction_ref = NativeOwnerRef("runtime.interaction", (interaction_id,))
+            observation = session.require((interaction_ref,))
+            interaction = self._input_payload(observation, interaction_ref)
+            acting = self._input_adapter_principal(interaction)
+            authority = self._input_current_authority_sources(operation, acting)
+            nominated = resolve_principal(principal)
+            if nominated != acting:
+                raise InputAuthorityUnavailable("caller principal differs from trusted current principal")
+            if authority["mode"] != "multiplayer":
+                # The collaboration contributor contract requires an actual Player;
+                # creator input remains valid, but cannot fabricate participation.
+                raise InputAuthorityUnavailable("collaboration requires current multiplayer participation")
+            route = player_route if isinstance(player_route, PrincipalPlayerRoute) else PrincipalPlayerRoute.from_mapping(player_route)
+            if _operation_digest(route.as_mapping()) != _operation_digest(authority["route"]):
+                raise InputAuthorityUnavailable("caller route differs from complete native account route")
+            state = validate_input_interaction(campaign_id=self._host._campaign_id, interaction=interaction)
+            if "intent_plan_id" not in state:
+                raise InputAuthorityUnavailable("input has no materialized collaboration clause")
+            refs = {interaction_ref,
+                NativeOwnerRef("runtime.message", (state["input_message_id"],)),
+                NativeOwnerRef("runtime.intent_plan", (state["intent_plan_id"],))}
+            for entry in authority["route"]["entries"]:
+                refs.update(NativeOwnerRef("world.player", (identity,)) for identity in entry["candidate_player_ids"])
+            reference = state.get("accepted_resume_ref")
+            if reference is not None:
+                refs.add(NativeOwnerRef("runtime.resolution", (reference["resolution_id"],)))
+            observation = session.require(tuple(refs))
+            if reference is not None:
+                observation, _checked = self._observe_retained_resolution_sources(session, observation,
+                    {reference["resolution_id"]: state["response_target"]["root_command_id"]})
+                root_id = state["response_target"]["root_command_id"]
+                root = native_command_state(self._input_payload(observation, NativeOwnerRef("runtime.command", (root_id,))),
+                    command_id=root_id, campaign_id=self._host._campaign_id)
+                if root["command_kind"] != "action":
+                    raise InputAuthorityUnavailable("response native action mapping is unavailable")
+            interaction = self._input_payload(observation, interaction_ref)
+            state = validate_input_interaction(campaign_id=self._host._campaign_id, interaction=interaction)
+            message = self._input_payload(observation, NativeOwnerRef("runtime.message", (state["input_message_id"],)))
+            plan = self._input_payload(observation, NativeOwnerRef("runtime.intent_plan", (state["intent_plan_id"],)))
+            segment = None
+            if reference is not None:
+                resolution = self._input_payload(observation, NativeOwnerRef("runtime.resolution", (reference["resolution_id"],)))
+                native = validate_retained_resolution(resolution_id=reference["resolution_id"], resolution=resolution)
+                if native.get("root_command_id") != state["response_target"]["root_command_id"]:
+                    raise InputAuthorityUnavailable("mixed response root differs")
+                matches = [item for item in native.get("segments", ()) if item.get("segment_id") == reference["segment_id"]]
+                if len(matches) != 1:
+                    raise InputAuthorityUnavailable("mixed response marker is missing or ambiguous")
+                segment = matches[0]
+            validate_input_closure(campaign_id=self._host._campaign_id, interaction=interaction,
+                message=message, plan=plan, accepted_response_segment=segment)
+            clauses = plan["state"]["clauses"]
+            matches = [clause for clause in clauses if clause["clause_id"] == clause_id]
+            if len(matches) != 1 or matches[0]["clause_kind"] != "intent":
+                raise InputAuthorityUnavailable("solicited response is not collaboration consent")
+            clause = matches[0]
+            if not clause.get("normalized_semantics") and not clause.get("material_exact_text_refs"):
+                raise InputAuthorityUnavailable("collaboration clause has no retained material meaning")
+            self._validate_input_player_route(observation, authority)
+            resolution = resolve_player(acting, authority["route"],
+                lambda identity: self._input_player_state(observation, identity), campaign_id=self._host._campaign_id)
+            decision = authorize_operation(acting, resolution, operation="gameplay", campaign_id=self._host._campaign_id)
+            if not decision.authorized or resolution.player is None:
+                raise InputAuthorityUnavailable("active current Player purpose is not authorized")
+            if (acting.stable_account_id != state["accepted_input_basis"]["principal"]["stable_account_id"]
+                    or resolution.player.player_id != state.get("player_id")):
+                raise InputAuthorityUnavailable("current PLAYER executor has no native voluntary-input mapping")
+            fresh_acting = self._input_adapter_principal(interaction)
+            fresh_authority = self._input_current_authority_sources(operation, fresh_acting)
+            if (acting != fresh_acting or _operation_digest(authority) != _operation_digest(fresh_authority)
+                    or not session.revalidate(observation)):
+                raise InputAuthorityUnavailable("REVALIDATION_REQUIRED: collaboration input source moved")
+            return observation, resolution.player
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            if isinstance(exc, RuntimeHostError):
+                raise
+            raise InputAuthorityUnavailable("native collaboration input authority is unavailable") from exc
+
+    def _validate_input_handoff_sources(self, promise: object) -> None:
+        """Validate an already-retained same-domain closure, without issuing it.
+
+        Positive root membership plus exact forward native links protect the
+        finite input closure. A complete-page flag is never negative proof.
+        Cross-source cleanup protection is not established by a read session;
+        absent an admitted protection/freeze reader that case holds explicitly.
+        """
+        from .current_owner import CurrentOwnerSource
+        from .durability import is_authorized_handoff_promise
+        from .recovery import (
+            _hydrate_execution_result,
+            _hydrate_input_root_closure,
+            _root_mappings,
+        )
+        from .runtime_execution import (
+            _validate_action_resolution_binding,
+            accepted_input_origin,
+            command_input_fingerprint,
+            execution_result_identity,
+            input_native_state,
+            native_command_state,
+            validate_input_interaction,
+            validate_retained_resolution,
+        )
+
+        if not is_authorized_handoff_promise(promise) or promise.campaign_id != self._host._campaign_id:
+            raise RuntimeHostError("input handoff promise differs from selected campaign")
+        basis = self._host._begin_operation()
+        session = self.begin(basis)
+
+        def expand(refs: set[NativeOwnerRef]) -> CurrentOwnerObservation:
+            prior = session.observation
+            fresh = session.require(tuple(refs))
+            if prior is not None and any(fresh.require(ref) != prior.require(ref) for ref in prior.key_union):
+                raise RuntimeHostError("REVALIDATION_REQUIRED: input closure moved during discovery")
+            return fresh
+
+        root_path = "STATE/RUNTIME/RECOVERY_ROOTS/ROUTING.yaml"
+        try:
+            page = self._host._repository.read_exact_path(basis.pinned_campaign, root_path)
+            if (not isinstance(page, Mapping) or type(page.get("schema_version")) is not int
+                    or set(page) != {"schema_version", "campaign_id", "complete", "roots"}):
+                raise RuntimeHostError("input protection root page is not a strict native carrier")
+            roots = _root_mappings(page, self._host._campaign_id)
+            owner_ref = NativeOwnerRef(promise.owner_kind, (promise.owner_id,))
+            observation = expand({owner_ref})
+            owner = self._input_payload(observation, owner_ref)
+            if not promise.validate(campaign_id=promise.campaign_id, owner_kind=promise.owner_kind,
+                                    owner_id=promise.owner_id, native_owner=owner):
+                raise RuntimeHostError("input handoff promise no longer matches selected native owner")
+            refs = {owner_ref}
+            if promise.owner_kind == "runtime.intent_plan":
+                plan_state = input_native_state(owner, "runtime.intent_plan")
+                interaction_ref = NativeOwnerRef("runtime.interaction", (plan_state["interaction_id"],))
+                refs.add(interaction_ref)
+                observation = expand(refs)
+                interaction = self._input_payload(observation, interaction_ref)
+            else:
+                interaction_ref = owner_ref
+                interaction = owner
+            state = validate_input_interaction(campaign_id=promise.campaign_id, interaction=interaction)
+            if state["accepted_input_basis"]["repository_identity"] != self._host._repository.repository_identity():
+                raise RuntimeHostError("retained input belongs to a different repository")
+            refs.add(NativeOwnerRef("runtime.message", (state["input_message_id"],)))
+            if "intent_plan_id" in state:
+                refs.add(NativeOwnerRef("runtime.intent_plan", (state["intent_plan_id"],)))
+            target = state.get("response_target")
+            if target is not None:
+                refs.add(NativeOwnerRef("runtime.resolution", (target["resolution_id"],)))
+                refs.add(NativeOwnerRef("runtime.command", (target["root_command_id"],)))
+                if "accepted_resume_ref" not in state:
+                    refs.add(NativeOwnerRef("runtime.continuation", (target["continuation_id"],)))
+            observation = expand(refs)
+            plan = None
+            native_basis_revisions: dict[NativeOwnerRef, str] = {}
+            extra_ordering_refs: set[NativeOwnerRef] = set()
+            extra_clauses: dict[str, Mapping[str, object]] = {}
+            if "intent_plan_id" in state:
+                plan = self._input_payload(observation, NativeOwnerRef("runtime.intent_plan", (state["intent_plan_id"],)))
+                for clause in input_native_state(plan, "runtime.intent_plan")["clauses"]:
+                    if "command_id" in clause:
+                        refs.add(NativeOwnerRef("runtime.command", (clause["command_id"],)))
+                        extra_clauses[clause["command_id"]] = clause
+                    for dependency in clause.get("native_basis_refs", ()):
+                        dependency_ref = NativeOwnerRef(dependency["family"], (dependency["id"],))
+                        if "revision" not in dependency:
+                            raise RuntimeHostError("input native-basis source revision is unavailable")
+                        if (dependency_ref in native_basis_revisions
+                                and native_basis_revisions[dependency_ref] != dependency["revision"]):
+                            raise RuntimeHostError("input native-basis source revisions conflict")
+                        native_basis_revisions[dependency_ref] = dependency["revision"]
+                        refs.add(dependency_ref)
+                    if "ordering_resolution_id" in clause:
+                        extra_ordering_refs.add(NativeOwnerRef("runtime.resolution", (clause["ordering_resolution_id"],)))
+                observation = expand(refs)
+                for clause in input_native_state(plan, "runtime.intent_plan")["clauses"]:
+                    if clause.get("material_exact_text_refs"):
+                        raise RuntimeHostError("input exact natural-owner protection reader is unavailable")
+            # Each populated extra K has its own execution owner. It never
+            # inherits the earlier response root's result or protection proof.
+            resolution_roots = {} if target is None else {target["resolution_id"]: target["root_command_id"]}
+            extra_commands: dict[str, Mapping[str, object]] = {}
+            direct_children: dict[str, Mapping[str, object]] = {}
+            for identity in extra_clauses:
+                command = native_command_state(self._input_payload(observation,
+                    NativeOwnerRef("runtime.command", (identity,))), command_id=identity, campaign_id=promise.campaign_id)
+                extra_commands[identity] = command
+                if command["command_kind"] == "action":
+                    resolution_roots[command["root_resolution_id"]] = identity
+                else:
+                    for segment in command.get("direct_transition_segments", ()):
+                        if "continuation_id" in segment:
+                            raise RuntimeHostError("direct segment Continuation source contract is unavailable")
+                        refs.update(NativeOwnerRef("runtime.mechanical_event", (event_id,)) for event_id in segment["event_ids"])
+                    invocations = list(command["pending_child_invocations"]) + [child
+                        for segment in command.get("direct_transition_segments", ()) for child in segment["pending_child_invocations"]]
+                    for child in invocations:
+                        if "child_resolution_id" not in child:
+                            raise RuntimeHostError("direct child requires its bounded native result mapping")
+                        child_id = child["child_resolution_id"]
+                        if child_id in direct_children and direct_children[child_id] != child:
+                            raise RuntimeHostError("direct child native cause is ambiguous")
+                        direct_children[child_id] = child
+                        resolution_roots[child_id] = identity
+            observation = expand(refs)
+            observation, checked_resolutions = self._observe_retained_resolution_sources(session, observation, resolution_roots)
+            refs.update(observation.key_union)
+            action_children = {child["child_resolution_id"]: command for command in extra_commands.values()
+                if command["command_kind"] == "action" for child in command["pending_child_invocations"]
+                if "child_resolution_id" in child}
+            remaining_children = {identity: command["command_id"] for identity, command in action_children.items()
+                if NativeOwnerRef("runtime.resolution", (identity,)) not in checked_resolutions}
+            if remaining_children:
+                observation, checked_children = self._observe_retained_resolution_sources(session, observation, remaining_children)
+                checked_resolutions.update(checked_children)
+                refs.update(observation.key_union)
+            for identity, command in action_children.items():
+                if identity == command["root_resolution_id"]:
+                    raise RuntimeHostError("action mandatory child cannot be its root Resolution")
+                _validate_action_resolution_binding(command, identity, validate_retained_resolution(resolution_id=identity,
+                    resolution=self._input_payload(observation, NativeOwnerRef("runtime.resolution", (identity,)))))
+            for command in extra_commands.values():
+                from .recovery import _validate_catalog_closure
+
+                if not callable(getattr(self._host._repository, "resolve_recovery_catalog_context", None)):
+                    raise RuntimeHostError("extra command accepted interpretation source is unavailable")
+                bound = self._observe_command_input(command, required_owner_refs=tuple(refs), current_authority=False)
+                if any(bound.require(ref) != observation.require(ref) for ref in observation.key_union):
+                    raise RuntimeHostError("REVALIDATION_REQUIRED: extra command interpretation sources moved")
+                refs.update(bound.key_union)
+                observation = expand(refs)
+                _validate_catalog_closure(self._host._repository, basis.pinned_campaign, command,
+                    command["catalog_context"], input_observation=bound)
+            # The response root cannot route extra units. A retained I or the
+            # exact complete same-I P is the bounded survivor for *all* units,
+            # including nonexecutables/held clauses with no K or native use yet.
+            protected = {(root["owner_kind"], root["owner_id"]) for root in roots}
+            if (("runtime.interaction", interaction["id"]) not in protected
+                    and (plan is None or ("runtime.intent_plan", plan["id"]) not in protected)):
+                raise RuntimeHostError("input lacks retained I/complete same-I Plan root protection")
+            if ("runtime.interaction", interaction["id"]) not in protected:
+                from .recovery_roots import validate_unresolved_input_owner
+
+                validate_unresolved_input_owner(promise.campaign_id, "runtime.intent_plan", plan)
+            records = {}
+            if extra_ordering_refs - checked_resolutions:
+                raise RuntimeHostError("input additional ordering protection closure is unavailable")
+            for ref in observation.key_union:
+                read = observation.require(ref)
+                payload = self._input_payload(observation, ref)
+                if isinstance(payload.get("state"), Mapping):
+                    for field, value in payload["state"].items():
+                        if field in payload and _operation_digest(payload[field]) != _operation_digest(value):
+                            raise RuntimeHostError("input retained envelope/state projections conflict")
+                if payload.get("campaign_id", promise.campaign_id) != promise.campaign_id:
+                    raise RuntimeHostError("input retained dependency belongs to another campaign")
+                if ref in native_basis_revisions and payload.get("revision") != native_basis_revisions[ref]:
+                    raise RuntimeHostError("input native-basis source revision differs")
+                if (read.source is not CurrentOwnerSource.PINNED_CAMPAIGN
+                        or read.source_basis != basis.pinned_campaign.revision):
+                    raise RuntimeHostError("input cross-source protection/freeze is unavailable")
+                records[route_native_record(ref.family_key, ref.identity).relative_path] = payload
+            # Use the existing cold reader on the observed union, never reload a
+            # missing selected owner from older campaign bytes or a transcript.
+            class ObservedSources:
+                def read_exact_path(self, pin: object, path: str) -> object:
+                    if pin != basis.pinned_campaign:
+                        raise RuntimeHostError("input retention source pin differs")
+                    native = records[path]
+                    if native.get("kind") == "runtime.mechanical_event" and "state" in native:
+                        return {**native["state"], "kind": native["kind"], "id": native["id"]}
+                    return native
+
+            _hydrate_input_root_closure(ObservedSources(), basis.pinned_campaign,
+                self._input_payload(observation, owner_ref))
+            for identity, command in extra_commands.items():
+                prior_segment = None
+                if "accepted_resume_ref" in state:
+                    reference = state["accepted_resume_ref"]
+                    prior = validate_retained_resolution(resolution_id=reference["resolution_id"],
+                        resolution=self._input_payload(observation, NativeOwnerRef("runtime.resolution", (reference["resolution_id"],))))
+                    prior_segment = next(segment for segment in prior["segments"] if segment["segment_id"] == reference["segment_id"])
+                origin = accepted_input_origin(campaign_id=promise.campaign_id, interaction=interaction,
+                    message=self._input_payload(observation, NativeOwnerRef("runtime.message", (state["input_message_id"],))),
+                    plan=plan, clause_id=command["clause_id"], accepted_response_segment=prior_segment)
+                if command["input_fingerprint"] != command_input_fingerprint(command, origin=origin):
+                    raise RuntimeHostError("retained extra command interpretation/origin fingerprint differs")
+                resolution = None
+                if command["command_kind"] == "action":
+                    resolution = validate_retained_resolution(resolution_id=command["root_resolution_id"],
+                        resolution=self._input_payload(observation, NativeOwnerRef("runtime.resolution", (command["root_resolution_id"],))))
+                    _validate_action_resolution_binding(command, command["root_resolution_id"], resolution)
+                    if not resolution["segments"]:
+                        raise RuntimeHostError("extra action native result closure is unavailable")
+                result = _hydrate_execution_result(ObservedSources(), basis.pinned_campaign, command, resolution)
+                if result is not None:
+                    execution_result_identity(command, result)
+                clause = extra_clauses[identity]
+                if clause["execution_state"] == "intent.executed" and (command["disposition"] != "command.settled"
+                        or result is None or result["status"] != "COMPLETED"):
+                    raise RuntimeHostError("executed extra unit lacks actual completed native closure")
+                if command["disposition"] == "command.settled" and (result is None
+                        or result["status"] not in {"COMPLETED", "REJECTED", "ABORTED", "FAILED"}
+                        or command["pending_child_invocations"]):
+                    raise RuntimeHostError("settled extra command lacks terminal native closure")
+                if command["disposition"] == "command.settled":
+                    native_descendants = [validate_retained_resolution(resolution_id=ref.identity[0],
+                        resolution=self._input_payload(observation, ref)) for ref in checked_resolutions]
+                    fixed_child_causes = {descendant.get("causal_invocation_key") for descendant in native_descendants
+                        if descendant["root_command_id"] == identity}
+                    for ref in checked_resolutions:
+                        descendant = validate_retained_resolution(resolution_id=ref.identity[0],
+                            resolution=self._input_payload(observation, ref))
+                        if descendant["root_command_id"] == identity and descendant["status"] not in {
+                                "COMPLETED", "REJECTED", "ABORTED", "FAILED"}:
+                            raise RuntimeHostError("settled extra command retains unfinished native descendants")
+                        if descendant["root_command_id"] == identity and any(
+                                child["firing_key"] not in fixed_child_causes for segment in descendant["segments"]
+                                for child in segment["pending_child_invocations"]):
+                            raise RuntimeHostError("settled extra command has an undiscovered mandatory native result")
+            for child_id, cause in direct_children.items():
+                child = validate_retained_resolution(resolution_id=child_id,
+                    resolution=self._input_payload(observation, NativeOwnerRef("runtime.resolution", (child_id,))))
+                if ("initiating_command_id" in child or child.get("causal_invocation_key") != cause["firing_key"]
+                        or child["activity_id"] != cause["activity_id"] or child["root_command_id"] != cause["root_command_id"]):
+                    raise RuntimeHostError("direct mandatory child lacks its exact native cause")
+            for ref in observation.key_union:
+                if ref.family_key == "runtime.command":
+                    command = native_command_state(self._input_payload(observation, ref),
+                        command_id=ref.identity[0], campaign_id=promise.campaign_id)
+                    if target is not None and ref.identity[0] == target["root_command_id"]:
+                        if command["command_kind"] != "action":
+                            raise RuntimeHostError("response native action mapping is unavailable")
+                        _validate_action_resolution_binding(command, target["resolution_id"], validate_retained_resolution(
+                            resolution_id=target["resolution_id"], resolution=self._input_payload(observation,
+                                NativeOwnerRef("runtime.resolution", (target["resolution_id"],)))))
+            if not promise.validate(campaign_id=promise.campaign_id, owner_kind=promise.owner_kind,
+                                    owner_id=promise.owner_id,
+                                    native_owner=self._input_payload(observation, owner_ref)):
+                raise RuntimeHostError("REVALIDATION_REQUIRED: input promise owner moved")
+            if (not session.revalidate(observation)
+                    or _operation_digest(page) != _operation_digest(
+                        self._host._repository.read_exact_path(basis.pinned_campaign, root_path))):
+                raise RuntimeHostError("REVALIDATION_REQUIRED: input retention sources moved")
+        except (AttributeError, KeyError, OSError, TypeError, ValueError) as exc:
+            if isinstance(exc, RuntimeHostError):
+                raise
+            raise RuntimeHostError("input retained content/protection closure is unavailable") from exc
 
     @staticmethod
     def _input_payload(observation: CurrentOwnerObservation, ref: NativeOwnerRef) -> Mapping[str, object]:

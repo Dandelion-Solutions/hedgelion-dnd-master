@@ -19,8 +19,8 @@ from typing import Final
 
 from .native_storage import route_native_record
 
-# framework_module_version: 1.0.6
-FRAMEWORK_MODULE_VERSION: Final = "1.0.6"
+# framework_module_version: 1.0.7
+FRAMEWORK_MODULE_VERSION: Final = "1.0.7"
 _SHA256: Final = re.compile(r"^[a-f0-9]{64}$")
 _ID: Final = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 _PROMISE_STATUSES: Final = frozenset(
@@ -697,3 +697,21 @@ def issue_durability_handoff_promise(
 
 def is_authorized_handoff_promise(value: object) -> bool:
     return isinstance(value, DurabilityHandoffPromise) and _ISSUED_HANDOFF_PROMISES.get(id(value)) is value
+
+
+def validate_input_handoff_sources(promise: DurabilityHandoffPromise, *, host: object) -> None:
+    """Check existing retained input sources; never acknowledge or establish SAVE.
+
+    The promise freezes routing obligations only. A bound Host must additionally
+    observe their actual content and existing same-domain root protection. This
+    read proof expires with its source window; native establishment remains the
+    writer's responsibility.
+    """
+    from .runtime_host import CurrentOwnerView, RuntimeHost
+
+    if not is_authorized_handoff_promise(promise):
+        raise DurabilityContractError("typed owner-issued input promise is required")
+    if (type(host) is not RuntimeHost or type(host._current_owner) is not CurrentOwnerView
+            or host._current_owner._host is not host):
+        raise DurabilityContractError("input retention requires the bound native Host")
+    host._current_owner._validate_input_handoff_sources(promise)

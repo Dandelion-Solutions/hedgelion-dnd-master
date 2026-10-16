@@ -2078,7 +2078,7 @@ class StoryUnitLayerTests(unittest.TestCase):
 
 class StoryT0MaterializationTests(unittest.TestCase):
     def test_native_semantic_event_has_its_exact_w02_operation_route(self) -> None:
-        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.6")
+        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.7")
         event = _semantic_event()
 
         operation = route_serialized_operation(
@@ -4666,7 +4666,7 @@ class StorySchemaTests(unittest.TestCase):
         self,
     ) -> None:
         self.assertEqual(story_module.FRAMEWORK_MODULE_VERSION, "1.0.8")
-        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.6")
+        self.assertEqual(DURABILITY_MODULE_VERSION, "1.0.7")
         self.assertEqual(FRAMEWORK_MODULE_VERSION, "1.0.7")
         schema_names = (
             "runtime-semantic-event-state.schema.json",

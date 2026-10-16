@@ -34,8 +34,8 @@ from .runtime_execution import (
     validate_input_resolution,
 )
 
-# framework_module_version: 1.0.7
-FRAMEWORK_MODULE_VERSION: Final = "1.0.7"
+# framework_module_version: 1.0.8
+FRAMEWORK_MODULE_VERSION: Final = "1.0.8"
 _REVISION = re.compile(r"^[a-f0-9]{40}(?:[a-f0-9]{24})?$")
 _NATIVE_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]*$")
 
@@ -901,7 +901,10 @@ def _validate_recovered_root_closures(
 ) -> None:
     for owner in owners:
         if owner.get("kind") in {"runtime.interaction", "runtime.intent_plan"}:
-            _hydrate_input_root_closure(repository, pinned, owner)
+            commands = _hydrate_input_root_closure(repository, pinned, owner)
+            for command in commands:
+                _validate_catalog_closure(repository, pinned, command, command["catalog_context"],
+                    input_observation=input_observation)
             continue
         if not _is_runtime_command_owner(owner):
             continue
@@ -959,8 +962,14 @@ def _validate_recovered_root_closures(
 
 def _hydrate_input_root_closure(
     repository: object, pinned: PinnedCampaign, owner: Mapping[str, object],
-) -> None:
+) -> tuple[Mapping[str, object], ...]:
     """Load exact native input links; no historical replay or current agency issue."""
+    from .runtime_execution import (
+        _validate_action_resolution_binding,
+        native_command_state,
+        validate_retained_resolution,
+    )
+
     try:
         if owner["kind"] == "runtime.intent_plan":
             plan = owner
@@ -1000,7 +1009,10 @@ def _hydrate_input_root_closure(
             current_resolution = _read_pinned_native_record(
                 repository, pinned, "runtime.resolution", (target["resolution_id"],), "input offer Resolution",
             )
-            if current_resolution.get("root_command_id") != target["root_command_id"]:
+            current_resolution_state = validate_retained_resolution(
+                resolution_id=target["resolution_id"], resolution=current_resolution,
+            )
+            if current_resolution_state.get("root_command_id") != target["root_command_id"]:
                 raise RecoveryFailure("input offer root command differs", code=RecoveryFailureCode.CORRUPT)
             continuation = _read_pinned_native_record(
                 repository, pinned, "runtime.continuation", (target["continuation_id"],), "input offer Continuation",
@@ -1015,7 +1027,7 @@ def _hydrate_input_root_closure(
             resolution = _read_pinned_native_record(
                 repository, pinned, "runtime.resolution", (reference["resolution_id"],), "input response Resolution",
             )
-            resolution_state = validate_input_resolution(
+            resolution_state = validate_retained_resolution(
                 resolution_id=reference["resolution_id"], resolution=resolution,
             )
             if resolution_state.get("root_command_id") != state["response_target"]["root_command_id"]:
@@ -1029,8 +1041,21 @@ def _hydrate_input_root_closure(
             segment = matches[0]
             if not isinstance(segment.get("resulting_execution_state"), str):
                 raise RecoveryFailure("input response result survivor is missing", code=RecoveryFailureCode.INCOMPLETE)
+        if "response_target" in state:
+            target = state["response_target"]
+            command = _read_pinned_native_record(repository, pinned, "runtime.command",
+                (target["root_command_id"],), "input response root command")
+            root = native_command_state(command, command_id=target["root_command_id"], campaign_id=pinned.campaign_id)
+            if root["command_kind"] != "action":
+                raise RecoveryFailure("response native action mapping is unavailable", code=RecoveryFailureCode.INCOMPLETE)
+            try:
+                _validate_action_resolution_binding(root, target["resolution_id"],
+                    resolution_state if "accepted_resume_ref" in state else current_resolution_state)
+            except CommandAcceptanceError as exc:
+                raise RecoveryFailure("input response native K/R binding differs", code=RecoveryFailureCode.CORRUPT) from exc
         validate_input_closure(campaign_id=pinned.campaign_id, interaction=interaction,
                                message=message, plan=plan, accepted_response_segment=segment)
+        commands = []
         if plan is not None:
             plan_state = input_native_state(plan, "runtime.intent_plan")
             for clause in plan_state["clauses"]:
@@ -1043,6 +1068,30 @@ def _hydrate_input_root_closure(
                 if (not isinstance(command_state, Mapping) or command_state.get("interaction_id") != interaction["id"]
                         or command_state.get("intent_plan_id") != plan["id"] or command_state.get("clause_id") != clause["clause_id"]):
                     raise RecoveryFailure("input populated clause command reciprocity differs", code=RecoveryFailureCode.CORRUPT)
+                from .runtime_execution import (
+                    accepted_input_origin,
+                    command_input_fingerprint,
+                    execution_result_identity,
+                )
+
+                command_state = native_command_state(command, command_id=clause["command_id"], campaign_id=pinned.campaign_id)
+                origin = accepted_input_origin(campaign_id=pinned.campaign_id, interaction=interaction,
+                    message=message, plan=plan, clause_id=clause["clause_id"], accepted_response_segment=segment)
+                if command_state["input_fingerprint"] != command_input_fingerprint(command_state, origin=origin):
+                    raise RecoveryFailure("input command accepted interpretation differs", code=RecoveryFailureCode.CORRUPT)
+                native_resolution = None
+                if command_state["command_kind"] == "action":
+                    result_id = command_state["root_resolution_id"]
+                    native_resolution = validate_retained_resolution(resolution_id=result_id,
+                        resolution=_read_pinned_native_record(repository, pinned, "runtime.resolution", (result_id,), "extra action result"))
+                result = _hydrate_execution_result(repository, pinned, command_state, native_resolution)
+                if result is not None:
+                    execution_result_identity(command_state, result)
+                if clause["execution_state"] == "intent.executed" and (result is None or result["status"] != "COMPLETED"
+                        or command_state["disposition"] != "command.settled"):
+                    raise RecoveryFailure("executed input unit lacks native completion", code=RecoveryFailureCode.INCOMPLETE)
+                commands.append(command_state)
+        return tuple(commands)
     except CommandAcceptanceError as exc:
         raise RecoveryFailure(f"input root closure is incomplete: {exc}", code=RecoveryFailureCode.INCOMPLETE) from exc
 
@@ -1124,6 +1173,110 @@ def _validate_pinned_native_identity(
             )
 
 
+def _hydrate_required_execution_children(repository: object, pinned: PinnedCampaign,
+        command: Mapping[str, object], owner: Mapping[str, object], *, owner_id: str,
+        seen: set[str] | None = None) -> None:
+    """Bounded cold-source closure for declared native results, never replay."""
+    from .catalog_runtime import canonical_json
+    from .native_storage import validate_loaded_identity
+    from .recovery_roots import _validate_native_owner
+    from .runtime_execution import (
+        _input_wire,
+        _pending_offer,
+        _validate_ordering_owner_schema,
+        resume_input_fingerprint,
+        validate_retained_resolution,
+    )
+
+    seen = set() if seen is None else seen
+    command_id = command["command_id"]
+    segments = owner.get("segments", owner.get("direct_transition_segments", ()))
+    invocations = list(owner.get("pending_child_invocations", ())) + [child for segment in segments
+        for child in segment["pending_child_invocations"]]
+    if owner_id == command.get("root_resolution_id"):
+        invocations += list(command["pending_child_invocations"])
+    child_ids = set(owner.get("child_resolution_ids", ())) | {
+        child["child_resolution_id"] for child in invocations if "child_resolution_id" in child}
+    for segment in segments:
+        output = segment.get("continuation_id")
+        if output is None or output == owner.get("continuation_id"):
+            continue
+        consumers = [later for later in segments if later["segment_sequence"] > segment["segment_sequence"]
+            and later.get("accepted_resume_input", {}).get("target", {}).get("continuation_id") == output]
+        if len(consumers) != 1:
+            raise RecoveryFailure("old Continuation lacks a retained consume cause", code=RecoveryFailureCode.INCOMPLETE)
+        consume = consumers[0]
+        marker = consume["accepted_resume_input"]
+        interaction = _read_pinned_native_record(repository, pinned, "runtime.interaction",
+            (marker["response_interaction_id"],), "retired Continuation input")
+        message = _read_pinned_native_record(repository, pinned, "runtime.message",
+            (marker["response_message_id"],), "retired Continuation input Message")
+        source = validate_input_interaction(campaign_id=pinned.campaign_id, interaction=interaction)
+        if (source.get("accepted_resume_ref") != {"resolution_id": owner_id, "segment_id": consume["segment_id"]}
+                or canonical_json(source.get("response_target")) != canonical_json(marker["target"])
+                or canonical_json(source.get("response_selection")) != canonical_json(marker["selection"])
+                or message.get("state", message).get("payload_state") != "message.exact_retained"
+                or resume_input_fingerprint(interaction=interaction, message=message) != marker["resume_fingerprint"]):
+            raise RecoveryFailure("retired Continuation provenance differs", code=RecoveryFailureCode.CORRUPT)
+    for child_id in sorted(child_ids):
+        if child_id in seen:
+            raise RecoveryFailure("native child source graph is cyclic", code=RecoveryFailureCode.CORRUPT)
+        seen.add(child_id)
+        child = validate_retained_resolution(resolution_id=child_id,
+            resolution=_read_pinned_native_record(repository, pinned, "runtime.resolution", (child_id,), "mandatory child result"))
+        causes = {canonical_json({**cause, "child_resolution_id": child_id}) for cause in invocations
+            if cause.get("child_resolution_id", child_id) == child_id
+            and cause["firing_key"] == child.get("causal_invocation_key")
+            and cause["activity_id"] == child["activity_id"] and cause["root_command_id"] == command_id
+            and ("procedure_id" not in cause or cause["procedure_id"] == child.get("procedure_id"))}
+        if (len(causes) != 1 or child["root_command_id"] != command_id or "initiating_command_id" in child
+                or child["status"] == "COMPLETED" and not child["segments"]):
+            raise RecoveryFailure("mandatory child native cause/result differs", code=RecoveryFailureCode.INCOMPLETE)
+        if command["disposition"] == "command.settled" and child["status"] not in {"COMPLETED", "REJECTED", "ABORTED", "FAILED"}:
+            raise RecoveryFailure("settled command retains pending child result", code=RecoveryFailureCode.INCOMPLETE)
+        for segment in child["segments"]:
+            for event_id in segment["event_ids"]:
+                event = _read_pinned_native_record(repository, pinned, "runtime.mechanical_event", (event_id,), "mandatory child event")
+                if "kind" in event or "id" in event or "state" in event:
+                    try:
+                        validate_loaded_identity("runtime.mechanical_event", (event_id,), event)
+                    except NativeStorageError as exc:
+                        raise RecoveryFailure("child event native envelope identity differs", code=RecoveryFailureCode.CORRUPT) from exc
+                state = event.get("state", event)
+                if "state" in event:
+                    for key, value in state.items():
+                        if key in event and canonical_json(event[key]) != canonical_json(value):
+                            raise RecoveryFailure("child event envelope/state conflicts", code=RecoveryFailureCode.CORRUPT)
+                wire = state if "state" in event else {key: value for key, value in state.items()
+                    if key not in {"kind", "id", "campaign_id", "revision", "event_id"}}
+                _input_wire("runtime-mechanical-event-state", wire)
+                _validate_event_identity({"event_id": event_id}, child_id, segment, segment["segment_id"], state)
+                if state["root_command_id"] != command_id or state["causal_ref"] != child_id:
+                    raise RecoveryFailure("child event native cause differs", code=RecoveryFailureCode.CORRUPT)
+        _hydrate_required_execution_children(repository, pinned, command, child, owner_id=child_id, seen=seen)
+    if "continuation_id" in owner:
+        identity = owner["continuation_id"]
+        native = _read_pinned_native_record(repository, pinned, "runtime.continuation", (identity,), "current execution suspension")
+        if "state" in native:
+            for key, value in native["state"].items():
+                if key in native and canonical_json(native[key]) != canonical_json(value):
+                    raise RecoveryFailure("Continuation envelope/state conflicts", code=RecoveryFailureCode.CORRUPT)
+            native = {**native["state"], **{key: native[key] for key in ("kind", "id", "campaign_id", "revision") if key in native}}
+        _validate_ordering_owner_schema("runtime.continuation", native)
+        if (native["root_command_id"] != command_id or native["resolution_id"] != owner_id
+                or native.get("procedure_id") != owner.get("procedure_id")
+                or not set(native["expected_child_resolution_ids"]) <= child_ids):
+            raise RecoveryFailure("current suspension native forward links differ", code=RecoveryFailureCode.CORRUPT)
+        if owner.get("status") in {"AWAITING_CHOICE", "AWAITING_REACTION"}:
+            kind, _offer, _responder = _pending_offer(native.get("pending_response"),
+                resolution_id=native["resolution_id"], continuation_generation=native["generation"])
+            if kind != ("choice" if owner["status"] == "AWAITING_CHOICE" else "reaction"):
+                raise RecoveryFailure("current suspension offer differs", code=RecoveryFailureCode.CORRUPT)
+    if "procedure_id" in owner:
+        _validate_native_owner("runtime.procedure", _read_pinned_native_record(repository, pinned,
+            "runtime.procedure", (owner["procedure_id"],), "execution Procedure"))
+
+
 def _hydrate_execution_result(
     repository: object,
     pinned: PinnedCampaign,
@@ -1133,6 +1286,8 @@ def _hydrate_execution_result(
     if accepted_command.get("command_kind") == "transition":
         if resolution is not None or "root_resolution_id" in accepted_command:
             raise RecoveryFailure("direct root cannot be a Resolution", code=RecoveryFailureCode.CORRUPT)
+        _hydrate_required_execution_children(repository, pinned, accepted_command, accepted_command,
+            owner_id=accepted_command["command_id"])
         command_id = _string_or_failure(accepted_command.get("command_id"), "command_id")
         segments = accepted_command.get("direct_transition_segments", [])
         if not isinstance(segments, list):
@@ -1189,6 +1344,8 @@ def _hydrate_execution_result(
         return result
     if accepted_command.get("command_kind") != "action" or not isinstance(resolution, Mapping):
         raise RecoveryFailure("execution owner variant is incomplete", code=RecoveryFailureCode.INCOMPLETE)
+    _hydrate_required_execution_children(repository, pinned, accepted_command, resolution,
+        owner_id=accepted_command["root_resolution_id"])
     command_id = _string_or_failure(accepted_command.get("command_id"), "accepted command_id")
     input_fingerprint = _digest_or_failure(
         accepted_command.get("input_fingerprint"), "accepted input_fingerprint"

@@ -58,8 +58,8 @@ if TYPE_CHECKING:
     from .runtime_host import RuntimeHost, _OperationBasis
 
 
-# framework_module_version: 1.0.21
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.21"
+# framework_module_version: 1.0.22
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.22"
 COLLABORATION_SCHEMA_VERSION: Final[int] = 3
 COLLABORATION_FRONTIER_SCHEMA_VERSION: Final[int] = 1
 COLLABORATION_CLOSED_BASIS_SCHEMA_VERSION: Final[int] = 1
@@ -3008,6 +3008,11 @@ def associate_input(
     """
     if not isinstance(obligation, CollaborationObligation):
         raise CollaborationAdmissionError("owner-derived obligation is required")
+    from .runtime_host import CurrentOwnerView, RuntimeHost
+
+    if (type(host) is not RuntimeHost or type(host._current_owner) is not CurrentOwnerView
+            or host._current_owner._host is not host):
+        raise CollaborationAdmissionError("bound runtime host is required")
     identity = (
         _id(interaction_id, "input interaction_id"),
         _id(clause_id, "input clause_id"),
@@ -3027,30 +3032,35 @@ def associate_input(
         raise CollaborationAdmissionError(
             "input targets a non-current collaboration generation"
         )
-    if generation is not None and generation != current.generation:
+    if generation is not None and (type(generation) is not int or generation != current.generation):
         raise CollaborationAdmissionError(
             "input targets a stale collaboration generation"
         )
     if current.lifecycle != "OPEN":
         raise CollaborationAdmissionError("only an open obligation accepts input")
     _revalidate_obligation_native_basis(current, host, basis=basis)
-    current_player, current_route_refs = _resolve_join_player(
-        host,
-        basis,
-        principal=principal,
-        player_route=player_route,
-    )
+    from .current_owner import NativeOwnerRef
+    from .runtime_host import InputAuthorityUnavailable
+
+    try:
+        observation, current_player = host._current_owner._observe_collaboration_input(
+            interaction_id, clause_id, principal=principal, player_route=player_route,
+        )
+    except InputAuthorityUnavailable as exc:
+        raise CollaborationAdmissionError(str(exc), failure_code="AUTHORITY_UNAVAILABLE") from exc
+    player_owner = host._current_owner._input_payload(observation,
+        NativeOwnerRef("world.player", (current_player.player_id,)))
+    current_route_refs = _player_route_refs(player_owner["state"], "current PLAYER")
     if (current.obligation_id, current.generation) not in current_route_refs:
         raise CollaborationAdmissionError(
             "current PLAYER collaboration route does not carry the obligation"
         )
-    interaction = _load_interaction(host, basis, interaction_id)
-    plan = _load_plan(
-        host,
-        basis,
-        _id(interaction["intent_plan_id"], "input intent_plan_id"),
-        interaction_id,
-    )
+    interaction_owner = host._current_owner._input_payload(observation,
+        NativeOwnerRef("runtime.interaction", (interaction_id,)))
+    interaction = {**interaction_owner, **interaction_owner["state"]}
+    plan_owner = host._current_owner._input_payload(observation,
+        NativeOwnerRef("runtime.intent_plan", (interaction["intent_plan_id"],)))
+    plan = {**plan_owner, **plan_owner["state"]}
     clause = _load_clause(plan, clause_id)
     if interaction.get("player_id") != current_player.player_id:
         raise CollaborationAdmissionError(
@@ -3077,6 +3087,22 @@ def associate_input(
         raise CollaborationAdmissionError(
             "collaboration input semantic class is incompatible with obligation"
         )
+    for field, expected in (("purpose", current.purpose), ("dependency_scope", current.dependency_scope)):
+        if field in clause and _thaw(clause[field]) != _thaw(expected):
+            raise CollaborationAdmissionError("input purpose/scope is incompatible with obligation")
+    if input_semantic_class == "ACTIONABLE_INTENT" and (
+        "command_id" in clause or clause["execution_state"] != "intent.pending"
+    ):
+        raise CollaborationAdmissionError("collaboration-held actionable input must remain pre-command")
+    try:
+        fresh, fresh_player = host._current_owner._observe_collaboration_input(
+            interaction_id, clause_id, principal=principal, player_route=player_route,
+        )
+    except InputAuthorityUnavailable as exc:
+        raise CollaborationAdmissionError(str(exc), failure_code="AUTHORITY_UNAVAILABLE") from exc
+    if fresh.observation_fingerprint != observation.observation_fingerprint or fresh_player != current_player:
+        raise CollaborationAdmissionError("REVALIDATION_REQUIRED: collaboration input source moved")
+    _revalidate_obligation_native_basis(current, host, basis=basis)
     if identity in current.accepted_input_uses:
         existing_contributor = dict(current.accepted_input_contributors)[identity]
         if existing_contributor != participant:

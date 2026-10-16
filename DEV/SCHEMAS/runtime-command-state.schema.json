@@ -25,7 +25,7 @@
     "root_resolution_id": {"type": "string", "minLength": 1},
     "transition_request": {"$ref": "https://hedgelion.invalid/schemas/transition-request.schema.json"},
     "transition_binding": {"$ref": "#/$defs/transitionBinding"},
-    "direct_transition_segments": {"type": "array", "minItems": 1, "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json"}},
+    "direct_transition_segments": {"type": "array", "minItems": 1, "items": {"$ref": "https://hedgelion.invalid/schemas/execution-segment.schema.json", "not": {"required": ["accepted_resume_input"]}}},
     "direct_transition_receipt": {"$ref": "https://hedgelion.invalid/schemas/resolution-receipt.schema.json"},
     "pending_child_invocations": {"type": "array", "items": {"$ref": "https://hedgelion.invalid/schemas/pending-child-invocation.schema.json"}},
     "interpreter_result": {"$ref": "https://hedgelion.invalid/schemas/interpreter-result.schema.json"},

@@ -36,8 +36,8 @@ from .policy_basis import (
 )
 from .structural_contracts import StructuralContractError, validate_contract
 
-# framework_module_version: 1.0.10
-FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.10"
+# framework_module_version: 1.0.11
+FRAMEWORK_MODULE_VERSION: Final[str] = "1.0.11"
 RUNTIME_COMMAND_SCHEMA_VERSION: Final = 4
 INTERPRETER_RESULT_FINGERPRINT_GENERATION: Final = 1
 RUNTIME_COMMAND_INPUT_FINGERPRINT_GENERATION: Final = 3
@@ -79,6 +79,8 @@ COMMAND_STATE_FIELDS: Final = frozenset(
 )
 _INTERPRETER_RESULT_DOMAIN: Final = b"HDM_INTERPRETER_RESULT/1\n"
 _RUNTIME_COMMAND_INPUT_DOMAIN: Final = b"HDM_RUNTIME_COMMAND_INPUT/3\n"
+RESUME_INPUT_FINGERPRINT_GENERATION: Final = 1
+_ACCEPTED_RESUME_INPUT_DOMAIN: Final = b"HDM_ACCEPTED_RESUME_INPUT/1\n"
 _SHA256_HEX: Final = frozenset("0123456789abcdef")
 
 
@@ -307,15 +309,9 @@ def validate_input_interaction(*, campaign_id: str, interaction: Mapping[str, ob
     return state
 
 
-def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object],
-                           message: Mapping[str, object], plan: Mapping[str, object] | None,
-                           accepted_response_segment: Mapping[str, object] | None) -> None:
-    """Validate deterministic native source closure, never authenticated authority.
-
-    A structurally matching retained marker is necessary, not proof of a native
-    consume edge. Protected acceptance must separately establish native issuance.
-    """
-    state = validate_input_interaction(campaign_id=campaign_id, interaction=interaction)
+def _validate_input_message(*, campaign_id: str, interaction: Mapping[str, object],
+                            state: Mapping[str, object], message: Mapping[str, object]) -> Mapping[str, object]:
+    """Validate I/M representation independently of later P/response progression."""
     message_state = input_native_state(message, "runtime.message")
     _input_campaign_projection(message, campaign_id)
     _input_wire("runtime-message-state", message_state)
@@ -339,8 +335,8 @@ def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object
         if sha256(text.encode("utf-8")) != digest:
             raise CommandAcceptanceError("input retained content digest differs")
     elif payload_state == "message.compacted":
-        if "exact_text" in message_state or plan is None:
-            raise CommandAcceptanceError("input compacted content cannot supply unplanned meaning")
+        if "exact_text" in message_state:
+            raise CommandAcceptanceError("input compacted content forbids exact_text")
     else:
         raise CommandAcceptanceError("input Message payload state is unsupported")
     for field in ("source_domain_ref",):
@@ -350,6 +346,47 @@ def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object
         refs = message_state["semantic_event_refs"]
         if not isinstance(refs, (tuple, list)) or len(refs) != len({_input_id(item) for item in refs}):
             raise CommandAcceptanceError("input semantic refs are malformed or duplicate")
+    return message_state
+
+
+def resume_input_fingerprint(*, interaction: Mapping[str, object], message: Mapping[str, object]) -> str:
+    """Codec1 over fixed accepted response input, not an acceptance/consume proof.
+
+    Phase, P/C/K and new outputs are deliberately excluded. The complete native
+    I/M types and representation are checked before canonical serialization.
+    """
+    native = input_native_state(interaction, "runtime.interaction")
+    state = validate_input_interaction(campaign_id=native.get("campaign_id"), interaction=interaction)
+    if state["input_kind"] not in {"response", "response_and_intent"}:
+        raise CommandAcceptanceError("resume fingerprint requires response input")
+    _validate_input_message(campaign_id=state["campaign_id"], interaction=interaction, state=state, message=message)
+    material = {"response_interaction_id": interaction["id"], "response_message_id": message["id"],
+                "input_kind": state["input_kind"], "accepted_input_basis": _thaw(state["accepted_input_basis"]),
+                "target": _thaw(state["response_target"]), "selection": _thaw(state["response_selection"])}
+    try:
+        return sha256(_ACCEPTED_RESUME_INPUT_DOMAIN + canonical_json(material))
+    except (TypeError, ValueError, UnicodeError) as exc:
+        raise CommandAcceptanceError("resume input is not canonical JSON/UTF-8") from exc
+
+
+def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object],
+                           message: Mapping[str, object], plan: Mapping[str, object] | None,
+                           accepted_response_segment: Mapping[str, object] | None) -> None:
+    """Validate deterministic native source closure, never authenticated authority.
+
+    A structurally matching retained marker is necessary, not proof of a native
+    consume edge. Protected acceptance must separately establish native issuance.
+    """
+    state = validate_input_interaction(campaign_id=campaign_id, interaction=interaction)
+    message_state = _validate_input_message(campaign_id=campaign_id, interaction=interaction,
+                                           state=state, message=message)
+    payload_state = message_state["payload_state"]
+    if payload_state == "message.compacted":
+        # normalized_semantics is an open object, not an admitted sufficient
+        # content representation. No wrapper/key/value heuristic can certify it.
+        # Until an actual content-bearing natural survivor is observed through
+        # its owner, this input reader must retain exact M rather than guess.
+        raise CommandAcceptanceError("compacted input requires admitted content-bearing survivor evidence")
     reference = state.get("accepted_resume_ref")
     if reference is None:
         if accepted_response_segment is not None:
@@ -358,7 +395,7 @@ def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object
         segment = accepted_response_segment
         if not isinstance(segment, Mapping) or segment.get("segment_id") != reference["segment_id"]:
             raise CommandAcceptanceError("input exact accepted response segment is missing")
-        _input_wire("execution-segment", {key: value for key, value in segment.items() if key != "accepted_resume_input"})
+        _input_wire("execution-segment", segment)
         sequence = _input_integer(segment.get("segment_sequence"))
         if reference["segment_id"] != f'{reference["resolution_id"]}:segment:{sequence}' or segment.get("commit_state") != "committed":
             raise CommandAcceptanceError("input response segment identity/commit differs")
@@ -377,10 +414,7 @@ def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object
                 or canonical_json(marker["target"]) != canonical_json(state["response_target"])
                 or canonical_json(marker["selection"]) != canonical_json(state["response_selection"])):
             raise CommandAcceptanceError("input response marker source links differ")
-        payload = {"response_interaction_id": interaction["id"], "response_message_id": message["id"],
-                   "input_kind": state["input_kind"], "accepted_input_basis": basis,
-                   "target": state["response_target"], "selection": state["response_selection"]}
-        if _input_digest(marker["resume_fingerprint"]) != sha256(b"HDM_ACCEPTED_RESUME_INPUT/1\n" + canonical_json(payload)):
+        if _input_digest(marker["resume_fingerprint"]) != resume_input_fingerprint(interaction=interaction, message=message):
             raise CommandAcceptanceError("input response marker fingerprint differs")
     if "intent_plan_id" not in state:
         if plan is not None:
@@ -424,14 +458,12 @@ def validate_input_closure(*, campaign_id: str, interaction: Mapping[str, object
                 raise CommandAcceptanceError("input ordinary clause must be intent")
             if state["input_kind"] == "response_and_intent" and clause_id != f"clause.intent.{order - 1}":
                 raise CommandAcceptanceError("input mixed extra clause ID differs")
+            if state["input_kind"] == "response_and_intent" and not (
+                clause.get("normalized_semantics") or clause.get("material_exact_text_refs")
+            ):
+                raise CommandAcceptanceError("input mixed extra clause has no retained material meaning")
     if state["input_kind"] == "response_and_intent" and len(clauses) < 2:
         raise CommandAcceptanceError("input mixed Plan needs real extra meaning")
-    if payload_state == "message.compacted":
-        for clause in clauses:
-            if clause["clause_kind"] == "solicited_response":
-                continue
-            if not clause.get("normalized_semantics") or clause.get("material_exact_text_refs"):
-                raise CommandAcceptanceError("input compacted Message lacks sufficient material semantic content/exact owner")
 
 
 def validate_input_plan(plan: Mapping[str, object]) -> Mapping[str, object]:
@@ -684,6 +716,8 @@ def execution_identity(
     if kind == "transition":
         if execution_owner_kind != "runtime.command" or owner_id != command_id or "root_resolution_id" in command:
             raise CommandAcceptanceError("direct execution owner must be the actual command")
+        if "accepted_resume_input" in segment:
+            raise CommandAcceptanceError("direct command cannot own a solicited response marker")
     elif kind == "action":
         _input_id(command.get("root_resolution_id"))
         if execution_owner_kind != "runtime.resolution":
@@ -706,46 +740,21 @@ def execution_identity(
         "segment_id": segment_id, "event_ids": event_ids}
 
 
-def _validate_execution_owner_edge(*, owner_kind: str, owner_id: str,
-        owner: Mapping[str, object], segment: Mapping[str, object], receipt: Mapping[str, object]) -> Mapping[str, object]:
-    """Validate a retained native edge, including cumulative receipt membership.
-
-    This is shared by serialized identity consumers and the independent native
-    envelope checker. It validates evidence; it does not establish an edge.
-    """
-    _input_wire("execution-segment", segment)
-    _input_integer(segment.get("schema_version"), exact=1)
-    _input_wire("resolution-receipt", receipt)
-    if owner_kind == "runtime.resolution":
-        if "state" in owner or "kind" in owner or "id" in owner:
-            state = validate_input_resolution(resolution_id=owner_id, resolution=owner)
-            if state is owner:
-                state = {key: value for key, value in owner.items()
-                    if key not in {"kind", "id", "campaign_id", "revision", "state_revision"}}
-        else:
-            state = dict(owner)
-        state = dict(state)
-        if "resolution_id" in state and state.pop("resolution_id") != owner_id:
-            raise CommandAcceptanceError("execution Resolution identity differs from its owner")
-        _input_wire("runtime-resolution-state", state)
-        _input_integer(state.get("schema_version"), exact=1)
-        segments = state["segments"]
-    elif owner_kind == "runtime.command":
-        _input_wire("runtime-command-state", owner)
-        if owner.get("command_id") != owner_id or owner.get("command_kind") != "transition":
-            raise CommandAcceptanceError("direct edge has a foreign native command owner")
-        state = owner
-        segments = owner.get("direct_transition_segments", ())
-        if canonical_json(_thaw(owner.get("direct_transition_receipt"))) != canonical_json(_thaw(receipt)):
-            raise CommandAcceptanceError("direct receipt differs from its actual native command")
-    else:
-        raise CommandAcceptanceError("execution owner kind is unsupported")
-    if not isinstance(segments, (list, tuple)) or not segments:
-        raise CommandAcceptanceError("execution owner has no committed segments")
+def _validate_retained_segments(*, owner_kind: str, owner_id: str,
+        state: Mapping[str, object], segments: object) -> dict[str, Mapping[str, object]]:
+    """One relational segment/frontier validator for native reads and receipts."""
+    if not isinstance(segments, (list, tuple)):
+        raise CommandAcceptanceError("execution owner segments are malformed")
     by_id: dict[str, Mapping[str, object]] = {}
     previous_sequence = 0
     for embedded in segments:
         _input_wire("execution-segment", embedded)
+        if "accepted_resume_input" in embedded:
+            if owner_kind != "runtime.resolution":
+                raise CommandAcceptanceError("only a real Resolution can retain a response marker")
+            _validate_resume_marker_shape(embedded)
+            if embedded["accepted_resume_input"]["target"]["root_command_id"] != state["root_command_id"]:
+                raise CommandAcceptanceError("response marker root differs from native Resolution")
         _input_integer(embedded.get("schema_version"), exact=1)
         sequence = _input_integer(embedded.get("segment_sequence"))
         expected_id = f"{owner_id}:segment:{sequence}"
@@ -764,6 +773,54 @@ def _validate_execution_owner_edge(*, owner_kind: str, owner_id: str,
         by_id[expected_id] = embedded
     if owner_kind == "runtime.resolution" and state["next_segment_sequence"] <= previous_sequence:
         raise CommandAcceptanceError("Resolution next segment does not follow its committed closure")
+    return by_id
+
+
+def validate_retained_resolution(*, resolution_id: str,
+        resolution: Mapping[str, object]) -> Mapping[str, object]:
+    """Complete native R grammar and intrinsic relations, never native issue."""
+    native = validate_input_resolution(resolution_id=resolution_id, resolution=resolution)
+    state = {key: value for key, value in native.items()
+             if key not in {"kind", "id", "campaign_id", "revision", "state_revision", "resolution_id"}}
+    _input_wire("runtime-resolution-state", state)
+    _ordering_resolution_schema(state)
+    _validate_retained_segments(owner_kind="runtime.resolution", owner_id=resolution_id,
+        state=state, segments=state["segments"])
+    if state["status"] in {"AWAITING_CHOICE", "AWAITING_REACTION"} and "continuation_id" not in state:
+        raise CommandAcceptanceError("suspended native Resolution requires its current Continuation")
+    declared = {child["child_resolution_id"] for segment in state["segments"]
+                for child in segment["pending_child_invocations"] if "child_resolution_id" in child}
+    if not declared <= set(state["child_resolution_ids"]):
+        raise CommandAcceptanceError("native Resolution omits a declared child forward link")
+    return state
+
+
+def _validate_execution_owner_edge(*, owner_kind: str, owner_id: str,
+        owner: Mapping[str, object], segment: Mapping[str, object], receipt: Mapping[str, object]) -> Mapping[str, object]:
+    """Validate one retained native edge and its cumulative receipt membership."""
+    _input_wire("execution-segment", segment)
+    _input_integer(segment.get("schema_version"), exact=1)
+    _input_wire("resolution-receipt", receipt)
+    if owner_kind == "runtime.resolution":
+        if "kind" in owner or "state" in owner or "id" in owner:
+            state = validate_retained_resolution(resolution_id=owner_id, resolution=owner)
+        else:
+            state = validate_retained_resolution(resolution_id=owner_id,
+                resolution={"kind": owner_kind, "id": owner_id, "state": owner})
+        segments = state["segments"]
+    elif owner_kind == "runtime.command":
+        _input_wire("runtime-command-state", owner)
+        if owner.get("command_id") != owner_id or owner.get("command_kind") != "transition":
+            raise CommandAcceptanceError("direct edge has a foreign native command owner")
+        state = owner
+        segments = owner.get("direct_transition_segments", ())
+        if canonical_json(_thaw(owner.get("direct_transition_receipt"))) != canonical_json(_thaw(receipt)):
+            raise CommandAcceptanceError("direct receipt differs from its actual native command")
+    else:
+        raise CommandAcceptanceError("execution owner kind is unsupported")
+    if not segments:
+        raise CommandAcceptanceError("execution owner has no committed segments")
+    by_id = _validate_retained_segments(owner_kind=owner_kind, owner_id=owner_id, state=state, segments=segments)
     selected = by_id.get(segment["segment_id"])
     if selected is None or canonical_json(_thaw(selected)) != canonical_json(_thaw(segment)):
         raise CommandAcceptanceError("selected segment differs from its actual native owner embedding")
@@ -1338,6 +1395,18 @@ def _ordering_pending_child(value: object, label: str) -> None:
         raise NativeOrderingError(f"{label} reason is unsupported")
 
 
+def _validate_resume_marker_shape(segment: Mapping[str, object]) -> None:
+    """Validate a retained R marker's closed types, never its native issuance."""
+    marker = segment["accepted_resume_input"]
+    _input_wire("https://hedgelion.invalid/schemas/execution-segment.schema.json#/$defs/acceptedResumeInput", marker)
+    for field in ("schema_version", "resume_fingerprint_generation"):
+        _input_integer(marker[field], exact=1)
+    _input_integer(marker["target"]["continuation_generation"])
+    sequence = _input_integer(segment["segment_sequence"])
+    if segment["segment_id"] != f'{marker["target"]["resolution_id"]}:segment:{sequence}':
+        raise CommandAcceptanceError("response marker is not embedded under its exact Resolution")
+
+
 def _ordering_segment(value: object, label: str) -> None:
     segment = _ordering_mapping(value, label)
     required = {
@@ -1351,7 +1420,7 @@ def _ordering_segment(value: object, label: str) -> None:
         "receipt_exports",
         "affected_revision_refs",
     }
-    allowed = required | {"continuation_id"}
+    allowed = required | {"continuation_id", "accepted_resume_input"}
     if set(segment) - allowed or not required.issubset(segment):
         raise NativeOrderingError(f"{label} has unexpected or missing fields")
     if type(segment["schema_version"]) is not int or segment["schema_version"] != 1:
@@ -1381,6 +1450,11 @@ def _ordering_segment(value: object, label: str) -> None:
     )
     if "continuation_id" in segment:
         _ordering_text(segment["continuation_id"], f"{label} continuation_id")
+    if "accepted_resume_input" in segment:
+        try:
+            _validate_resume_marker_shape(segment)
+        except CommandAcceptanceError as exc:
+            raise NativeOrderingError(f"{label} retained response marker is invalid: {exc}") from exc
 
 
 def _ordering_pending_response_schema(value: object, label: str) -> None:
@@ -1483,6 +1557,9 @@ def _ordering_resolution_schema(payload: Mapping[str, object]) -> None:
     segments = _ordering_array(payload["segments"], "resolution segments")
     for index, segment in enumerate(segments):
         _ordering_segment(segment, f"resolution segments[{index}]")
+        if ("accepted_resume_input" in segment
+                and segment["accepted_resume_input"]["target"]["root_command_id"] != payload["root_command_id"]):
+            raise NativeOrderingError("retained response marker has a foreign root command")
     if "details" in payload:
         _ordering_mapping(payload["details"], "resolution details")
 
@@ -1620,6 +1697,16 @@ def _ordering_record(
     record_revision = payload.get("revision")
     if record_revision is not None and record_revision != campaign_pin.revision:
         raise NativeOrderingError(f"exact {family} record is stale")
+    if family == "runtime.resolution" and "state" in payload:
+        # The native envelope is authoritative; normalize only after checking
+        # every duplicated projection. This is the same W07 source, not a second
+        # ordering owner or a fallback to a stale flattened representation.
+        try:
+            state = validate_input_resolution(resolution_id=record_id, resolution=payload)
+        except CommandAcceptanceError as exc:
+            raise NativeOrderingError("native Resolution envelope/state is inconsistent") from exc
+        payload = {**{key: payload[key] for key in _ORDERING_ENVELOPE_FIELDS if key in payload},
+                   **{key: value for key, value in state.items() if key != "resolution_id"}}
     _validate_ordering_owner_schema(family, payload)
     return payload
 

@@ -99,7 +99,12 @@ class RepositoryFixture:
     def __init__(self, clause: dict[str, object] | None = None) -> None:
         self.records: dict[str, object] = {}
         self.reads: list[str] = []
+        self.input_exchanges = {}
+        self.acting_principal = VerifiedPrincipal("43", "bob")
         self._install_records(clause or _collective_clause())
+
+    def repository_identity(self) -> str:
+        return "github.com/example/campaigns"
 
     def pin_campaign(self, campaign_id: str) -> PinnedCampaign:
         if campaign_id != CAMPAIGN_ID:
@@ -139,6 +144,14 @@ class RepositoryFixture:
                 "campaign_id", "session_id", "player_id", "input_message_id", "intent_plan_id",
             ) if key in value})
             state["accepted_input_basis"]["authority_at_acceptance"]["player_id"] = state["player_id"]
+            account, login = {"player-alice": ("42", "alice"), "player-bob": ("43", "bob"),
+                              "player-carol": ("44", "carol")}[state["player_id"]]
+            accepted = state["accepted_input_basis"]
+            accepted.update(repository_identity=self.repository_identity(), accepted_exchange_key=record_id,
+                            host_invocation_ref=record_id)
+            accepted["principal"] = {"provider": "github", "stable_account_id": account, "login_at_acceptance": login}
+            self.input_exchanges[record_id] = (record_id, record_id, VerifiedPrincipal(account, login),
+                                               message["state"]["exact_text"])
             value = {**value, **state, "state": state}
             message["id"] = state["input_message_id"]
             message["state"]["message_id"] = message["id"]
@@ -151,6 +164,10 @@ class RepositoryFixture:
                 clause["clause_kind"] = "intent"
             state = {"schema_version": 1, "interaction_id": value["interaction_id"], "clauses": clauses}
             value = {**value, **state, "state": state}
+        elif family == "world.player":
+            state = {key: deepcopy(value[key]) for key in ("player_id", "status", "github_binding", "controlled_pc_ids",
+                "collaboration_route_refs", "deactivated_by", "policy_authority") if key in value}
+            value = {**value, "schema_version": 2, "state": state}
         self.records[route_native_record(family, (record_id,)).relative_path] = value
 
     def _install_records(self, clause: dict[str, object]) -> None:
@@ -199,6 +216,8 @@ class RepositoryFixture:
                 "state": {"name": "Market morning"},
             },
         )
+        self.records["MANIFEST.yaml"] = _campaign_manifest()
+        self.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"] = _route().as_mapping()
 
 
 class CampaignPublicationRepositoryFixture(RepositoryFixture):
@@ -213,6 +232,7 @@ class CampaignPublicationRepositoryFixture(RepositoryFixture):
         self._changed_paths: dict[str, tuple[str, ...]] = {}
         super().__init__(clause)
         self.records["MANIFEST.yaml"] = {
+            **_campaign_manifest(),
             "campaign_id": CAMPAIGN_ID,
             "campaign_name": "The Frostfall",
             "branch": "campaign/frostfall",
@@ -778,8 +798,39 @@ def _host(
     publication: CampaignPublicationTransport | None = None,
     live: LiveFixture | None = None,
 ) -> object:
+    class TrustedClauseInputFixture:
+        """Constructor-bound TC input mapping captured at source fixture creation.
+
+        This is not deployment or native acceptance evidence. Caller principals
+        and subsequently edited native basis bytes cannot change this mapping.
+        """
+        adapter_profile_id = "fixture.input"
+        adapter_profile_generation = 1
+
+        def _exchange(self, repository_identity, campaign_id, adapter_profile_id,
+                      adapter_profile_generation, accepted_exchange_key):
+            if (repository_identity, campaign_id, adapter_profile_id, adapter_profile_generation) != (
+                repository.repository_identity(), CAMPAIGN_ID, "fixture.input", 1):
+                raise ValueError("foreign input scope")
+            return repository.input_exchanges[accepted_exchange_key]
+
+        def lookup_exchange(self, **key):
+            return self._exchange(**key)[0]
+
+        def accepted_representation(self, *, host_invocation_ref, **key):
+            _, invocation, author, text = self._exchange(**key)
+            if invocation != host_invocation_ref:
+                raise ValueError("foreign invocation")
+            return author, text
+
+        def current_principal(self, *, repository_identity, campaign_id):
+            if (repository_identity, campaign_id) != (repository.repository_identity(), CAMPAIGN_ID):
+                raise ValueError("foreign current principal scope")
+            return repository.acting_principal
+
     return compose_runtime_host(
-        CAMPAIGN_ID, repository, live or LiveFixture(), publication
+        CAMPAIGN_ID, repository, live or LiveFixture(), publication,
+        accepted_input_capability=TrustedClauseInputFixture(),
     )
 
 
@@ -880,6 +931,8 @@ def _attach_route_ref(
     for player_id in player_ids:
         path = route_native_record("world.player", (player_id,)).relative_path
         player = repository.records[path]
+        # Both are native identity projections in this older fixture corpus.
+        # The explicit fixture mutation keeps the admitted state synchronized.
         refs = {
             (ref["obligation_id"], ref["generation"])
             for ref in player.get("collaboration_route_refs", ())
@@ -889,6 +942,7 @@ def _attach_route_ref(
             {"obligation_id": obligation_id, "generation": generation}
             for obligation_id, generation in sorted(refs)
         ]
+        player["state"]["collaboration_route_refs"] = deepcopy(player["collaboration_route_refs"])
 
 
 def _live_source(scene_id: str) -> LiveEnvelope:
@@ -1405,6 +1459,7 @@ class CollaborationAdmissionTests(unittest.TestCase):
         _attach_route_ref(repository, obligation, "player-alice", "player-bob")
         bob_path = route_native_record("world.player", ("player-bob",)).relative_path
         repository.records[bob_path]["collaboration_route_refs"] = []  # type: ignore[index]
+        repository.records[bob_path]["state"]["collaboration_route_refs"] = []
 
         with self.assertRaisesRegex(CollaborationAdmissionError, "route"):
             associate_input(
@@ -3302,7 +3357,7 @@ class CollaborationPublicationRecoveryTests(unittest.TestCase):
 
 class CollaborationAccessReconciliationTests(unittest.TestCase):
     def test_module_revision_changes_without_changing_persisted_schema(self) -> None:
-        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.21")
+        self.assertEqual(collaboration_module.FRAMEWORK_MODULE_VERSION, "1.0.22")
         self.assertEqual(collaboration_module.COLLABORATION_SCHEMA_VERSION, 3)
 
     def _open_pending(
@@ -3323,6 +3378,8 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
             repository.records["MANIFEST.yaml"] = _campaign_manifest(
                 player_ids=("player-alice", "player-bob", "player-carol")
             )
+            repository.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"]["entries"].append(
+                {"stable_account_id": "44", "candidate_player_ids": ["player-carol"]})
         obligation = open_or_successor_obligation(
             _classify(repository), obligation_id="obligation-access-reconcile"
         )
@@ -3360,7 +3417,7 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
             "interaction-2",
             "clause-2",
             principal=_bob_principal(),
-            player_route=_route(),
+            player_route=repository.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"],
         )
         _persist_obligation(repository, accepted)
         return accepted
@@ -3500,6 +3557,8 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
         self.assertEqual(
             recovered.accepted_input_contributors, accepted.accepted_input_contributors
         )
+        _add_persisted_input(repository, interaction_id="interaction-3", clause_id="clause-3",
+                             player_id="player-bob", pc_id="pc-bob")
         with self.assertRaisesRegex(CollaborationAdmissionError, "active|join"):
             associate_input(
                 recovered,
@@ -3507,7 +3566,7 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
                 "interaction-3",
                 "clause-3",
                 principal=_bob_principal(),
-                player_route=_route(),
+                player_route=repository.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"],
             )
         with self.assertRaisesRegex(CollaborationAdmissionError, "active|join"):
             join_participant(host, principal=_bob_principal(), player_route=_route())
@@ -3620,19 +3679,8 @@ class CollaborationAccessReconciliationTests(unittest.TestCase):
             pc_id="pc-carol",
         )
         carol = VerifiedPrincipal(stable_account_id="44", login="carol")
-        carol_route = build_principal_player_route(
-            CAMPAIGN_ID,
-            (
-                PlayerRecord(
-                    "player-carol",
-                    "44",
-                    "carol",
-                    "active",
-                    None,
-                    controlled_pc_ids=("pc-carol",),
-                ),
-            ),
-        )
+        repository.acting_principal = carol
+        carol_route = repository.records["STATE/RUNTIME/PRINCIPAL_PLAYER_ROUTING.yaml"]
         associated = associate_input(
             current,
             host,
